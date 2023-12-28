@@ -20,7 +20,7 @@ class ToastCard extends StatefulHookConsumerWidget {
     required this.type,
     required this.duration,
     required this.onDismissed,
-    required this.text,
+    this.text,
     this.title,
     this.debugText,
     this.isDebug = false,
@@ -31,7 +31,7 @@ class ToastCard extends StatefulHookConsumerWidget {
   final Duration duration;
   final VoidCallback onDismissed;
 
-  final Text text;
+  final Text? text;
   final Text? title;
   final Text? debugText;
   final bool isDebug;
@@ -185,7 +185,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                             ),
                                           ),
                                         ),
-                                      text,
+                                      if (text != null) text,
                                       const Gap(12),
                                     ],
                                   ),
