@@ -40,12 +40,14 @@ abstract class SingleValidatorBase {
   /// {@macro [SingleValidatorBase]}
   SingleValidatorBase(
     this._ref, {
+    this.name,
     String? initialError,
     List<SingleValidatorBase> relatedValidators = const [],
   })  : _initialError = initialError,
         _relatedValidators = relatedValidators;
 
   final Ref _ref;
+  final String? name;
   final String? _initialError;
 
   /// Список связанных валидаторов, которые также будут валидироваться при валидации текущего
@@ -131,6 +133,7 @@ final class SingleValidator extends SingleValidatorBase {
   SingleValidator(
     super._ref,
     this._validatorFn, {
+    super.name,
     super.initialError,
     super.relatedValidators,
   });
@@ -166,6 +169,7 @@ final class SingleAsyncValidator extends SingleValidatorBase {
   SingleAsyncValidator(
     super._ref,
     this._validatorFn, {
+    super.name,
     super.initialError,
     super.relatedValidators,
   });
