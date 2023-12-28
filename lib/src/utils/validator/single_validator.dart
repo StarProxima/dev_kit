@@ -89,7 +89,7 @@ abstract class SingleValidatorBase {
 
           return errorStr;
         },
-        limiter: debounce != null
+        rateLimiter: debounce != null
             ? Debounce(
                 milliseconds: debounce.inMilliseconds,
                 tag: hashCode.toString(),
