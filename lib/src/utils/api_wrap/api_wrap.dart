@@ -41,8 +41,8 @@ class ApiWrapper implements IApiWrap {
 /// Тип колбека, используемый для обработки ошибок API.
 typedef ErrorResponseOnError = FutureOr<D?> Function<D>({
   required ErrorResponse error,
-  required bool isVisibleError,
-  required bool isDebugError,
+  required bool shouldShowError,
+  required bool shouldShowErrorForDebugOnly,
   required FutureOr<D?> Function(ErrorResponse error)? originalOnError,
 });
 
@@ -76,9 +76,9 @@ extension ApiWrapX on IApiWrap {
   /// [retry] - настройки повторных попыток выполнения запроса.
   /// Если не указано, то повторных попыток не будет.
   ///
-  /// [isVisibleError] - будет ли показана ошибка.
+  /// [shouldShowError] - будет ли показана ошибка.
   ///
-  /// [isDebugError] - будет ли ошибка отображаться только для дебага.
+  /// [shouldShowErrorForDebugOnly] - будет ли ошибка отображаться только для дебага.
   ///
   /// ```dart
   /// await apiWrap(
@@ -95,16 +95,16 @@ extension ApiWrapX on IApiWrap {
     ExecuteIf? executeIf,
     RateLimiter? rateLimiter,
     Retry? retry,
-    bool isVisibleError = true,
-    bool isDebugError = false,
+    bool shouldShowError = true,
+    bool shouldShowErrorForDebugOnly = false,
   }) =>
       wrapOptions.internalApiWrap<T, D>(
         function,
         onSuccess: onSuccess,
         onError: (error) => wrapOptions.onError?.call(
           error: error,
-          isVisibleError: isVisibleError,
-          isDebugError: isDebugError,
+          shouldShowError: shouldShowError,
+          shouldShowErrorForDebugOnly: shouldShowErrorForDebugOnly,
           originalOnError: onError,
         ),
         delay: delay,
@@ -132,8 +132,8 @@ extension ApiWrapX on IApiWrap {
     required FutureOr<D> Function(ErrorResponse error) onError,
     Duration? delay,
     Retry? retry,
-    bool isVisibleError = true,
-    bool isDebugError = false,
+    bool shouldShowError = true,
+    bool shouldShowErrorForDebugOnly = false,
   }) async =>
       (await apiWrap<T, D>(
         function,
@@ -141,8 +141,8 @@ extension ApiWrapX on IApiWrap {
         onError: onError,
         delay: delay,
         retry: retry,
-        isVisibleError: isVisibleError,
-        isDebugError: isDebugError,
+        shouldShowError: shouldShowError,
+        shouldShowErrorForDebugOnly: shouldShowErrorForDebugOnly,
       )) as D;
 
   /// Как [apiWrap], возвращает тот же тип, что и [function], но может быть null при ошибке.
@@ -160,8 +160,8 @@ extension ApiWrapX on IApiWrap {
     ExecuteIf? executeIf,
     RateLimiter? rateLimiter,
     Retry? retry,
-    bool isVisibleError = true,
-    bool isDebugError = false,
+    bool shouldShowError = true,
+    bool shouldShowErrorForDebugOnly = false,
   }) =>
       apiWrap(
         function,
@@ -171,8 +171,8 @@ extension ApiWrapX on IApiWrap {
         executeIf: executeIf,
         rateLimiter: rateLimiter,
         retry: retry,
-        isVisibleError: isVisibleError,
-        isDebugError: isDebugError,
+        shouldShowError: shouldShowError,
+        shouldShowErrorForDebugOnly: shouldShowErrorForDebugOnly,
       );
 
   /// Объединяет свойства [apiWrapGuard] и [apiWrapSingle].
@@ -195,8 +195,8 @@ extension ApiWrapX on IApiWrap {
     required FutureOr<T> Function(ErrorResponse error) onError,
     Duration? delay,
     Retry? retry,
-    bool isVisibleError = true,
-    bool isDebugError = false,
+    bool shouldShowError = true,
+    bool shouldShowErrorForDebugOnly = false,
   }) async =>
       (await apiWrap<T, T>(
         function,
@@ -204,7 +204,7 @@ extension ApiWrapX on IApiWrap {
         onError: onError,
         delay: delay,
         retry: retry,
-        isVisibleError: isVisibleError,
-        isDebugError: isDebugError,
+        shouldShowError: shouldShowError,
+        shouldShowErrorForDebugOnly: shouldShowErrorForDebugOnly,
       ))!;
 }
