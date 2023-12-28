@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../../../app_dev_kit.dart';
 import 'internal_api_wrap.dart';
 
 /// Операция для debounce и thottle в [InternalApiWrap]
@@ -8,11 +9,13 @@ class ApiOperation<T> {
     this.timer,
     this.completer,
     this.function,
+    this.rateLimiter,
   });
 
   final Timer? timer;
   final Completer<T?>? completer;
   final FutureOr<T> Function()? function;
+  final RateLimiter? rateLimiter;
 
   void cancel() {
     timer?.cancel();

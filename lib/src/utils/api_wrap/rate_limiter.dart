@@ -6,12 +6,14 @@ import 'api_operation.dart';
 sealed class RateLimiter extends Duration {
   RateLimiter({
     this.tag,
+    this.onCancel,
     super.milliseconds,
     super.seconds,
     super.minutes,
   });
 
   final String? tag;
+  final void Function()? onCancel;
 
   Future<T?> call<T>(
     Map<String, ApiOperation> operations,
@@ -29,6 +31,7 @@ class Debounce extends RateLimiter {
   Debounce({
     super.tag,
     this.includeRequestTime = true,
+    super.onCancel,
     super.milliseconds,
     super.seconds,
     super.minutes,
@@ -44,7 +47,9 @@ class Debounce extends RateLimiter {
     final tag = this.tag ?? StackTrace.current.toString();
     final completer = Completer<T?>();
 
-    operations.remove(tag)?.cancel();
+    operations.remove(tag)
+      ?..rateLimiter?.onCancel?.call()
+      ..cancel();
 
     operations[tag] = ApiOperation<T>(
       timer: Timer(this, () async {
@@ -55,6 +60,7 @@ class Debounce extends RateLimiter {
       }),
       completer: completer,
       function: function,
+      rateLimiter: this,
     );
     final res = await completer.future;
     // Если операция была отменена в течении debounce, то возвращается null.
@@ -73,6 +79,7 @@ class Throttle extends RateLimiter {
   Throttle({
     super.tag,
     this.includeRequestTime = true,
+    super.onCancel,
     super.milliseconds,
     super.seconds,
     super.minutes,
@@ -88,7 +95,12 @@ class Throttle extends RateLimiter {
     final tag = this.tag ?? StackTrace.current.toString();
     // Если операция уже существует, то возвращается null.
     // При этом не вызывается ни onSuccess, ни onError.
-    if (operations.containsKey(tag)) return null;
+
+    if (operations.containsKey(tag)) {
+      onCancel?.call();
+      return null;
+    }
+
     operations[tag] = ApiOperation();
 
     final futureOr = includeRequestTime ? await function() : function();
