@@ -77,11 +77,11 @@ mixin ValidatorMixin implements IRef {
   /// Метод для вызова валидации у переданных валидаторов.
   /// Возвращает список ошибок, если они есть.
   @protected
-  Future<List<String>> processValidators(
+  Future<List<({String? name, String error})>> processValidators(
     List<SingleValidatorBase> validators, {
     bool softMode = false,
   }) async {
-    final errors = <String>[];
+    final errors = <({String? name, String error})>[];
 
     for (final validator in validators) {
       final String? error;
@@ -92,7 +92,7 @@ mixin ValidatorMixin implements IRef {
         error = await validator.validate();
       }
 
-      if (error != null) errors.add(error);
+      if (error != null) errors.add((name: validator.name, error: error));
     }
 
     return errors;
