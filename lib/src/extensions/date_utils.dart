@@ -1,4 +1,4 @@
-extension DateUtilsExtension on DateTime {
+extension DateUtilsX on DateTime {
   DateTime get dateOnly => DateTime(year, month, day);
 
   DateTime get yearAndMonthOnly => DateTime(year, month);

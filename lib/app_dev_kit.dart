@@ -8,7 +8,7 @@ export 'package:gap/gap.dart';
 // Extensions
 export 'src/extensions/date_utils.dart';
 export 'src/extensions/list_utils.dart';
-export 'src/extensions/null_if_empty_string.dart';
+export 'src/extensions/string_utils.dart';
 
 // Api utils
 export 'src/utils/api_wrap/error_response/error_response.dart';
