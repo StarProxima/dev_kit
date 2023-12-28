@@ -7,9 +7,12 @@ import '../../../core_dev_kit.dart';
 
 part 'single_validator.g.dart';
 
+/// Метод для установки ошибки вручную в AsyncValidator
+/// [Debounce] работает только в softMode. Если операция прерывается, то текущая ошибка не меняется.
+/// В обычном режиме валидация не может быть прервана, что бы не было false positive результатов.
 typedef SetError = FutureOr<String?> Function(
   FutureOr<String?> Function() error, {
-  Duration? debounce,
+  Debounce? softDebounce,
 });
 
 @Riverpod(keepAlive: true)
@@ -63,7 +66,9 @@ abstract class SingleValidatorBase {
     final errorsEqual = error == currentError;
     final softModeBlock = softMode && currentError == null;
 
-    if (!errorsEqual && !softModeBlock) setError(() => error);
+    if (!errorsEqual && !softModeBlock) {
+      setError(() => error);
+    }
 
     for (final validator in _relatedValidators) {
       validator.softValidate();
@@ -77,25 +82,31 @@ abstract class SingleValidatorBase {
   /// в течении [debounce] не было вызвано других [setError]
   FutureOr<String?> setError(
     FutureOr<String?> Function() error, {
-    Duration? debounce,
-  }) =>
-      _apiUtils.apiWrapSingle<String?>(
-        () async {
-          final errorStr = await error();
+    Debounce? debounce,
+  }) async {
+    var isCanceled = false;
+    final errorStr = await _apiUtils.apiWrapSingle<String?>(
+      () async {
+        final errorStr = await error();
 
-          if (_ref.exists(errorProvider)) {
-            _ref.read(errorProvider.notifier).setError(errorStr);
-          }
+        if (_ref.exists(errorProvider)) {
+          _ref.read(errorProvider.notifier).setError(errorStr);
+        }
 
-          return errorStr;
-        },
-        rateLimiter: debounce != null
-            ? Debounce(
-                milliseconds: debounce.inMilliseconds,
-                tag: hashCode.toString(),
-              )
-            : null,
-      );
+        return errorStr;
+      },
+      onError: (_) => this.error,
+      rateLimiter: debounce != null
+          ? Debounce(
+              tag: debounce.tag ?? hashCode.toString(),
+              milliseconds: debounce.inMilliseconds,
+              onCancel: () => isCanceled = true,
+            )
+          : null,
+    );
+
+    return isCanceled ? this.error : errorStr;
+  }
 
   /// Провайдер ошибки
   late final errorProvider = _errorProvider(hashCode, _initialError);
@@ -178,7 +189,10 @@ final class SingleAsyncValidator extends SingleValidatorBase {
       if (_ref.exists(_countProvider)) notifier.increment();
     });
 
-    final newError = await _validatorFn(setError);
+    final newError = await _validatorFn(
+      (error, {softDebounce}) =>
+          setError(error, debounce: softMode ? softDebounce : null),
+    );
 
     if (_ref.exists(_countProvider)) notifier.decrement();
 
