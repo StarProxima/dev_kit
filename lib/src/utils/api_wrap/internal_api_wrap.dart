@@ -7,6 +7,8 @@ import 'error_response/error_response.dart';
 import 'rate_limiter.dart';
 import 'retry.dart';
 
+typedef ExecuteIf = FutureOr<bool> Function();
+
 class InternalApiWrap {
   InternalApiWrap(this._retry);
 
@@ -30,11 +32,15 @@ class InternalApiWrap {
     FutureOr<D?> Function(ErrorResponse error)? onError,
     Duration? delay,
     RateLimiter? limiter,
+    ExecuteIf? executeIf,
     Retry? retry,
   }) async {
     retry ??= _retry;
     final maxAttempts = retry.maxAttempts;
     final retryIf = retry.retryIf;
+
+    // ignore: no_leading_underscores_for_local_identifiers
+    FutureOr<bool> _executeIf() async => executeIf == null || await executeIf();
 
     ErrorResponse error;
 
@@ -47,10 +53,14 @@ class InternalApiWrap {
         final T response;
 
         if (limiter != null && attempt == 1) {
-          final res = await limiter(_operations, function);
+          final res = await limiter(_operations, () async {
+            if (await _executeIf()) return null;
+            return function();
+          });
           if (res == null) return null;
           response = res;
         } else {
+          if (await _executeIf()) return null;
           response = await function();
         }
 

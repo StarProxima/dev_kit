@@ -93,6 +93,7 @@ extension ApiWrapX on IApiWrap {
     FutureOr<D?> Function(ErrorResponse error)? onError,
     Duration? delay,
     RateLimiter? limiter,
+    ExecuteIf? executeIf,
     Retry? retry,
     bool isVisibleError = true,
     bool isDebugError = false,
@@ -108,6 +109,7 @@ extension ApiWrapX on IApiWrap {
         ),
         delay: delay,
         limiter: limiter,
+        executeIf: executeIf,
         retry: retry,
       );
 
@@ -156,6 +158,7 @@ extension ApiWrapX on IApiWrap {
     FutureOr<T?> Function(ErrorResponse error)? onError,
     Duration? delay,
     RateLimiter? limiter,
+    ExecuteIf? executeIf,
     Retry? retry,
     bool isVisibleError = true,
     bool isDebugError = false,
@@ -166,6 +169,7 @@ extension ApiWrapX on IApiWrap {
         onError: onError,
         delay: delay,
         limiter: limiter,
+        executeIf: executeIf,
         retry: retry,
         isVisibleError: isVisibleError,
         isDebugError: isDebugError,
