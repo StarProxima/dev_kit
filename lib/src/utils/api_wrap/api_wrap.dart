@@ -26,7 +26,10 @@ class ApiWrapper implements IApiWrap {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
     ApiWrapOptions? opstions,
-  }) : wrapOptions = opstions ?? ApiWrapOptions();
+  }) : wrapOptions = opstions ??
+            ApiWrapOptions(
+              parseError: (e) => e,
+            );
 
   @override
   final ApiWrapOptions wrapOptions;
@@ -50,28 +53,33 @@ class ApiWrapper implements IApiWrap {
 }
 
 /// Тип колбека, используемый для обработки ошибок API.
-typedef ErrorResponseOnError = FutureOr<D?> Function<D>({
-  required ErrorResponse error,
+typedef ErrorResponseOnError<ErrorType> = FutureOr<D?> Function<D>({
+  required ErrorResponse<ErrorType> error,
   required ErrorVisibility errorVisibility,
-  required FutureOr<D?> Function(ErrorResponse error)? originalOnError,
+  required FutureOr<D?> Function(ErrorResponse<ErrorType> error)?
+      originalOnError,
 });
 
-class ApiWrapOptions {
+class ApiWrapOptions<ErrorType> {
   ApiWrapOptions({
     Retry? retry,
+    required ErrorType Function(Object) parseError,
     this.onError,
-  }) : internalApiWrap = InternalApiWrap(retry ?? Retry(maxAttempts: 0));
+  }) : internalApiWrap = InternalApiWrap(
+          retry: retry ?? Retry(maxAttempts: 0),
+          parseError: parseError,
+        );
 
-  final InternalApiWrap internalApiWrap;
-  final ErrorResponseOnError? onError;
+  final InternalApiWrap<ErrorType> internalApiWrap;
+  final ErrorResponseOnError<ErrorType>? onError;
 }
 
-abstract class IApiWrap {
+abstract class IApiWrap<ErrorType> {
   @protected
-  abstract final ApiWrapOptions wrapOptions;
+  abstract final ApiWrapOptions<ErrorType> wrapOptions;
 }
 
-extension ApiWrapX on IApiWrap {
+extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// Обёртывает [Dio] запрос к API или обычную функцию с возможностью использования
   /// последовательных вложенных запросов, автоматической/ручной обработки ошибок и доп. логики.
   ///
@@ -96,7 +104,7 @@ extension ApiWrapX on IApiWrap {
   Future<D?> apiWrap<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
-    FutureOr<D?> Function(ErrorResponse error)? onError,
+    FutureOr<D?> Function(ErrorResponse<ErrorType> error)? onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     ExecuteIf? executeIf,
@@ -140,7 +148,7 @@ extension ApiWrapX on IApiWrap {
   Future<D> apiWrapGuard<T, D>(
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T) onSuccess,
-    required FutureOr<D> Function(ErrorResponse error) onError,
+    required FutureOr<D> Function(ErrorResponse<ErrorType> error) onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry? retry,
@@ -164,7 +172,7 @@ extension ApiWrapX on IApiWrap {
   Future<T?> apiWrapSingle<T>(
     FutureOr<T> Function() function, {
     FutureOr<T?> Function(T)? onSuccess,
-    FutureOr<T?> Function(ErrorResponse error)? onError,
+    FutureOr<T?> Function(ErrorResponse<ErrorType> error)? onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     ExecuteIf? executeIf,
@@ -199,7 +207,7 @@ extension ApiWrapX on IApiWrap {
   Future<T> apiWrapSingleGuard<T>(
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T)? onSuccess,
-    required FutureOr<T> Function(ErrorResponse error) onError,
+    required FutureOr<T> Function(ErrorResponse<ErrorType> error) onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry? retry,

@@ -1,4 +1,4 @@
-name: sleeptery
+name: dev_kit
 
 packages:
   - .
@@ -8,10 +8,10 @@ scripts:
   fix_format: 'melos exec "dart fix --apply && dart format ."'
 
   # Запускает build_runner build
-  build: 'melos exec --scope="sleeptery" "dart run build_runner build -d"'
+  build: 'melos exec "dart run build_runner build -d"'
 
   # Запускает build_runner watch в core package
-  watch: 'melos exec --scope="sleeptery" "dart run build_runner watch -d"'
+  watch: 'melos exec "dart run build_runner watch -d"'
 
   pub_get: 'melos exec "flutter pub get"'
   

@@ -4,12 +4,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'error_response.freezed.dart';
 
-sealed class ErrorResponse implements Exception {}
+sealed class ErrorResponse<ErrorType> implements Exception {}
 
 @freezed
-class RequestError extends ErrorResponse with _$RequestError {
+class RequestError<ErrorType> extends ErrorResponse<ErrorType>
+    with _$RequestError {
   factory RequestError({
-    required Object error,
+    required ErrorType error,
     required int statusCode,
     required String method,
     required Uri url,
@@ -18,7 +19,8 @@ class RequestError extends ErrorResponse with _$RequestError {
 }
 
 @freezed
-class InternalError extends ErrorResponse with _$InternalError {
+class InternalError<ErrorType> extends ErrorResponse<ErrorType>
+    with _$InternalError {
   factory InternalError({
     required Object error,
     required StackTrace stackTrace,
