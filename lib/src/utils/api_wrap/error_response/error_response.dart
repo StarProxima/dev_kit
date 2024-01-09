@@ -8,7 +8,7 @@ sealed class ErrorResponse<ErrorType> implements Exception {}
 
 @freezed
 class RequestError<ErrorType> extends ErrorResponse<ErrorType>
-    with _$RequestError {
+    with _$RequestError<ErrorType> {
   factory RequestError({
     required ErrorType error,
     required int statusCode,
