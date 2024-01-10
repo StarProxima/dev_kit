@@ -4,11 +4,11 @@ import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
 
-import '../../../core_dev_kit.dart';
+import 'models/api_error.dart';
 
 final _rand = math.Random();
 
-bool _defaultRetryIf(ErrorResponse e) {
+bool _defaultRetryIf(ApiError e) {
   if (e is! InternalError) return false;
 
   return switch (e.error) {
@@ -19,10 +19,10 @@ bool _defaultRetryIf(ErrorResponse e) {
   };
 }
 
-typedef RetryIf = FutureOr<bool> Function(ErrorResponse error);
+typedef RetryIf = FutureOr<bool> Function(ApiError error);
 
 class Retry {
-   Retry({
+  Retry({
     required this.maxAttempts,
     this.retryIf = _defaultRetryIf,
     this.delayFactor = const Duration(milliseconds: 500),

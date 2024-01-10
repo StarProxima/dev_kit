@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../../core_dev_kit.dart';
+import 'internal_api_wrap.dart';
+import 'models/api_error.dart';
+import 'rate_limiter.dart';
+import 'retry.dart';
 
 enum ErrorVisibility {
   /// Отображать ошибку всегда.
@@ -26,10 +29,7 @@ class ApiWrapper implements IApiWrap {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
     ApiWrapOptions? opstions,
-  }) : wrapOptions = opstions ??
-            ApiWrapOptions(
-              parseError: (e) => e,
-            );
+  }) : wrapOptions = opstions ?? ApiWrapOptions();
 
   @override
   final ApiWrapOptions wrapOptions;
@@ -54,16 +54,15 @@ class ApiWrapper implements IApiWrap {
 
 /// Тип колбека, используемый для обработки ошибок API.
 typedef ErrorResponseOnError<ErrorType> = FutureOr<D?> Function<D>({
-  required ErrorResponse<ErrorType> error,
+  required ApiError<ErrorType> error,
   required ErrorVisibility errorVisibility,
-  required FutureOr<D?> Function(ErrorResponse<ErrorType> error)?
-      originalOnError,
+  required FutureOr<D?> Function(ApiError<ErrorType> error)? originalOnError,
 });
 
 class ApiWrapOptions<ErrorType> {
   ApiWrapOptions({
     Retry? retry,
-    required ErrorType Function(Object) parseError,
+    ErrorType Function(Object)? parseError,
     this.onError,
   }) : internalApiWrap = InternalApiWrap(
           retry: retry ?? Retry(maxAttempts: 0),
@@ -103,8 +102,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// ```
   Future<D?> apiWrap<T, D>(
     FutureOr<T> Function() function, {
-    FutureOr<D?> Function(T)? onSuccess,
-    FutureOr<D?> Function(ErrorResponse<ErrorType> error)? onError,
+    FutureOr<D?> Function(T res)? onSuccess,
+    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     ExecuteIf? executeIf,
@@ -125,13 +124,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         retry: retry,
       );
 
-  void test() {
-    apiWrap(
-      () => null,
-      errorVisibility: ErrorVisibility.always,
-    );
-  }
-
   /// Как [apiWrap], но требует указывать все колбеки, что позволяет возвращать ненулевое значение.
   ///
   /// Пример:
@@ -147,8 +139,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// ```
   Future<D> apiWrapGuard<T, D>(
     FutureOr<T> Function() function, {
-    required FutureOr<D> Function(T) onSuccess,
-    required FutureOr<D> Function(ErrorResponse<ErrorType> error) onError,
+    required FutureOr<D> Function(T res) onSuccess,
+    required FutureOr<D> Function(ApiError<ErrorType> error) onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry? retry,
@@ -171,8 +163,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// ```
   Future<T?> apiWrapSingle<T>(
     FutureOr<T> Function() function, {
-    FutureOr<T?> Function(T)? onSuccess,
-    FutureOr<T?> Function(ErrorResponse<ErrorType> error)? onError,
+    FutureOr<T?> Function(T res)? onSuccess,
+    FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     ExecuteIf? executeIf,
@@ -206,8 +198,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// ```
   Future<T> apiWrapSingleGuard<T>(
     FutureOr<T> Function() function, {
-    FutureOr<T> Function(T)? onSuccess,
-    required FutureOr<T> Function(ErrorResponse<ErrorType> error) onError,
+    FutureOr<T> Function(T res)? onSuccess,
+    required FutureOr<T> Function(ApiError<ErrorType> error) onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry? retry,

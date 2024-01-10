@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import '../../../app_dev_kit.dart';
+import 'internal_api_wrap.dart';
+import 'rate_limiter.dart';
 
 /// Операция для debounce и thottle в [InternalApiWrap]
-class ApiOperation<T> {
-  ApiOperation({
+class RateOperation<T> {
+  RateOperation({
     this.timer,
     this.completer,
     this.function,

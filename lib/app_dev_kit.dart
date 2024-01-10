@@ -11,7 +11,7 @@ export 'src/extensions/list_utils.dart';
 export 'src/extensions/string_utils.dart';
 
 // Api utils
-export 'src/utils/api_wrap/error_response/error_response.dart';
+export 'src/utils/api_wrap/models/api_error.dart';
 export 'src/utils/api_wrap/api_wrap.dart';
 export 'src/utils/api_wrap/internal_api_wrap.dart';
 export 'src/utils/api_wrap/rate_limiter.dart';

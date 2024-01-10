@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'error_response.dart';
+part of 'api_error.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
-mixin _$RequestError<ErrorType> {
+mixin _$ErrorResponse<ErrorType> {
   ErrorType get error => throw _privateConstructorUsedError;
   int get statusCode => throw _privateConstructorUsedError;
   String get method => throw _privateConstructorUsedError;
@@ -23,15 +23,15 @@ mixin _$RequestError<ErrorType> {
   StackTrace get stackTrace => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $RequestErrorCopyWith<ErrorType, RequestError<ErrorType>> get copyWith =>
+  $ErrorResponseCopyWith<ErrorType, ErrorResponse<ErrorType>> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $RequestErrorCopyWith<ErrorType, $Res> {
-  factory $RequestErrorCopyWith(RequestError<ErrorType> value,
-          $Res Function(RequestError<ErrorType>) then) =
-      _$RequestErrorCopyWithImpl<ErrorType, $Res, RequestError<ErrorType>>;
+abstract class $ErrorResponseCopyWith<ErrorType, $Res> {
+  factory $ErrorResponseCopyWith(ErrorResponse<ErrorType> value,
+          $Res Function(ErrorResponse<ErrorType>) then) =
+      _$ErrorResponseCopyWithImpl<ErrorType, $Res, ErrorResponse<ErrorType>>;
   @useResult
   $Res call(
       {ErrorType error,
@@ -42,10 +42,10 @@ abstract class $RequestErrorCopyWith<ErrorType, $Res> {
 }
 
 /// @nodoc
-class _$RequestErrorCopyWithImpl<ErrorType, $Res,
-        $Val extends RequestError<ErrorType>>
-    implements $RequestErrorCopyWith<ErrorType, $Res> {
-  _$RequestErrorCopyWithImpl(this._value, this._then);
+class _$ErrorResponseCopyWithImpl<ErrorType, $Res,
+        $Val extends ErrorResponse<ErrorType>>
+    implements $ErrorResponseCopyWith<ErrorType, $Res> {
+  _$ErrorResponseCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -87,11 +87,11 @@ class _$RequestErrorCopyWithImpl<ErrorType, $Res,
 }
 
 /// @nodoc
-abstract class _$$RequestErrorImplCopyWith<ErrorType, $Res>
-    implements $RequestErrorCopyWith<ErrorType, $Res> {
-  factory _$$RequestErrorImplCopyWith(_$RequestErrorImpl<ErrorType> value,
-          $Res Function(_$RequestErrorImpl<ErrorType>) then) =
-      __$$RequestErrorImplCopyWithImpl<ErrorType, $Res>;
+abstract class _$$ErrorResponseImplCopyWith<ErrorType, $Res>
+    implements $ErrorResponseCopyWith<ErrorType, $Res> {
+  factory _$$ErrorResponseImplCopyWith(_$ErrorResponseImpl<ErrorType> value,
+          $Res Function(_$ErrorResponseImpl<ErrorType>) then) =
+      __$$ErrorResponseImplCopyWithImpl<ErrorType, $Res>;
   @override
   @useResult
   $Res call(
@@ -103,12 +103,12 @@ abstract class _$$RequestErrorImplCopyWith<ErrorType, $Res>
 }
 
 /// @nodoc
-class __$$RequestErrorImplCopyWithImpl<ErrorType, $Res>
-    extends _$RequestErrorCopyWithImpl<ErrorType, $Res,
-        _$RequestErrorImpl<ErrorType>>
-    implements _$$RequestErrorImplCopyWith<ErrorType, $Res> {
-  __$$RequestErrorImplCopyWithImpl(_$RequestErrorImpl<ErrorType> _value,
-      $Res Function(_$RequestErrorImpl<ErrorType>) _then)
+class __$$ErrorResponseImplCopyWithImpl<ErrorType, $Res>
+    extends _$ErrorResponseCopyWithImpl<ErrorType, $Res,
+        _$ErrorResponseImpl<ErrorType>>
+    implements _$$ErrorResponseImplCopyWith<ErrorType, $Res> {
+  __$$ErrorResponseImplCopyWithImpl(_$ErrorResponseImpl<ErrorType> _value,
+      $Res Function(_$ErrorResponseImpl<ErrorType>) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -120,7 +120,7 @@ class __$$RequestErrorImplCopyWithImpl<ErrorType, $Res>
     Object? url = null,
     Object? stackTrace = null,
   }) {
-    return _then(_$RequestErrorImpl<ErrorType>(
+    return _then(_$ErrorResponseImpl<ErrorType>(
       error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -147,8 +147,8 @@ class __$$RequestErrorImplCopyWithImpl<ErrorType, $Res>
 
 /// @nodoc
 
-class _$RequestErrorImpl<ErrorType> implements _RequestError<ErrorType> {
-  _$RequestErrorImpl(
+class _$ErrorResponseImpl<ErrorType> implements _ErrorResponse<ErrorType> {
+  _$ErrorResponseImpl(
       {required this.error,
       required this.statusCode,
       required this.method,
@@ -167,15 +167,10 @@ class _$RequestErrorImpl<ErrorType> implements _RequestError<ErrorType> {
   final StackTrace stackTrace;
 
   @override
-  String toString() {
-    return 'RequestError<$ErrorType>(error: $error, statusCode: $statusCode, method: $method, url: $url, stackTrace: $stackTrace)';
-  }
-
-  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$RequestErrorImpl<ErrorType> &&
+            other is _$ErrorResponseImpl<ErrorType> &&
             const DeepCollectionEquality().equals(other.error, error) &&
             (identical(other.statusCode, statusCode) ||
                 other.statusCode == statusCode) &&
@@ -197,18 +192,18 @@ class _$RequestErrorImpl<ErrorType> implements _RequestError<ErrorType> {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$RequestErrorImplCopyWith<ErrorType, _$RequestErrorImpl<ErrorType>>
-      get copyWith => __$$RequestErrorImplCopyWithImpl<ErrorType,
-          _$RequestErrorImpl<ErrorType>>(this, _$identity);
+  _$$ErrorResponseImplCopyWith<ErrorType, _$ErrorResponseImpl<ErrorType>>
+      get copyWith => __$$ErrorResponseImplCopyWithImpl<ErrorType,
+          _$ErrorResponseImpl<ErrorType>>(this, _$identity);
 }
 
-abstract class _RequestError<ErrorType> implements RequestError<ErrorType> {
-  factory _RequestError(
+abstract class _ErrorResponse<ErrorType> implements ErrorResponse<ErrorType> {
+  factory _ErrorResponse(
       {required final ErrorType error,
       required final int statusCode,
       required final String method,
       required final Uri url,
-      required final StackTrace stackTrace}) = _$RequestErrorImpl<ErrorType>;
+      required final StackTrace stackTrace}) = _$ErrorResponseImpl<ErrorType>;
 
   @override
   ErrorType get error;
@@ -222,7 +217,7 @@ abstract class _RequestError<ErrorType> implements RequestError<ErrorType> {
   StackTrace get stackTrace;
   @override
   @JsonKey(ignore: true)
-  _$$RequestErrorImplCopyWith<ErrorType, _$RequestErrorImpl<ErrorType>>
+  _$$ErrorResponseImplCopyWith<ErrorType, _$ErrorResponseImpl<ErrorType>>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -317,11 +312,6 @@ class _$InternalErrorImpl<ErrorType> implements _InternalError<ErrorType> {
   final Object error;
   @override
   final StackTrace stackTrace;
-
-  @override
-  String toString() {
-    return 'InternalError<$ErrorType>(error: $error, stackTrace: $stackTrace)';
-  }
 
   @override
   bool operator ==(Object other) {

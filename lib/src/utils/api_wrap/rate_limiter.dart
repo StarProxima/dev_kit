@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'api_operation.dart';
+import 'rate_operation.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
 sealed class RateLimiter extends Duration {
@@ -15,8 +15,8 @@ sealed class RateLimiter extends Duration {
   final String? tag;
   final void Function()? onCancel;
 
-  Future<T?> call<T>(
-    Map<String, ApiOperation> operations,
+  Future<T?> process<T>(
+    Map<String, RateOperation> operations,
     FutureOr<T> Function() function,
   );
 }
@@ -40,8 +40,8 @@ class Debounce extends RateLimiter {
   final bool includeRequestTime;
 
   @override
-  Future<T?> call<T>(
-    Map<String, ApiOperation> operations,
+  Future<T?> process<T>(
+    Map<String, RateOperation> operations,
     FutureOr<T> Function() function,
   ) async {
     final tag = this.tag ?? StackTrace.current.toString();
@@ -51,7 +51,7 @@ class Debounce extends RateLimiter {
       ?..rateLimiter?.onCancel?.call()
       ..cancel();
 
-    operations[tag] = ApiOperation<T>(
+    operations[tag] = RateOperation<T>(
       timer: Timer(this, () async {
         final op = operations[tag];
         final future = op?.complete();
@@ -88,8 +88,8 @@ class Throttle extends RateLimiter {
   final bool includeRequestTime;
 
   @override
-  Future<T?> call<T>(
-    Map<String, ApiOperation> operations,
+  Future<T?> process<T>(
+    Map<String, RateOperation> operations,
     FutureOr<T> Function() function,
   ) async {
     final tag = this.tag ?? StackTrace.current.toString();
@@ -101,10 +101,10 @@ class Throttle extends RateLimiter {
       return null;
     }
 
-    operations[tag] = ApiOperation();
+    operations[tag] = RateOperation();
 
     final futureOr = includeRequestTime ? await function() : function();
-    operations[tag] = ApiOperation<T>(
+    operations[tag] = RateOperation<T>(
       timer: Timer(this, () => operations.remove(tag)),
     );
     return futureOr;
