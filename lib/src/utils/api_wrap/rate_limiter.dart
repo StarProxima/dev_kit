@@ -81,9 +81,9 @@ class Throttle extends RateLimiter {
     super.tag,
     this.includeRequestTime = true,
     this.cooldownTick = const Duration(seconds: 1),
-    this.onCooldownTick,
-    this.onCooldownStart,
-    this.onCooldownEnd,
+    this.onTickCooldown,
+    this.onStartCooldown,
+    this.onEndCooldown,
     super.onCancelOperation,
     super.milliseconds,
     super.seconds,
@@ -92,9 +92,9 @@ class Throttle extends RateLimiter {
 
   final bool includeRequestTime;
   final Duration cooldownTick;
-  final void Function(Duration remainingTime)? onCooldownTick;
-  final void Function()? onCooldownStart;
-  final void Function()? onCooldownEnd;
+  final void Function(Duration remainingTime)? onTickCooldown;
+  final void Function()? onStartCooldown;
+  final void Function()? onEndCooldown;
 
   @override
   Future<RateResult<T>> process<T>({
@@ -125,17 +125,17 @@ class Throttle extends RateLimiter {
     Timer? cooldownControlTimer;
 
     if (!operation.cooldownIsCancel) {
-      onCooldownStart?.call();
+      onStartCooldown?.call();
 
-      if (onCooldownTick != null) {
-        onCooldownTick!(this);
+      if (onTickCooldown != null) {
+        onTickCooldown!(this);
         cooldownControlTimer = Timer.periodic(
           cooldownTick,
           (timer) {
             final remainingMilliseconds =
                 inMilliseconds - timer.tick * cooldownTick.inMilliseconds;
 
-            onCooldownTick!(Duration(milliseconds: remainingMilliseconds));
+            onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
           },
         );
       }
@@ -147,8 +147,8 @@ class Throttle extends RateLimiter {
         callback: () {
           operations.remove(tag);
           cooldownControlTimer?.cancel();
-          onCooldownTick?.call(Duration.zero);
-          onCooldownEnd?.call();
+          onTickCooldown?.call(Duration.zero);
+          onEndCooldown?.call();
         },
       );
     }
