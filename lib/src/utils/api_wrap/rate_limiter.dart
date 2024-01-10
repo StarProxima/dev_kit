@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'rate_operation.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
@@ -13,7 +15,7 @@ sealed class RateLimiter extends Duration {
   });
 
   final String? tag;
-  final void Function()? onCancel;
+  final VoidCallback? onCancel;
 
   Future<T?> process<T>(
     Map<String, RateOperation> operations,
@@ -79,13 +81,17 @@ class Throttle extends RateLimiter {
   Throttle({
     super.tag,
     this.includeRequestTime = true,
+    this.onStart,
     super.onCancel,
+    this.onComplete,
     super.milliseconds,
     super.seconds,
     super.minutes,
   });
 
   final bool includeRequestTime;
+  final VoidCallback? onStart;
+  final VoidCallback? onComplete;
 
   @override
   Future<T?> process<T>(
@@ -104,8 +110,13 @@ class Throttle extends RateLimiter {
     operations[tag] = RateOperation();
 
     final futureOr = includeRequestTime ? await function() : function();
+    onStart?.call();
+
     operations[tag] = RateOperation<T>(
-      timer: Timer(this, () => operations.remove(tag)),
+      timer: Timer(this, () {
+        operations.remove(tag);
+        onComplete?.call();
+      }),
     );
     return futureOr;
   }
