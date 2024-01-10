@@ -13,10 +13,11 @@ sealed class RateLimiter extends Duration {
   final String? tag;
   final VoidCallback? onCancelOperation;
 
-  Future<RateResult<T>> process<T>(
-    RateOperationsContainer container,
-    FutureOr<T> Function() function,
-  );
+  Future<RateResult<T>> process<T>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<T> Function() function,
+  });
 }
 
 class Debounce extends RateLimiter {
@@ -38,11 +39,12 @@ class Debounce extends RateLimiter {
   final bool includeRequestTime;
 
   @override
-  Future<RateResult<T>> process<T>(
-    RateOperationsContainer container,
-    FutureOr<T> Function() function,
-  ) async {
-    final tag = this.tag ?? StackTrace.current.toString();
+  Future<RateResult<T>> process<T>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<T> Function() function,
+  }) async {
+    final tag = this.tag ?? defaultTag;
     final completer = Completer<RateResult<T>>();
 
     final operations = container.debounceOperations;
@@ -89,11 +91,12 @@ class Throttle extends RateLimiter {
   final CooldownControl? control;
 
   @override
-  Future<RateResult<T>> process<T>(
-    RateOperationsContainer container,
-    FutureOr<T> Function() function,
-  ) async {
-    final tag = this.tag ?? StackTrace.current.toString();
+  Future<RateResult<T>> process<T>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<T> Function() function,
+  }) async {
+    final tag = this.tag ?? defaultTag;
 
     final operations = container.throttleOperations;
 

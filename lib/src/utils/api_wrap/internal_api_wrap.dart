@@ -19,15 +19,6 @@ class InternalApiWrap<ErrorType> {
   /// Операции debounce и thottle, доступные по тегу.
   final RateOperationsContainer _operationsContainer;
 
-  // /// Находит операцию по [tag], немедленно выполняет её, если она есть.
-  // void fireOperation(String tag) => _operations.remove(tag)?.complete();
-
-  // /// Находит операцию по [tag] и отменяет её.
-  // void cancelOperation(String tag) => _operations.remove(tag)?.cancel();
-
-  // /// Отменяет все операции.
-  // void cancelAllOperations() => _operations.keys.forEach(cancelOperation);
-
   Future<D?> call<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
@@ -57,8 +48,11 @@ class InternalApiWrap<ErrorType> {
         if (await notExecuteIf()) return null;
 
         if (rateLimiter != null && attempt == 1) {
-          final res =
-              await rateLimiter.process<T>(_operationsContainer, function);
+          final res = await rateLimiter.process<T>(
+            container: _operationsContainer,
+            function: function,
+            defaultTag: '$hashCode${StackTrace.current}',
+          );
 
           switch (res) {
             case RateSuccess<T>():
