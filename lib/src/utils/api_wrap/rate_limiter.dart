@@ -92,8 +92,7 @@ class Throttle extends RateLimiter {
   Throttle({
     super.tag,
     this.includeRequestTime = true,
-    this.onStartCooldown,
-    this.onEndCooldown,
+    this.control,
     super.onCancelOperation,
     super.milliseconds,
     super.seconds,
@@ -101,8 +100,7 @@ class Throttle extends RateLimiter {
   });
 
   final bool includeRequestTime;
-  final Timer? Function(Duration throttleDuration)? onStartCooldown;
-  final VoidCallback? onEndCooldown;
+  final CooldownControl? control;
 
   @override
   Future<RateResult<T>> process<T>(
@@ -121,16 +119,43 @@ class Throttle extends RateLimiter {
     operations[tag] = RateOperation();
 
     final futureOr = includeRequestTime ? await function() : function();
-    final timer = onStartCooldown?.call(this);
+
+    final control = this.control;
+
+    Timer? timer;
+
+    if (control != null) {
+      control.onTick(this);
+
+      timer = Timer.periodic(
+        control.tick,
+        (timer) {
+          final remainingMilliseconds =
+              inMilliseconds - timer.tick * control.tick.inMilliseconds;
+
+          control.onTick(Duration(milliseconds: remainingMilliseconds));
+        },
+      );
+    }
 
     operations[tag] = RateOperation<T>(
       timer: Timer(this, () {
         operations.remove(tag);
         timer?.cancel();
-        onEndCooldown?.call();
+        control?.onTick(Duration.zero);
       }),
     );
     final data = await futureOr;
     return RateSuccess(data);
   }
+}
+
+class CooldownControl {
+  CooldownControl({
+    required this.tick,
+    required this.onTick,
+  });
+
+  final Duration tick;
+  final void Function(Duration remainingTime) onTick;
 }
