@@ -80,7 +80,10 @@ class Throttle extends RateLimiter {
   Throttle({
     super.tag,
     this.includeRequestTime = true,
-    this.control,
+    this.cooldownTick = const Duration(seconds: 1),
+    this.onCooldownTick,
+    this.onCooldownStart,
+    this.onCooldownEnd,
     super.onCancelOperation,
     super.milliseconds,
     super.seconds,
@@ -88,7 +91,10 @@ class Throttle extends RateLimiter {
   });
 
   final bool includeRequestTime;
-  final CooldownControl? control;
+  final Duration cooldownTick;
+  final void Function(Duration remainingTime)? onCooldownTick;
+  final void Function()? onCooldownStart;
+  final void Function()? onCooldownEnd;
 
   @override
   Future<RateResult<T>> process<T>({
@@ -116,22 +122,20 @@ class Throttle extends RateLimiter {
 
     final futureOr = includeRequestTime ? await function() : function();
 
-    final control = this.control;
-    final onTick = control?.onTick;
     Timer? cooldownControlTimer;
 
-    if (!operation.cooldownIsCancel && control != null) {
-      control.onStart?.call();
+    if (!operation.cooldownIsCancel) {
+      onCooldownStart?.call();
 
-      if (onTick != null) {
-        onTick(this);
+      if (onCooldownTick != null) {
+        onCooldownTick!(this);
         cooldownControlTimer = Timer.periodic(
-          control.tick,
+          cooldownTick,
           (timer) {
             final remainingMilliseconds =
-                inMilliseconds - timer.tick * control.tick.inMilliseconds;
+                inMilliseconds - timer.tick * cooldownTick.inMilliseconds;
 
-            onTick(Duration(milliseconds: remainingMilliseconds));
+            onCooldownTick!(Duration(milliseconds: remainingMilliseconds));
           },
         );
       }
@@ -143,8 +147,8 @@ class Throttle extends RateLimiter {
         callback: () {
           operations.remove(tag);
           cooldownControlTimer?.cancel();
-          onTick?.call(Duration.zero);
-          control?.onEnd?.call();
+          onCooldownTick?.call(Duration.zero);
+          onCooldownEnd?.call();
         },
       );
     }
@@ -152,18 +156,4 @@ class Throttle extends RateLimiter {
     final data = await futureOr;
     return RateSuccess(data);
   }
-}
-
-class CooldownControl {
-  CooldownControl({
-    this.tick = const Duration(seconds: 1),
-    this.onTick,
-    this.onStart,
-    this.onEnd,
-  });
-
-  final Duration tick;
-  final void Function(Duration remainingTime)? onTick;
-  final void Function()? onStart;
-  final void Function()? onEnd;
 }
