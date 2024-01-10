@@ -1,19 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-
-import 'rate_operation.dart';
-
-sealed class RateResult<T> {
-  const RateResult();
-}
-
-class RateSuccess<T> extends RateResult<T> {
-  const RateSuccess(this.data);
-  final T data;
-}
-
-class RateCancel<T> extends RateResult<T> {}
+part of 'api_wrap.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
 sealed class RateLimiter extends Duration {
@@ -29,7 +14,7 @@ sealed class RateLimiter extends Duration {
   final VoidCallback? onCancelOperation;
 
   Future<RateResult<T>> process<T>(
-    Map<String, RateOperation> operations,
+    RateOperationsContainer container,
     FutureOr<T> Function() function,
   );
 }
@@ -54,32 +39,33 @@ class Debounce extends RateLimiter {
 
   @override
   Future<RateResult<T>> process<T>(
-    Map<String, RateOperation> operations,
+    RateOperationsContainer container,
     FutureOr<T> Function() function,
   ) async {
     final tag = this.tag ?? StackTrace.current.toString();
     final completer = Completer<RateResult<T>>();
 
-    operations.remove(tag)
-      ?..rateLimiter?.onCancelOperation?.call()
-      ..cancel();
+    final operations = container.debounceOperations;
 
-    operations[tag] = RateOperation<T>(
+    // Если операция была отменена в течении debounce, то возвращается null.
+    // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
+    // При этом не вызывается ни onSuccess, ни onError.
+    operations.remove(tag)?.cancel();
+
+    operations[tag] = DebounceOperation(
       timer: Timer(this, () async {
-        final op = operations[tag];
-        final future = op?.complete();
+        final operation = operations[tag];
+        final future = operation?.complete();
         if (includeRequestTime) await future;
-        if (operations.containsValue(op)) operations.remove(tag);
+        if (operations.containsValue(operation)) operations.remove(tag);
       }),
       completer: completer,
       function: function,
       rateLimiter: this,
     );
-    final res = await completer.future;
-    // Если операция была отменена в течении debounce, то возвращается null.
-    // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
-    // При этом не вызывается ни onSuccess, ни onError.
-    return res;
+
+    final result = await completer.future;
+    return result;
   }
 }
 
@@ -104,34 +90,39 @@ class Throttle extends RateLimiter {
 
   @override
   Future<RateResult<T>> process<T>(
-    Map<String, RateOperation> operations,
+    RateOperationsContainer container,
     FutureOr<T> Function() function,
   ) async {
     final tag = this.tag ?? StackTrace.current.toString();
-    // Если операция уже существует, то возвращается null.
-    // При этом не вызывается ни onSuccess, ни onError.
+
+    final operations = container.throttleOperations;
 
     if (operations.containsKey(tag)) {
+      // Если операция уже существует, то возвращается null.
+      // При этом не вызывается ни onSuccess, ни onError.
       onCancelOperation?.call();
       return RateCancel();
     }
 
-    operations[tag] = RateOperation();
+    final operation = ThrottleOperation(
+      onCooldownEnd: () {
+        operations.remove(tag);
+      },
+    );
+    operations[tag] = operation;
 
     final futureOr = includeRequestTime ? await function() : function();
 
     final control = this.control;
-
     final onTick = control?.onTick;
+    Timer? cooldownControlTimer;
 
-    Timer? timer;
-
-    if (control != null) {
+    if (!operation.cooldownIsCancel && control != null) {
       control.onStart?.call();
 
       if (onTick != null) {
         onTick(this);
-        timer = Timer.periodic(
+        cooldownControlTimer = Timer.periodic(
           control.tick,
           (timer) {
             final remainingMilliseconds =
@@ -143,14 +134,18 @@ class Throttle extends RateLimiter {
       }
     }
 
-    operations[tag] = RateOperation<T>(
-      timer: Timer(this, () {
-        operations.remove(tag);
-        timer?.cancel();
-        onTick?.call(Duration.zero);
-        control?.onEnd?.call();
-      }),
-    );
+    if (!operation.cooldownIsCancel) {
+      operation.startCooldown(
+        duration: this,
+        callback: () {
+          operations.remove(tag);
+          cooldownControlTimer?.cancel();
+          onTick?.call(Duration.zero);
+          control?.onEnd?.call();
+        },
+      );
+    }
+
     final data = await futureOr;
     return RateSuccess(data);
   }

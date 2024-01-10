@@ -10,12 +10,9 @@ export 'src/extensions/date_utils.dart';
 export 'src/extensions/list_utils.dart';
 export 'src/extensions/string_utils.dart';
 
-// Api utils
+// Api wrap
 export 'src/utils/api_wrap/models/api_error.dart';
 export 'src/utils/api_wrap/api_wrap.dart';
-export 'src/utils/api_wrap/internal_api_wrap.dart';
-export 'src/utils/api_wrap/rate_limiter.dart';
-export 'src/utils/api_wrap/retry.dart';
 
 // Async utils
 export 'src/utils/async/async_utils.dart';

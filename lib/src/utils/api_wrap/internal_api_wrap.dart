@@ -1,11 +1,4 @@
-import 'dart:async';
-
-import 'package:dio/dio.dart';
-
-import 'models/api_error.dart';
-import 'rate_limiter.dart';
-import 'rate_operation.dart';
-import 'retry.dart';
+part of 'api_wrap.dart';
 
 typedef ExecuteIf = FutureOr<bool> Function();
 
@@ -14,24 +7,26 @@ typedef ParseError<ErrorType> = ErrorType Function(Object error);
 class InternalApiWrap<ErrorType> {
   InternalApiWrap({
     required Retry retry,
+    required RateOperationsContainer container,
     ParseError<ErrorType>? parseError,
   })  : _retry = retry,
-        _parseError = parseError;
+        _parseError = parseError,
+        _operationsContainer = container;
 
   final Retry _retry;
   final ParseError<ErrorType>? _parseError;
 
   /// Операции debounce и thottle, доступные по тегу.
-  final Map<String, RateOperation> _operations = {};
+  final RateOperationsContainer _operationsContainer;
 
-  /// Находит операцию по [tag], немедленно выполняет её, если она есть.
-  void fireOperation(String tag) => _operations.remove(tag)?.complete();
+  // /// Находит операцию по [tag], немедленно выполняет её, если она есть.
+  // void fireOperation(String tag) => _operations.remove(tag)?.complete();
 
-  /// Находит операцию по [tag] и отменяет её.
-  void cancelOperation(String tag) => _operations.remove(tag)?.cancel();
+  // /// Находит операцию по [tag] и отменяет её.
+  // void cancelOperation(String tag) => _operations.remove(tag)?.cancel();
 
-  /// Отменяет все операции.
-  void cancelAllOperations() => _operations.keys.forEach(cancelOperation);
+  // /// Отменяет все операции.
+  // void cancelAllOperations() => _operations.keys.forEach(cancelOperation);
 
   Future<D?> call<T, D>(
     FutureOr<T> Function() function, {
@@ -62,7 +57,8 @@ class InternalApiWrap<ErrorType> {
         if (await notExecuteIf()) return null;
 
         if (rateLimiter != null && attempt == 1) {
-          final res = await rateLimiter.process<T>(_operations, function);
+          final res =
+              await rateLimiter.process<T>(_operationsContainer, function);
 
           switch (res) {
             case RateSuccess<T>():

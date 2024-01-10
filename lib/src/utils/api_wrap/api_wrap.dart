@@ -1,12 +1,17 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import 'internal_api_wrap.dart';
 import 'models/api_error.dart';
-import 'rate_limiter.dart';
-import 'retry.dart';
+
+part 'api_wrap_controller.dart';
+part 'internal_api_wrap.dart';
+part 'rate_limiter.dart';
+part 'rate_operation.dart';
+part 'retry.dart';
 
 enum ErrorVisibility {
   /// Отображать ошибку всегда.
@@ -28,11 +33,11 @@ enum ErrorVisibility {
 class ApiWrapper implements IApiWrap {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    ApiWrapOptions? opstions,
-  }) : wrapOptions = opstions ?? ApiWrapOptions();
+    ApiWrapController? opstions,
+  }) : wrapController = opstions ?? ApiWrapController();
 
   @override
-  final ApiWrapOptions wrapOptions;
+  final ApiWrapController wrapController;
 
   static Future<T> hideError<T>(
     FutureOr<T> Function() function, {
@@ -59,23 +64,9 @@ typedef ErrorResponseOnError<ErrorType> = FutureOr<D?> Function<D>({
   required FutureOr<D?> Function(ApiError<ErrorType> error)? originalOnError,
 });
 
-class ApiWrapOptions<ErrorType> {
-  ApiWrapOptions({
-    Retry? retry,
-    ErrorType Function(Object)? parseError,
-    this.onError,
-  }) : internalApiWrap = InternalApiWrap(
-          retry: retry ?? Retry(maxAttempts: 0),
-          parseError: parseError,
-        );
-
-  final InternalApiWrap<ErrorType> internalApiWrap;
-  final ErrorResponseOnError<ErrorType>? onError;
-}
-
 abstract class IApiWrap<ErrorType> {
   @protected
-  abstract final ApiWrapOptions<ErrorType> wrapOptions;
+  abstract final ApiWrapController<ErrorType> wrapController;
 }
 
 extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
@@ -110,10 +101,10 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     RateLimiter? rateLimiter,
     Retry? retry,
   }) =>
-      wrapOptions.internalApiWrap<T, D>(
+      wrapController.internalApiWrap<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: (error) => wrapOptions.onError?.call(
+        onError: (error) => wrapController.onError?.call(
           error: error,
           errorVisibility: errorVisibility,
           originalOnError: onError,

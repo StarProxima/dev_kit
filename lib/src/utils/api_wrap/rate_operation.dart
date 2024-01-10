@@ -1,37 +1,80 @@
-import 'dart:async';
+part of 'api_wrap.dart';
 
-import 'internal_api_wrap.dart';
-import 'rate_limiter.dart';
+sealed class RateResult<T> {
+  const RateResult();
+}
 
-/// Операция для debounce и thottle в [InternalApiWrap]
-class RateOperation<T> {
-  RateOperation({
-    this.timer,
-    this.completer,
-    this.function,
-    this.rateLimiter,
+class RateSuccess<T> extends RateResult<T> {
+  const RateSuccess(this.data);
+  final T data;
+}
+
+class RateCancel<T> extends RateResult<T> {}
+
+class RateOperationsContainer {
+  RateOperationsContainer();
+
+  final Map<String, DebounceOperation> debounceOperations = {};
+  final Map<String, ThrottleOperation> throttleOperations = {};
+}
+
+class DebounceOperation<T> {
+  DebounceOperation({
+    required this.timer,
+    required this.completer,
+    required this.function,
+    required this.rateLimiter,
   });
 
-  final Timer? timer;
-  final Completer<RateResult<T>>? completer;
-  final FutureOr<T> Function()? function;
-  final RateLimiter? rateLimiter;
+  final Timer timer;
+  final Completer<RateResult<T>> completer;
+  final FutureOr<T> Function() function;
+  final RateLimiter rateLimiter;
 
   void cancel() {
-    timer?.cancel();
-    if (completer?.isCompleted ?? true) return;
-    completer?.complete(RateCancel());
+    timer.cancel();
+    rateLimiter.onCancelOperation?.call();
+    if (completer.isCompleted) return;
+    completer.complete(RateCancel());
   }
 
   Future<void> complete() async {
-    timer?.cancel();
+    timer.cancel();
     try {
-      final res = await function!.call();
-      if (completer?.isCompleted ?? true) return;
-      completer?.complete(RateSuccess(res));
+      final res = await function.call();
+      if (completer.isCompleted) return;
+      completer.complete(RateSuccess(res));
     } catch (e, s) {
-      if (completer?.isCompleted ?? true) return;
-      completer?.complete(Future.error(e, s));
+      if (completer.isCompleted) return;
+      completer.complete(Future.error(e, s));
     }
+  }
+}
+
+class ThrottleOperation<T> {
+  ThrottleOperation({
+    required this.onCooldownEnd,
+  });
+
+  final VoidCallback onCooldownEnd;
+  VoidCallback? cooldownCallback;
+
+  bool cooldownIsCancel = false;
+
+  late Timer _timer;
+
+  void startCooldown({
+    required Duration duration,
+    required VoidCallback callback,
+  }) {
+    cooldownCallback = callback;
+    _timer = Timer(duration, callback);
+  }
+
+  void cancelCooldown() {
+    cooldownIsCancel = true;
+    _timer.cancel();
+    cooldownCallback?.call();
+    onCooldownEnd();
   }
 }
