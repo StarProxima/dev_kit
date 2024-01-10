@@ -4,7 +4,7 @@ part 'api_error.freezed.dart';
 
 sealed class ApiError<ErrorType> implements Exception {}
 
-@freezed
+@Freezed(toStringOverride: true)
 class ErrorResponse<ErrorType> extends ApiError<ErrorType>
     with _$ErrorResponse<ErrorType> {
   factory ErrorResponse({
@@ -20,7 +20,7 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType>
       'ErrorResponse{\nerror: $error, \nstatusCode: $statusCode, \nmethod: $method, \nurl: $url, \nstackTrace: $stackTrace\n}';
 }
 
-@freezed
+@Freezed(toStringOverride: true)
 class InternalError<ErrorType> extends ApiError<ErrorType>
     with _$InternalError {
   factory InternalError({
