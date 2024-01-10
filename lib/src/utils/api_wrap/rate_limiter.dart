@@ -19,14 +19,14 @@ class RateCancel<T> extends RateResult<T> {}
 sealed class RateLimiter extends Duration {
   RateLimiter({
     this.tag,
-    this.onCancel,
+    this.onCancelOperation,
     super.milliseconds,
     super.seconds,
     super.minutes,
   });
 
   final String? tag;
-  final VoidCallback? onCancel;
+  final VoidCallback? onCancelOperation;
 
   Future<RateResult<T>> process<T>(
     Map<String, RateOperation> operations,
@@ -44,7 +44,7 @@ class Debounce extends RateLimiter {
   Debounce({
     super.tag,
     this.includeRequestTime = true,
-    super.onCancel,
+    super.onCancelOperation,
     super.milliseconds,
     super.seconds,
     super.minutes,
@@ -61,7 +61,7 @@ class Debounce extends RateLimiter {
     final completer = Completer<RateResult<T>>();
 
     operations.remove(tag)
-      ?..rateLimiter?.onCancel?.call()
+      ?..rateLimiter?.onCancelOperation?.call()
       ..cancel();
 
     operations[tag] = RateOperation<T>(
@@ -92,17 +92,17 @@ class Throttle extends RateLimiter {
   Throttle({
     super.tag,
     this.includeRequestTime = true,
-    this.onStart,
-    super.onCancel,
-    this.onComplete,
+    this.onStartCooldown,
+    this.onEndCooldown,
+    super.onCancelOperation,
     super.milliseconds,
     super.seconds,
     super.minutes,
   });
 
   final bool includeRequestTime;
-  final VoidCallback? onStart;
-  final VoidCallback? onComplete;
+  final Timer? Function(Duration throttleDuration)? onStartCooldown;
+  final VoidCallback? onEndCooldown;
 
   @override
   Future<RateResult<T>> process<T>(
@@ -114,19 +114,20 @@ class Throttle extends RateLimiter {
     // При этом не вызывается ни onSuccess, ни onError.
 
     if (operations.containsKey(tag)) {
-      onCancel?.call();
+      onCancelOperation?.call();
       return RateCancel();
     }
 
     operations[tag] = RateOperation();
 
     final futureOr = includeRequestTime ? await function() : function();
-    onStart?.call();
+    final timer = onStartCooldown?.call(this);
 
     operations[tag] = RateOperation<T>(
       timer: Timer(this, () {
         operations.remove(tag);
-        onComplete?.call();
+        timer?.cancel();
+        onEndCooldown?.call();
       }),
     );
     final data = await futureOr;
