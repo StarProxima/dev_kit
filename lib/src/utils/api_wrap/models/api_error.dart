@@ -2,9 +2,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'api_error.freezed.dart';
 
-sealed class ApiError<ErrorType> implements Exception {}
+sealed class ApiError<ErrorType> implements Exception {
+  const ApiError();
+}
 
-@Freezed(toStringOverride: true)
+@freezed
 class ErrorResponse<ErrorType> extends ApiError<ErrorType>
     with _$ErrorResponse<ErrorType> {
   factory ErrorResponse({
@@ -14,21 +16,23 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType>
     required Uri url,
     required StackTrace stackTrace,
   }) = _ErrorResponse;
-
-  @override
-  String toString() =>
-      'ErrorResponse{\nerror: $error, \nstatusCode: $statusCode, \nmethod: $method, \nurl: $url, \nstackTrace: $stackTrace\n}';
 }
 
-@Freezed(toStringOverride: true)
+@freezed
 class InternalError<ErrorType> extends ApiError<ErrorType>
     with _$InternalError {
   factory InternalError({
     required Object error,
     required StackTrace stackTrace,
   }) = _InternalError;
+}
 
-  @override
-  String toString() =>
+extension ErrorResponseX on ErrorResponse {
+  String toDescription() =>
+      'ErrorResponse{\nerror: $error, \nstatusCode: $statusCode, \nmethod: $method, \nurl: $url, \nstackTrace: $stackTrace\n}';
+}
+
+extension InternalErrorX on InternalError {
+  String toDescription() =>
       'InternalError{\nerror: $error, \nstackTrace: $stackTrace\n}';
 }
