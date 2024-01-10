@@ -122,27 +122,33 @@ class Throttle extends RateLimiter {
 
     final control = this.control;
 
+    final onTick = control?.onTick;
+
     Timer? timer;
 
     if (control != null) {
-      control.onTick(this);
+      control.onStart?.call();
 
-      timer = Timer.periodic(
-        control.tick,
-        (timer) {
-          final remainingMilliseconds =
-              inMilliseconds - timer.tick * control.tick.inMilliseconds;
+      if (onTick != null) {
+        onTick(this);
+        timer = Timer.periodic(
+          control.tick,
+          (timer) {
+            final remainingMilliseconds =
+                inMilliseconds - timer.tick * control.tick.inMilliseconds;
 
-          control.onTick(Duration(milliseconds: remainingMilliseconds));
-        },
-      );
+            onTick(Duration(milliseconds: remainingMilliseconds));
+          },
+        );
+      }
     }
 
     operations[tag] = RateOperation<T>(
       timer: Timer(this, () {
         operations.remove(tag);
         timer?.cancel();
-        control?.onTick(Duration.zero);
+        onTick?.call(Duration.zero);
+        control?.onEnd?.call();
       }),
     );
     final data = await futureOr;
@@ -152,10 +158,14 @@ class Throttle extends RateLimiter {
 
 class CooldownControl {
   CooldownControl({
-    required this.tick,
-    required this.onTick,
+    this.tick = const Duration(seconds: 1),
+    this.onTick,
+    this.onStart,
+    this.onEnd,
   });
 
   final Duration tick;
-  final void Function(Duration remainingTime) onTick;
+  final void Function(Duration remainingTime)? onTick;
+  final void Function()? onStart;
+  final void Function()? onEnd;
 }
