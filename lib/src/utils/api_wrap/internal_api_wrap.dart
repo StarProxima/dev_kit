@@ -59,15 +59,18 @@ class InternalApiWrap<ErrorType> {
       try {
         final T response;
 
+        if (await notExecuteIf()) return null;
+
         if (rateLimiter != null && attempt == 1) {
-          final res = await rateLimiter.process(_operations, () async {
-            if (await notExecuteIf()) return null;
-            return function();
-          });
-          if (res == null) return null;
-          response = res;
+          final res = await rateLimiter.process<T>(_operations, function);
+
+          switch (res) {
+            case RateSuccess<T>():
+              response = res.data;
+            case RateCancel<T>():
+              return null;
+          }
         } else {
-          if (await notExecuteIf()) return null;
           response = await function();
         }
 

@@ -13,22 +13,22 @@ class RateOperation<T> {
   });
 
   final Timer? timer;
-  final Completer<T?>? completer;
+  final Completer<RateResult<T>>? completer;
   final FutureOr<T> Function()? function;
   final RateLimiter? rateLimiter;
 
   void cancel() {
     timer?.cancel();
     if (completer?.isCompleted ?? true) return;
-    completer?.complete(null);
+    completer?.complete(RateCancel());
   }
 
   Future<void> complete() async {
     timer?.cancel();
     try {
-      final res = await function?.call();
+      final res = await function!.call();
       if (completer?.isCompleted ?? true) return;
-      completer?.complete(res);
+      completer?.complete(RateSuccess(res));
     } catch (e, s) {
       if (completer?.isCompleted ?? true) return;
       completer?.complete(Future.error(e, s));

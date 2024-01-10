@@ -4,6 +4,17 @@ import 'package:flutter/foundation.dart';
 
 import 'rate_operation.dart';
 
+sealed class RateResult<T> {
+  const RateResult();
+}
+
+class RateSuccess<T> extends RateResult<T> {
+  const RateSuccess(this.data);
+  final T data;
+}
+
+class RateCancel<T> extends RateResult<T> {}
+
 /// Базовый класс для [Debounce] и [Throttle].
 sealed class RateLimiter extends Duration {
   RateLimiter({
@@ -17,7 +28,7 @@ sealed class RateLimiter extends Duration {
   final String? tag;
   final VoidCallback? onCancel;
 
-  Future<T?> process<T>(
+  Future<RateResult<T>> process<T>(
     Map<String, RateOperation> operations,
     FutureOr<T> Function() function,
   );
@@ -42,12 +53,12 @@ class Debounce extends RateLimiter {
   final bool includeRequestTime;
 
   @override
-  Future<T?> process<T>(
+  Future<RateResult<T>> process<T>(
     Map<String, RateOperation> operations,
     FutureOr<T> Function() function,
   ) async {
     final tag = this.tag ?? StackTrace.current.toString();
-    final completer = Completer<T?>();
+    final completer = Completer<RateResult<T>>();
 
     operations.remove(tag)
       ?..rateLimiter?.onCancel?.call()
@@ -94,7 +105,7 @@ class Throttle extends RateLimiter {
   final VoidCallback? onComplete;
 
   @override
-  Future<T?> process<T>(
+  Future<RateResult<T>> process<T>(
     Map<String, RateOperation> operations,
     FutureOr<T> Function() function,
   ) async {
@@ -104,7 +115,7 @@ class Throttle extends RateLimiter {
 
     if (operations.containsKey(tag)) {
       onCancel?.call();
-      return null;
+      return RateCancel();
     }
 
     operations[tag] = RateOperation();
@@ -118,6 +129,7 @@ class Throttle extends RateLimiter {
         onComplete?.call();
       }),
     );
-    return futureOr;
+    final data = await futureOr;
+    return RateSuccess(data);
   }
 }
