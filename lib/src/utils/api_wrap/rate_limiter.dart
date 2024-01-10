@@ -83,9 +83,12 @@ class Throttle extends RateLimiter {
     super.milliseconds,
     super.seconds,
     super.minutes,
+    this.timerr,
   });
 
   final bool includeRequestTime;
+
+  final (Duration duration, void Function(Duration duration) callback)? timerr;
 
   @override
   Future<T?> process<T>(
@@ -93,8 +96,6 @@ class Throttle extends RateLimiter {
     FutureOr<T> Function() function,
   ) async {
     final tag = this.tag ?? StackTrace.current.toString();
-    // Если операция уже существует, то возвращается null.
-    // При этом не вызывается ни onSuccess, ни onError.
 
     if (operations.containsKey(tag)) {
       onCancel?.call();
@@ -104,8 +105,29 @@ class Throttle extends RateLimiter {
     operations[tag] = RateOperation();
 
     final futureOr = includeRequestTime ? await function() : function();
+
+    final timer = timerr != null
+        ? Timer.periodic(
+            timerr!.$1,
+            (timer) {
+              final dur =
+                  this - DateTime.now().difference(operations[tag]!.startTime);
+              if (dur == Duration.zero || dur.isNegative) {
+                timer.cancel();
+                timerr!.$2(Duration.zero);
+                return;
+              }
+              timerr!.$2(dur);
+            },
+          )
+        : null;
+
     operations[tag] = RateOperation<T>(
-      timer: Timer(this, () => operations.remove(tag)),
+      timer: Timer(this, () {
+        operations.remove(tag);
+        timer?.cancel();
+        timerr!.$2(Duration.zero);
+      }),
     );
     return futureOr;
   }

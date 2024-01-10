@@ -10,12 +10,16 @@ class RateOperation<T> {
     this.completer,
     this.function,
     this.rateLimiter,
-  });
+    DateTime? startTime,
+  }) {
+    this.startTime = startTime ?? DateTime.now();
+  }
 
   final Timer? timer;
   final Completer<T?>? completer;
   final FutureOr<T> Function()? function;
   final RateLimiter? rateLimiter;
+  late final DateTime startTime;
 
   void cancel() {
     timer?.cancel();
