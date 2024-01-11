@@ -99,7 +99,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     ExecuteIf? executeIf,
     RateLimiter? rateLimiter,
-    Retry? retry,
+    Retry<ErrorType>? retry,
   }) =>
       wrapController.internalApiWrap<T, D>(
         function,
@@ -134,7 +134,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     required FutureOr<D> Function(ApiError<ErrorType> error) onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
-    Retry? retry,
+    Retry<ErrorType>? retry,
   }) async =>
       (await apiWrap<T, D>(
         function,
@@ -160,7 +160,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     ExecuteIf? executeIf,
     RateLimiter? rateLimiter,
-    Retry? retry,
+    Retry<ErrorType>? retry,
   }) =>
       apiWrap(
         function,
@@ -193,7 +193,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     required FutureOr<T> Function(ApiError<ErrorType> error) onError,
     ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
-    Retry? retry,
+    Retry<ErrorType>? retry,
   }) async =>
       (await apiWrap<T, T>(
         function,

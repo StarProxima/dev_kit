@@ -13,9 +13,9 @@ bool _defaultRetryIf(ApiError e) {
   };
 }
 
-typedef RetryIf = FutureOr<bool> Function(ApiError error);
+typedef RetryIf<ErrorType> = FutureOr<bool> Function(ApiError<ErrorType> error);
 
-class Retry {
+class Retry<ErrorType> {
   Retry({
     required this.maxAttempts,
     this.retryIf = _defaultRetryIf,
@@ -24,7 +24,7 @@ class Retry {
     this.randomizationFactor = 0.25,
   });
 
-  final RetryIf retryIf;
+  final RetryIf<ErrorType> retryIf;
   final int maxAttempts;
   final Duration delayFactor;
   final Duration maxDelay;
