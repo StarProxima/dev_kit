@@ -47,8 +47,8 @@ abstract class SingleValidatorBase {
         _relatedValidators = relatedValidators;
 
   final Ref _ref;
-  final String? name;
   final String? _initialError;
+  String? name;
 
   /// Список связанных валидаторов, которые также будут валидироваться при валидации текущего
   final List<SingleValidatorBase> _relatedValidators;
@@ -79,6 +79,12 @@ abstract class SingleValidatorBase {
     return error;
   }
 
+  /// Провайдер ошибки
+  late final errorProvider = _errorProvider(hashCode, _initialError);
+
+  /// Текущая ошибка в валидаторе
+  String? get errorText => _ref.read(errorProvider);
+
   /// Устанавливает ошибку в провайдер.
   /// Если указан [debounce], то ошибка будет установлена только если
   /// в течении [debounce] не было вызвано других [setError]
@@ -107,11 +113,7 @@ abstract class SingleValidatorBase {
     return errorStr;
   }
 
-  /// Провайдер ошибки
-  late final errorProvider = _errorProvider(hashCode, _initialError);
-
-  /// Текущая ошибка в валидаторе
-  String? get error => _ref.read(errorProvider);
+  void clearError() => setError(() => null);
 
   /// Метод валидации - обновляет провайдер и возвращает ошибку
   FutureOr<String?> validate();
