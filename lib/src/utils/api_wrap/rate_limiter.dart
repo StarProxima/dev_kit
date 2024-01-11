@@ -5,9 +5,10 @@ sealed class RateLimiter extends Duration {
   RateLimiter({
     this.tag,
     this.onCancelOperation,
-    super.milliseconds,
-    super.seconds,
+    super.hours,
     super.minutes,
+    super.seconds,
+    super.milliseconds,
   });
 
   final String? tag;
@@ -29,14 +30,15 @@ class Debounce extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Debounce({
     super.tag,
-    this.includeRequestTime = true,
+    this.shouldCancelRunningOperations = true,
     super.onCancelOperation,
-    super.milliseconds,
-    super.seconds,
+    super.hours,
     super.minutes,
+    super.seconds,
+    super.milliseconds,
   });
 
-  final bool includeRequestTime;
+  final bool shouldCancelRunningOperations;
 
   @override
   Future<RateResult<T>> process<T>({
@@ -58,7 +60,7 @@ class Debounce extends RateLimiter {
       timer: Timer(this, () async {
         final operation = operations[tag];
         final future = operation?.complete();
-        if (includeRequestTime) await future;
+        if (shouldCancelRunningOperations) await future;
         if (operations.containsValue(operation)) operations.remove(tag);
       }),
       completer: completer,
@@ -71,6 +73,15 @@ class Debounce extends RateLimiter {
   }
 }
 
+/// Варианты запуска cooldown.
+enum CooldownLaunch {
+  /// Cooldown начнётся сразу после начала выполнения запроса.
+  immediately,
+
+  /// Cooldown начнётся сразу после выполнения запроса.
+  afterOperaion,
+}
+
 class Throttle extends RateLimiter {
   /// Сразу вызывает функцию.
   ///
@@ -79,19 +90,20 @@ class Throttle extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Throttle({
     super.tag,
-    this.includeRequestTime = true,
-    this.cooldownTick = const Duration(seconds: 1),
+    this.cooldownLaunch = CooldownLaunch.afterOperaion,
+    this.cooldownTickDelay = const Duration(seconds: 1),
     this.onTickCooldown,
     this.onStartCooldown,
     this.onEndCooldown,
     super.onCancelOperation,
-    super.milliseconds,
-    super.seconds,
+    super.hours,
     super.minutes,
+    super.seconds,
+    super.milliseconds,
   });
 
-  final bool includeRequestTime;
-  final Duration cooldownTick;
+  final CooldownLaunch cooldownLaunch;
+  final Duration cooldownTickDelay;
   final void Function(Duration remainingTime)? onTickCooldown;
   final void Function()? onStartCooldown;
   final void Function()? onEndCooldown;
@@ -120,7 +132,9 @@ class Throttle extends RateLimiter {
     );
     operations[tag] = operation;
 
-    final futureOr = includeRequestTime ? await function() : function();
+    final futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
+        ? await function()
+        : function();
 
     Timer? cooldownControlTimer;
 
@@ -130,10 +144,10 @@ class Throttle extends RateLimiter {
       if (onTickCooldown != null) {
         onTickCooldown!(this);
         cooldownControlTimer = Timer.periodic(
-          cooldownTick,
+          cooldownTickDelay,
           (timer) {
             final remainingMilliseconds =
-                inMilliseconds - timer.tick * cooldownTick.inMilliseconds;
+                inMilliseconds - timer.tick * cooldownTickDelay.inMilliseconds;
 
             onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
           },
