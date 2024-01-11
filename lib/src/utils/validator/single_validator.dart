@@ -1,7 +1,8 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -43,7 +44,6 @@ abstract class SingleValidatorBase {
   SingleValidatorBase(
     this._ref, {
     String? label,
-    required this.tag,
     String? initialError,
     List<SingleValidatorBase> relatedValidators = const [],
   })  : _initialError = initialError,
@@ -54,8 +54,6 @@ abstract class SingleValidatorBase {
   final String? _initialError;
   String? _label;
   String? get label => _label;
-
-  final String tag;
 
   // ignore: use_setters_to_change_properties
   void setLabel(String? label) => _label = label;
@@ -90,7 +88,7 @@ abstract class SingleValidatorBase {
   }
 
   /// Провайдер ошибки
-  _ErrorProvider get errorProvider => _errorProvider(hashCode, _initialError);
+  late final errorProvider = _errorProvider(hashCode, _initialError);
 
   /// Текущая ошибка в валидаторе
   String? get errorText => _ref.read(errorProvider);
@@ -145,7 +143,6 @@ class SingleValidator extends SingleValidatorBase {
   SingleValidator(
     super._ref,
     this._validatorFn, {
-    required super.tag,
     super.label,
     super.initialError,
     super.relatedValidators,
@@ -158,6 +155,16 @@ class SingleValidator extends SingleValidatorBase {
 
   @override
   String? validate() => _internalValidate(_validatorFn(), softMode: false);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SingleValidator &&
+          runtimeType == other.runtimeType &&
+          _validatorFn == other._validatorFn;
+
+  @override
+  int get hashCode => _validatorFn.hashCode;
 }
 
 @riverpod
@@ -182,7 +189,6 @@ class SingleAsyncValidator extends SingleValidatorBase {
   SingleAsyncValidator(
     super._ref,
     this._validatorFn, {
-    required super.tag,
     super.label,
     super.initialError,
     super.relatedValidators,
@@ -219,4 +225,14 @@ class SingleAsyncValidator extends SingleValidatorBase {
 
   @override
   FutureOr<String?> validate() => _internalAsyncValidate();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SingleAsyncValidator &&
+          runtimeType == other.runtimeType &&
+          _validatorFn == other._validatorFn;
+
+  @override
+  int get hashCode => _validatorFn.hashCode;
 }
