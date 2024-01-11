@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -135,7 +138,7 @@ abstract class SingleValidatorBase {
 /// {@template [SingleValidator]}
 /// Вариант валидора с синхронной валидацией
 /// {@endtemplate}
-final class SingleValidator extends SingleValidatorBase {
+class SingleValidator extends SingleValidatorBase {
   /// {@macro [SingleValidator]}
   SingleValidator(
     super._ref,
@@ -152,6 +155,16 @@ final class SingleValidator extends SingleValidatorBase {
 
   @override
   String? validate() => _internalValidate(_validatorFn(), softMode: false);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SingleValidator &&
+          runtimeType == other.runtimeType &&
+          _validatorFn == other._validatorFn;
+
+  @override
+  int get hashCode => _validatorFn.hashCode;
 }
 
 @riverpod
@@ -171,7 +184,7 @@ bool _loading(_LoadingRef ref, int hashcode) =>
 /// Вариант валидора с асинхронной валидацией
 /// Можно несколько раз обновлять ошибку через [SetError]
 /// {@endtemplate}
-final class SingleAsyncValidator extends SingleValidatorBase {
+class SingleAsyncValidator extends SingleValidatorBase {
   /// {@macro [SingleAsyncValidator]}
   SingleAsyncValidator(
     super._ref,
@@ -212,4 +225,14 @@ final class SingleAsyncValidator extends SingleValidatorBase {
 
   @override
   FutureOr<String?> validate() => _internalAsyncValidate();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SingleAsyncValidator &&
+          runtimeType == other.runtimeType &&
+          _validatorFn == other._validatorFn;
+
+  @override
+  int get hashCode => _validatorFn.hashCode;
 }
