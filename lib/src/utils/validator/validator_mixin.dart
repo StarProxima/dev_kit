@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../../core_dev_kit.dart';
 
@@ -11,9 +12,11 @@ import '../../../core_dev_kit.dart';
 mixin ValidatorMixin implements IRef {
   @protected
   List<SingleValidatorBase> get allValidators =>
-      UnmodifiableListView(_allValidators);
+      UnmodifiableListView(_allValidators.values);
 
-  final Set<SingleValidatorBase> _allValidators = {};
+  final Map<String, SingleValidatorBase> _allValidators = {};
+
+  String get validatorTag => '$hashCode${StackTrace.current}';
 
   /// Метод для создания [SingleValidator].
   /// Необходимо вызывать только при инициализации класса.
@@ -33,13 +36,13 @@ mixin ValidatorMixin implements IRef {
     final validator = SingleValidator(
       ref,
       validatorFn,
+      tag: validatorTag,
       label: label,
       relatedValidators: relatedValidators,
     );
-
     final a1 = _allValidators.length;
 
-    _allValidators.add(validator);
+    _allValidators[validator.tag] = validator;
 
     final a2 = _allValidators.length;
 
@@ -80,11 +83,12 @@ mixin ValidatorMixin implements IRef {
     final validator = SingleAsyncValidator(
       ref,
       label: label,
+      tag: validatorTag,
       validatorFn,
       relatedValidators: relatedValidators,
     );
 
-    _allValidators.add(validator);
+    _allValidators[validator.tag] = validator;
 
     return validator;
   }
