@@ -167,11 +167,6 @@ class _$ErrorResponseImpl<ErrorType> implements _ErrorResponse<ErrorType> {
   final StackTrace stackTrace;
 
   @override
-  String toString() {
-    return 'ErrorResponse<$ErrorType>(error: $error, statusCode: $statusCode, method: $method, url: $url, stackTrace: $stackTrace)';
-  }
-
-  @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
@@ -317,11 +312,6 @@ class _$InternalErrorImpl<ErrorType> implements _InternalError<ErrorType> {
   final Object error;
   @override
   final StackTrace stackTrace;
-
-  @override
-  String toString() {
-    return 'InternalError<$ErrorType>(error: $error, stackTrace: $stackTrace)';
-  }
 
   @override
   bool operator ==(Object other) {

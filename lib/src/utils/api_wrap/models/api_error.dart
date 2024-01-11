@@ -16,6 +16,10 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType>
     required Uri url,
     required StackTrace stackTrace,
   }) = _ErrorResponse;
+
+  @override
+  String toString() =>
+      'ErrorResponse{\n  error: $error,\n  statusCode: $statusCode,\n  method: $method,\n  url: $url,\n  stackTrace: $stackTrace\n}';
 }
 
 @freezed
@@ -25,14 +29,8 @@ class InternalError<ErrorType> extends ApiError<ErrorType>
     required Object error,
     required StackTrace stackTrace,
   }) = _InternalError;
-}
 
-extension ErrorResponseX on ErrorResponse {
-  String toDescription() =>
-      'ErrorResponse{\nerror: $error, \nstatusCode: $statusCode, \nmethod: $method, \nurl: $url, \nstackTrace: $stackTrace\n}';
-}
-
-extension InternalErrorX on InternalError {
-  String toDescription() =>
-      'InternalError{\nerror: $error, \nstackTrace: $stackTrace\n}';
+  @override
+  String toString() =>
+      'InternalError{\n  error: $error,\n  stackTrace: $stackTrace\n}';
 }
