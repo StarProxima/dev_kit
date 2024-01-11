@@ -13,7 +13,7 @@ mixin ValidatorMixin implements IRef {
   List<SingleValidatorBase> get allValidators =>
       UnmodifiableListView(_allValidators);
 
-  final List<SingleValidatorBase> _allValidators = [];
+  final Set<SingleValidatorBase> _allValidators = {};
 
   /// Метод для создания [SingleValidator].
   /// Необходимо вызывать только при инициализации класса.
@@ -27,17 +27,25 @@ mixin ValidatorMixin implements IRef {
   @protected
   SingleValidator validator(
     String? Function() validatorFn, {
-    String? name,
+    String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
     final validator = SingleValidator(
       ref,
       validatorFn,
-      name: name,
+      label: label,
       relatedValidators: relatedValidators,
     );
 
+    final a1 = _allValidators.length;
+
     _allValidators.add(validator);
+
+    final a2 = _allValidators.length;
+
+    if (a1 == a2) {
+      print('Validator already added');
+    }
 
     return validator;
   }
@@ -66,12 +74,12 @@ mixin ValidatorMixin implements IRef {
   @protected
   SingleAsyncValidator asyncValidator(
     FutureOr<String?> Function(SetError setError) validatorFn, {
-    String? name,
+    String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
     final validator = SingleAsyncValidator(
       ref,
-      name: name,
+      label: label,
       validatorFn,
       relatedValidators: relatedValidators,
     );
@@ -84,11 +92,11 @@ mixin ValidatorMixin implements IRef {
   /// Метод для вызова валидации у переданных валидаторов.
   /// Возвращает список ошибок, если они есть.
   @protected
-  Future<List<({String? name, String error})>> processValidators(
+  Future<List<({String? label, String error})>> processValidators(
     List<SingleValidatorBase> validators, {
     bool softMode = false,
   }) async {
-    final errors = <({String? name, String error})>[];
+    final errors = <({String? label, String error})>[];
 
     for (final validator in validators) {
       final String? error;
@@ -99,7 +107,7 @@ mixin ValidatorMixin implements IRef {
         error = await validator.validate();
       }
 
-      if (error != null) errors.add((name: validator.name, error: error));
+      if (error != null) errors.add((label: validator.label, error: error));
     }
 
     return errors;

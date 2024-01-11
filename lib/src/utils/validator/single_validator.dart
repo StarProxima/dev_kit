@@ -40,15 +40,20 @@ abstract class SingleValidatorBase {
   /// {@macro [SingleValidatorBase]}
   SingleValidatorBase(
     this._ref, {
-    this.name,
+    String? label,
     String? initialError,
     List<SingleValidatorBase> relatedValidators = const [],
   })  : _initialError = initialError,
+        _label = label,
         _relatedValidators = relatedValidators;
 
   final Ref _ref;
   final String? _initialError;
-  String? name;
+  String? _label;
+  String? get label => _label;
+
+  // ignore: use_setters_to_change_properties
+  void setLabel(String? label) => _label = label;
 
   /// Список связанных валидаторов, которые также будут валидироваться при валидации текущего
   final List<SingleValidatorBase> _relatedValidators;
@@ -135,7 +140,7 @@ final class SingleValidator extends SingleValidatorBase {
   SingleValidator(
     super._ref,
     this._validatorFn, {
-    super.name,
+    super.label,
     super.initialError,
     super.relatedValidators,
   });
@@ -171,7 +176,7 @@ final class SingleAsyncValidator extends SingleValidatorBase {
   SingleAsyncValidator(
     super._ref,
     this._validatorFn, {
-    super.name,
+    super.label,
     super.initialError,
     super.relatedValidators,
   });
