@@ -21,7 +21,7 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
 
   @override
   String toString() =>
-      'ErrorResponse{\n  error: $error,\n  statusCode: $statusCode,\n  method: $method,\n  url: $url,\n  stackTrace: $stackTrace\n}';
+      'ErrorResponse:\n$statusCode $method $url\n\n$error\n\n$stackTrace';
 }
 
 class InternalError<ErrorType> extends ApiError<ErrorType> {
@@ -34,6 +34,5 @@ class InternalError<ErrorType> extends ApiError<ErrorType> {
   final StackTrace stackTrace;
 
   @override
-  String toString() =>
-      'InternalError{\n  error: $error,\n  stackTrace: $stackTrace\n}';
+  String toString() => 'InternalError:\n\n$error\n\n$stackTrace';
 }
