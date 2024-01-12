@@ -5,8 +5,7 @@ import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import 'models/api_error.dart';
-
+part 'api_error.dart';
 part 'api_wrap_controller.dart';
 part 'internal_api_wrap.dart';
 part 'rate_limiter.dart';

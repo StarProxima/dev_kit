@@ -11,7 +11,6 @@ export 'src/extensions/list_utils.dart';
 export 'src/extensions/string_utils.dart';
 
 // Api wrap
-export 'src/utils/api_wrap/models/api_error.dart';
 export 'src/utils/api_wrap/api_wrap.dart';
 
 // Async utils
