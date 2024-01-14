@@ -56,7 +56,7 @@ class Debounce extends RateLimiter {
     // При этом не вызывается ни onSuccess, ни onError.
     operations.remove(tag)?.cancel();
 
-    operations[tag] = DebounceOperation(
+    operations[tag] = DebounceOperation<T>(
       timer: Timer(this, () async {
         final operation = operations[tag];
         final future = operation?.complete();
@@ -125,7 +125,7 @@ class Throttle extends RateLimiter {
       return RateCancel();
     }
 
-    final operation = ThrottleOperation(
+    final operation = ThrottleOperation<T>(
       onCooldownEnd: () {
         operations.remove(tag);
       },

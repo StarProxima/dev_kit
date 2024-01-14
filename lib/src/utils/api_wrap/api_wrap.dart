@@ -161,7 +161,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
   }) =>
-      apiWrap(
+      apiWrap<T, T>(
         function,
         onSuccess: onSuccess,
         onError: onError,
