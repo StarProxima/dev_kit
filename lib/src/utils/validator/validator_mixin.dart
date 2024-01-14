@@ -19,13 +19,13 @@ mixin ValidatorMixin implements IRef {
   /// Необходимо вызывать только при инициализации класса.
   /// Пример:
   /// ```dart
-  /// late final password = validator(
+  /// late final passwordValidator = createValidator(
   ///   () => shared.validatePassword(_regState.password),
   ///   relatedValidators: [repeatPassword],
   /// );
   /// ```
   @protected
-  SingleValidator validator(
+  SingleValidator createValidator(
     String? Function() validatorFn, {
     String? label,
     List<SingleValidatorBase> relatedValidators = const [],
@@ -37,15 +37,7 @@ mixin ValidatorMixin implements IRef {
       relatedValidators: relatedValidators,
     );
 
-    final a1 = _allValidators.length;
-
     _allValidators.add(validator);
-
-    final a2 = _allValidators.length;
-
-    if (a1 == a2) {
-      print('Validator already added');
-    }
 
     return validator;
   }
@@ -55,7 +47,7 @@ mixin ValidatorMixin implements IRef {
   ///
   /// Пример:
   /// ```dart
-  /// late final email = asyncValidator(
+  /// late final emailValidator = createAsyncValidator(
   ///   (setError) async {
   ///     var error = shared.validateEmail(_controlleState.email);
   ///     if (error != null) return error;
@@ -72,7 +64,7 @@ mixin ValidatorMixin implements IRef {
   /// );
   /// ```
   @protected
-  SingleAsyncValidator asyncValidator(
+  SingleAsyncValidator createAsyncValidator(
     FutureOr<String?> Function(SetError setError) validatorFn, {
     String? label,
     List<SingleValidatorBase> relatedValidators = const [],
