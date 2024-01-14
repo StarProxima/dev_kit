@@ -38,6 +38,10 @@ class ApiWrapper implements IApiWrap {
   @override
   final ApiWrapController wrapController;
 
+  // После некототорго времени использования, пришёл к выводу, что лучше отказать от такой обработки ошибок
+  // Т.к. неотловленная ошибки не будут записываться в крашлитику, а полезность и удобство использования достаточно маленькое
+  // ignore: provide_deprecation_message
+  @deprecated
   static Future<T> hideError<T>(
     FutureOr<T> Function() function, {
     bool? enabled,
