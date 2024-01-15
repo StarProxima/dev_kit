@@ -25,13 +25,15 @@ mixin ValidatorMixin implements IRef {
   /// );
   /// ```
   @protected
-  SingleValidator createValidator(
-    String? Function() validatorFn, {
+  SingleValidator<T> createValidator<T>(
+    T Function() getState,
+    String? Function(T state) validatorFn, {
     String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
-    final validator = SingleValidator(
+    final validator = SingleValidator<T>(
       ref,
+      getState,
       validatorFn,
       label: label,
       relatedValidators: relatedValidators,
@@ -64,15 +66,17 @@ mixin ValidatorMixin implements IRef {
   /// );
   /// ```
   @protected
-  SingleAsyncValidator createAsyncValidator(
-    FutureOr<String?> Function(SetError setError) validatorFn, {
+  SingleAsyncValidator<T> createAsyncValidator<T>(
+    FutureOr<T> Function() getState,
+    FutureOr<String?> Function(T state, {required bool softMode}) validatorFn, {
     String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
-    final validator = SingleAsyncValidator(
+    final validator = SingleAsyncValidator<T>(
       ref,
-      label: label,
+      getState,
       validatorFn,
+      label: label,
       relatedValidators: relatedValidators,
     );
 
