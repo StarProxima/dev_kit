@@ -154,20 +154,6 @@ class _LoadingProviderElement extends AutoDisposeProviderElement<bool>
   int get hashcode => (origin as _LoadingProvider).hashcode;
 }
 
-String _$error2Hash() => r'177afea7734083b773074e1dc8fcade019c98f63';
-
-/// See also [_Error2].
-@ProviderFor(_Error2)
-final _error2Provider = AsyncNotifierProvider<_Error2, String?>.internal(
-  _Error2.new,
-  name: r'_error2Provider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$error2Hash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$Error2 = AsyncNotifier<String?>;
 String _$errorHash() => r'1bbf57492cb8192e9ae8058c11e338d511e414ac';
 
 abstract class _$Error extends BuildlessAutoDisposeNotifier<String?> {

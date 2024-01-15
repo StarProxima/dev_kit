@@ -25,54 +25,21 @@ mixin ValidatorMixin implements IRef {
   /// );
   /// ```
   @protected
-  SingleValidator createValidator(
-    String? Function() validatorFn, {
+  SingleValidator<T> createValidator<T>(
+    FutureOr<T> Function() getState, {
+    required FutureOr<String?> Function(T state) validate,
+    FutureOr<String?> Function(T state)? postValidate,
+    Debounce? debounce,
     String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
-    final validator = SingleValidator(
+    final validator = SingleValidator<T>(
       ref,
-      validatorFn,
+      getState,
+      validateFn: validate,
+      postValidateFn: postValidate,
+      debounce: debounce,
       label: label,
-      relatedValidators: relatedValidators,
-    );
-
-    _allValidators.add(validator);
-
-    return validator;
-  }
-
-  /// Метод для создания [SingleAsyncValidator].
-  /// Необходимо вызывать только при инициализации класса.
-  ///
-  /// Пример:
-  /// ```dart
-  /// late final emailValidator = createAsyncValidator(
-  ///   (setError) async {
-  ///     var error = shared.validateEmail(_controlleState.email);
-  ///     if (error != null) return error;
-  ///
-  ///     if (_isRegistration) {
-  ///       error ??= await setError(
-  ///         () => shared.checkExistsEmail(_controlleState.email),
-  ///         debounce: const Duration(milliseconds: 1500),
-  ///       );
-  ///     }
-  ///
-  ///     return error;
-  ///   },
-  /// );
-  /// ```
-  @protected
-  SingleAsyncValidator createAsyncValidator(
-    FutureOr<String?> Function(SetError setError) validatorFn, {
-    String? label,
-    List<SingleValidatorBase> relatedValidators = const [],
-  }) {
-    final validator = SingleAsyncValidator(
-      ref,
-      label: label,
-      validatorFn,
       relatedValidators: relatedValidators,
     );
 
