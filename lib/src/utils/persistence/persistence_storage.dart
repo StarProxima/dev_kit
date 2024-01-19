@@ -22,7 +22,7 @@ abstract class PersistenceStorage {
 
   Future<void> close();
 
-  static late final PersistenceStorage storage;
+  static late PersistenceStorage storage;
 
   static Future<void> init(FutureOr<PersistenceStorage> storage) async {
     PersistenceStorage.storage = await storage;
