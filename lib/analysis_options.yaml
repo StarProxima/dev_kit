@@ -3,8 +3,6 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - "build/**"
-  plugins:
-    - custom_lint
 
   errors: 
     body_might_complete_normally_nullable: ignore
