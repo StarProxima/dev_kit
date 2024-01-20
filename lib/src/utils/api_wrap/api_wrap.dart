@@ -38,10 +38,9 @@ class ApiWrapper implements IApiWrap {
   @override
   final ApiWrapController wrapController;
 
-  // После некототорго времени использования, пришёл к выводу, что лучше отказать от такой обработки ошибок
-  // Т.к. неотловленная ошибки не будут записываться в крашлитику, а полезность и удобство использования достаточно маленькое
-  // ignore: provide_deprecation_message
-  @deprecated
+  // После некототорго времени использования, пришёл к выводу, что лучше отказать от такой обработки ошибок.
+  // Т.к. неотловленная ошибки не будут записываться в крашлитику, а полезность и удобство использования сомнительное
+  @Deprecated('Use function instead')
   static Future<T> hideError<T>(
     FutureOr<T> Function() function, {
     bool? enabled,
@@ -73,28 +72,133 @@ abstract class IApiWrap<ErrorType> {
 }
 
 extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
-  /// Обёртывает [Dio] запрос к API или обычную функцию с возможностью использования
-  /// последовательных вложенных запросов, автоматической/ручной обработки ошибок и доп. логики.
+  /// Обёртывает HTTP запрос через [Dio] или обычную функцию, сохраняя тип данных.
+  /// Предоставляет возможность использования последовательных вложенных запросов и
+  /// автоматической или ручной обработки ошибок.
   ///
-  /// [function] - [Dio] запрос или функция.
+  /// Применяется, когда входной и выходной типы функции совпадают.
   ///
-  /// [onSuccess] - функция, которая будет вызвана при успешном ответе API.
+  /// [function] - API запрос или функция, возвращающая значение типа [T].
   ///
-  /// [onError] - функция, которая будет вызвана при ошибке API.
+  /// [onSuccess] - функция, вызываемая при успешном ответе, с необязательным возвращаемым типом [T].
+  ///
+  /// [onError] - функция для обработки ошибок, с необязательным возвращаемым типом [T].
   ///
   /// [delay] - задержка перед выполнением запроса.
   ///
   /// [retry] - настройки повторных попыток выполнения запроса.
   /// Если не указано, то повторных попыток не будет.
   ///
-  /// ```dart
-  /// await apiWrap(
-  ///   () => api.login(),
-  ///   onSuccess: (token) => appStorage.updateToken(token),
-  ///   onError: (_) => appStorage.clearToken(),
-  /// );
-  /// ```
-  Future<D?> apiWrap<T, D>(
+  /// Возвращает Future<T?> со значением, полученным либо от [function],
+  /// либо от [onSuccess], если он задан, либо от [onError] при ошибке.
+  Future<T?> apiWrap<T>(
+    FutureOr<T> Function() function, {
+    FutureOr<T?> Function(T res)? onSuccess,
+    FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
+    ErrorVisibility errorVisibility = ErrorVisibility.always,
+    Duration? delay,
+    ExecuteIf? executeIf,
+    RateLimiter? rateLimiter,
+    Retry<ErrorType>? retry,
+  }) =>
+      _internalApiWrap<T, T>(
+        function,
+        onSuccess: onSuccess,
+        onError: onError,
+        delay: delay,
+        executeIf: executeIf,
+        rateLimiter: rateLimiter,
+        retry: retry,
+        errorVisibility: errorVisibility,
+      );
+
+  /// Строгая версия [apiWrap].
+  /// Если [onError] не задан, будет вызвано исключение при возникновении ошибки.
+  /// Это позволяет возвращать ненулевой тип.
+  ///
+  /// [function] - API запрос или функция, возвращающая [T].
+  /// [onSuccess] - функция, вызываемая при успешном ответе, возвращающая [T].
+  /// [onError] - функция для обработки ошибок, возвращающая [T].
+  /// Остальные параметры аналогичны apiWrap.
+  ///
+  /// Возвращает Future с ненулевым результатом типа [T].
+  Future<T> apiWrapStrict<T>(
+    FutureOr<T> Function() function, {
+    FutureOr<T> Function(T res)? onSuccess,
+    FutureOr<T> Function(ApiError<ErrorType> error)? onError,
+    ErrorVisibility errorVisibility = ErrorVisibility.always,
+    Duration? delay,
+    Retry<ErrorType>? retry,
+  }) async =>
+      (await _internalApiWrap<T, T>(
+        function,
+        onSuccess: onSuccess,
+        onError: onError ?? (e) => throw e,
+        delay: delay,
+        retry: retry,
+        errorVisibility: errorVisibility,
+      )) as T;
+
+  /// Обёртывает API запрос или обычную функцию, позволяя преобразовывать тип данных.
+  ///
+  /// Используется, когда необходимо преобразовать входной тип [T] в выходной тип [D].
+  ///
+  /// [function] - API запрос или функция, возвращающая значение типа [T].
+  ///
+  /// [onSuccess] - функция, вызываемая при успешном ответе, преобразующая [T] в [D].
+  ///
+  /// [onError] - функция для обработки ошибок, с возможным возвращаемым значением типа [D].
+  /// Остальные параметры аналогичны apiWrap.
+  ///
+  /// Возвращает Future<D?> с преобразованным значением, полученным либо от [onSuccess] либо от [onError].
+  Future<D?> apiWrapTransform<T, D>(
+    FutureOr<T> Function() function, {
+    FutureOr<D?> Function(T res)? onSuccess,
+    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    ErrorVisibility errorVisibility = ErrorVisibility.always,
+    Duration? delay,
+    ExecuteIf? executeIf,
+    RateLimiter? rateLimiter,
+    Retry<ErrorType>? retry,
+  }) =>
+      _internalApiWrap<T, D>(
+        function,
+        onSuccess: onSuccess,
+        onError: onError,
+        delay: delay,
+        executeIf: executeIf,
+        rateLimiter: rateLimiter,
+        retry: retry,
+      );
+
+  /// Строгая версия [apiWrapTransform], требующая обязательного определения [onSuccess].
+  /// Если [onError] не задан, будет вызвано исключение при возникновении ошибки.
+  /// Это позволяет возвращать ненулевой тип.
+  ///
+  /// [function] - API запрос или функция, возвращающая значение типа [T].
+  /// [onSuccess] - обязательная функция, преобразующая [T] в [D] при успешном ответе.
+  /// [onError] - необязательная функция для обработки ошибок, возвращающая [T].
+  /// Остальные параметры аналогичны apiWrapTransform.
+  ///
+  /// Возвращает Future с ненулевым результатом типа [D].
+  Future<D> apiWrapTransformStrict<T, D>(
+    FutureOr<T> Function() function, {
+    required FutureOr<D> Function(T res) onSuccess,
+    FutureOr<D> Function(ApiError<ErrorType> error)? onError,
+    ErrorVisibility errorVisibility = ErrorVisibility.always,
+    Duration? delay,
+    Retry<ErrorType>? retry,
+  }) async =>
+      (await _internalApiWrap<T, D>(
+        function,
+        onSuccess: onSuccess,
+        onError: onError ?? (e) => throw e,
+        delay: delay,
+        retry: retry,
+        errorVisibility: errorVisibility,
+      )) as D;
+
+  Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T res)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
@@ -131,6 +235,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   ///   onError: (_) => false,
   /// );
   /// ```
+  @Deprecated('Use apiWrapTransformStrict instead')
   Future<D> apiWrapGuard<T, D>(
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T res) onSuccess,
@@ -139,7 +244,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
   }) async =>
-      (await apiWrap<T, D>(
+      (await apiWrapTransform<T, D>(
         function,
         onSuccess: onSuccess,
         onError: onError,
@@ -155,6 +260,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// final user = await apiWrapSingle(api.getCurrentUser);
   /// if(user != null) ...
   /// ```
+  @Deprecated('Use apiWrap instead')
   Future<T?> apiWrapSingle<T>(
     FutureOr<T> Function() function, {
     FutureOr<T?> Function(T res)? onSuccess,
@@ -165,7 +271,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
   }) =>
-      apiWrap<T, T>(
+      apiWrapTransform<T, T>(
         function,
         onSuccess: onSuccess,
         onError: onError,
@@ -190,6 +296,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   ///   onError: (_) => User.empty(),
   /// );
   /// ```
+  @Deprecated('Use apiWrapStrict instead')
   Future<T> apiWrapSingleGuard<T>(
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T res)? onSuccess,
@@ -198,7 +305,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
   }) async =>
-      (await apiWrap<T, T>(
+      (await apiWrapTransform<T, T>(
         function,
         onSuccess: onSuccess,
         onError: onError,
