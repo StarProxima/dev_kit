@@ -29,14 +29,14 @@ enum ErrorVisibility {
 /// Даёт возможность реализовать автоматическую обработку ошибок (логгирование и показ тостов) с возможность отлючения.
 /// Предоставляет методы для обработки успешного и ошибочного ответа API.
 /// {@endtemplate}
-class ApiWrapper implements IApiWrap {
+class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    ApiWrapController? opstions,
-  }) : wrapController = opstions ?? ApiWrapController();
+    ApiWrapController<ErrorType>? opstions,
+  }) : wrapController = opstions ?? ApiWrapController<ErrorType>();
 
   @override
-  final ApiWrapController wrapController;
+  final ApiWrapController<ErrorType> wrapController;
 
   // После некототорго времени использования, пришёл к выводу, что лучше отказать от такой обработки ошибок.
   // Т.к. неотловленная ошибки не будут записываться в крашлитику, а полезность и удобство использования сомнительное
