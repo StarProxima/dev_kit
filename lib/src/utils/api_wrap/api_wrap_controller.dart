@@ -5,6 +5,7 @@ class ApiWrapController<ErrorType> {
     this.retry,
     this.parseError,
     this.onError,
+    this.defaultShowErrorToast = true,
   }) {
     container = RateOperationsContainer();
     internalApiWrap = InternalApiWrap<ErrorType>(
@@ -17,6 +18,7 @@ class ApiWrapController<ErrorType> {
   final Retry? retry;
   final ErrorType Function(Object)? parseError;
   final ErrorResponseOnError<ErrorType>? onError;
+  final bool defaultShowErrorToast;
 
   late final RateOperationsContainer container;
   late final InternalApiWrap<ErrorType> internalApiWrap;

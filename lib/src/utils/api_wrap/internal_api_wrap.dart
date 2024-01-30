@@ -1,7 +1,5 @@
 part of 'api_wrap.dart';
 
-typedef ExecuteIf = FutureOr<bool> Function();
-
 typedef ParseError<ErrorType> = ErrorType Function(Object error);
 
 class InternalApiWrap<ErrorType> {
@@ -25,15 +23,11 @@ class InternalApiWrap<ErrorType> {
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     RateLimiter? rateLimiter,
-    ExecuteIf? executeIf,
     Retry? retry,
   }) async {
     retry ??= _retry;
     final maxAttempts = retry.maxAttempts;
     final retryIf = retry.retryIf;
-
-    FutureOr<bool> notExecuteIf() async =>
-        executeIf != null && !(await executeIf());
 
     ApiError<ErrorType> error;
 
@@ -44,8 +38,6 @@ class InternalApiWrap<ErrorType> {
       attempt++;
       try {
         final T response;
-
-        if (await notExecuteIf()) return null;
 
         if (rateLimiter != null && attempt == 1) {
           final res = await rateLimiter.process<T>(

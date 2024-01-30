@@ -12,17 +12,6 @@ part 'rate_limiter.dart';
 part 'rate_operation.dart';
 part 'retry.dart';
 
-enum ErrorVisibility {
-  /// Отображать ошибку всегда.
-  always,
-
-  /// Отображать ошибку только для отладки.
-  debugOnly,
-
-  /// Не отображать ошибку.
-  never,
-}
-
 /// {@template [ApiWrapper]}
 /// Предоставляет утилиты и обёртки для [Dio] запросов и обычных функций.
 ///
@@ -62,7 +51,7 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
 /// Тип колбека, используемый для обработки ошибок API.
 typedef ErrorResponseOnError<ErrorType> = FutureOr<D?> Function<D>({
   required ApiError<ErrorType> error,
-  required ErrorVisibility errorVisibility,
+  required bool showErrorToast,
   required FutureOr<D?> Function(ApiError<ErrorType> error)? originalOnError,
 });
 
@@ -93,20 +82,19 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T res)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
-    ExecuteIf? executeIf,
-    RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
+    RateLimiter? rateLimiter,
+    bool showErrorToast = true,
   }) =>
       _internalApiWrap<T, D>(
         function,
         onSuccess: onSuccess,
         onError: onError,
         delay: delay,
-        executeIf: executeIf,
-        rateLimiter: rateLimiter,
         retry: retry,
+        rateLimiter: rateLimiter,
+        showErrorToast: showErrorToast,
       );
 
   /// Строгая версия [apiWrap], требующая обязательного определения [onSuccess].
@@ -123,9 +111,9 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T res) onSuccess,
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry<ErrorType>? retry,
+    bool showErrorToast = true,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -133,7 +121,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
-        errorVisibility: errorVisibility,
+        showErrorToast: showErrorToast,
       )) as D;
 
   /// Версия [apiWrap] c единым типом данных.
@@ -153,21 +141,19 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T?> Function(T res)? onSuccess,
     FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
-    ExecuteIf? executeIf,
-    RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
+    RateLimiter? rateLimiter,
+    bool showErrorToast = true,
   }) =>
       _internalApiWrap<T, T>(
         function,
         onSuccess: onSuccess,
         onError: onError,
         delay: delay,
-        executeIf: executeIf,
-        rateLimiter: rateLimiter,
         retry: retry,
-        errorVisibility: errorVisibility,
+        rateLimiter: rateLimiter,
+        showErrorToast: showErrorToast,
       );
 
   /// Строгая версия [apiWrap] c единым типом данных.
@@ -184,9 +170,9 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T res)? onSuccess,
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry<ErrorType>? retry,
+    bool showErrorToast = true,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
@@ -194,31 +180,30 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
-        errorVisibility: errorVisibility,
+        showErrorToast: showErrorToast,
       )) as T;
 
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T res)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
-    ExecuteIf? executeIf,
-    RateLimiter? rateLimiter,
+    bool? showErrorToast,
     Retry<ErrorType>? retry,
+    RateLimiter? rateLimiter,
   }) =>
       wrapController.internalApiWrap<T, D>(
         function,
         onSuccess: onSuccess,
         onError: (error) => wrapController.onError?.call(
           error: error,
-          errorVisibility: errorVisibility,
+          showErrorToast:
+              showErrorToast ?? wrapController.defaultShowErrorToast,
           originalOnError: onError,
         ),
         delay: delay,
-        executeIf: executeIf,
-        rateLimiter: rateLimiter,
         retry: retry,
+        rateLimiter: rateLimiter,
       );
 
   /// Как [apiWrap], но требует указывать все колбеки, что позволяет возвращать ненулевое значение.
@@ -239,9 +224,9 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T res) onSuccess,
     required FutureOr<D> Function(ApiError<ErrorType> error) onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry<ErrorType>? retry,
+    bool showErrorToast = true,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -249,7 +234,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError,
         delay: delay,
         retry: retry,
-        errorVisibility: errorVisibility,
+        showErrorToast: showErrorToast,
       )) as D;
 
   /// Объединяет свойства [apiWrapGuard] и [apiWrapSingle].
@@ -271,9 +256,9 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T res)? onSuccess,
     required FutureOr<T> Function(ApiError<ErrorType> error) onError,
-    ErrorVisibility errorVisibility = ErrorVisibility.always,
     Duration? delay,
     Retry<ErrorType>? retry,
+    bool showErrorToast = true,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
@@ -281,6 +266,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError,
         delay: delay,
         retry: retry,
-        errorVisibility: errorVisibility,
+        showErrorToast: showErrorToast,
       ))!;
 }
