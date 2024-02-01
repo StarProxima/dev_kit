@@ -70,7 +70,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// [onSuccess] - функция, вызываемая при успешном ответе, возможно, преобразующая [T] в [D].
   ///
   /// [onError] - функция для обработки ошибок, с возможным возвращаемым значением типа [D].
-  /// Остальные параметры аналогичны apiWrap.
   ///
   /// [delay] - задержка перед выполнением запроса.
   ///
@@ -85,7 +84,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
-    bool showErrorToast = true,
+    bool? showErrorToast,
   }) =>
       _internalApiWrap<T, D>(
         function,
@@ -104,7 +103,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// [function] - API запрос или функция, возвращающая значение типа [T].
   /// [onSuccess] - обязательная функция, преобразующая [T] в [D] при успешном ответе.
   /// [onError] - необязательная функция для обработки ошибок, возвращающая [T].
-  /// Остальные параметры аналогичны apiWrapTransform.
   ///
   /// Возвращает Future с ненулевым результатом типа [D].
   Future<D> apiWrapStrict<T, D>(
@@ -113,7 +111,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    bool showErrorToast = true,
+    bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -133,8 +131,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   ///
   /// [onError] - функция для обработки ошибок, с необязательным возвращаемым типом [T].
   ///
-  /// Остальные параметры аналогичны apiWrap.
-  ///
   /// Возвращает Future<T?> со значением, полученным либо от [function],
   /// либо от [onSuccess], если он задан, либо от [onError] при ошибке.
   Future<T?> apiWrapSingle<T>(
@@ -144,7 +140,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
-    bool showErrorToast = true,
+    bool? showErrorToast,
   }) =>
       _internalApiWrap<T, T>(
         function,
@@ -163,7 +159,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// [function] - API запрос или функция, возвращающая [T].
   /// [onSuccess] - функция, вызываемая при успешном ответе, возвращающая [T].
   /// [onError] - функция для обработки ошибок, возвращающая [T].
-  /// Остальные параметры аналогичны apiWrap.
   ///
   /// Возвращает Future с ненулевым результатом типа [T].
   Future<T> apiWrapStrictSingle<T>(
@@ -172,7 +167,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    bool showErrorToast = true,
+    bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
@@ -188,9 +183,9 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D?> Function(T res)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
-    bool? showErrorToast,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
+    bool? showErrorToast,
   }) =>
       wrapController.internalApiWrap<T, D>(
         function,
