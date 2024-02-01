@@ -1,18 +1,16 @@
 part of 'api_wrap.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
-sealed class RateLimiter extends Duration {
-  RateLimiter({
+sealed class RateLimiter {
+  const RateLimiter({
     this.tag,
     this.onCancelOperation,
-    super.hours,
-    super.minutes,
-    super.seconds,
-    super.milliseconds,
+    this.duration = Duration.zero,
   });
 
   final String? tag;
   final VoidCallback? onCancelOperation;
+  final Duration duration;
 
   Future<RateResult<T>> process<T>({
     required RateOperationsContainer container,
@@ -30,12 +28,9 @@ class Debounce extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Debounce({
     super.tag,
+    super.duration,
     this.shouldCancelRunningOperations = true,
     super.onCancelOperation,
-    super.hours,
-    super.minutes,
-    super.seconds,
-    super.milliseconds,
   });
 
   final bool shouldCancelRunningOperations;
@@ -57,7 +52,7 @@ class Debounce extends RateLimiter {
     operations.remove(tag)?.cancel();
 
     operations[tag] = DebounceOperation<T>(
-      timer: Timer(this, () async {
+      timer: Timer(duration, () async {
         final operation = operations[tag];
         final future = operation?.complete();
         if (shouldCancelRunningOperations) await future;
@@ -90,16 +85,13 @@ class Throttle extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Throttle({
     super.tag,
+    super.duration,
     this.cooldownLaunch = CooldownLaunch.afterOperaion,
     this.cooldownTickDelay = const Duration(seconds: 1),
     this.onTickCooldown,
     this.onStartCooldown,
     this.onEndCooldown,
     super.onCancelOperation,
-    super.hours,
-    super.minutes,
-    super.seconds,
-    super.milliseconds,
   });
 
   final CooldownLaunch cooldownLaunch;
@@ -142,12 +134,12 @@ class Throttle extends RateLimiter {
       onStartCooldown?.call();
 
       if (onTickCooldown != null) {
-        onTickCooldown!(this);
+        onTickCooldown!(duration);
         cooldownControlTimer = Timer.periodic(
           cooldownTickDelay,
           (timer) {
-            final remainingMilliseconds =
-                inMilliseconds - timer.tick * cooldownTickDelay.inMilliseconds;
+            final remainingMilliseconds = duration.inMilliseconds -
+                timer.tick * cooldownTickDelay.inMilliseconds;
 
             onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
           },
@@ -157,7 +149,7 @@ class Throttle extends RateLimiter {
 
     if (!operation.cooldownIsCancel) {
       operation.startCooldown(
-        duration: this,
+        duration: duration,
         callback: () {
           operations.remove(tag);
           cooldownControlTimer?.cancel();
