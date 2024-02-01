@@ -55,16 +55,20 @@ class Debounce extends RateLimiter {
       timer: Timer(duration, () async {
         final operation = operations[tag];
         final future = operation?.complete();
-        if (shouldCancelRunningOperations) await future;
-        if (operations.containsValue(operation)) operations.remove(tag);
+        try {
+          if (shouldCancelRunningOperations) await future;
+        } catch (_) {
+          rethrow;
+        } finally {
+          if (operations.containsValue(operation)) operations.remove(tag);
+        }
       }),
       completer: completer,
       function: function,
       rateLimiter: this,
     );
 
-    final result = await completer.future;
-    return result;
+    return completer.future;
   }
 }
 
@@ -117,46 +121,47 @@ class Throttle extends RateLimiter {
       return RateCancel();
     }
 
+    Timer? cooldownTickTimer;
+
     final operation = ThrottleOperation<T>(
       onCooldownEnd: () {
         operations.remove(tag);
+        cooldownTickTimer?.cancel();
+        onTickCooldown?.call(Duration.zero);
+        onEndCooldown?.call();
       },
     );
     operations[tag] = operation;
 
-    final futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
-        ? await function()
-        : function();
+    final FutureOr<T> futureOr;
 
-    Timer? cooldownControlTimer;
+    try {
+      futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
+          ? await function()
+          : function();
+    } catch (_) {
+      rethrow;
+    } finally {
+      if (!operation.cooldownIsCancel) {
+        onStartCooldown?.call();
 
-    if (!operation.cooldownIsCancel) {
-      onStartCooldown?.call();
+        if (onTickCooldown != null) {
+          onTickCooldown!(duration);
+          cooldownTickTimer = Timer.periodic(
+            cooldownTickDelay,
+            (timer) {
+              final remainingMilliseconds = duration.inMilliseconds -
+                  timer.tick * cooldownTickDelay.inMilliseconds;
 
-      if (onTickCooldown != null) {
-        onTickCooldown!(duration);
-        cooldownControlTimer = Timer.periodic(
-          cooldownTickDelay,
-          (timer) {
-            final remainingMilliseconds = duration.inMilliseconds -
-                timer.tick * cooldownTickDelay.inMilliseconds;
-
-            onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
-          },
-        );
+              onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
+            },
+          );
+        }
       }
-    }
 
-    if (!operation.cooldownIsCancel) {
-      operation.startCooldown(
-        duration: duration,
-        callback: () {
-          operations.remove(tag);
-          cooldownControlTimer?.cancel();
-          onTickCooldown?.call(Duration.zero);
-          onEndCooldown?.call();
-        },
-      );
+      if (!operation.cooldownIsCancel) {
+        operation.startCooldown(duration: duration);
+      }
     }
 
     final data = await futureOr;

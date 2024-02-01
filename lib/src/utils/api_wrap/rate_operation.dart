@@ -58,17 +58,13 @@ class ThrottleOperation<T> {
 
   final VoidCallback onCooldownEnd;
   VoidCallback? cooldownCallback;
-
   bool cooldownIsCancel = false;
-
   late Timer _timer;
 
   void startCooldown({
     required Duration duration,
-    required VoidCallback callback,
   }) {
-    cooldownCallback = callback;
-    _timer = Timer(duration, callback);
+    _timer = Timer(duration, cancelCooldown);
   }
 
   void cancelCooldown() {
