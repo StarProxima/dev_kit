@@ -1,12 +1,11 @@
 // ignore_for_file: directives_ordering
 
-library;
-
 // Packages
 export 'package:gap/gap.dart';
 
 // Extensions
 export 'src/extensions/date_utils.dart';
+export 'src/extensions/duration_utils.dart';
 export 'src/extensions/list_utils.dart';
 export 'src/extensions/string_utils.dart';
 
