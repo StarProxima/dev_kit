@@ -28,10 +28,13 @@ class ApiWrapController<ErrorType> {
   }
 
   Future<void> fireAllDebounceOperations() async {
-    final futures = <Future<void>>[];
-    for (final tag in container.debounceOperations.keys) {
-      futures.add(container.debounceOperations.remove(tag)!.complete());
-    }
+    final futures = [
+      ...container.debounceOperations.values.map(
+        (operation) => operation.complete(),
+      ),
+    ];
+
+    container.debounceOperations.clear();
 
     await futures.wait;
   }
