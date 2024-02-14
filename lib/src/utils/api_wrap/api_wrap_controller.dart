@@ -27,6 +27,15 @@ class ApiWrapController<ErrorType> {
     await container.debounceOperations.remove(tag)?.complete();
   }
 
+  Future<void> fireAllDebounceOperations() async {
+    final futures = <Future<void>>[];
+    for (final tag in container.debounceOperations.keys) {
+      futures.add(container.debounceOperations.remove(tag)!.complete());
+    }
+
+    await futures.wait;
+  }
+
   void cancelDebounceOperation(String tag) {
     container.debounceOperations.remove(tag)?.cancel();
   }
