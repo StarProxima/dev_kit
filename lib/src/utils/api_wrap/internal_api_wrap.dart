@@ -17,6 +17,7 @@ class InternalApiWrap<ErrorType> {
   /// Операции debounce и thottle, доступные по тегу.
   final RateOperationsContainer _operationsContainer;
 
+  @visibleForTesting
   Future<D?> call<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
@@ -85,4 +86,10 @@ class InternalApiWrap<ErrorType> {
       return onError?.call(error);
     }
   }
+}
+
+const useInApiWrap = _UseInApiWrap();
+
+class _UseInApiWrap {
+  const _UseInApiWrap();
 }
