@@ -71,6 +71,8 @@ class InternalApiWrap<ErrorType> {
         } else {
           error = InternalError(error: e, stackTrace: e.stackTrace);
         }
+      } on ApiError<ErrorType> catch (e) {
+        error = e;
       } catch (e, s) {
         error = InternalError(error: e, stackTrace: s);
       }
