@@ -7,7 +7,7 @@ final _cacheMap = <String, ({Timer? timer, Set<KeepAliveLink> links})>{};
 final _cacheMap2 = <String,
     ({bool isValidCache, Set<KeepAliveLink> links, Set<int> hashcodes})>{};
 
-extension CacheRef on AutoDisposeRef {
+extension RefCacheX on AutoDisposeRef {
   void cacheFor(Duration duration) {
     final link = keepAlive();
 

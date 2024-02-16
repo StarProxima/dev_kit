@@ -87,9 +87,3 @@ class InternalApiWrap<ErrorType> {
     }
   }
 }
-
-const useInApiWrap = _UseInApiWrap();
-
-class _UseInApiWrap {
-  const _UseInApiWrap();
-}
