@@ -8,6 +8,7 @@ export 'src/extensions/date_utils.dart';
 export 'src/extensions/duration_utils.dart';
 export 'src/extensions/list_utils.dart';
 export 'src/extensions/string_utils.dart';
+export 'src/extensions/ref_cache.dart';
 
 // Api wrap
 export 'src/utils/api_wrap/api_wrap.dart';
