@@ -1,48 +1,36 @@
-import 'dart:async';
+part of 'api_wrap.dart';
 
-import 'package:dio/dio.dart';
+typedef ParseError<ErrorType> = ErrorType Function(Object error);
 
-import 'api_operation.dart';
-import 'error_response/error_response.dart';
-import 'rate_limiter.dart';
-import 'retry.dart';
-
-typedef ExecuteIf = FutureOr<bool> Function();
-
-class InternalApiWrap {
-  InternalApiWrap(this._retry);
+class InternalApiWrap<ErrorType> {
+  InternalApiWrap({
+    required Retry retry,
+    required RateOperationsContainer container,
+    ParseError<ErrorType>? parseError,
+  })  : _retry = retry,
+        _parseError = parseError,
+        _operationsContainer = container;
 
   final Retry _retry;
+  final ParseError<ErrorType>? _parseError;
 
   /// Операции debounce и thottle, доступные по тегу.
-  final Map<String, ApiOperation> _operations = {};
+  final RateOperationsContainer _operationsContainer;
 
-  /// Находит операцию по [tag], немедленно выполняет её, если она есть.
-  void fireOperation(String tag) => _operations.remove(tag)?.complete();
-
-  /// Находит операцию по [tag] и отменяет её.
-  void cancelOperation(String tag) => _operations.remove(tag)?.cancel();
-
-  /// Отменяет все операции.
-  void cancelAllOperations() => _operations.keys.forEach(cancelOperation);
-
+  @visibleForTesting
   Future<D?> call<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
-    FutureOr<D?> Function(ErrorResponse error)? onError,
+    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     RateLimiter? rateLimiter,
-    ExecuteIf? executeIf,
     Retry? retry,
   }) async {
     retry ??= _retry;
     final maxAttempts = retry.maxAttempts;
     final retryIf = retry.retryIf;
 
-    FutureOr<bool> notExecuteIf() async =>
-        executeIf != null && !(await executeIf());
-
-    ErrorResponse error;
+    ApiError<ErrorType> error;
 
     if (delay != null) await Future.delayed(delay);
 
@@ -53,14 +41,19 @@ class InternalApiWrap {
         final T response;
 
         if (rateLimiter != null && attempt == 1) {
-          final res = await rateLimiter(_operations, () async {
-            if (await notExecuteIf()) return null;
-            return function();
-          });
-          if (res == null) return null;
-          response = res;
+          final res = await rateLimiter.process<T>(
+            container: _operationsContainer,
+            function: function,
+            defaultTag: '$hashCode${StackTrace.current}',
+          );
+
+          switch (res) {
+            case RateSuccess<T>():
+              response = res.data;
+            case RateCancel<T>():
+              return null;
+          }
         } else {
-          if (await notExecuteIf()) return null;
           response = await function();
         }
 
@@ -69,9 +62,9 @@ class InternalApiWrap {
       } on DioException catch (e) {
         final res = e.response;
         if (res != null) {
-          error = RequestError(
+          error = ErrorResponse(
             statusCode: res.statusCode ?? 0,
-            error: res.data,
+            error: _parseError?.call(res.data) ?? res.data,
             method: res.requestOptions.method,
             url: res.requestOptions.uri,
             stackTrace: e.stackTrace,
@@ -79,6 +72,8 @@ class InternalApiWrap {
         } else {
           error = InternalError(error: e, stackTrace: e.stackTrace);
         }
+      } on ApiError<ErrorType> catch (e) {
+        error = e;
       } catch (e, s) {
         error = InternalError(error: e, stackTrace: s);
       }

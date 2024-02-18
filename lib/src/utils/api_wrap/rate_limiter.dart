@@ -1,24 +1,22 @@
-import 'dart:async';
-
-import 'api_operation.dart';
+part of 'api_wrap.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
-sealed class RateLimiter extends Duration {
-  RateLimiter({
+sealed class RateLimiter {
+  const RateLimiter({
     this.tag,
-    this.onCancel,
-    super.milliseconds,
-    super.seconds,
-    super.minutes,
+    this.onCancelOperation,
+    this.duration = Duration.zero,
   });
 
   final String? tag;
-  final void Function()? onCancel;
+  final VoidCallback? onCancelOperation;
+  final Duration duration;
 
-  Future<T?> call<T>(
-    Map<String, ApiOperation> operations,
-    FutureOr<T> Function() function,
-  );
+  Future<RateResult<T>> process<T>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<T> Function() function,
+  });
 }
 
 class Debounce extends RateLimiter {
@@ -30,44 +28,57 @@ class Debounce extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Debounce({
     super.tag,
-    this.includeRequestTime = true,
-    super.onCancel,
-    super.milliseconds,
-    super.seconds,
-    super.minutes,
+    super.duration,
+    this.shouldCancelRunningOperations = true,
+    super.onCancelOperation,
   });
 
-  final bool includeRequestTime;
+  final bool shouldCancelRunningOperations;
 
   @override
-  Future<T?> call<T>(
-    Map<String, ApiOperation> operations,
-    FutureOr<T> Function() function,
-  ) async {
-    final tag = this.tag ?? StackTrace.current.toString();
-    final completer = Completer<T?>();
+  Future<RateResult<T>> process<T>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<T> Function() function,
+  }) async {
+    final tag = this.tag ?? defaultTag;
+    final completer = Completer<RateResult<T>>();
 
-    operations.remove(tag)
-      ?..rateLimiter?.onCancel?.call()
-      ..cancel();
+    final operations = container.debounceOperations;
 
-    operations[tag] = ApiOperation<T>(
-      timer: Timer(this, () async {
-        final op = operations[tag];
-        final future = op?.complete();
-        if (includeRequestTime) await future;
-        if (operations.containsValue(op)) operations.remove(tag);
+    // Если операция была отменена в течении debounce, то возвращается null.
+    // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
+    // При этом не вызывается ни onSuccess, ни onError.
+    operations.remove(tag)?.cancel();
+
+    operations[tag] = DebounceOperation<T>(
+      timer: Timer(duration, () async {
+        final operation = operations[tag];
+        final future = operation?.complete();
+        try {
+          if (shouldCancelRunningOperations) await future;
+        } catch (_) {
+          rethrow;
+        } finally {
+          if (operations.containsValue(operation)) operations.remove(tag);
+        }
       }),
       completer: completer,
       function: function,
       rateLimiter: this,
     );
-    final res = await completer.future;
-    // Если операция была отменена в течении debounce, то возвращается null.
-    // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
-    // При этом не вызывается ни onSuccess, ни onError.
-    return res;
+
+    return completer.future;
   }
+}
+
+/// Варианты запуска cooldown.
+enum CooldownLaunch {
+  /// Cooldown начнётся сразу после начала выполнения запроса.
+  immediately,
+
+  /// Cooldown начнётся сразу после выполнения запроса.
+  afterOperaion,
 }
 
 class Throttle extends RateLimiter {
@@ -78,35 +89,82 @@ class Throttle extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Throttle({
     super.tag,
-    this.includeRequestTime = true,
-    super.onCancel,
-    super.milliseconds,
-    super.seconds,
-    super.minutes,
+    super.duration,
+    this.cooldownLaunch = CooldownLaunch.afterOperaion,
+    this.cooldownTickDelay = const Duration(seconds: 1),
+    this.onTickCooldown,
+    this.onStartCooldown,
+    this.onEndCooldown,
+    super.onCancelOperation,
   });
 
-  final bool includeRequestTime;
+  final CooldownLaunch cooldownLaunch;
+  final Duration cooldownTickDelay;
+  final void Function(Duration remainingTime)? onTickCooldown;
+  final void Function()? onStartCooldown;
+  final void Function()? onEndCooldown;
 
   @override
-  Future<T?> call<T>(
-    Map<String, ApiOperation> operations,
-    FutureOr<T> Function() function,
-  ) async {
-    final tag = this.tag ?? StackTrace.current.toString();
-    // Если операция уже существует, то возвращается null.
-    // При этом не вызывается ни onSuccess, ни onError.
+  Future<RateResult<T>> process<T>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<T> Function() function,
+  }) async {
+    final tag = this.tag ?? defaultTag;
+
+    final operations = container.throttleOperations;
 
     if (operations.containsKey(tag)) {
-      onCancel?.call();
-      return null;
+      // Если операция уже существует, то возвращается null.
+      // При этом не вызывается ни onSuccess, ни onError.
+      onCancelOperation?.call();
+      return RateCancel();
     }
 
-    operations[tag] = ApiOperation();
+    Timer? cooldownTickTimer;
 
-    final futureOr = includeRequestTime ? await function() : function();
-    operations[tag] = ApiOperation<T>(
-      timer: Timer(this, () => operations.remove(tag)),
+    final operation = ThrottleOperation<T>(
+      onCooldownEnd: () {
+        operations.remove(tag);
+        cooldownTickTimer?.cancel();
+        onTickCooldown?.call(Duration.zero);
+        onEndCooldown?.call();
+      },
     );
-    return futureOr;
+    operations[tag] = operation;
+
+    final FutureOr<T> futureOr;
+
+    try {
+      futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
+          ? await function()
+          : function();
+    } catch (_) {
+      rethrow;
+    } finally {
+      if (!operation.cooldownIsCancel) {
+        onStartCooldown?.call();
+
+        if (onTickCooldown != null) {
+          onTickCooldown!(duration);
+          cooldownTickTimer = Timer.periodic(
+            cooldownTickDelay,
+            (timer) {
+              final remainingMilliseconds = duration.inMilliseconds -
+                  timer.tick * cooldownTickDelay.inMilliseconds;
+
+              onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
+            },
+          );
+        }
+      }
+
+      if (!operation.cooldownIsCancel) {
+        operation.startCooldown(duration: duration);
+      }
+    }
+
+    final data = await futureOr;
+    return RateSuccess(data);
   }
 }

@@ -1,28 +1,11 @@
+// ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
+
 import 'dart:async';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core_dev_kit.dart';
-
 part 'single_validator.g.dart';
-
-/// Метод для установки ошибки вручную в AsyncValidator
-/// [Debounce] работает только в softMode. Если операция прерывается, то текущая ошибка убирается.
-/// В обычном режиме валидация не может быть прервана, что бы не было false positive результатов.
-typedef SetError = FutureOr<String?> Function(
-  FutureOr<String?> Function() error, {
-  Debounce? softDebounce,
-});
-
-@Riverpod(keepAlive: true)
-class _Error2 extends _$Error2 {
-  @override
-  Future<String?> build() async => 'initialError';
-
-  // ignore: use_setters_to_change_properties
-  void setError(String? error) => state = error as AsyncValue<String?>;
-}
 
 @riverpod
 class _Error extends _$Error {
@@ -36,24 +19,27 @@ class _Error extends _$Error {
 /// {@template [SingleValidatorBase]}
 /// Базовый класс для валидаторов
 /// {@endtemplate}
-abstract class SingleValidatorBase {
+abstract class SingleValidatorBase<T> {
   /// {@macro [SingleValidatorBase]}
   SingleValidatorBase(
     this._ref, {
-    this.name,
+    String? label,
     String? initialError,
     List<SingleValidatorBase> relatedValidators = const [],
   })  : _initialError = initialError,
+        _label = label,
         _relatedValidators = relatedValidators;
 
   final Ref _ref;
-  final String? name;
   final String? _initialError;
+  String? _label;
+  String? get label => _label;
+
+  // ignore: use_setters_to_change_properties
+  void setLabel(String? label) => _label = label;
 
   /// Список связанных валидаторов, которые также будут валидироваться при валидации текущего
   final List<SingleValidatorBase> _relatedValidators;
-
-  final _apiUtils = ApiWrapper();
 
   /// Внутренний метод валидации - принимает новую ошибку, обновляет провайдер и возвращает её.
   /// Также валидирует все связанные валидаторы.
@@ -69,7 +55,7 @@ abstract class SingleValidatorBase {
     final softModeBlock = softMode && currentError == null;
 
     if (!errorsEqual && !softModeBlock) {
-      setError(() => error);
+      setError(error);
     }
 
     for (final validator in _relatedValidators) {
@@ -79,39 +65,20 @@ abstract class SingleValidatorBase {
     return error;
   }
 
-  /// Устанавливает ошибку в провайдер.
-  /// Если указан [debounce], то ошибка будет установлена только если
-  /// в течении [debounce] не было вызвано других [setError]
-  FutureOr<String?> setError(
-    FutureOr<String?> Function() error, {
-    Debounce? debounce,
-  }) async {
-    final errorStr = await _apiUtils.apiWrapSingle<String?>(
-      () async {
-        final errorStr = await error();
-
-        if (_ref.exists(errorProvider)) {
-          _ref.read(errorProvider.notifier).setError(errorStr);
-        }
-
-        return errorStr;
-      },
-      rateLimiter: debounce != null
-          ? Debounce(
-              tag: debounce.tag ?? hashCode.toString(),
-              milliseconds: debounce.inMilliseconds,
-            )
-          : null,
-    );
-
-    return errorStr;
-  }
-
   /// Провайдер ошибки
   late final errorProvider = _errorProvider(hashCode, _initialError);
 
   /// Текущая ошибка в валидаторе
-  String? get error => _ref.read(errorProvider);
+  String? get errorText => _ref.read(errorProvider);
+
+  /// Устанавливает ошибку в провайдер.
+  void setError(String? error) {
+    if (_ref.exists(errorProvider)) {
+      _ref.read(errorProvider.notifier).setError(error);
+    }
+  }
+
+  void clearError() => setError(null);
 
   /// Метод валидации - обновляет провайдер и возвращает ошибку
   FutureOr<String?> validate();
@@ -128,23 +95,27 @@ abstract class SingleValidatorBase {
 /// {@template [SingleValidator]}
 /// Вариант валидора с синхронной валидацией
 /// {@endtemplate}
-final class SingleValidator extends SingleValidatorBase {
+class SingleValidator<T> extends SingleValidatorBase<T> {
   /// {@macro [SingleValidator]}
   SingleValidator(
     super._ref,
+    this._getState,
     this._validatorFn, {
-    super.name,
+    super.label,
     super.initialError,
     super.relatedValidators,
   });
 
-  final String? Function() _validatorFn;
+  final T Function() _getState;
+  final String? Function(T state) _validatorFn;
 
   @override
-  String? softValidate() => _internalValidate(_validatorFn(), softMode: true);
+  String? softValidate() =>
+      _internalValidate(_validatorFn(_getState()), softMode: true);
 
   @override
-  String? validate() => _internalValidate(_validatorFn(), softMode: false);
+  String? validate() =>
+      _internalValidate(_validatorFn(_getState()), softMode: false);
 }
 
 @riverpod
@@ -162,19 +133,21 @@ bool _loading(_LoadingRef ref, int hashcode) =>
 
 /// {@template [SingleAsyncValidator]}
 /// Вариант валидора с асинхронной валидацией
-/// Можно несколько раз обновлять ошибку через [SetError]
 /// {@endtemplate}
-final class SingleAsyncValidator extends SingleValidatorBase {
+class SingleAsyncValidator<T> extends SingleValidatorBase<T> {
   /// {@macro [SingleAsyncValidator]}
   SingleAsyncValidator(
     super._ref,
+    this._getState,
     this._validatorFn, {
-    super.name,
+    super.label,
     super.initialError,
     super.relatedValidators,
   });
 
-  final FutureOr<String?> Function(SetError) _validatorFn;
+  final FutureOr<T> Function() _getState;
+  final FutureOr<String?> Function(T state, {required bool softMode})
+      _validatorFn;
 
   /// Провайдер загрузки - true, если валидация в процессе
   late final loadingProvider = _loadingProvider(hashCode);
@@ -185,17 +158,17 @@ final class SingleAsyncValidator extends SingleValidatorBase {
   FutureOr<String?> _internalAsyncValidate({bool softMode = false}) async {
     final notifier = _ref.read(_countProvider.notifier);
 
+    final initialExist = _ref.exists(_countProvider);
+
     // ignore: unawaited_futures
     Future(() {
-      if (_ref.exists(_countProvider)) notifier.increment();
+      if (initialExist && _ref.exists(_countProvider)) notifier.increment();
     });
 
-    final newError = await _validatorFn(
-      (error, {softDebounce}) =>
-          setError(error, debounce: softMode ? softDebounce : null),
-    );
+    final state = await _getState();
+    final newError = await _validatorFn(state, softMode: softMode);
 
-    if (_ref.exists(_countProvider)) notifier.decrement();
+    if (initialExist && _ref.exists(_countProvider)) notifier.decrement();
 
     return _internalValidate(newError, softMode: softMode);
   }

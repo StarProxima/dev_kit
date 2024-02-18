@@ -13,27 +13,29 @@ mixin ValidatorMixin implements IRef {
   List<SingleValidatorBase> get allValidators =>
       UnmodifiableListView(_allValidators);
 
-  final List<SingleValidatorBase> _allValidators = [];
+  final Set<SingleValidatorBase> _allValidators = {};
 
   /// Метод для создания [SingleValidator].
   /// Необходимо вызывать только при инициализации класса.
   /// Пример:
   /// ```dart
-  /// late final password = validator(
+  /// late final passwordValidator = createValidator(
   ///   () => shared.validatePassword(_regState.password),
   ///   relatedValidators: [repeatPassword],
   /// );
   /// ```
   @protected
-  SingleValidator validator(
-    String? Function() validatorFn, {
-    String? name,
+  SingleValidator<T> createValidator<T>(
+    T Function() getState,
+    String? Function(T state) validatorFn, {
+    String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
-    final validator = SingleValidator(
+    final validator = SingleValidator<T>(
       ref,
+      getState,
       validatorFn,
-      name: name,
+      label: label,
       relatedValidators: relatedValidators,
     );
 
@@ -47,7 +49,7 @@ mixin ValidatorMixin implements IRef {
   ///
   /// Пример:
   /// ```dart
-  /// late final email = asyncValidator(
+  /// late final emailValidator = createAsyncValidator(
   ///   (setError) async {
   ///     var error = shared.validateEmail(_controlleState.email);
   ///     if (error != null) return error;
@@ -64,15 +66,17 @@ mixin ValidatorMixin implements IRef {
   /// );
   /// ```
   @protected
-  SingleAsyncValidator asyncValidator(
-    FutureOr<String?> Function(SetError setError) validatorFn, {
-    String? name,
+  SingleAsyncValidator<T> createAsyncValidator<T>(
+    FutureOr<T> Function() getState,
+    FutureOr<String?> Function(T state, {required bool softMode}) validatorFn, {
+    String? label,
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
-    final validator = SingleAsyncValidator(
+    final validator = SingleAsyncValidator<T>(
       ref,
-      name: name,
+      getState,
       validatorFn,
+      label: label,
       relatedValidators: relatedValidators,
     );
 
@@ -84,11 +88,11 @@ mixin ValidatorMixin implements IRef {
   /// Метод для вызова валидации у переданных валидаторов.
   /// Возвращает список ошибок, если они есть.
   @protected
-  Future<List<({String? name, String error})>> processValidators(
+  Future<List<({String? label, String error})>> processValidators(
     List<SingleValidatorBase> validators, {
     bool softMode = false,
   }) async {
-    final errors = <({String? name, String error})>[];
+    final errors = <({String? label, String error})>[];
 
     for (final validator in validators) {
       final String? error;
@@ -99,7 +103,7 @@ mixin ValidatorMixin implements IRef {
         error = await validator.validate();
       }
 
-      if (error != null) errors.add((name: validator.name, error: error));
+      if (error != null) errors.add((label: validator.label, error: error));
     }
 
     return errors;
