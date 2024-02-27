@@ -97,10 +97,7 @@ linter:
 
 
     # Not support in Dart < 3.2
-    # annotate_redeclares: true
-    # avoid_unstable_final_fields: true
-
-
+    annotate_redeclares: true
 
     # ------------------------------
     # All lint rules:
@@ -108,7 +105,6 @@ linter:
     always_declare_return_types: true
     # always_put_control_body_on_new_line: true
     # always_put_required_named_parameters_first: true
-    always_require_non_null_named_parameters: true
     # always_specify_types: true
     # always_use_package_imports: true
     annotate_overrides: true
@@ -138,8 +134,6 @@ linter:
     avoid_relative_lib_imports: true
     avoid_renaming_method_parameters: true
     avoid_return_types_on_setters: true
-    avoid_returning_null: true
-    avoid_returning_null_for_future: true
     avoid_returning_null_for_void: true
     avoid_returning_this: true
     avoid_setters_without_getters: true
@@ -188,7 +182,6 @@ linter:
     implicit_call_tearoffs: true
     implicit_reopen: true
     invalid_case_patterns: true
-    iterable_contains_unrelated_type: true
     join_return_with_assignment: true
     leading_newlines_in_multiline_strings: true
     library_annotations: true
@@ -196,7 +189,6 @@ linter:
     library_prefixes: true
     library_private_types_in_public_api: true
     # lines_longer_than_80_chars: true
-    list_remove_unrelated_type: true
     literal_only_boolean_expressions: true
     matching_super_parameters: true
     missing_whitespace_between_adjacent_strings: true
