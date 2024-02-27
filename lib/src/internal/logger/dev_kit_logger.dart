@@ -1,6 +1,8 @@
+import 'package:auto_exporter_annotation/auto_exporter_annotation.dart';
 import 'package:proxima_logger/proxima_logger.dart';
 
 /// Логгер, используемый в dev_kit.
+@IgnoreExport()
 final logger = DevKitLogger(
   settings: _settingsBuilder,
 );

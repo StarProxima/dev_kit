@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../core_dev_kit.dart';
+import '../../../dev_kit.dart';
 
 /// {@template [ValidatorMixin]}
 /// Предоставляет методы для создания и проверки обычных и асинхронных валидаторов.

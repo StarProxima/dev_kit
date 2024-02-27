@@ -1,0 +1,30 @@
+global_options:
+  freezed:
+    runs_before:
+      - json_serializable
+  json_serializable:
+    runs_before:
+      - riverpod_generator
+
+targets:  
+  $default:
+    sources:
+     include:
+      - "pubspec.yaml"
+      - $package$
+      - assets/**
+      - lib/**
+      - api_specs/**
+    builders:
+      source_gen|combining_builder:
+        options:
+          ignore_for_file:
+          - lines_longer_than_80_chars
+          - prefer_expression_function_bodies
+          - unused_import
+          - require_trailing_commas
+          - library_private_types_in_public_api
+      auto_exporter:
+        options:
+          default_export_all: true
+          project_name: src/export
