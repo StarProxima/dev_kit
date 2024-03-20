@@ -11,6 +11,7 @@ import '../../../dev_kit.dart';
 enum ToastType {
   success,
   info,
+  warning,
   error,
 }
 
@@ -105,6 +106,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     final iconColor = switch (widget.type) {
       ToastType.success => Colors.green,
       ToastType.info => Colors.blue,
+      ToastType.warning => Colors.yellow,
       ToastType.error => Colors.red,
     };
 
@@ -140,6 +142,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                             switch (widget.type) {
                               ToastType.success => Icons.check_circle_outline,
                               ToastType.info => Icons.info_outline,
+                              ToastType.warning => Icons.info_outline,
                               ToastType.error => Icons.cancel_outlined,
                             },
                             color: iconColor,
