@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../dev_kit.dart';
+
 final _cacheMap = <String, ({Timer? timer, Set<KeepAliveLink> links})>{};
 
 final _cacheMap2 = <String,
@@ -9,19 +11,25 @@ final _cacheMap2 = <String,
 
 extension RefCacheX on AutoDisposeRef {
   void cacheFor(Duration duration) {
-    final link = keepAlive();
+    watch(userChangedProvider);
 
+    final link = keepAlive();
     final timer = Timer(duration, link.close);
     onDispose(timer.cancel);
   }
 
   void cacheByTag(String cacheTag) {
+    watch(userChangedProvider);
+
     _cacheMap[cacheTag]?.timer?.cancel();
     _cacheMap[cacheTag] ??= (timer: null, links: {});
     _cacheMap[cacheTag]?.links.add(keepAlive());
   }
 
+  @Deprecated('Пока не работает должным образом')
   void cacheByTagFor(String cacheTag, Duration duration) {
+    watch(userChangedProvider);
+
     final timer = Timer(duration, () {
       final item = _cacheMap2[cacheTag];
       if (item != null) {
