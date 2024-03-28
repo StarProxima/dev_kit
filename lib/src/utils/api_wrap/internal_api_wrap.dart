@@ -26,68 +26,72 @@ class InternalApiWrap<ErrorType> {
     RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
   }) async {
-    retry ??= _retry;
-    final maxAttempts = retry.maxAttempts;
-    final retryIf = retry.retryIf;
+    final finalRetry = retry ?? _retry;
+    final maxAttempts = finalRetry.maxAttempts;
+    final retryIf = finalRetry.retryIf;
 
     ApiError<ErrorType> error;
 
     if (delay != null) await Future.delayed(delay);
 
-    var attempt = 0;
-    while (true) {
-      attempt++;
-      try {
-        final T response;
+    Future<D?> fn() async {
+      var attempt = 0;
+      while (true) {
+        attempt++;
+        try {
+          final T response;
 
-        if (rateLimiter != null && attempt == 1) {
-          final res = await rateLimiter.process<T>(
-            container: _operationsContainer,
-            function: function,
-            defaultTag: '$hashCode${StackTrace.current}',
-          );
-
-          switch (res) {
-            case RateSuccess<T>():
-              response = res.data;
-            case RateCancel<T>():
-              return null;
-          }
-        } else {
           response = await function();
+
+          return (await onSuccess?.call(response)) ??
+              (response is D ? response as D : null);
+        } on DioException catch (e) {
+          final res = e.response;
+          if (res != null) {
+            error = ErrorResponse(
+              statusCode: res.statusCode ?? 0,
+              error: _parseError?.call(res.data) ?? res.data,
+              method: res.requestOptions.method,
+              url: res.requestOptions.uri,
+              stackTrace: e.stackTrace,
+            );
+          } else {
+            error = InternalError(error: e, stackTrace: e.stackTrace);
+          }
+        } on ApiError<ErrorType> catch (e) {
+          error = e;
+        } catch (e, s) {
+          error = InternalError(error: e, stackTrace: s);
         }
 
-        return (await onSuccess?.call(response)) ??
-            (response is D ? response as D : null);
-      } on DioException catch (e) {
-        final res = e.response;
-        if (res != null) {
-          error = ErrorResponse(
-            statusCode: res.statusCode ?? 0,
-            error: _parseError?.call(res.data) ?? res.data,
-            method: res.requestOptions.method,
-            url: res.requestOptions.uri,
-            stackTrace: e.stackTrace,
-          );
-        } else {
-          error = InternalError(error: e, stackTrace: e.stackTrace);
+        if (attempt <= maxAttempts && await retryIf(error)) {
+          final delay = finalRetry.calculateDelay(attempt);
+          if (kDebugMode) {
+            logger.debug('Retry', 'Attempt: $attempt, delay: $delay');
+          }
+          await Future.delayed(delay);
+          continue;
         }
-      } on ApiError<ErrorType> catch (e) {
-        error = e;
-      } catch (e, s) {
-        error = InternalError(error: e, stackTrace: s);
+
+        return onError?.call(error);
       }
-
-      if (attempt <= maxAttempts && await retryIf(error)) {
-        final delay = retry.calculateDelay(attempt);
-        if (kDebugMode) {
-          logger.debug('Retry', 'Attempt: $attempt, delay: $delay');
-        }
-        await Future.delayed(retry.calculateDelay(attempt));
-        continue;
-      }
-
-      return onError?.call(error);
     }
+
+    if (rateLimiter != null) {
+      final res = await rateLimiter.process<D?>(
+        container: _operationsContainer,
+        function: fn,
+        defaultTag: '$hashCode${StackTrace.current}',
+      );
+
+      switch (res) {
+        case RateSuccess<D?>():
+          return res.data;
+        case RateCancel<D?>():
+          return null;
+      }
+    }
+
+    return fn();
   }
 }
