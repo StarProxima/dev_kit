@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../internal/logger/dev_kit_logger.dart';
+
 part 'annotations.dart';
 part 'api_error.dart';
 part 'api_wrap_controller.dart';

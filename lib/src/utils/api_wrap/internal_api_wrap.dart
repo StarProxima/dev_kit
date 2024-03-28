@@ -79,6 +79,10 @@ class InternalApiWrap<ErrorType> {
       }
 
       if (attempt <= maxAttempts && await retryIf(error)) {
+        final delay = retry.calculateDelay(attempt);
+        if (kDebugMode) {
+          logger.debug('Retry', 'Attempt: $attempt, delay: $delay');
+        }
         await Future.delayed(retry.calculateDelay(attempt));
         continue;
       }
