@@ -188,7 +188,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     RateLimiter? rateLimiter,
     bool? showErrorToast,
   }) =>
-      wrapController.internalApiWrap<T, D>(
+      wrapController.internalApiWrap.execute<T, D>(
         function,
         onSuccess: onSuccess,
         onError: (error) => wrapController.onError?.call(

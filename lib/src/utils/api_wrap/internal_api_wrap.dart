@@ -4,27 +4,27 @@ typedef ParseError<ErrorType> = ErrorType Function(Object error);
 
 class InternalApiWrap<ErrorType> {
   InternalApiWrap({
-    required Retry retry,
+    required Retry<ErrorType> retry,
     required RateOperationsContainer container,
     ParseError<ErrorType>? parseError,
   })  : _retry = retry,
         _parseError = parseError,
         _operationsContainer = container;
 
-  final Retry _retry;
+  final Retry<ErrorType> _retry;
   final ParseError<ErrorType>? _parseError;
 
   /// Операции debounce и thottle, доступные по тегу.
   final RateOperationsContainer _operationsContainer;
 
   @visibleForTesting
-  Future<D?> call<T, D>(
+  Future<D?> execute<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     RateLimiter? rateLimiter,
-    Retry? retry,
+    Retry<ErrorType>? retry,
   }) async {
     retry ??= _retry;
     final maxAttempts = retry.maxAttempts;
