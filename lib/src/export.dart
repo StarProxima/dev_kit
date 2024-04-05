@@ -8,6 +8,8 @@ export 'package:dev_kit/src/extensions/duration_utils.dart';
 export 'package:dev_kit/src/extensions/list_utils.dart';
 export 'package:dev_kit/src/extensions/ref_cache.dart';
 export 'package:dev_kit/src/extensions/string_utils.dart';
+export 'package:dev_kit/src/hooks/app_lifecycle_listener_hook.dart';
+export 'package:dev_kit/src/hooks/use_listener.dart';
 export 'package:dev_kit/src/utils/api_wrap/api_wrap.dart';
 export 'package:dev_kit/src/utils/async_builder/async_builder.dart';
 export 'package:dev_kit/src/utils/async_builder/async_builder_defaults.dart';
