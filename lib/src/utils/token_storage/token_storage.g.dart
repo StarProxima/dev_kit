@@ -55,7 +55,7 @@ final userChangedProvider = NotifierProvider<UserChanged, void>.internal(
 );
 
 typedef _$UserChanged = Notifier<void>;
-String _$tokenStorageHash() => r'ec75ca7ab4c970af74c3fbe568c34a791ba95654';
+String _$tokenStorageHash() => r'e02e879dd840006d6c90339976b5adbd1cc00b78';
 
 /// Отвечает за управление и хранение токенов авторизации пользователя
 ///

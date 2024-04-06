@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../dev_kit.dart';
+import '../../internal/logger/dev_kit_logger.dart';
 
 part 'token_storage.freezed.dart';
 part 'token_storage.g.dart';
@@ -47,17 +48,20 @@ class TokenStorage extends _$TokenStorage implements IRef {
 
   @override
   Future<TokenStorageState?> build() async {
-    final (refreshToken, accessToken) = await (
-      _storage.read(key: _refreshKey),
-      _storage.read(key: _accessKey),
-    ).wait;
+    try {
+      final refreshToken = await _storage.read(key: _refreshKey);
+      final accessToken = await _storage.read(key: _accessKey);
 
-    if (refreshToken == null || accessToken == null) return null;
+      if (refreshToken == null || accessToken == null) return null;
 
-    return TokenStorageState(
-      refreshToken: refreshToken,
-      accessToken: accessToken,
-    );
+      return TokenStorageState(
+        refreshToken: refreshToken,
+        accessToken: accessToken,
+      );
+    } catch (e, s) {
+      logger.error(title: 'TokenStorage', error: e, stack: s);
+      return null;
+    }
   }
 
   void updateToken({
