@@ -160,10 +160,18 @@ class AsyncBuilder<T> extends StatelessWidget {
             });
           }
         }
+        final factor = index * settings.itemIndexDurationFactor;
 
-        final animationBegin = index /
-            (settings.concurrentAnimationsCount +
-                (index * settings.itemIndexDurationFactor));
+        if (settings.itemIndexDurationFactor != 0) {
+          animationController.duration = Duration(
+            milliseconds: (animationController.duration!.inMilliseconds -
+                    factor * settings.itemAnimationDuration.inMilliseconds)
+                .ceil(),
+          );
+        }
+
+        final animationBegin =
+            index / (settings.concurrentAnimationsCount + factor);
 
         final begin = min(animationBegin, pageSize) / pageSize;
         final end = min(animationBegin + 1, pageSize) / pageSize;
