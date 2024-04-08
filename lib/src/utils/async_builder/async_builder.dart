@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../dev_kit.dart';
-import '../../internal/logger/dev_kit_logger.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -149,7 +148,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     var dataFn = data;
     final settings = defaults.animationSettings.apply(animationSettings);
 
-    if (animationController != null && !animationController.isCompleted) {
+    if (animationController != null) {
       dataFn = (item) {
         final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
         final animatedItemsCount = settings.animatedItemsCount;
@@ -169,14 +168,6 @@ class AsyncBuilder<T> extends StatelessWidget {
             animatedItemsCount != null && index > animatedItemsCount;
 
         final limitedIndex = isLimited ? animatedItemsCount : index;
-
-        if (isLimited) {
-          logger.debug('animationController Complete');
-          Future.delayed(
-            settings.itemAnimationDuration,
-            () => animationController.value = 1,
-          );
-        }
 
         final curConcurrentAnimationsCount = max(
           settings.concurrentAnimationsCount +
