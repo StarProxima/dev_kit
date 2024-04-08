@@ -74,31 +74,23 @@ class ItemAnimationSettingsDefaults {
   final bool shouldAnimateOnlyAfterLoading;
   final Widget Function(Widget child, Animation<double> animation) builder;
 
-  ItemAnimationSettingsDefaults apply(ItemAnimationSettings? settings) {
-    final defaults = ItemAnimationSettingsDefaults(
-      itemAnimationDuration:
-          settings?.itemAnimationDuration ?? itemAnimationDuration,
-      delayBeforeStartAnimation:
-          settings?.delayBeforeStartAnimation ?? delayBeforeStartAnimation,
-      animatedItemsCount: settings?.animatedItemsCount ?? animatedItemsCount,
-      itemIndexConcurrentFactor:
-          settings?.itemIndexDurationFactor ?? itemIndexConcurrentFactor,
-      concurrentAnimationsCount:
-          settings?.concurrentAnimationsCount ?? concurrentAnimationsCount,
-      animationAutoStart: settings?.animationAutoStart ?? animationAutoStart,
-      shouldAnimateOnlyAfterLoading: settings?.shouldAnimateOnlyAfterLoading ??
-          shouldAnimateOnlyAfterLoading,
-      builder: settings?.builder ?? builder,
-    );
-
-    assert(
-      defaults.itemIndexConcurrentFactor < 0 &&
-          defaults.animatedItemsCount != null,
-      'При itemIndexConcurrentFactor меньше нуля, необходимо указать количество анимируемых элементов для расчёта продолжительности всей анимации',
-    );
-
-    return defaults;
-  }
+  ItemAnimationSettingsDefaults apply(ItemAnimationSettings? settings) =>
+      ItemAnimationSettingsDefaults(
+        itemAnimationDuration:
+            settings?.itemAnimationDuration ?? itemAnimationDuration,
+        delayBeforeStartAnimation:
+            settings?.delayBeforeStartAnimation ?? delayBeforeStartAnimation,
+        animatedItemsCount: settings?.animatedItemsCount ?? animatedItemsCount,
+        itemIndexConcurrentFactor:
+            settings?.itemIndexDurationFactor ?? itemIndexConcurrentFactor,
+        concurrentAnimationsCount:
+            settings?.concurrentAnimationsCount ?? concurrentAnimationsCount,
+        animationAutoStart: settings?.animationAutoStart ?? animationAutoStart,
+        shouldAnimateOnlyAfterLoading:
+            settings?.shouldAnimateOnlyAfterLoading ??
+                shouldAnimateOnlyAfterLoading,
+        builder: settings?.builder ?? builder,
+      );
 }
 
 class ItemAnimationSettings {
