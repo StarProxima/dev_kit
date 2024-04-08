@@ -82,7 +82,7 @@ class ItemAnimationSettingsDefaults {
             settings?.delayBeforeStartAnimation ?? delayBeforeStartAnimation,
         animatedItemsCount: settings?.animatedItemsCount ?? animatedItemsCount,
         itemIndexConcurrentFactor:
-            settings?.itemIndexDurationFactor ?? itemIndexConcurrentFactor,
+            settings?.itemIndexConcurrentFactor ?? itemIndexConcurrentFactor,
         concurrentAnimationsCount:
             settings?.concurrentAnimationsCount ?? concurrentAnimationsCount,
         animationAutoStart: settings?.animationAutoStart ?? animationAutoStart,
@@ -99,7 +99,7 @@ class ItemAnimationSettings {
     this.itemAnimationDuration,
     this.delayBeforeStartAnimation,
     this.animatedItemsCount,
-    this.itemIndexDurationFactor,
+    this.itemIndexConcurrentFactor,
     this.concurrentAnimationsCount,
     this.animationAutoStart,
     this.shouldAnimateOnlyAfterLoading,
@@ -112,9 +112,9 @@ class ItemAnimationSettings {
   /// Количество первых элементов, которые будут анимированы.
   final int? animatedItemsCount;
 
-  /// Устанавливает изменение продолжительности анимации в зависимости от индекса элемента.
+  /// Устанавливает изменение задержки между анимациями в зависимости от индекса элемента.
   /// Если 0.1, то чем дальше, тем быстрее будут анимароваться элементы.
-  final double? itemIndexDurationFactor;
+  final double? itemIndexConcurrentFactor;
 
   /// Количество одновременных анимаций в списке.
   /// По умолчанию, элементы анимируются поочерёдно. Увеличение этого значения позволяет запускать
