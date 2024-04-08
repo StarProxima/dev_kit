@@ -88,6 +88,9 @@ class AsyncBuilder<T> extends StatelessWidget {
   ///
   /// [onRetry] - функция обратного вызова, вызываемая при попытке повторного выполнения операции
   /// после возникновения ошибки.
+  ///
+  /// [animationController] - Для отложенной анимации элементов должен передаваться один [AnimationController],
+  /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
   static AsyncBuilder<Item>? paginated<Item>(
     AsyncValue<Iterable<Item>> Function(int pointer) value, {
     BuildContext? context,
@@ -105,7 +108,8 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? loading,
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
-    ItemAnimationSettings? itemAnimation,
+    AnimationController? animationController,
+    ItemAnimationSettings? animationSettings,
     required Widget Function(Item item) data,
   }) {
     final defaults = AsyncBuilderDefaults.instance;
@@ -141,44 +145,44 @@ class AsyncBuilder<T> extends StatelessWidget {
       value(calculatePointer(index - pageSize, pageSize));
     }
 
-    final itemAnim = itemAnimation;
     var dataFn = data;
 
-    if (itemAnim != null) {
-      final itemAnimDefaluts = defaults.itemAnimation;
+    if (animationController != null) {
+      final animationSettingsDefaluts = defaults.itemAnimation;
       dataFn = (item) {
-        final controller = itemAnim.animationController;
+        if (animationController.isDismissed) {
+          final itemAnimationDuration =
+              animationSettings?.itemAnimationDuration ??
+                  animationSettingsDefaluts.itemAnimationDuration;
 
-        if (controller.isDismissed) {
-          final itemAnimationDuration = itemAnim.itemAnimationDuration ??
-              itemAnimDefaluts.itemAnimationDuration;
-
-          final animationAutoStart = itemAnim.animationAutoStart ??
-              itemAnimDefaluts.animationAutoStart;
+          final animationAutoStart = animationSettings?.animationAutoStart ??
+              animationSettingsDefaluts.animationAutoStart;
 
           final delayBeforeStartAnimation =
-              itemAnim.delayBeforeStartAnimation ??
-                  itemAnimDefaluts.delayBeforeStartAnimation;
+              animationSettings?.delayBeforeStartAnimation ??
+                  animationSettingsDefaluts.delayBeforeStartAnimation;
 
-          controller.duration = itemAnimationDuration * pageSize;
+          animationController.duration = itemAnimationDuration * pageSize;
           if (animationAutoStart) {
             Future.delayed(delayBeforeStartAnimation, () {
-              if (context?.mounted ?? true) controller.forward();
+              if (context?.mounted ?? true) animationController.forward();
             });
           }
         }
 
-        final concurrentAnimationsCount = itemAnim.concurrentAnimationsCount ??
-            itemAnimDefaluts.concurrentAnimationsCount;
+        final concurrentAnimationsCount =
+            animationSettings?.concurrentAnimationsCount ??
+                animationSettingsDefaluts.concurrentAnimationsCount;
 
         final begin = min(index, pageSize) / pageSize;
         final end = min(index + concurrentAnimationsCount, pageSize) / pageSize;
 
-        final animation = controller.drive(
+        final animation = animationController.drive(
           CurveTween(curve: Interval(begin, end)),
         );
 
-        final builder = itemAnim.builder ?? itemAnimDefaluts.builder;
+        final builder =
+            animationSettings?.builder ?? animationSettingsDefaluts.builder;
 
         return builder(data(item), animation);
       };

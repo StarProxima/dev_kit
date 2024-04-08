@@ -74,7 +74,6 @@ class ItemAnimationSettingsDefaults {
 class ItemAnimationSettings {
   /// Получает параметры по умолчанию из [ItemAnimationSettingsDefaults]
   ItemAnimationSettings({
-    required this.animationController,
     this.itemAnimationDuration,
     this.delayBeforeStartAnimation,
     this.concurrentAnimationsCount,
@@ -83,9 +82,6 @@ class ItemAnimationSettings {
     this.builder,
   });
 
-  /// Для всех элементов должен передаваться один [AnimationController],
-  /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
-  final AnimationController animationController;
   final Duration? itemAnimationDuration;
   final Duration? delayBeforeStartAnimation;
 
