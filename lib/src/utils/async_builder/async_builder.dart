@@ -148,15 +148,14 @@ class AsyncBuilder<T> extends StatelessWidget {
     var dataFn = data;
     final settings = defaults.animationSettings.apply(animationSettings);
 
-    if (animationController != null &&
-        (settings.animatedItemsCount == null ||
-            index < settings.animatedItemsCount!)) {
-      final animatedItemCount = settings.animatedItemsCount ?? pageSize;
-
+    if (animationController != null && !animationController.isCompleted) {
       dataFn = (item) {
+        final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
+        final animatedItemsCount = settings.animatedItemsCount;
+
         if (animationController.isDismissed) {
           animationController.duration =
-              settings.itemAnimationDuration * animatedItemCount;
+              settings.itemAnimationDuration * itemCountForDuration;
 
           if (settings.animationAutoStart) {
             Future.delayed(settings.delayBeforeStartAnimation, () {
@@ -165,17 +164,29 @@ class AsyncBuilder<T> extends StatelessWidget {
           }
         }
 
-        final animationBegin = index /
-            max(
-              settings.concurrentAnimationsCount +
-                  index * settings.itemIndexConcurrentFactor,
-              0.01,
-            );
+        final limitedIndex =
+            animatedItemsCount != null && index > animatedItemsCount
+                ? animatedItemsCount
+                : index;
+
+        final curConcurrentAnimationsCount = max(
+          settings.concurrentAnimationsCount +
+              limitedIndex * settings.itemIndexConcurrentFactor,
+          0.01,
+        );
+
+        final animationBegin = limitedIndex / curConcurrentAnimationsCount;
+
+        if (animationController.value >
+            1 / curConcurrentAnimationsCount +
+                (1 / itemCountForDuration) * 0.5) {
+          animationController.value = 1;
+        }
 
         final begin =
-            min(animationBegin, animatedItemCount) / animatedItemCount;
-        final end =
-            min(animationBegin + 1, animatedItemCount) / animatedItemCount;
+            min(animationBegin, itemCountForDuration) / itemCountForDuration;
+        final end = min(animationBegin + 1, itemCountForDuration) /
+            itemCountForDuration;
 
         final animation = animationController.drive(
           CurveTween(curve: Interval(begin, end)),
