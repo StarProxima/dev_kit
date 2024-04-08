@@ -169,8 +169,9 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     final settings = animationSettings;
+    var dataFn = data;
     if (settings != null) {
-      data = (item) {
+      dataFn = (item) {
         final controller = settings.animationController;
 
         if (controller.isDismissed) {
@@ -203,7 +204,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       loading: loadingBuilder,
       error: errorBuilder,
       orElse: orElse,
-      data: data,
+      data: dataFn,
     );
   }
 
