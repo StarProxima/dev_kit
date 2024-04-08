@@ -1,37 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../dev_kit.dart';
-
-class ItemAnimationSettings {
-  ItemAnimationSettings({
-    required this.animationController,
-    this.itemAnimationDuration = const Duration(milliseconds: 150),
-    this.delayBeforeStartAnimation = Duration.zero,
-    this.concurrentAnimationsCount = 5,
-    this.animationAutoStart = true,
-    this.shouldAnimateOnlyAfterLoading = false,
-    required this.builder,
-  });
-
-  /// Для всех элементов должен передаваться один [AnimationController],
-  /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
-  final AnimationController animationController;
-  final Duration itemAnimationDuration;
-  final Duration delayBeforeStartAnimation;
-
-  /// Количество одновременных анимаций в списке.
-  /// По умолчанию, элементы анимируются поочерёдно. Увеличение этого значения позволяет запускать
-  /// несколько анимаций одновременно. Например, при значении 2, вторая анимация начнётся
-  /// после завершения половины времени первой анимации.
-  final int concurrentAnimationsCount;
-  final bool animationAutoStart;
-  final bool shouldAnimateOnlyAfterLoading;
-
-  final Widget Function(Widget child, Animation<double> animation) builder;
-}
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -118,7 +91,6 @@ class AsyncBuilder<T> extends StatelessWidget {
   static AsyncBuilder<Item>? paginated<Item>(
     AsyncValue<Iterable<Item>> Function(int pointer) value, {
     BuildContext? context,
-    ItemAnimationSettings? animationSettings,
     required int index,
     required int pageSize,
     int preloadNextPageOffset = 0,
@@ -133,6 +105,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? loading,
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
+    ItemAnimationSettings? itemAnimation,
     required Widget Function(Item item) data,
   }) {
     final defaults = AsyncBuilderDefaults.instance;
@@ -168,30 +141,46 @@ class AsyncBuilder<T> extends StatelessWidget {
       value(calculatePointer(index - pageSize, pageSize));
     }
 
-    final settings = animationSettings;
+    final itemAnim = itemAnimation;
     var dataFn = data;
-    if (settings != null) {
+
+    if (itemAnim != null) {
+      final itemAnimDefaluts = defaults.itemAnimation;
       dataFn = (item) {
-        final controller = settings.animationController;
+        final controller = itemAnim.animationController;
 
         if (controller.isDismissed) {
-          controller.duration = settings.itemAnimationDuration * pageSize;
-          if (settings.animationAutoStart) {
-            Future.delayed(settings.delayBeforeStartAnimation, () {
+          final itemAnimationDuration = itemAnim.itemAnimationDuration ??
+              itemAnimDefaluts.itemAnimationDuration;
+
+          final animationAutoStart = itemAnim.animationAutoStart ??
+              itemAnimDefaluts.animationAutoStart;
+
+          final delayBeforeStartAnimation =
+              itemAnim.delayBeforeStartAnimation ??
+                  itemAnimDefaluts.delayBeforeStartAnimation;
+
+          controller.duration = itemAnimationDuration * pageSize;
+          if (animationAutoStart) {
+            Future.delayed(delayBeforeStartAnimation, () {
               if (context?.mounted ?? true) controller.forward();
             });
           }
         }
 
+        final concurrentAnimationsCount = itemAnim.concurrentAnimationsCount ??
+            itemAnimDefaluts.concurrentAnimationsCount;
+
         final begin = min(index, pageSize) / pageSize;
-        final end = min(index + settings.concurrentAnimationsCount, pageSize) /
-            pageSize;
+        final end = min(index + concurrentAnimationsCount, pageSize) / pageSize;
 
         final animation = controller.drive(
           CurveTween(curve: Interval(begin, end)),
         );
 
-        return settings.builder(data(item), animation);
+        final builder = itemAnim.builder ?? itemAnimDefaluts.builder;
+
+        return builder(data(item), animation);
       };
     }
 
