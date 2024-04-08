@@ -162,14 +162,6 @@ class AsyncBuilder<T> extends StatelessWidget {
         }
         final factor = index * settings.itemIndexDurationFactor;
 
-        if (settings.itemIndexDurationFactor != 0) {
-          animationController.duration = Duration(
-            milliseconds: (animationController.duration!.inMilliseconds -
-                    factor * settings.itemAnimationDuration.inMilliseconds)
-                .ceil(),
-          );
-        }
-
         final animationBegin =
             index / (settings.concurrentAnimationsCount + factor);
 
