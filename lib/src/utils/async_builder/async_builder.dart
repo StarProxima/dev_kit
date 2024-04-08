@@ -1,7 +1,37 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../dev_kit.dart';
+
+class ItemAnimationSettings {
+  ItemAnimationSettings({
+    required this.animationController,
+    this.itemAnimationDuration = const Duration(milliseconds: 150),
+    this.delayBeforeStartAnimation = Duration.zero,
+    this.concurrentAnimationsCount = 5,
+    this.animationAutoStart = true,
+    this.shouldAnimateOnlyAfterLoading = false,
+    required this.builder,
+  });
+
+  /// Для всех элементов должен передаваться один [AnimationController],
+  /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
+  final AnimationController animationController;
+  final Duration itemAnimationDuration;
+  final Duration delayBeforeStartAnimation;
+
+  /// Количество одновременных анимаций в списке.
+  /// По умолчанию, элементы анимируются поочерёдно. Увеличение этого значения позволяет запускать
+  /// несколько анимаций одновременно. Например, при значении 2, вторая анимация начнётся
+  /// после завершения половины времени первой анимации.
+  final int concurrentAnimationsCount;
+  final bool animationAutoStart;
+  final bool shouldAnimateOnlyAfterLoading;
+
+  final Widget Function(Widget child, Animation animation) builder;
+}
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -50,6 +80,8 @@ class AsyncBuilder<T> extends StatelessWidget {
   final Widget Function()? orElse;
   final Widget Function(T data) data;
 
+  // static final Map<int, int> _map = {};
+
   /// Функция для организации пагинации списков с дополнительным функционалом.
   ///
   /// Этот метод помогает управлять загрузкой данных с пагинацией, предоставляя
@@ -85,6 +117,8 @@ class AsyncBuilder<T> extends StatelessWidget {
   /// после возникновения ошибки.
   static AsyncBuilder<Item>? paginated<Item>(
     AsyncValue<Iterable<Item>> Function(int pointer) value, {
+    BuildContext? context,
+    ItemAnimationSettings? animationSettings,
     required int index,
     required int pageSize,
     int preloadNextPageOffset = 0,
@@ -132,6 +166,32 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
     if (indexOnPage <= preloadPrevPageOffset && index % pageSize > 1) {
       value(calculatePointer(index - pageSize, pageSize));
+    }
+
+    final settings = animationSettings;
+    if (settings != null) {
+      data = (item) {
+        final controller = settings.animationController;
+
+        if (controller.isDismissed) {
+          controller.duration = settings.itemAnimationDuration * pageSize;
+          if (settings.animationAutoStart) {
+            Future.delayed(settings.delayBeforeStartAnimation, () {
+              if (context?.mounted ?? true) controller.forward();
+            });
+          }
+        }
+
+        final begin = min(index, pageSize) / pageSize;
+        final end = min(index + settings.concurrentAnimationsCount, pageSize) /
+            pageSize;
+
+        final animation = controller.drive(
+          CurveTween(curve: Interval(begin, end)),
+        );
+
+        return settings.builder(data(item), animation);
+      };
     }
 
     return AsyncBuilder(
