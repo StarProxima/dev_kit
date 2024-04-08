@@ -148,33 +148,20 @@ class AsyncBuilder<T> extends StatelessWidget {
     var dataFn = data;
 
     if (animationController != null) {
-      final animationSettingsDefaluts = defaults.itemAnimation;
+      final settings = defaults.animationSettings.apply(animationSettings);
+
       dataFn = (item) {
         if (animationController.isDismissed) {
-          final itemAnimationDuration =
-              animationSettings?.itemAnimationDuration ??
-                  animationSettingsDefaluts.itemAnimationDuration;
-
-          final animationAutoStart = animationSettings?.animationAutoStart ??
-              animationSettingsDefaluts.animationAutoStart;
-
-          final delayBeforeStartAnimation =
-              animationSettings?.delayBeforeStartAnimation ??
-                  animationSettingsDefaluts.delayBeforeStartAnimation;
-
-          animationController.duration = itemAnimationDuration * pageSize;
-          if (animationAutoStart) {
-            Future.delayed(delayBeforeStartAnimation, () {
+          animationController.duration =
+              settings.itemAnimationDuration * pageSize;
+          if (settings.animationAutoStart) {
+            Future.delayed(settings.delayBeforeStartAnimation, () {
               if (context?.mounted ?? true) animationController.forward();
             });
           }
         }
 
-        final concurrentAnimationsCount =
-            animationSettings?.concurrentAnimationsCount ??
-                animationSettingsDefaluts.concurrentAnimationsCount;
-
-        final animationBegin = index / concurrentAnimationsCount;
+        final animationBegin = index / settings.concurrentAnimationsCount;
         final begin = min(animationBegin, pageSize) / pageSize;
         final end = min(animationBegin + 1, pageSize) / pageSize;
 
@@ -182,10 +169,7 @@ class AsyncBuilder<T> extends StatelessWidget {
           CurveTween(curve: Interval(begin, end)),
         );
 
-        final builder =
-            animationSettings?.builder ?? animationSettingsDefaluts.builder;
-
-        return builder(data(item), animation);
+        return settings.builder(data(item), animation);
       };
     }
 

@@ -26,10 +26,10 @@ class AsyncBuilderDefaults {
   AsyncBuilderDefaults.init({
     required this.loading,
     required this.error,
-    required this.itemAnimation,
     required this.paginationPointer,
     this.paginationLoading,
     this.paginationError,
+    required this.animationSettings,
   }) {
     _instance = this;
   }
@@ -45,7 +45,7 @@ class AsyncBuilderDefaults {
 
   final Widget Function() loading;
   final Widget Function(AsyncBuilderError error) error;
-  final ItemAnimationSettingsDefaults itemAnimation;
+  final ItemAnimationSettingsDefaults animationSettings;
 
   /// Page or offset
   final int Function(int index, int pageSize) paginationPointer;
@@ -57,6 +57,8 @@ class ItemAnimationSettingsDefaults {
   ItemAnimationSettingsDefaults({
     required this.itemAnimationDuration,
     required this.delayBeforeStartAnimation,
+    this.animatedItemsCount,
+    this.itemIndexDurationFactor = 1,
     required this.concurrentAnimationsCount,
     required this.animationAutoStart,
     required this.shouldAnimateOnlyAfterLoading,
@@ -65,10 +67,30 @@ class ItemAnimationSettingsDefaults {
 
   final Duration itemAnimationDuration;
   final Duration delayBeforeStartAnimation;
+  final int? animatedItemsCount;
+  final int itemIndexDurationFactor;
   final int concurrentAnimationsCount;
   final bool animationAutoStart;
   final bool shouldAnimateOnlyAfterLoading;
   final Widget Function(Widget child, Animation<double> animation) builder;
+
+  ItemAnimationSettingsDefaults apply(ItemAnimationSettings? settings) =>
+      ItemAnimationSettingsDefaults(
+        itemAnimationDuration:
+            settings?.itemAnimationDuration ?? itemAnimationDuration,
+        delayBeforeStartAnimation:
+            settings?.delayBeforeStartAnimation ?? delayBeforeStartAnimation,
+        animatedItemsCount: settings?.animatedItemsCount ?? animatedItemsCount,
+        itemIndexDurationFactor:
+            settings?.itemIndexDurationFactor ?? itemIndexDurationFactor,
+        concurrentAnimationsCount:
+            settings?.concurrentAnimationsCount ?? concurrentAnimationsCount,
+        animationAutoStart: settings?.animationAutoStart ?? animationAutoStart,
+        shouldAnimateOnlyAfterLoading:
+            settings?.shouldAnimateOnlyAfterLoading ??
+                shouldAnimateOnlyAfterLoading,
+        builder: settings?.builder ?? builder,
+      );
 }
 
 class ItemAnimationSettings {
@@ -76,6 +98,8 @@ class ItemAnimationSettings {
   ItemAnimationSettings({
     this.itemAnimationDuration,
     this.delayBeforeStartAnimation,
+    this.animatedItemsCount,
+    this.itemIndexDurationFactor,
     this.concurrentAnimationsCount,
     this.animationAutoStart,
     this.shouldAnimateOnlyAfterLoading,
@@ -84,6 +108,13 @@ class ItemAnimationSettings {
 
   final Duration? itemAnimationDuration;
   final Duration? delayBeforeStartAnimation;
+
+  /// Количество первых элементов, которые будут анимированы.
+  final int? animatedItemsCount;
+
+  /// Устанавливает изменение продолжительности анимации в зависимости от индекса элемента.
+  /// Если 1.1, то чем дальше, тем быстрее будут анимароваться элементы.
+  final int? itemIndexDurationFactor;
 
   /// Количество одновременных анимаций в списке.
   /// По умолчанию, элементы анимируются поочерёдно. Увеличение этого значения позволяет запускать
