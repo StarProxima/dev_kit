@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../dev_kit.dart';
+import '../../internal/logger/dev_kit_logger.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -180,7 +181,8 @@ class AsyncBuilder<T> extends StatelessWidget {
         if (animationController.value >
             1 / curConcurrentAnimationsCount +
                 (1 / itemCountForDuration) * 0.5) {
-          animationController.value = 1;
+          logger.debug('animationController Complete');
+          Future(() => animationController.value = 1);
         }
 
         final begin =
