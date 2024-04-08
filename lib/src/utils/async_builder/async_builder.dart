@@ -165,10 +165,18 @@ class AsyncBuilder<T> extends StatelessWidget {
           }
         }
 
-        final limitedIndex =
-            animatedItemsCount != null && index > animatedItemsCount
-                ? animatedItemsCount
-                : index;
+        final isLimited =
+            animatedItemsCount != null && index > animatedItemsCount;
+
+        final limitedIndex = isLimited ? animatedItemsCount : index;
+
+        if (isLimited) {
+          logger.debug('animationController Complete');
+          Future.delayed(
+            settings.itemAnimationDuration,
+            () => animationController.value = 1,
+          );
+        }
 
         final curConcurrentAnimationsCount = max(
           settings.concurrentAnimationsCount +
@@ -177,13 +185,6 @@ class AsyncBuilder<T> extends StatelessWidget {
         );
 
         final animationBegin = limitedIndex / curConcurrentAnimationsCount;
-
-        if (animationController.value >
-            1 / curConcurrentAnimationsCount +
-                (1 / itemCountForDuration) * 0.5) {
-          logger.debug('animationController Complete');
-          Future(() => animationController.value = 1);
-        }
 
         final begin =
             min(animationBegin, itemCountForDuration) / itemCountForDuration;
