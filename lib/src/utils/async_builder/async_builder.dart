@@ -164,8 +164,8 @@ class AsyncBuilder<T> extends StatelessWidget {
         final animationBegin = index /
             max(
               settings.concurrentAnimationsCount +
-                  index * settings.itemIndexDurationFactor,
-              0.0001,
+                  index * settings.itemIndexConcurrentFactor,
+              0.01,
             );
 
         final begin = min(animationBegin, pageSize) / pageSize;
