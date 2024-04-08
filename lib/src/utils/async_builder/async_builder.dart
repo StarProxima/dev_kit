@@ -187,7 +187,7 @@ class AsyncBuilder<T> extends StatelessWidget {
         );
 
         final child = data(item);
-        return SizedBox.shrink(
+        return SizedBox(
           key: child.key,
           child: settings.builder(child, animation),
         );
