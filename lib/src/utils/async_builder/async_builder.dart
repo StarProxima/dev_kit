@@ -30,7 +30,7 @@ class ItemAnimationSettings {
   final bool animationAutoStart;
   final bool shouldAnimateOnlyAfterLoading;
 
-  final Widget Function(Widget child, Animation animation) builder;
+  final Widget Function(Widget child, Animation<double> animation) builder;
 }
 
 /// {@template AsyncBuilder}
