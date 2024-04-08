@@ -186,7 +186,11 @@ class AsyncBuilder<T> extends StatelessWidget {
           CurveTween(curve: Interval(begin, end)),
         );
 
-        return settings.builder(data(item), animation);
+        final child = data(item);
+        return SizedBox.shrink(
+          key: child.key,
+          child: settings.builder(child, animation),
+        );
       };
     }
 
