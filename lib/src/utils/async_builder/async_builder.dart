@@ -174,8 +174,9 @@ class AsyncBuilder<T> extends StatelessWidget {
             animationSettings?.concurrentAnimationsCount ??
                 animationSettingsDefaluts.concurrentAnimationsCount;
 
-        final begin = min(index, pageSize) / pageSize;
-        final end = min(index + concurrentAnimationsCount, pageSize) / pageSize;
+        final animationBegin = index / concurrentAnimationsCount;
+        final begin = min(animationBegin, pageSize) / pageSize;
+        final end = min(animationBegin + 1, pageSize) / pageSize;
 
         final animation = animationController.drive(
           CurveTween(curve: Interval(begin, end)),
