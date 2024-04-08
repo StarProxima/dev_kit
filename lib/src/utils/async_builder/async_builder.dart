@@ -150,10 +150,13 @@ class AsyncBuilder<T> extends StatelessWidget {
     if (animationController != null) {
       final settings = defaults.animationSettings.apply(animationSettings);
 
+      final animatedItemCount = settings.animatedItemsCount ?? pageSize;
+
       dataFn = (item) {
         if (animationController.isDismissed) {
           animationController.duration =
-              settings.itemAnimationDuration * pageSize;
+              settings.itemAnimationDuration * animatedItemCount;
+
           if (settings.animationAutoStart) {
             Future.delayed(settings.delayBeforeStartAnimation, () {
               if (context?.mounted ?? true) animationController.forward();
@@ -168,8 +171,10 @@ class AsyncBuilder<T> extends StatelessWidget {
               0.01,
             );
 
-        final begin = min(animationBegin, pageSize) / pageSize;
-        final end = min(animationBegin + 1, pageSize) / pageSize;
+        final begin =
+            min(animationBegin, animatedItemCount) / animatedItemCount;
+        final end =
+            min(animationBegin + 1, animatedItemCount) / animatedItemCount;
 
         final animation = animationController.drive(
           CurveTween(curve: Interval(begin, end)),
