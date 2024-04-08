@@ -146,10 +146,11 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     var dataFn = data;
+    final settings = defaults.animationSettings.apply(animationSettings);
 
-    if (animationController != null) {
-      final settings = defaults.animationSettings.apply(animationSettings);
-
+    if (animationController != null &&
+        (settings.animatedItemsCount == null ||
+            index < settings.animatedItemsCount!)) {
       final animatedItemCount = settings.animatedItemsCount ?? pageSize;
 
       dataFn = (item) {
