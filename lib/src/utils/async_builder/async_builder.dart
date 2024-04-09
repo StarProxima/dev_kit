@@ -53,7 +53,7 @@ class AsyncBuilder<T> extends StatelessWidget {
   final Widget Function()? orElse;
   final Widget Function(T data) data;
 
-  // static final Map<int, int> _map = {};
+  static final Map<int, int> _animationControllerMap = {};
 
   /// Функция для организации пагинации списков с дополнительным функционалом.
   ///
@@ -156,10 +156,15 @@ class AsyncBuilder<T> extends StatelessWidget {
         if (animationController.isDismissed) {
           animationController.duration =
               settings.itemAnimationDuration * itemCountForDuration;
+          final hash = animationController.hashCode;
+          _animationControllerMap[context.hashCode] = hash;
 
           if (settings.animationAutoStart) {
             Future.delayed(settings.delayBeforeStartAnimation, () {
-              if (context?.mounted ?? true) animationController.forward();
+              if (context?.mounted ??
+                  true && _animationControllerMap[context.hashCode] == hash) {
+                animationController.forward();
+              }
             });
           }
         }
