@@ -118,15 +118,23 @@ class AsyncBuilder<T> extends StatelessWidget {
         calculatePaginationPointer ?? defaults.paginationPointer;
     final pointer = calculatePointer(index, pageSize);
     final indexOnPage = index % pageSize;
+
     final asyncValue = value(pointer);
 
-    final stop = asyncValue.when(
+    if (asyncValue.hasValue && indexOnPage >= asyncValue.value!.length) {
+      return null;
+    }
+
+    final asyncItem =
+        value(pointer).selectData((items) => items.elementAt(indexOnPage));
+
+    final stop = asyncItem.when(
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
       error: (_, __) => false,
       loading: () => stopOnLoad && indexOnPage != 0,
-      data: (items) => indexOnPage >= items.length,
+      data: (items) => false,
     );
 
     if (stop) return null;
@@ -200,7 +208,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     return AsyncBuilder(
-      asyncValue.selectData((items) => items.elementAt(indexOnPage)),
+      asyncItem,
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
