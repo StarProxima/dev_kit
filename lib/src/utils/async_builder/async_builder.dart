@@ -93,7 +93,7 @@ class AsyncBuilder<T> extends StatelessWidget {
   /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
   static AsyncBuilder<Item>? paginated<Item>(
     AsyncValue<Iterable<Item>> Function(int pointer) value, {
-    BuildContext? context,
+    required BuildContext context,
     required int index,
     required int pageSize,
     int preloadNextPageOffset = 0,
@@ -148,7 +148,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     var dataFn = data;
     final settings = defaults.animationSettings.apply(animationSettings);
 
-    if (animationController != null) {
+    if (animationController != null && settings.enabled) {
       dataFn = (item) {
         final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
         final animatedItemsCount = settings.animatedItemsCount;
@@ -161,8 +161,8 @@ class AsyncBuilder<T> extends StatelessWidget {
 
           if (settings.animationAutoStart) {
             Future.delayed(settings.delayBeforeStartAnimation, () {
-              if (context?.mounted ??
-                  true && _animationControllerMap[context.hashCode] == hash) {
+              if (context.mounted &&
+                  _animationControllerMap[context.hashCode] == hash) {
                 animationController.forward();
               }
             });

@@ -55,6 +55,7 @@ class AsyncBuilderDefaults {
 
 class ItemAnimationSettingsDefaults {
   ItemAnimationSettingsDefaults({
+    this.enabled = true,
     required this.itemAnimationDuration,
     required this.delayBeforeStartAnimation,
     this.animatedItemsCount,
@@ -65,6 +66,7 @@ class ItemAnimationSettingsDefaults {
     required this.builder,
   });
 
+  final bool enabled;
   final Duration itemAnimationDuration;
   final Duration delayBeforeStartAnimation;
   final int? animatedItemsCount;
