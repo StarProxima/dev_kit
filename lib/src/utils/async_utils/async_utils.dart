@@ -4,25 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod/src/async_notifier.dart';
 
+// TODO: Сделать AsyncUtils и AsyncValueX часть пакета AsyncBuilder?
+
 extension AsyncUtils<State> on AsyncNotifierBase<State> {
   @protected
-  void setLoading() => state = AsyncLoading<State>();
-
-  @protected
   void setData(State newState) => state = AsyncData<State>(newState);
-
-  @protected
-  void restoreLastState([Object? error]) {
-    if (state is AsyncLoading<State> && state.hasValue && state.value != null) {
-      setData(state.value as State);
-    } else {
-      setError(Exception('No last state found: $error'));
-    }
-  }
-
-  @protected
-  void setError(Object error, [StackTrace? stackTrace]) =>
-      state = AsyncError<State>(error, stackTrace ?? StackTrace.current);
 
   Future<void> refresh() async {
     ref.invalidateSelf();
@@ -31,6 +17,7 @@ extension AsyncUtils<State> on AsyncNotifierBase<State> {
 }
 
 extension RefAsyncRefresh on Ref {
+  @Deprecated('Лучше использовать обычный refresh с игнором линта')
   Future<void> refreshAsync<State>(
     AsyncNotifierProviderBase<dynamic, State> provider,
   ) async {
@@ -39,9 +26,66 @@ extension RefAsyncRefresh on Ref {
 }
 
 extension WidgetRefAsyncRefresh on WidgetRef {
+  @Deprecated('Лучше использовать обычный refresh с игнором линта')
   Future<void> refreshAsync<State>(
     AsyncNotifierProviderBase<dynamic, State> provider,
   ) async {
     return await refresh(provider.future);
+  }
+}
+
+extension ProviderSelectDataX<T> on ProviderListenable<AsyncValue<T>> {
+  /// Позволяет выбирать часть из состояния провайдера, похож на AsyncValue.whenData,
+  /// но поддерживает skipLoadingOnReload, skipLoadingOnRefresh и skipError
+  ProviderListenable<AsyncValue<Selected>> selectData<Selected>(
+    Selected Function(T data) selector,
+  ) {
+    return select(
+      (value) => value.selectData(selector),
+    );
+  }
+}
+
+extension AsyncValueX<T> on AsyncValue<T> {
+  /// Позволяет выбирать часть из состояния провайдера, похож на AsyncValue.whenData,
+  /// но поддерживает skipLoadingOnReload, skipLoadingOnRefresh и skipError
+  AsyncValue<Selected> selectData<Selected>(
+    Selected Function(T data) selector,
+  ) {
+    return when<AsyncValue<Selected>>(
+      data: (data) {
+        final asyncData = AsyncData(selector(data));
+
+        if (isLoading) {
+          return AsyncLoading<Selected>().copyWithPrevious(asyncData);
+        }
+
+        return asyncData;
+      },
+      error: (e, s) {
+        final asyncError = AsyncError<Selected>(e, s);
+
+        if (hasValue) {
+          return asyncError.copyWithPrevious(
+            AsyncData(selector(value as T)),
+            isRefresh: false,
+          );
+        }
+
+        return asyncError;
+      },
+      loading: () {
+        final asyncLoading = AsyncLoading<Selected>();
+
+        if (hasValue) {
+          return asyncLoading.copyWithPrevious(
+            AsyncData(selector(value as T)),
+            isRefresh: false,
+          );
+        }
+
+        return asyncLoading;
+      },
+    );
   }
 }

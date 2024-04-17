@@ -200,7 +200,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     return AsyncBuilder(
-      asyncValue.whenData((items) => items.elementAt(indexOnPage)),
+      asyncValue.selectData((items) => items.elementAt(indexOnPage)),
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
