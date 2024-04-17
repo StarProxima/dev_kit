@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod/src/async_notifier.dart';
 
-// TODO: Сделать AsyncUtils и AsyncValueX часть пакета AsyncBuilder?
+// TODO: Сделать AsyncUtils и AsyncValueUtils часть пакета AsyncBuilder?
 
 extension AsyncUtils<State> on AsyncNotifierBase<State> {
   @protected
@@ -46,7 +46,7 @@ extension ProviderSelectDataX<T> on ProviderListenable<AsyncValue<T>> {
   }
 }
 
-extension AsyncValueX<T> on AsyncValue<T> {
+extension AsyncValueUtils<T> on AsyncValue<T> {
   /// Позволяет выбирать часть из состояния провайдера, похож на AsyncValue.whenData,
   /// но поддерживает skipLoadingOnReload, skipLoadingOnRefresh и skipError
   AsyncValue<Selected> selectData<Selected>(
