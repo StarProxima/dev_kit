@@ -24,19 +24,28 @@ part 'retry.dart';
 class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
+    required FutureOr<void> Function(ApiError<ErrorType> error) onError,
     ApiWrapController<ErrorType>? options,
-  }) : wrapController = options ?? ApiWrapController<ErrorType>();
+  })  : _handleError = onError,
+        wrapController = options ?? ApiWrapController<ErrorType>();
 
   @override
   final ApiWrapController<ErrorType> wrapController;
+
+  final FutureOr<void> Function(ApiError<ErrorType> error) _handleError;
+
+  @override
+  FutureOr<void> handleError(ApiError<ErrorType> error) => _handleError(error);
 }
 
-/// Тип колбека, используемый для обработки ошибок API.
-typedef OnError<ErrorType> = FutureOr<D?> Function<D>(
-  ApiError<ErrorType> error,
-);
+// /// Тип колбека, используемый для обработки ошибок API.
+// typedef OnError<ErrorType> = FutureOr<D?> Function<D>(
+//   ApiError<ErrorType> error,
+// );
 
 abstract class IApiWrap<ErrorType> {
+  FutureOr<void> handleError(ApiError<ErrorType> error);
+
   @protected
   abstract final ApiWrapController<ErrorType> wrapController;
 }
@@ -162,7 +171,11 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
       wrapController.internalApiWrap.execute<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: onError ?? (error) => wrapController.onError?.call(error),
+        onError: onError ??
+            (e) {
+              handleError(e);
+              return null;
+            },
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,

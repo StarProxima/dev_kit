@@ -4,7 +4,6 @@ class ApiWrapController<ErrorType> {
   ApiWrapController({
     this.retry,
     this.parseError,
-    this.onError,
   }) {
     container = RateOperationsContainer();
     internalApiWrap = InternalApiWrap(
@@ -16,7 +15,6 @@ class ApiWrapController<ErrorType> {
 
   final Retry<ErrorType>? retry;
   final ErrorType Function(Object)? parseError;
-  final OnError<ErrorType>? onError;
 
   late final RateOperationsContainer container;
   late final InternalApiWrap<ErrorType> internalApiWrap;
