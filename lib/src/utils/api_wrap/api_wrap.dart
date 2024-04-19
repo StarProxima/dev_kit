@@ -24,39 +24,17 @@ part 'retry.dart';
 class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    ApiWrapController<ErrorType>? opstions,
-  }) : wrapController = opstions ?? ApiWrapController<ErrorType>();
+    ApiWrapController<ErrorType>? options,
+  }) : wrapController = options ?? ApiWrapController<ErrorType>();
 
   @override
   final ApiWrapController<ErrorType> wrapController;
-
-  // После некототорго времени использования, пришёл к выводу, что лучше отказать от такой обработки ошибок.
-  // Т.к. неотловленная ошибки не будут записываться в крашлитику, а полезность и удобство использования сомнительное
-  @Deprecated('Use function instead')
-  static Future<T> hideError<T>(
-    FutureOr<T> Function() function, {
-    bool? enabled,
-  }) async {
-    // Временно выключено для тестов
-    enabled ??= false;
-
-    if (!enabled) return function();
-
-    try {
-      final res = await function();
-      return res;
-    } catch (e, s) {
-      return Future.error(e, s);
-    }
-  }
 }
 
 /// Тип колбека, используемый для обработки ошибок API.
-typedef ErrorResponseOnError<ErrorType> = FutureOr<D?> Function<D>({
-  required ApiError<ErrorType> error,
-  required bool showErrorToast,
-  required FutureOr<D?> Function(ApiError<ErrorType> error)? originalOnError,
-});
+typedef OnError<ErrorType> = FutureOr<D?> Function<D>(
+  ApiError<ErrorType> error,
+);
 
 abstract class IApiWrap<ErrorType> {
   @protected
@@ -87,7 +65,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
-    bool? showErrorToast,
   }) =>
       _internalApiWrap<T, D>(
         function,
@@ -96,7 +73,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
-        showErrorToast: showErrorToast,
       );
 
   /// Строгая версия [apiWrap], требующая обязательного определения [onSuccess].
@@ -114,7 +90,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -122,7 +97,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
-        showErrorToast: showErrorToast,
       )) as D;
 
   /// Версия [apiWrap] c единым типом данных.
@@ -143,7 +117,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
-    bool? showErrorToast,
   }) =>
       _internalApiWrap<T, T>(
         function,
@@ -152,7 +125,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
-        showErrorToast: showErrorToast,
       );
 
   /// Строгая версия [apiWrap] c единым типом данных.
@@ -170,7 +142,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
@@ -178,7 +149,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
-        showErrorToast: showErrorToast,
       )) as T;
 
   Future<D?> _internalApiWrap<T, D>(
@@ -188,82 +158,13 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
-    bool? showErrorToast,
   }) =>
       wrapController.internalApiWrap.execute<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: (error) => wrapController.onError?.call(
-          error: error,
-          showErrorToast:
-              showErrorToast ?? wrapController.defaultShowErrorToast,
-          originalOnError: onError,
-        ),
+        onError: onError ?? (error) => wrapController.onError?.call(error),
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
       );
-
-  /// Как [apiWrap], но требует указывать все колбеки, что позволяет возвращать ненулевое значение.
-  ///
-  /// Пример:
-  /// ```dart
-  /// final userIsAuthorized = await apiWrapGuard(
-  ///   () => api.auth(login: 'user', password: '123'),
-  ///   onSuccess: (user) {
-  ///     saveUser(user);
-  ///     return true;
-  ///   },
-  ///   onError: (_) => false,
-  /// );
-  /// ```
-  @Deprecated('Use apiWrapStrict instead')
-  Future<D> apiWrapGuard<T, D>(
-    FutureOr<T> Function() function, {
-    required FutureOr<D> Function(T res) onSuccess,
-    required FutureOr<D> Function(ApiError<ErrorType> error) onError,
-    Duration? delay,
-    Retry<ErrorType>? retry,
-    bool showErrorToast = true,
-  }) async =>
-      (await _internalApiWrap<T, D>(
-        function,
-        onSuccess: onSuccess,
-        onError: onError,
-        delay: delay,
-        retry: retry,
-        showErrorToast: showErrorToast,
-      )) as D;
-
-  /// Объединяет свойства [apiWrapGuard] и [apiWrapSingle].
-  ///
-  /// Требует обязательных колбеков для обработки ошибок.
-  /// Возвращает тот же ненулевой тип, что и [function].
-  /// Если [onSuccess] не указан, то метод возвращает результат [function].
-  ///
-  /// Пример:
-  /// ```dart
-  /// // user не может быть null
-  /// final user = await apiWrapSingleGuard(
-  ///   api.getCurrentUser,
-  ///   onError: (_) => User.empty(),
-  /// );
-  /// ```
-  @Deprecated('Use apiWrapSingleStrict instead')
-  Future<T> apiWrapSingleGuard<T>(
-    FutureOr<T> Function() function, {
-    FutureOr<T> Function(T res)? onSuccess,
-    required FutureOr<T> Function(ApiError<ErrorType> error) onError,
-    Duration? delay,
-    Retry<ErrorType>? retry,
-    bool showErrorToast = true,
-  }) async =>
-      (await _internalApiWrap<T, T>(
-        function,
-        onSuccess: onSuccess,
-        onError: onError,
-        delay: delay,
-        retry: retry,
-        showErrorToast: showErrorToast,
-      ))!;
 }
