@@ -80,7 +80,7 @@ class InternalApiWrap<ErrorType> {
     }
 
     if (rateLimiter != null) {
-      final res = await rateLimiter.process(
+      final res = await rateLimiter.process<D?>(
         container: _operationsContainer,
         function: fn,
         defaultTag: '$hashCode${StackTrace.current}',

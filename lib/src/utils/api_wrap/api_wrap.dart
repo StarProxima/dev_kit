@@ -29,26 +29,6 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
 
   @override
   final ApiWrapController<ErrorType> wrapController;
-
-  // После некототорго времени использования, пришёл к выводу, что лучше отказать от такой обработки ошибок.
-  // Т.к. неотловленная ошибки не будут записываться в крашлитику, а полезность и удобство использования сомнительное
-  @Deprecated('Use function instead')
-  static Future<T> hideError<T>(
-    FutureOr<T> Function() function, {
-    bool? enabled,
-  }) async {
-    // Временно выключено для тестов
-    enabled ??= false;
-
-    if (!enabled) return function();
-
-    try {
-      final res = await function();
-      return res;
-    } catch (e, s) {
-      return Future.error(e, s);
-    }
-  }
 }
 
 /// Тип колбека, используемый для обработки ошибок API.
@@ -202,11 +182,12 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
       wrapController.internalApiWrap.execute<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: (error) => wrapController.onError?.call(
+        onError: (error) => wrapController.onError(
           error: error,
           showErrorToast:
               showErrorToast ?? wrapController.defaultShowErrorToast,
-          originalOnError: onError,
+          originalOnError:
+              onError ?? (shouldThrowOnError ? (e) => throw e : null),
         ),
         delay: delay,
         retry: retry,

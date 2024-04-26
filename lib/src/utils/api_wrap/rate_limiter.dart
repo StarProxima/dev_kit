@@ -12,10 +12,10 @@ sealed class RateLimiter<T> {
   final T? Function()? onCancelOperation;
   final Duration duration;
 
-  Future<RateOperationResult<T>> process({
+  Future<RateOperationResult<D>> process<D>({
     required RateOperationsContainer container,
     required String defaultTag,
-    required FutureOr<T> Function() function,
+    required FutureOr<D> Function() function,
   });
 }
 
@@ -36,13 +36,13 @@ class Debounce<T> extends RateLimiter<T> {
   final bool shouldCancelRunningOperations;
 
   @override
-  Future<RateOperationResult<T>> process({
+  Future<RateOperationResult<D>> process<D>({
     required RateOperationsContainer container,
     required String defaultTag,
-    required FutureOr<T> Function() function,
+    required FutureOr<D> Function() function,
   }) async {
     final tag = this.tag ?? defaultTag;
-    final completer = Completer<RateOperationResult<T>>();
+    final completer = Completer<RateOperationResult<D>>();
 
     final operations = container.debounceOperations;
 
@@ -50,10 +50,10 @@ class Debounce<T> extends RateLimiter<T> {
     // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
     // При этом не вызывается ни onSuccess, ни onError.
     operations.remove(tag)?.cancel(
-          rateCancel: RateOperationCancel(rateLimiter: 'Debounce', tag: tag),
+          rateCancel: RateOperationCancel<D>(rateLimiter: 'Debounce', tag: tag),
         );
 
-    operations[tag] = DebounceOperation<T>(
+    operations[tag] = DebounceOperation<D>(
       timer: Timer(duration, () async {
         final operation = operations[tag];
         final future = operation?.complete();
@@ -107,10 +107,10 @@ class Throttle<T> extends RateLimiter<T> {
   final void Function()? onEndCooldown;
 
   @override
-  Future<RateOperationResult<T>> process({
+  Future<RateOperationResult<D>> process<D>({
     required RateOperationsContainer container,
     required String defaultTag,
-    required FutureOr<T> Function() function,
+    required FutureOr<D> Function() function,
   }) async {
     final tag = this.tag ?? defaultTag;
 
@@ -120,7 +120,7 @@ class Throttle<T> extends RateLimiter<T> {
       // Если операция уже существует, то возвращается null.
       // При этом не вызывается ни onSuccess, ни onError.
       onCancelOperation?.call();
-      return RateOperationCancel(
+      return RateOperationCancel<D>(
         rateLimiter: 'Throttle',
         tag: tag,
       );
@@ -128,7 +128,7 @@ class Throttle<T> extends RateLimiter<T> {
 
     Timer? cooldownTickTimer;
 
-    final operation = ThrottleOperation<T>(
+    final operation = ThrottleOperation<D>(
       onCooldownEnd: () {
         operations.remove(tag);
         cooldownTickTimer?.cancel();
@@ -138,7 +138,7 @@ class Throttle<T> extends RateLimiter<T> {
     );
     operations[tag] = operation;
 
-    final FutureOr<T> futureOr;
+    final FutureOr<D> futureOr;
 
     try {
       futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
