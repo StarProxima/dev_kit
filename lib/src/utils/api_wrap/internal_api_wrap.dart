@@ -23,8 +23,9 @@ class InternalApiWrap<ErrorType> {
     FutureOr<D?> Function(T)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
-    RateLimiter? rateLimiter,
+    RateLimiter<D?>? rateLimiter,
     Retry<ErrorType>? retry,
+    required bool shouldThrowOnError,
   }) async {
     final finalRetry = retry ?? _retry;
     final maxAttempts = finalRetry.maxAttempts;
@@ -73,22 +74,23 @@ class InternalApiWrap<ErrorType> {
           continue;
         }
 
-        return onError?.call(error);
+        if (onError != null) return onError(error);
+        return shouldThrowOnError ? throw error : null;
       }
     }
 
     if (rateLimiter != null) {
-      final res = await rateLimiter.process<D?>(
+      final res = await rateLimiter.process(
         container: _operationsContainer,
         function: fn,
         defaultTag: '$hashCode${StackTrace.current}',
       );
 
       switch (res) {
-        case RateSuccess<D?>():
+        case RateOperationSuccess<D?>():
           return res.data;
-        case RateCancel<D?>():
-          return null;
+        case RateOperationCancel<D?>():
+          return shouldThrowOnError ? throw res : null;
       }
     }
 

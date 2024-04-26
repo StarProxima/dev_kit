@@ -40,7 +40,9 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelDebounceOperation(String tag) {
-    container.debounceOperations.remove(tag)?.cancel();
+    container.debounceOperations.remove(tag)?.cancel(
+          rateCancel: RateOperationCancel(rateLimiter: 'Debounce', tag: tag),
+        );
   }
 
   void cancelThrottleCooldown(String tag) {
@@ -48,8 +50,11 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelAllOperations() {
-    for (final operation in container.debounceOperations.values) {
-      operation.cancel();
+    for (final MapEntry(key: tag, value: operation)
+        in container.debounceOperations.entries) {
+      operation.cancel(
+        rateCancel: RateOperationCancel(rateLimiter: 'Debounce', tag: tag),
+      );
     }
 
     for (final operation in container.throttleOperations.values) {

@@ -1,7 +1,7 @@
 part of 'api_wrap.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
-sealed class RateLimiter {
+sealed class RateLimiter<T> {
   const RateLimiter({
     this.tag,
     this.onCancelOperation,
@@ -9,17 +9,17 @@ sealed class RateLimiter {
   });
 
   final String? tag;
-  final VoidCallback? onCancelOperation;
+  final T? Function()? onCancelOperation;
   final Duration duration;
 
-  Future<RateResult<T>> process<T>({
+  Future<RateOperationResult<T>> process({
     required RateOperationsContainer container,
     required String defaultTag,
     required FutureOr<T> Function() function,
   });
 }
 
-class Debounce extends RateLimiter {
+class Debounce<T> extends RateLimiter<T> {
   /// Задержит выполнение на заданное время.
   ///
   /// Если метод будет вызван ещё раз с тем же [tag],
@@ -36,20 +36,22 @@ class Debounce extends RateLimiter {
   final bool shouldCancelRunningOperations;
 
   @override
-  Future<RateResult<T>> process<T>({
+  Future<RateOperationResult<T>> process({
     required RateOperationsContainer container,
     required String defaultTag,
     required FutureOr<T> Function() function,
   }) async {
     final tag = this.tag ?? defaultTag;
-    final completer = Completer<RateResult<T>>();
+    final completer = Completer<RateOperationResult<T>>();
 
     final operations = container.debounceOperations;
 
     // Если операция была отменена в течении debounce, то возвращается null.
     // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
     // При этом не вызывается ни onSuccess, ни onError.
-    operations.remove(tag)?.cancel();
+    operations.remove(tag)?.cancel(
+          rateCancel: RateOperationCancel(rateLimiter: 'Debounce', tag: tag),
+        );
 
     operations[tag] = DebounceOperation<T>(
       timer: Timer(duration, () async {
@@ -81,7 +83,7 @@ enum CooldownLaunch {
   afterOperaion,
 }
 
-class Throttle extends RateLimiter {
+class Throttle<T> extends RateLimiter<T> {
   /// Сразу вызывает функцию.
   ///
   /// Если в течении заданного времени метод будет вызван ещё раз с тем же [tag], то новый запрос не выполнится.
@@ -105,7 +107,7 @@ class Throttle extends RateLimiter {
   final void Function()? onEndCooldown;
 
   @override
-  Future<RateResult<T>> process<T>({
+  Future<RateOperationResult<T>> process({
     required RateOperationsContainer container,
     required String defaultTag,
     required FutureOr<T> Function() function,
@@ -118,7 +120,10 @@ class Throttle extends RateLimiter {
       // Если операция уже существует, то возвращается null.
       // При этом не вызывается ни onSuccess, ни onError.
       onCancelOperation?.call();
-      return RateCancel();
+      return RateOperationCancel(
+        rateLimiter: 'Throttle',
+        tag: tag,
+      );
     }
 
     Timer? cooldownTickTimer;
@@ -165,6 +170,6 @@ class Throttle extends RateLimiter {
     }
 
     final data = await futureOr;
-    return RateSuccess(data);
+    return RateOperationSuccess(data);
   }
 }

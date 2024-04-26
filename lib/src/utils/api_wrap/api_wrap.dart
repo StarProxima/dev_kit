@@ -86,7 +86,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    RateLimiter? rateLimiter,
+    RateLimiter<D?>? rateLimiter,
     bool? showErrorToast,
   }) =>
       _internalApiWrap<T, D>(
@@ -97,6 +97,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         retry: retry,
         rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
+        shouldThrowOnError: false,
       );
 
   /// Строгая версия [apiWrap], требующая обязательного определения [onSuccess].
@@ -114,15 +115,18 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
+    RateLimiter<D>? rateLimiter,
     bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: onError ?? (e) => throw e,
+        onError: onError,
         delay: delay,
         retry: retry,
+        rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
+        shouldThrowOnError: true,
       )) as D;
 
   /// Версия [apiWrap] c единым типом данных.
@@ -142,7 +146,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    RateLimiter? rateLimiter,
+    RateLimiter<T?>? rateLimiter,
     bool? showErrorToast,
   }) =>
       _internalApiWrap<T, T>(
@@ -153,6 +157,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         retry: retry,
         rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
+        shouldThrowOnError: false,
       );
 
   /// Строгая версия [apiWrap] c единым типом данных.
@@ -170,25 +175,29 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
+    RateLimiter<T>? rateLimiter,
     bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
         onSuccess: onSuccess,
-        onError: onError ?? (e) => throw e,
+        onError: onError,
         delay: delay,
         retry: retry,
+        rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
+        shouldThrowOnError: true,
       )) as T;
 
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
-    FutureOr<D?> Function(T res)? onSuccess,
-    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
-    Duration? delay,
-    Retry<ErrorType>? retry,
-    RateLimiter? rateLimiter,
-    bool? showErrorToast,
+    required FutureOr<D?> Function(T res)? onSuccess,
+    required FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    required Duration? delay,
+    required Retry<ErrorType>? retry,
+    required RateLimiter<D?>? rateLimiter,
+    required bool? showErrorToast,
+    required bool shouldThrowOnError,
   }) =>
       wrapController.internalApiWrap.execute<T, D>(
         function,
@@ -202,68 +211,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
+        shouldThrowOnError: shouldThrowOnError,
       );
-
-  /// Как [apiWrap], но требует указывать все колбеки, что позволяет возвращать ненулевое значение.
-  ///
-  /// Пример:
-  /// ```dart
-  /// final userIsAuthorized = await apiWrapGuard(
-  ///   () => api.auth(login: 'user', password: '123'),
-  ///   onSuccess: (user) {
-  ///     saveUser(user);
-  ///     return true;
-  ///   },
-  ///   onError: (_) => false,
-  /// );
-  /// ```
-  @Deprecated('Use apiWrapStrict instead')
-  Future<D> apiWrapGuard<T, D>(
-    FutureOr<T> Function() function, {
-    required FutureOr<D> Function(T res) onSuccess,
-    required FutureOr<D> Function(ApiError<ErrorType> error) onError,
-    Duration? delay,
-    Retry<ErrorType>? retry,
-    bool showErrorToast = true,
-  }) async =>
-      (await _internalApiWrap<T, D>(
-        function,
-        onSuccess: onSuccess,
-        onError: onError,
-        delay: delay,
-        retry: retry,
-        showErrorToast: showErrorToast,
-      )) as D;
-
-  /// Объединяет свойства [apiWrapGuard] и [apiWrapSingle].
-  ///
-  /// Требует обязательных колбеков для обработки ошибок.
-  /// Возвращает тот же ненулевой тип, что и [function].
-  /// Если [onSuccess] не указан, то метод возвращает результат [function].
-  ///
-  /// Пример:
-  /// ```dart
-  /// // user не может быть null
-  /// final user = await apiWrapSingleGuard(
-  ///   api.getCurrentUser,
-  ///   onError: (_) => User.empty(),
-  /// );
-  /// ```
-  @Deprecated('Use apiWrapSingleStrict instead')
-  Future<T> apiWrapSingleGuard<T>(
-    FutureOr<T> Function() function, {
-    FutureOr<T> Function(T res)? onSuccess,
-    required FutureOr<T> Function(ApiError<ErrorType> error) onError,
-    Duration? delay,
-    Retry<ErrorType>? retry,
-    bool showErrorToast = true,
-  }) async =>
-      (await _internalApiWrap<T, T>(
-        function,
-        onSuccess: onSuccess,
-        onError: onError,
-        delay: delay,
-        retry: retry,
-        showErrorToast: showErrorToast,
-      ))!;
 }

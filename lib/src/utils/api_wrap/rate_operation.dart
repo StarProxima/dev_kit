@@ -1,15 +1,28 @@
 part of 'api_wrap.dart';
 
-sealed class RateResult<T> {
-  const RateResult();
+sealed class RateOperationResult<T> {
+  const RateOperationResult();
 }
 
-class RateSuccess<T> extends RateResult<T> {
-  const RateSuccess(this.data);
+class RateOperationSuccess<T> extends RateOperationResult<T> {
+  const RateOperationSuccess(this.data);
   final T data;
 }
 
-class RateCancel<T> extends RateResult<T> {}
+class RateOperationCancel<T> extends RateOperationResult<T>
+    implements Exception {
+  const RateOperationCancel({
+    required this.rateLimiter,
+    required this.tag,
+  });
+
+  final String rateLimiter;
+  final String tag;
+
+  @override
+  String toString() =>
+      'Operation was canceled by $rateLimiter. You can specify onCancelOperation in $rateLimiter to avoid throwing an exception. Operation tag:\n$tag';
+}
 
 class RateOperationsContainer {
   RateOperationsContainer();
@@ -27,15 +40,17 @@ class DebounceOperation<T> {
   });
 
   final Timer timer;
-  final Completer<RateResult<T>> completer;
+  final Completer<RateOperationResult<T>> completer;
   final FutureOr<T> Function() function;
   final RateLimiter rateLimiter;
 
-  void cancel() {
+  void cancel({
+    required RateOperationCancel<T> rateCancel,
+  }) {
     timer.cancel();
     rateLimiter.onCancelOperation?.call();
     if (completer.isCompleted) return;
-    completer.complete(RateCancel());
+    completer.complete(rateCancel);
   }
 
   Future<void> complete() async {
@@ -43,7 +58,7 @@ class DebounceOperation<T> {
     try {
       final res = await function.call();
       if (completer.isCompleted) return;
-      completer.complete(RateSuccess(res));
+      completer.complete(RateOperationSuccess(res));
     } catch (e, s) {
       if (completer.isCompleted) return;
       completer.complete(Future.error(e, s));
