@@ -23,9 +23,8 @@ class InternalApiWrap<ErrorType> {
     FutureOr<D?> Function(T)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
-    RateLimiter<D?>? rateLimiter,
+    RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
-    required bool shouldThrowOnError,
   }) async {
     final finalRetry = retry ?? _retry;
     final maxAttempts = finalRetry.maxAttempts;
@@ -74,8 +73,7 @@ class InternalApiWrap<ErrorType> {
           continue;
         }
 
-        if (onError != null) return onError(error);
-        return shouldThrowOnError ? throw error : null;
+        return onError?.call(error);
       }
     }
 
@@ -89,8 +87,10 @@ class InternalApiWrap<ErrorType> {
       switch (res) {
         case RateOperationSuccess<D?>():
           return res.data;
-        case RateOperationCancel<D?>():
-          return shouldThrowOnError ? throw res : null;
+        case RateOperationCancel<D?>(:final rateLimiter, :final tag):
+          return onError?.call(
+            RateCancelError(rateLimiter: rateLimiter, tag: tag),
+          );
       }
     }
 

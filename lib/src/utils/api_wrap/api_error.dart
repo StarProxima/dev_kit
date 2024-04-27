@@ -36,3 +36,17 @@ class InternalError<ErrorType> extends ApiError<ErrorType> {
   @override
   String toString() => 'InternalError:\n\n$error\n\n$stackTrace';
 }
+
+class RateCancelError<ErrorType> extends ApiError<ErrorType> {
+  RateCancelError({
+    required this.rateLimiter,
+    required this.tag,
+  });
+
+  final String rateLimiter;
+  final String tag;
+
+  @override
+  String toString() =>
+      'RateLimitError: Operation was canceled by $rateLimiter. Operation tag:\n$tag';
+}

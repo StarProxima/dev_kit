@@ -1,15 +1,13 @@
 part of 'api_wrap.dart';
 
 /// Базовый класс для [Debounce] и [Throttle].
-sealed class RateLimiter<T> {
+sealed class RateLimiter {
   const RateLimiter({
     this.tag,
-    this.onCancelOperation,
     this.duration = Duration.zero,
   });
 
   final String? tag;
-  final T? Function()? onCancelOperation;
   final Duration duration;
 
   Future<RateOperationResult<D>> process<D>({
@@ -19,7 +17,7 @@ sealed class RateLimiter<T> {
   });
 }
 
-class Debounce<T> extends RateLimiter<T> {
+class Debounce extends RateLimiter {
   /// Задержит выполнение на заданное время.
   ///
   /// Если метод будет вызван ещё раз с тем же [tag],
@@ -30,7 +28,6 @@ class Debounce<T> extends RateLimiter<T> {
     super.tag,
     super.duration,
     this.shouldCancelRunningOperations = true,
-    super.onCancelOperation,
   });
 
   final bool shouldCancelRunningOperations;
@@ -83,7 +80,7 @@ enum CooldownLaunch {
   afterOperaion,
 }
 
-class Throttle<T> extends RateLimiter<T> {
+class Throttle extends RateLimiter {
   /// Сразу вызывает функцию.
   ///
   /// Если в течении заданного времени метод будет вызван ещё раз с тем же [tag], то новый запрос не выполнится.
@@ -97,7 +94,6 @@ class Throttle<T> extends RateLimiter<T> {
     this.onTickCooldown,
     this.onStartCooldown,
     this.onEndCooldown,
-    super.onCancelOperation,
   });
 
   final CooldownLaunch cooldownLaunch;
@@ -119,7 +115,6 @@ class Throttle<T> extends RateLimiter<T> {
     if (operations.containsKey(tag)) {
       // Если операция уже существует, то возвращается null.
       // При этом не вызывается ни onSuccess, ни onError.
-      onCancelOperation?.call();
       return RateOperationCancel<D>(
         rateLimiter: 'Throttle',
         tag: tag,

@@ -9,8 +9,7 @@ class RateOperationSuccess<T> extends RateOperationResult<T> {
   final T data;
 }
 
-class RateOperationCancel<T> extends RateOperationResult<T>
-    implements Exception {
+class RateOperationCancel<T> extends RateOperationResult<T> {
   const RateOperationCancel({
     required this.rateLimiter,
     required this.tag,
@@ -18,10 +17,6 @@ class RateOperationCancel<T> extends RateOperationResult<T>
 
   final String rateLimiter;
   final String tag;
-
-  @override
-  String toString() =>
-      'Operation was canceled by $rateLimiter. You can specify onCancelOperation in $rateLimiter to avoid throwing an exception. Operation tag:\n$tag';
 }
 
 class RateOperationsContainer {
@@ -48,7 +43,6 @@ class DebounceOperation<T> {
     required RateOperationCancel<T> rateCancel,
   }) {
     timer.cancel();
-    rateLimiter.onCancelOperation?.call();
     if (completer.isCompleted) return;
     completer.complete(rateCancel);
   }

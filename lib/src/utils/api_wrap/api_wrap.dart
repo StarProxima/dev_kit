@@ -66,7 +66,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    RateLimiter<D?>? rateLimiter,
+    RateLimiter? rateLimiter,
     bool? showErrorToast,
   }) =>
       _internalApiWrap<T, D>(
@@ -77,7 +77,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         retry: retry,
         rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
-        shouldThrowOnError: false,
       );
 
   /// Строгая версия [apiWrap], требующая обязательного определения [onSuccess].
@@ -95,18 +94,17 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    RateLimiter<D>? rateLimiter,
+    RateLimiter? rateLimiter,
     bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: onError,
+        onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
-        shouldThrowOnError: true,
       )) as D;
 
   /// Версия [apiWrap] c единым типом данных.
@@ -126,7 +124,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    RateLimiter<T?>? rateLimiter,
+    RateLimiter? rateLimiter,
     bool? showErrorToast,
   }) =>
       _internalApiWrap<T, T>(
@@ -137,7 +135,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         retry: retry,
         rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
-        shouldThrowOnError: false,
       );
 
   /// Строгая версия [apiWrap] c единым типом данных.
@@ -155,18 +152,17 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
-    RateLimiter<T>? rateLimiter,
+    RateLimiter? rateLimiter,
     bool? showErrorToast,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
         onSuccess: onSuccess,
-        onError: onError,
+        onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
         showErrorToast: showErrorToast,
-        shouldThrowOnError: true,
       )) as T;
 
   Future<D?> _internalApiWrap<T, D>(
@@ -175,9 +171,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     required FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
     required Duration? delay,
     required Retry<ErrorType>? retry,
-    required RateLimiter<D?>? rateLimiter,
+    required RateLimiter? rateLimiter,
     required bool? showErrorToast,
-    required bool shouldThrowOnError,
   }) =>
       wrapController.internalApiWrap.execute<T, D>(
         function,
@@ -186,12 +181,10 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
           error: error,
           showErrorToast:
               showErrorToast ?? wrapController.defaultShowErrorToast,
-          originalOnError:
-              onError ?? (shouldThrowOnError ? (e) => throw e : null),
+          originalOnError: onError,
         ),
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
-        shouldThrowOnError: shouldThrowOnError,
       );
 }

@@ -278,7 +278,7 @@ void main() {
         rateLimiter: Throttle(tag: tag),
       );
 
-      await expectLater(r2, throwsA(isA<RateOperationCancel>()));
+      await expectLater(r2, throwsA(isA<RateCancelError>()));
 
       await Future.delayed(const Duration(seconds: 1));
 
@@ -321,17 +321,18 @@ void main() {
 
     test('Debounce cancel in Strict', () async {
       const tag = 'Debounce cancel in Strict';
-      final r1 = apiWrapper.apiWrapStrictSingle<String>(
+
+      final r1 = apiWrapper.apiWrapStrictSingle(
         () => 'Success',
         rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
       );
 
       // ignore: unawaited_futures
-      expectLater(r1, throwsA(isA<RateOperationCancel>()));
+      expectLater(r1, throwsA(isA<RateCancelError>()));
 
       await Future.delayed(const Duration(milliseconds: 200));
 
-      final r2 = await apiWrapper.apiWrapStrictSingle<String>(
+      final r2 = await apiWrapper.apiWrapStrictSingle(
         () => 'Success',
         rateLimiter:
             Debounce(tag: tag, duration: const Duration(milliseconds: 200)),
@@ -339,12 +340,34 @@ void main() {
 
       expect(r2, equals('Success'));
 
-      final r3 = await apiWrapper.apiWrapStrictSingle<String>(
+      final r3 = await apiWrapper.apiWrapStrictSingle(
         () => 'Success',
         rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
       );
 
       expect(r3, equals('Success'));
+
+      final r4 = apiWrapper.apiWrapStrictSingle(
+        () => 'Success',
+        onError: (e) => switch (e) {
+          RateCancelError(:final tag) => tag,
+          _ => throw e,
+        },
+        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+      );
+
+      // ignore: unawaited_futures
+      expectLater(r4, completion(equals(tag)));
+
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      final r5 = await apiWrapper.apiWrapStrictSingle(
+        () => 'Success',
+        rateLimiter:
+            Debounce(tag: tag, duration: const Duration(milliseconds: 200)),
+      );
+
+      expect(r5, equals('Success'));
     });
   });
 }
