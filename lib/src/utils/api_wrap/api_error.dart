@@ -50,5 +50,5 @@ class RateCancelError<ErrorType> implements ApiError<ErrorType> {
 
   @override
   String toString() =>
-      'RateLimitError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation tag:\n$tag';
+      'RateCancelError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation tag:\n$tag';
 }
