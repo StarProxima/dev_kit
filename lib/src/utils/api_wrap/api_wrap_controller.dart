@@ -4,9 +4,10 @@ class ApiWrapController<ErrorType> {
   ApiWrapController({
     this.retry,
     this.parseError,
-    this.onError,
+    ErrorResponseOnError<ErrorType>? onError,
     this.defaultShowErrorToast = true,
   }) {
+    this.onError = onError ?? _defaultOnError;
     container = RateOperationsContainer();
     internalApiWrap = InternalApiWrap(
       retry: retry ?? Retry(maxAttempts: 0),
@@ -15,10 +16,18 @@ class ApiWrapController<ErrorType> {
     );
   }
 
+  FutureOr<D?> _defaultOnError<D>({
+    required ApiError<ErrorType> error,
+    required bool showErrorToast,
+    required FutureOr<D?> Function(ApiError<ErrorType> error)? originalOnError,
+  }) {
+    return originalOnError?.call(error);
+  }
+
   final Retry<ErrorType>? retry;
-  final ErrorType Function(Object)? parseError;
-  final ErrorResponseOnError<ErrorType>? onError;
+  final ParseError<ErrorType>? parseError;
   final bool defaultShowErrorToast;
+  late final ErrorResponseOnError<ErrorType> onError;
 
   late final RateOperationsContainer container;
   late final InternalApiWrap<ErrorType> internalApiWrap;
@@ -40,7 +49,8 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelDebounceOperation(String tag) {
-    container.debounceOperations.remove(tag)?.cancel();
+    final operation = container.debounceOperations.remove(tag);
+    operation?.cancel(tag: tag);
   }
 
   void cancelThrottleCooldown(String tag) {
@@ -48,8 +58,9 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelAllOperations() {
-    for (final operation in container.debounceOperations.values) {
-      operation.cancel();
+    for (final MapEntry(key: tag, value: operation)
+        in container.debounceOperations.entries) {
+      operation.cancel(tag: tag);
     }
 
     for (final operation in container.throttleOperations.values) {

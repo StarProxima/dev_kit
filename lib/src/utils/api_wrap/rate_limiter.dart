@@ -1,21 +1,46 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'api_wrap.dart';
+
+@immutable
+class RateTimings {
+  const RateTimings(
+    this.duration,
+    this.elapsedTime,
+  );
+
+  final Duration duration;
+  final Duration elapsedTime;
+  Duration get remainingTime => duration - elapsedTime;
+
+  @override
+  bool operator ==(covariant RateTimings other) {
+    if (identical(this, other)) return true;
+
+    return other.duration == duration && other.elapsedTime == elapsedTime;
+  }
+
+  @override
+  int get hashCode => duration.hashCode ^ elapsedTime.hashCode;
+
+  @override
+  String toString() =>
+      'RateTimings(duration: $duration, elapsedTime: $elapsedTime, remainingTime: $remainingTime)';
+}
 
 /// Базовый класс для [Debounce] и [Throttle].
 sealed class RateLimiter {
-  const RateLimiter({
+  RateLimiter({
     this.tag,
-    this.onCancelOperation,
     this.duration = Duration.zero,
   });
 
   final String? tag;
-  final VoidCallback? onCancelOperation;
   final Duration duration;
 
-  Future<RateResult<T>> process<T>({
+  Future<RateOperationResult<D>> process<D>({
     required RateOperationsContainer container,
     required String defaultTag,
-    required FutureOr<T> Function() function,
+    required FutureOr<D> Function() function,
   });
 }
 
@@ -30,28 +55,37 @@ class Debounce extends RateLimiter {
     super.tag,
     super.duration,
     this.shouldCancelRunningOperations = true,
-    super.onCancelOperation,
+    this.delayTickInterval = const Duration(seconds: 1),
+    this.onDelayStart,
+    this.onDelayTick,
+    this.onDelayEnd,
   });
 
   final bool shouldCancelRunningOperations;
 
+  final Duration delayTickInterval;
+  final void Function()? onDelayStart;
+  final void Function(RateTimings timings)? onDelayTick;
+  final void Function()? onDelayEnd;
+
   @override
-  Future<RateResult<T>> process<T>({
+  Future<RateOperationResult<D>> process<D>({
     required RateOperationsContainer container,
     required String defaultTag,
-    required FutureOr<T> Function() function,
+    required FutureOr<D> Function() function,
   }) async {
     final tag = this.tag ?? defaultTag;
-    final completer = Completer<RateResult<T>>();
+    final completer = Completer<RateOperationResult<D>>();
 
     final operations = container.debounceOperations;
 
-    // Если операция была отменена в течении debounce, то возвращается null.
-    // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
-    // При этом не вызывается ни onSuccess, ни onError.
-    operations.remove(tag)?.cancel();
+    final existingOperation = operations[tag];
+    existingOperation?.cancel(tag: tag);
 
-    operations[tag] = DebounceOperation<T>(
+    Timer? delayTickTimer;
+
+    final operation = DebounceOperation<D>(
+      rateLimiter: this,
       timer: Timer(duration, () async {
         final operation = operations[tag];
         final future = operation?.complete();
@@ -65,8 +99,29 @@ class Debounce extends RateLimiter {
       }),
       completer: completer,
       function: function,
-      rateLimiter: this,
+      onDelayEnd: () {
+        delayTickTimer?.cancel();
+        onDelayEnd?.call();
+      },
     );
+    operations[tag] = operation;
+
+    onDelayStart?.call();
+
+    if (onDelayTick != null) {
+      onDelayTick!(RateTimings(duration, Duration.zero));
+      delayTickTimer = Timer.periodic(
+        delayTickInterval,
+        (timer) {
+          final timings = operation.calculateRateTimings(
+            elapsedTime: Duration(
+              milliseconds: timer.tick * delayTickInterval.inMilliseconds,
+            ),
+          );
+          onDelayTick!(timings);
+        },
+      );
+    }
 
     return completer.future;
   }
@@ -91,49 +146,59 @@ class Throttle extends RateLimiter {
     super.tag,
     super.duration,
     this.cooldownLaunch = CooldownLaunch.afterOperaion,
-    this.cooldownTickDelay = const Duration(seconds: 1),
-    this.onTickCooldown,
-    this.onStartCooldown,
-    this.onEndCooldown,
-    super.onCancelOperation,
+    this.cooldownTickInterval = const Duration(seconds: 1),
+    this.onCooldownStart,
+    this.onCooldownTick,
+    this.onCooldownEnd,
   });
 
   final CooldownLaunch cooldownLaunch;
-  final Duration cooldownTickDelay;
-  final void Function(Duration remainingTime)? onTickCooldown;
-  final void Function()? onStartCooldown;
-  final void Function()? onEndCooldown;
+
+  final Duration cooldownTickInterval;
+  final void Function()? onCooldownStart;
+  final void Function(RateTimings timings)? onCooldownTick;
+  final void Function()? onCooldownEnd;
 
   @override
-  Future<RateResult<T>> process<T>({
+  Future<RateOperationResult<D>> process<D>({
     required RateOperationsContainer container,
     required String defaultTag,
-    required FutureOr<T> Function() function,
+    required FutureOr<D> Function() function,
   }) async {
     final tag = this.tag ?? defaultTag;
 
     final operations = container.throttleOperations;
+    final existingOperation = operations[tag];
 
-    if (operations.containsKey(tag)) {
-      // Если операция уже существует, то возвращается null.
-      // При этом не вызывается ни onSuccess, ни onError.
-      onCancelOperation?.call();
-      return RateCancel();
+    if (existingOperation != null) {
+      return RateOperationCancel<D>(
+        rateLimiter: 'Throttle',
+        tag: tag,
+        timings: existingOperation.calculateRateTimings(),
+      );
     }
 
     Timer? cooldownTickTimer;
 
-    final operation = ThrottleOperation<T>(
+    final operation = ThrottleOperation<D>(
+      rateLimiter: this,
       onCooldownEnd: () {
-        operations.remove(tag);
+        final operation = operations.remove(tag);
         cooldownTickTimer?.cancel();
-        onTickCooldown?.call(Duration.zero);
-        onEndCooldown?.call();
+
+        if (operation == null) return;
+
+        onCooldownTick?.call(
+          operation.calculateRateTimings(
+            elapsedTime: operation.rateLimiter.duration,
+          ),
+        );
+        onCooldownEnd?.call();
       },
     );
     operations[tag] = operation;
 
-    final FutureOr<T> futureOr;
+    final FutureOr<D> futureOr;
 
     try {
       futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
@@ -143,28 +208,29 @@ class Throttle extends RateLimiter {
       rethrow;
     } finally {
       if (!operation.cooldownIsCancel) {
-        onStartCooldown?.call();
+        operation.startCooldown(duration: duration);
 
-        if (onTickCooldown != null) {
-          onTickCooldown!(duration);
+        onCooldownStart?.call();
+
+        if (onCooldownTick != null) {
+          onCooldownTick!(RateTimings(duration, Duration.zero));
           cooldownTickTimer = Timer.periodic(
-            cooldownTickDelay,
+            cooldownTickInterval,
             (timer) {
-              final remainingMilliseconds = duration.inMilliseconds -
-                  timer.tick * cooldownTickDelay.inMilliseconds;
-
-              onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
+              final timings = operation.calculateRateTimings(
+                elapsedTime: Duration(
+                  milliseconds:
+                      timer.tick * cooldownTickInterval.inMilliseconds,
+                ),
+              );
+              onCooldownTick!(timings);
             },
           );
         }
       }
-
-      if (!operation.cooldownIsCancel) {
-        operation.startCooldown(duration: duration);
-      }
     }
 
     final data = await futureOr;
-    return RateSuccess(data);
+    return RateOperationSuccess(data);
   }
 }
