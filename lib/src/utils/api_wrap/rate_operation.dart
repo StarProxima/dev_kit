@@ -31,50 +31,65 @@ class RateOperationsContainer {
 sealed class RateOperation<T> {
   RateOperation({
     required this.rateLimiter,
-  }) {
-    _startAt = DateTime.now();
-  }
+  });
 
   final RateLimiter rateLimiter;
-  late DateTime _startAt;
+  DateTime? _startAt;
 
   RateTimings calculateRateTimings({
     Duration? elapsedTime,
   }) {
-    elapsedTime = elapsedTime ?? DateTime.now().difference(_startAt);
+    elapsedTime = elapsedTime ??
+        (_startAt != null
+            ? DateTime.now().difference(_startAt!)
+            : Duration.zero);
     return RateTimings(rateLimiter.duration, elapsedTime);
   }
 }
 
 class DebounceOperation<T> extends RateOperation<T> {
   DebounceOperation({
+    required super.rateLimiter,
     required this.timer,
     required this.completer,
     required this.function,
-    required super.rateLimiter,
-  });
+    required this.onDelayEnd,
+  }) {
+    _startAt = DateTime.now();
+  }
 
   final Timer timer;
   final Completer<RateOperationResult<T>> completer;
   final FutureOr<T> Function() function;
+  final VoidCallback onDelayEnd;
 
   void cancel({
-    required RateOperationCancel<T> rateCancel,
+    required String tag,
   }) {
     timer.cancel();
+    onDelayEnd();
+
     if (completer.isCompleted) return;
-    completer.complete(rateCancel);
+    completer.complete(
+      RateOperationCancel<T>(
+        rateLimiter: 'Debounce',
+        tag: tag,
+        timings: calculateRateTimings(),
+      ),
+    );
   }
 
   Future<void> complete() async {
     timer.cancel();
+    onDelayEnd();
+
     try {
       final res = await function.call();
       if (completer.isCompleted) return;
       completer.complete(RateOperationSuccess(res));
     } catch (e, s) {
       if (completer.isCompleted) return;
-      completer.complete(Future.error(e, s));
+      completer.completeError(e, s);
     }
   }
 }
@@ -83,9 +98,7 @@ class ThrottleOperation<T> extends RateOperation<T> {
   ThrottleOperation({
     required super.rateLimiter,
     required this.onCooldownEnd,
-  }) {
-    _startAt = DateTime.now();
-  }
+  });
 
   final VoidCallback onCooldownEnd;
   bool cooldownIsCancel = false;
@@ -94,6 +107,7 @@ class ThrottleOperation<T> extends RateOperation<T> {
   void startCooldown({
     required Duration duration,
   }) {
+    _startAt = DateTime.now();
     _timer = Timer(duration, cancelCooldown);
   }
 

@@ -243,7 +243,7 @@ void main() {
     });
 
     test('Throttle cancel', () async {
-      const tag = 'RateLimiter cancel';
+      const tag = 'Throttle cancel';
       final r1 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
         rateLimiter: Throttle(tag: tag, duration: const Duration(seconds: 1)),
@@ -375,20 +375,23 @@ void main() {
     });
 
     test('Throttle cooldown', () async {
-      const tag = 'RateLimiter cancel';
+      const tag = 'Throttle cooldown';
 
       final cooldownList = [];
 
       const cooldownDuration = Duration(seconds: 1);
-      final r1 = await apiWrapper.apiWrapSingle<String>(
-        () => 'Success',
+      final r1 = await apiWrapper.apiWrapSingle(
+        () async {
+          await Future.delayed(const Duration(milliseconds: 400));
+          return 'Success';
+        },
         rateLimiter: Throttle(
           tag: tag,
           duration: cooldownDuration,
-          cooldownTickDelay: const Duration(milliseconds: 200),
-          onStartCooldown: () => cooldownList.add('Start'),
-          onEndCooldown: () => cooldownList.add('End'),
-          onTickCooldown: cooldownList.add,
+          cooldownTickInterval: const Duration(milliseconds: 200),
+          onCooldownStart: () => cooldownList.add('Start'),
+          onCooldownEnd: () => cooldownList.add('End'),
+          onCooldownTick: cooldownList.add,
         ),
       );
 
@@ -428,9 +431,71 @@ void main() {
         ]),
       );
 
-      final r3 = await apiWrapper.apiWrapSingle<String>(
+      final r3 = await apiWrapper.apiWrapSingle(
         () => 'Success',
         rateLimiter: Throttle(tag: tag),
+      );
+
+      expect(r3, equals('Success'));
+    });
+
+    test('Debounce delay', () async {
+      const tag = 'Debounce delay';
+
+      final delayList = [];
+
+      const delayDuration = Duration(seconds: 1);
+      final r1Future = apiWrapper.apiWrapSingle(
+        () {},
+        onError: (error) {
+          switch (error) {
+            case RateCancelError():
+              return error;
+            case _:
+              return null;
+          }
+        },
+        rateLimiter: Debounce(
+          tag: tag,
+          duration: delayDuration,
+          delayTickInterval: const Duration(milliseconds: 200),
+          onDelayStart: () => delayList.add('Start'),
+          onDelayTick: delayList.add,
+          onDelayEnd: () => delayList.add('End'),
+        ),
+      );
+
+      const delay = Duration(milliseconds: 300);
+      await Future.delayed(delay);
+
+      final r2 = await apiWrapper.apiWrapSingle(
+        () => 'Success',
+        rateLimiter: Debounce(tag: tag),
+      );
+
+      expect(r2, 'Success');
+
+      final r1 = await r1Future;
+
+      expect(r1, isNotNull);
+      expect(r1!.timings.duration, delayDuration);
+      expect(r1.timings.elapsedTime, greaterThan(delay));
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      expect(
+        delayList,
+        equals([
+          'Start',
+          for (int i = 0; i <= 1; i++)
+            RateTimings(delayDuration, Duration(milliseconds: 200 * i)),
+          'End',
+        ]),
+      );
+
+      final r3 = await apiWrapper.apiWrapSingle<String>(
+        () => 'Success',
+        rateLimiter: Debounce(tag: tag),
       );
 
       expect(r3, equals('Success'));

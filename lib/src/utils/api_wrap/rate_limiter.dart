@@ -55,9 +55,18 @@ class Debounce extends RateLimiter {
     super.tag,
     super.duration,
     this.shouldCancelRunningOperations = true,
+    this.delayTickInterval = const Duration(seconds: 1),
+    this.onDelayStart,
+    this.onDelayTick,
+    this.onDelayEnd,
   });
 
   final bool shouldCancelRunningOperations;
+
+  final Duration delayTickInterval;
+  final void Function()? onDelayStart;
+  final void Function(RateTimings timings)? onDelayTick;
+  final void Function()? onDelayEnd;
 
   @override
   Future<RateOperationResult<D>> process<D>({
@@ -70,16 +79,13 @@ class Debounce extends RateLimiter {
 
     final operations = container.debounceOperations;
 
-    final operation = operations[tag];
-    operation?.cancel(
-      rateCancel: RateOperationCancel<D>(
-        rateLimiter: 'Debounce',
-        tag: tag,
-        timings: operation.calculateRateTimings(),
-      ),
-    );
+    final existingOperation = operations[tag];
+    existingOperation?.cancel(tag: tag);
 
-    operations[tag] = DebounceOperation<D>(
+    Timer? delayTickTimer;
+
+    final operation = DebounceOperation<D>(
+      rateLimiter: this,
       timer: Timer(duration, () async {
         final operation = operations[tag];
         final future = operation?.complete();
@@ -93,8 +99,29 @@ class Debounce extends RateLimiter {
       }),
       completer: completer,
       function: function,
-      rateLimiter: this,
+      onDelayEnd: () {
+        delayTickTimer?.cancel();
+        onDelayEnd?.call();
+      },
     );
+    operations[tag] = operation;
+
+    onDelayStart?.call();
+
+    if (onDelayTick != null) {
+      onDelayTick!(RateTimings(duration, Duration.zero));
+      delayTickTimer = Timer.periodic(
+        delayTickInterval,
+        (timer) {
+          final timings = operation.calculateRateTimings(
+            elapsedTime: Duration(
+              milliseconds: timer.tick * delayTickInterval.inMilliseconds,
+            ),
+          );
+          onDelayTick!(timings);
+        },
+      );
+    }
 
     return completer.future;
   }
@@ -119,17 +146,18 @@ class Throttle extends RateLimiter {
     super.tag,
     super.duration,
     this.cooldownLaunch = CooldownLaunch.afterOperaion,
-    this.cooldownTickDelay = const Duration(seconds: 1),
-    this.onTickCooldown,
-    this.onStartCooldown,
-    this.onEndCooldown,
+    this.cooldownTickInterval = const Duration(seconds: 1),
+    this.onCooldownStart,
+    this.onCooldownTick,
+    this.onCooldownEnd,
   });
 
   final CooldownLaunch cooldownLaunch;
-  final Duration cooldownTickDelay;
-  final void Function(RateTimings timings)? onTickCooldown;
-  final void Function()? onStartCooldown;
-  final void Function()? onEndCooldown;
+
+  final Duration cooldownTickInterval;
+  final void Function()? onCooldownStart;
+  final void Function(RateTimings timings)? onCooldownTick;
+  final void Function()? onCooldownEnd;
 
   @override
   Future<RateOperationResult<D>> process<D>({
@@ -160,12 +188,12 @@ class Throttle extends RateLimiter {
 
         if (operation == null) return;
 
-        onTickCooldown?.call(
+        onCooldownTick?.call(
           operation.calculateRateTimings(
             elapsedTime: operation.rateLimiter.duration,
           ),
         );
-        onEndCooldown?.call();
+        onCooldownEnd?.call();
       },
     );
     operations[tag] = operation;
@@ -180,30 +208,25 @@ class Throttle extends RateLimiter {
       rethrow;
     } finally {
       if (!operation.cooldownIsCancel) {
-        onStartCooldown?.call();
+        operation.startCooldown(duration: duration);
 
-        if (onTickCooldown != null) {
-          onTickCooldown!(RateTimings(duration, Duration.zero));
+        onCooldownStart?.call();
+
+        if (onCooldownTick != null) {
+          onCooldownTick!(RateTimings(duration, Duration.zero));
           cooldownTickTimer = Timer.periodic(
-            cooldownTickDelay,
+            cooldownTickInterval,
             (timer) {
-              if (operation.cooldownIsCancel) {
-                timer.cancel();
-                return;
-              }
               final timings = operation.calculateRateTimings(
                 elapsedTime: Duration(
-                  milliseconds: timer.tick * cooldownTickDelay.inMilliseconds,
+                  milliseconds:
+                      timer.tick * cooldownTickInterval.inMilliseconds,
                 ),
               );
-              onTickCooldown!(timings);
+              onCooldownTick!(timings);
             },
           );
         }
-      }
-
-      if (!operation.cooldownIsCancel) {
-        operation.startCooldown(duration: duration);
       }
     }
 
