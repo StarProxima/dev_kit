@@ -1,10 +1,12 @@
 ## 1.14.0 - 04.2024
 * `RateLimiter` добавлен в `Sctrict` методы `ApiWrap`
 * Теперь вместо вызова onCancelOperation в `RateLimiter`, будет вызываться `onError` c `RateCancelError`
+* Добавлены параметры `delayTickInterval`, `onDelayTick`, `onDelayStart`, `onDelayEnd` в `Debounce`
 * Добавлены тесты для `ApiWrap`, `Retry` и `RateLimiter`
 
 ## 1.13.0 - 04.2024
-* Добавлен метод `selectData` к `AsycnValue`, который похож на AsyncValue.whenData, но позволяет выбирать часть из состояния провайдера, поддерживая skipLoadingOnReload, skipLoadingOnRefresh и skipError
+* Добавлен метод `selectData` к `AsycnValue`, который похож на `AsyncValue.whenData`, но позволяет выбирать часть из состояния провайдера, поддерживая skipLoadingOnReload, skipLoadingOnRefresh и skipError
+* Исправлена ошибка, связанная с использованием `AsyncValue.whenData` в `AsyncBuilder.paginated`
 
 ## 1.12.0 - 04.2024
 * В `AsyncBuilder.paginated` добавлена функция для возможности кастомизируемой отложенной анимации для элементов списка с помощью одного `AnimationController`. Добавлен `ItemAnimationSettings` с параметрами для настройки анимации
