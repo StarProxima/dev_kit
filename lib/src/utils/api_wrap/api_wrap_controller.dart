@@ -25,7 +25,7 @@ class ApiWrapController<ErrorType> {
   }
 
   final Retry<ErrorType>? retry;
-  final ErrorType Function(Object)? parseError;
+  final ParseError<ErrorType>? parseError;
   final bool defaultShowErrorToast;
   late final ErrorResponseOnError<ErrorType> onError;
 
@@ -49,9 +49,14 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelDebounceOperation(String tag) {
-    container.debounceOperations.remove(tag)?.cancel(
-          rateCancel: RateOperationCancel(rateLimiter: 'Debounce', tag: tag),
-        );
+    final operation = container.debounceOperations.remove(tag);
+    operation?.cancel(
+      rateCancel: RateOperationCancel(
+        rateLimiter: 'Debounce',
+        tag: tag,
+        timings: operation.calculateRateTimings(),
+      ),
+    );
   }
 
   void cancelThrottleCooldown(String tag) {
@@ -62,7 +67,11 @@ class ApiWrapController<ErrorType> {
     for (final MapEntry(key: tag, value: operation)
         in container.debounceOperations.entries) {
       operation.cancel(
-        rateCancel: RateOperationCancel(rateLimiter: 'Debounce', tag: tag),
+        rateCancel: RateOperationCancel(
+          rateLimiter: 'Debounce',
+          tag: tag,
+          timings: operation.calculateRateTimings(),
+        ),
       );
     }
 

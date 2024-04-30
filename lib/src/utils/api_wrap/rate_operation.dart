@@ -9,14 +9,16 @@ class RateOperationSuccess<T> extends RateOperationResult<T> {
   final T data;
 }
 
-class RateOperationCancel<T> extends RateOperationResult<T> {
-  const RateOperationCancel({
+class RateOperationCancel<T> implements RateOperationResult<T> {
+  RateOperationCancel({
     required this.rateLimiter,
     required this.tag,
+    required this.timings,
   });
 
   final String rateLimiter;
   final String tag;
+  final RateTimings timings;
 }
 
 class RateOperationsContainer {
@@ -26,18 +28,35 @@ class RateOperationsContainer {
   final Map<String, ThrottleOperation> throttleOperations = {};
 }
 
-class DebounceOperation<T> {
+sealed class RateOperation<T> {
+  RateOperation({
+    required this.rateLimiter,
+  }) {
+    _startAt = DateTime.now();
+  }
+
+  final RateLimiter rateLimiter;
+  late DateTime _startAt;
+
+  RateTimings calculateRateTimings({
+    Duration? elapsedTime,
+  }) {
+    elapsedTime = elapsedTime ?? DateTime.now().difference(_startAt);
+    return RateTimings(rateLimiter.duration, elapsedTime);
+  }
+}
+
+class DebounceOperation<T> extends RateOperation<T> {
   DebounceOperation({
     required this.timer,
     required this.completer,
     required this.function,
-    required this.rateLimiter,
+    required super.rateLimiter,
   });
 
   final Timer timer;
   final Completer<RateOperationResult<T>> completer;
   final FutureOr<T> Function() function;
-  final RateLimiter rateLimiter;
 
   void cancel({
     required RateOperationCancel<T> rateCancel,
@@ -60,13 +79,15 @@ class DebounceOperation<T> {
   }
 }
 
-class ThrottleOperation<T> {
+class ThrottleOperation<T> extends RateOperation<T> {
   ThrottleOperation({
+    required super.rateLimiter,
     required this.onCooldownEnd,
-  });
+  }) {
+    _startAt = DateTime.now();
+  }
 
   final VoidCallback onCooldownEnd;
-  VoidCallback? cooldownCallback;
   bool cooldownIsCancel = false;
   late Timer _timer;
 
@@ -79,7 +100,6 @@ class ThrottleOperation<T> {
   void cancelCooldown() {
     cooldownIsCancel = true;
     _timer.cancel();
-    cooldownCallback?.call();
     onCooldownEnd();
   }
 }

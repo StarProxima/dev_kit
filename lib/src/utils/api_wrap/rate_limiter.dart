@@ -1,8 +1,35 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'api_wrap.dart';
+
+@immutable
+class RateTimings {
+  const RateTimings(
+    this.duration,
+    this.elapsedTime,
+  );
+
+  final Duration duration;
+  final Duration elapsedTime;
+  Duration get remainingTime => duration - elapsedTime;
+
+  @override
+  bool operator ==(covariant RateTimings other) {
+    if (identical(this, other)) return true;
+
+    return other.duration == duration && other.elapsedTime == elapsedTime;
+  }
+
+  @override
+  int get hashCode => duration.hashCode ^ elapsedTime.hashCode;
+
+  @override
+  String toString() =>
+      'RateTimings(duration: $duration, elapsedTime: $elapsedTime, remainingTime: $remainingTime)';
+}
 
 /// Базовый класс для [Debounce] и [Throttle].
 sealed class RateLimiter {
-  const RateLimiter({
+  RateLimiter({
     this.tag,
     this.duration = Duration.zero,
   });
@@ -43,12 +70,14 @@ class Debounce extends RateLimiter {
 
     final operations = container.debounceOperations;
 
-    // Если операция была отменена в течении debounce, то возвращается null.
-    // Eсли includeRequestTime, то при отмене null вернётся, даже если выполение функции уже началось.
-    // При этом не вызывается ни onSuccess, ни onError.
-    operations.remove(tag)?.cancel(
-          rateCancel: RateOperationCancel<D>(rateLimiter: 'Debounce', tag: tag),
-        );
+    final operation = operations[tag];
+    operation?.cancel(
+      rateCancel: RateOperationCancel<D>(
+        rateLimiter: 'Debounce',
+        tag: tag,
+        timings: operation.calculateRateTimings(),
+      ),
+    );
 
     operations[tag] = DebounceOperation<D>(
       timer: Timer(duration, () async {
@@ -98,7 +127,7 @@ class Throttle extends RateLimiter {
 
   final CooldownLaunch cooldownLaunch;
   final Duration cooldownTickDelay;
-  final void Function(Duration remainingTime)? onTickCooldown;
+  final void Function(RateTimings timings)? onTickCooldown;
   final void Function()? onStartCooldown;
   final void Function()? onEndCooldown;
 
@@ -111,23 +140,31 @@ class Throttle extends RateLimiter {
     final tag = this.tag ?? defaultTag;
 
     final operations = container.throttleOperations;
+    final existingOperation = operations[tag];
 
-    if (operations.containsKey(tag)) {
-      // Если операция уже существует, то возвращается null.
-      // При этом не вызывается ни onSuccess, ни onError.
+    if (existingOperation != null) {
       return RateOperationCancel<D>(
         rateLimiter: 'Throttle',
         tag: tag,
+        timings: existingOperation.calculateRateTimings(),
       );
     }
 
     Timer? cooldownTickTimer;
 
     final operation = ThrottleOperation<D>(
+      rateLimiter: this,
       onCooldownEnd: () {
-        operations.remove(tag);
+        final operation = operations.remove(tag);
         cooldownTickTimer?.cancel();
-        onTickCooldown?.call(Duration.zero);
+
+        if (operation == null) return;
+
+        onTickCooldown?.call(
+          operation.calculateRateTimings(
+            elapsedTime: operation.rateLimiter.duration,
+          ),
+        );
         onEndCooldown?.call();
       },
     );
@@ -146,14 +183,20 @@ class Throttle extends RateLimiter {
         onStartCooldown?.call();
 
         if (onTickCooldown != null) {
-          onTickCooldown!(duration);
+          onTickCooldown!(RateTimings(duration, Duration.zero));
           cooldownTickTimer = Timer.periodic(
             cooldownTickDelay,
             (timer) {
-              final remainingMilliseconds = duration.inMilliseconds -
-                  timer.tick * cooldownTickDelay.inMilliseconds;
-
-              onTickCooldown!(Duration(milliseconds: remainingMilliseconds));
+              if (operation.cooldownIsCancel) {
+                timer.cancel();
+                return;
+              }
+              final timings = operation.calculateRateTimings(
+                elapsedTime: Duration(
+                  milliseconds: timer.tick * cooldownTickDelay.inMilliseconds,
+                ),
+              );
+              onTickCooldown!(timings);
             },
           );
         }

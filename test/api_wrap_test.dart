@@ -21,10 +21,14 @@ void main() {
   }
 
   group('ApiWrap Common Tests', () {
-    late ApiWrapper apiWrapper;
+    late ApiWrapper<int> apiWrapper;
 
     setUp(() {
-      apiWrapper = ApiWrapper();
+      apiWrapper = ApiWrapper<int>(
+        options: ApiWrapController<int>(
+          parseError: (error) => 0,
+        ),
+      );
     });
 
     test('Success function call', () async {
@@ -151,7 +155,7 @@ void main() {
     test('Retry', () async {
       var attempt = 0;
 
-      Future<String?> retryFn(Retry retry) async {
+      Future<String?> retryFn(Retry<int> retry) async {
         return apiWrapper.apiWrap(
           () {
             if (attempt++ < 2) badResponse(statusCode: 503);
@@ -368,6 +372,68 @@ void main() {
       );
 
       expect(r5, equals('Success'));
+    });
+
+    test('Throttle cooldown', () async {
+      const tag = 'RateLimiter cancel';
+
+      final cooldownList = [];
+
+      const cooldownDuration = Duration(seconds: 1);
+      final r1 = await apiWrapper.apiWrapSingle<String>(
+        () => 'Success',
+        rateLimiter: Throttle(
+          tag: tag,
+          duration: cooldownDuration,
+          cooldownTickDelay: const Duration(milliseconds: 200),
+          onStartCooldown: () => cooldownList.add('Start'),
+          onEndCooldown: () => cooldownList.add('End'),
+          onTickCooldown: cooldownList.add,
+        ),
+      );
+
+      expect(r1, equals('Success'));
+
+      const delay = Duration(milliseconds: 300);
+      await Future.delayed(delay);
+
+      final r2 = await apiWrapper.apiWrap(
+        () => 'Success',
+        onError: (error) {
+          switch (error) {
+            case RateCancelError():
+              return error;
+            case _:
+              return null;
+          }
+        },
+        rateLimiter: Throttle(
+          tag: tag,
+        ),
+      );
+
+      expect(r2, isNotNull);
+      expect(r2!.timings.duration, cooldownDuration);
+      expect(r2.timings.elapsedTime, greaterThan(delay));
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      expect(
+        cooldownList,
+        equals([
+          'Start',
+          for (int i = 0; i <= 5; i++)
+            RateTimings(cooldownDuration, Duration(milliseconds: 200 * i)),
+          'End',
+        ]),
+      );
+
+      final r3 = await apiWrapper.apiWrapSingle<String>(
+        () => 'Success',
+        rateLimiter: Throttle(tag: tag),
+      );
+
+      expect(r3, equals('Success'));
     });
   });
 }

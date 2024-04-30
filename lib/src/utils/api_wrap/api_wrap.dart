@@ -24,8 +24,8 @@ part 'retry.dart';
 class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    ApiWrapController<ErrorType>? opstions,
-  }) : wrapController = opstions ?? ApiWrapController<ErrorType>();
+    ApiWrapController<ErrorType>? options,
+  }) : wrapController = options ?? ApiWrapController<ErrorType>();
 
   @override
   final ApiWrapController<ErrorType> wrapController;
