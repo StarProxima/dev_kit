@@ -19,14 +19,16 @@ class ToastCard extends StatefulHookConsumerWidget {
   const ToastCard({
     super.key,
     required this.type,
-    required this.duration,
+    this.duration = Duration.zero,
     this.onDismissed,
     this.text,
     this.title,
     this.debugText,
     this.isDebug = false,
     this.decoration,
-    this.hasBorder,
+    this.hasBorder = false,
+    this.isAnimated = false,
+    this.isAutoHidden = false,
   });
 
   final ToastType type;
@@ -39,7 +41,9 @@ class ToastCard extends StatefulHookConsumerWidget {
   final bool isDebug;
 
   final Decoration? decoration;
-  final bool? hasBorder;
+  final bool hasBorder;
+  final bool isAnimated;
+  final bool isAutoHidden;
 
   @override
   ConsumerState<ToastCard> createState() => _ToastCardState();
@@ -56,7 +60,9 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     final isDebug = widget.isDebug;
     final duration = widget.duration;
     final decoration = widget.decoration;
-    final hasBorder = widget.hasBorder ?? false;
+    final hasBorder = widget.hasBorder;
+    final isAnimated = widget.isAnimated;
+    final isAutoHidden = widget.isAutoHidden;
 
     final scaleAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
@@ -81,8 +87,12 @@ class _ToastCardState extends ConsumerState<ToastCard> {
 
     useEffect(
       () {
-        scaleAnimationController.forward();
-        setTimerToHide();
+        if (isAnimated) {
+          scaleAnimationController.forward();
+        } else {
+          scaleAnimationController.value = 1;
+        }
+        if (isAutoHidden) setTimerToHide();
         return timer?.cancel;
       },
       const [],
@@ -95,7 +105,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     void openCloseCard() {
       if (debugTextAnimationController.isCompleted) {
         debugTextAnimationController.reverse();
-        setTimerToHide();
+        if (isAutoHidden) setTimerToHide();
       } else if (widget.debugText != null) {
         debugTextAnimationController.forward();
         timer?.cancel();
