@@ -35,14 +35,14 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   final OnError<ErrorType> _handleError;
 
   @override
-  FutureOr<void> handleError(ApiError<ErrorType> error) => _handleError(error);
+  FutureOr<void> onError(ApiError<ErrorType> error) => _handleError(error);
 }
 
 // /// Тип колбека, используемый для обработки ошибок API.
 typedef OnError<ErrorType> = FutureOr<void> Function(ApiError<ErrorType> error);
 
 abstract class IApiWrap<ErrorType> {
-  FutureOr<void> handleError(ApiError<ErrorType> error);
+  FutureOr<void> onError(ApiError<ErrorType> error);
 
   @protected
   abstract final ApiWrapController<ErrorType> wrapController;
@@ -180,7 +180,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onSuccess: onSuccess,
         onError: onError ??
             (e) {
-              handleError(e);
+              this.onError(e);
               if (shouldThrowError) throw e;
             },
         delay: delay,
