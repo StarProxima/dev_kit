@@ -28,7 +28,7 @@ void main() {
         options: ApiWrapController(
           parseError: (error) => 0,
         ),
-        onError: (error, {errorHandler = ErrorHandler.prod}) {},
+        onError: (error) {},
       );
     });
 
@@ -36,7 +36,6 @@ void main() {
       final r1 = await apiWrapper.apiWrap(
         () => 'Success',
         onSuccess: (res) => 'Processed $res',
-        errorHandler: ErrorHandler.none,
       );
 
       final r2 = await apiWrapper.apiWrapSingle(

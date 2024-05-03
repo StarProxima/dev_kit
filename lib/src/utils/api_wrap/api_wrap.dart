@@ -15,13 +15,6 @@ part 'rate_limiter.dart';
 part 'rate_operation.dart';
 part 'retry.dart';
 
-enum ErrorHandler {
-  prod,
-  debug,
-  report,
-  none;
-}
-
 /// {@template [ApiWrapper]}
 /// Предоставляет утилиты и обёртки для [Dio] запросов и обычных функций.
 ///
@@ -31,10 +24,7 @@ enum ErrorHandler {
 class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    required FutureOr<void> Function(
-      ApiError<ErrorType> error, {
-      ErrorHandler errorHandler,
-    }) onError,
+    required FutureOr<void> Function(ApiError<ErrorType> error) onError,
     ApiWrapController<ErrorType>? options,
   })  : _handleError = onError,
         wrapController = options ?? ApiWrapController<ErrorType>();
@@ -45,24 +35,14 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   final OnError<ErrorType> _handleError;
 
   @override
-  FutureOr<void> handleError(
-    ApiError<ErrorType> error, {
-    ErrorHandler errorHandler = ErrorHandler.prod,
-  }) =>
-      _handleError(error, errorHandler: errorHandler);
+  FutureOr<void> handleError(ApiError<ErrorType> error) => _handleError(error);
 }
 
 // /// Тип колбека, используемый для обработки ошибок API.
-typedef OnError<ErrorType> = FutureOr<void> Function(
-  ApiError<ErrorType> error, {
-  ErrorHandler errorHandler,
-});
+typedef OnError<ErrorType> = FutureOr<void> Function(ApiError<ErrorType> error);
 
 abstract class IApiWrap<ErrorType> {
-  FutureOr<void> handleError(
-    ApiError<ErrorType> error, {
-    ErrorHandler errorHandler,
-  });
+  FutureOr<void> handleError(ApiError<ErrorType> error);
 
   @protected
   abstract final ApiWrapController<ErrorType> wrapController;
@@ -89,7 +69,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T res)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
-    ErrorHandler errorHandler = ErrorHandler.prod,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -98,7 +77,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
-        errorHandler: errorHandler,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -118,7 +96,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T res) onSuccess,
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
-    ErrorHandler errorHandler = ErrorHandler.prod,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -127,7 +104,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
-        errorHandler: errorHandler,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -149,7 +125,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T?> Function(T res)? onSuccess,
     FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
-    ErrorHandler errorHandler = ErrorHandler.prod,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -158,7 +133,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
-        errorHandler: errorHandler,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -178,7 +152,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T res)? onSuccess,
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
-    ErrorHandler errorHandler = ErrorHandler.prod,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -187,7 +160,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
-        errorHandler: errorHandler,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -198,7 +170,6 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     required FutureOr<D?> Function(T res)? onSuccess,
     required FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
-    required ErrorHandler errorHandler,
     required Duration? delay,
     required Retry<ErrorType>? retry,
     required RateLimiter? rateLimiter,
@@ -207,11 +178,11 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
       wrapController.internalApiWrap.execute<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: (e) {
-          handleError(e, errorHandler: errorHandler);
-          if (onError == null && shouldThrowError) throw e;
-          return onError?.call(e);
-        },
+        onError: onError ??
+            (e) {
+              handleError(e);
+              if (shouldThrowError) throw e;
+            },
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
