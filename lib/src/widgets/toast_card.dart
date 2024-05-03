@@ -26,6 +26,7 @@ class ToastCard extends StatefulHookConsumerWidget {
     this.debugText,
     this.isDebug = false,
     this.decoration,
+    this.hasBorder,
   });
 
   final ToastType type;
@@ -38,6 +39,7 @@ class ToastCard extends StatefulHookConsumerWidget {
   final bool isDebug;
 
   final Decoration? decoration;
+  final bool? hasBorder;
 
   @override
   ConsumerState<ToastCard> createState() => _ToastCardState();
@@ -54,6 +56,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     final isDebug = widget.isDebug;
     final duration = widget.duration;
     final decoration = widget.decoration;
+    final hasBorder = widget.hasBorder ?? false;
 
     final scaleAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
@@ -124,7 +127,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                 BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: backgroundColor,
-                  border: Border.all(color: textColor.withOpacity(0.2)),
+                  border: hasBorder ? Border.all(color: textColor.withOpacity(0.2)) : null,
                 ),
             clipBehavior: Clip.antiAlias,
             child: ConstrainedBox(
