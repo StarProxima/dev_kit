@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_field_initializers_in_const_classes
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -46,7 +44,6 @@ class ToastCard extends StatefulHookConsumerWidget {
 }
 
 class _ToastCardState extends ConsumerState<ToastCard> {
-  Timer? timer;
 
   @override
   Widget build(BuildContext context) {
@@ -54,39 +51,13 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     final text = widget.text;
     final debugText = widget.debugText;
     final isDebug = widget.isDebug;
-    final duration = widget.duration;
     final decoration = widget.decoration;
     final hasBorder = widget.hasBorder ?? false;
 
     final scaleAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
       reverseDuration: const Duration(milliseconds: 150),
-    );
-
-    void setTimerToHide({bool immediately = false}) {
-      timer?.cancel();
-      timer = Timer(immediately ? Duration.zero : duration, () {
-        if (!mounted) return;
-        scaleAnimationController.reverse();
-        Future.delayed(
-          scaleAnimationController.reverseDuration!,
-          () {
-            if (mounted) {
-              widget.onDismissed?.call();
-            }
-          },
-        );
-      });
-    }
-
-    useEffect(
-      () {
-        scaleAnimationController.forward();
-        setTimerToHide();
-        return timer?.cancel;
-      },
-      const [],
-    );
+    )..forward();
 
     final debugTextAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
@@ -95,10 +66,8 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     void openCloseCard() {
       if (debugTextAnimationController.isCompleted) {
         debugTextAnimationController.reverse();
-        setTimerToHide();
       } else if (widget.debugText != null) {
         debugTextAnimationController.forward();
-        timer?.cancel();
       }
     }
 
