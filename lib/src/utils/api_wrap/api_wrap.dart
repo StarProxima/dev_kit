@@ -207,12 +207,11 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
       wrapController.internalApiWrap.execute<T, D>(
         function,
         onSuccess: onSuccess,
-        onError: onError ??
-            (e) {
-              handleError(e, errorHandler: errorHandler);
-              if (shouldThrowError) throw e;
-              return null;
-            },
+        onError: (e) {
+          handleError(e, errorHandler: errorHandler);
+          if (onError == null && shouldThrowError) throw e;
+          return onError?.call(e);
+        },
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,

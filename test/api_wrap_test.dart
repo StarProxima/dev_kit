@@ -28,7 +28,7 @@ void main() {
         options: ApiWrapController(
           parseError: (error) => 0,
         ),
-        onError: (error, [h = ErrorHandler.prod]) {},
+        onError: (error, {errorHandler = ErrorHandler.prod}) {},
       );
     });
 
