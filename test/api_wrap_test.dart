@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dev_kit/dev_kit.dart';
 import 'package:dev_kit/src/export.dart';
 import 'package:dio/dio.dart';
@@ -27,10 +25,10 @@ void main() {
 
     setUp(() {
       apiWrapper = ApiWrapper<int>(
-        options: ApiWrapController<int>(
+        options: ApiWrapController(
           parseError: (error) => 0,
         ),
-        onError: (error) {},
+        onError: (error, [h = ErrorHandler.prod]) {},
       );
     });
 
@@ -38,6 +36,7 @@ void main() {
       final r1 = await apiWrapper.apiWrap(
         () => 'Success',
         onSuccess: (res) => 'Processed $res',
+        errorHandler: ErrorHandler.none,
       );
 
       final r2 = await apiWrapper.apiWrapSingle(
