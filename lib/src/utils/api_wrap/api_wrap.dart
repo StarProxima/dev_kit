@@ -102,6 +102,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
+    RateLimiter? rateLimiter,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -109,6 +110,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
+        rateLimiter: rateLimiter,
       )) as D;
 
   /// Версия [apiWrap] c единым типом данных.
@@ -154,6 +156,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
     Duration? delay,
     Retry<ErrorType>? retry,
+    RateLimiter? rateLimiter,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
@@ -161,6 +164,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         onError: onError ?? (e) => throw e,
         delay: delay,
         retry: retry,
+        rateLimiter: rateLimiter,
       )) as T;
 
   Future<D?> _internalApiWrap<T, D>(

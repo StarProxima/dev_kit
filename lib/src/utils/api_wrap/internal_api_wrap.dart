@@ -1,6 +1,6 @@
 part of 'api_wrap.dart';
 
-typedef ParseError<ErrorType> = ErrorType Function(Object error);
+typedef ParseError<ErrorType> = ErrorType Function(Object? error);
 
 class InternalApiWrap<ErrorType> {
   InternalApiWrap({
@@ -85,10 +85,20 @@ class InternalApiWrap<ErrorType> {
       );
 
       switch (res) {
-        case RateSuccess<D?>():
+        case RateOperationSuccess<D?>():
           return res.data;
-        case RateCancel<D?>():
-          return null;
+        case RateOperationCancel<D?>(
+            :final rateLimiter,
+            :final tag,
+            :final timings
+          ):
+          return onError?.call(
+            RateCancelError(
+              rateLimiter: rateLimiter,
+              tag: tag,
+              timings: timings,
+            ),
+          );
       }
     }
 

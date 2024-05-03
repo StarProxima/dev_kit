@@ -14,7 +14,7 @@ class ApiWrapController<ErrorType> {
   }
 
   final Retry<ErrorType>? retry;
-  final ErrorType Function(Object)? parseError;
+  final ParseError<ErrorType>? parseError;
 
   late final RateOperationsContainer container;
   late final InternalApiWrap<ErrorType> internalApiWrap;
@@ -36,7 +36,8 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelDebounceOperation(String tag) {
-    container.debounceOperations.remove(tag)?.cancel();
+    final operation = container.debounceOperations.remove(tag);
+    operation?.cancel(tag: tag);
   }
 
   void cancelThrottleCooldown(String tag) {
@@ -44,8 +45,9 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelAllOperations() {
-    for (final operation in container.debounceOperations.values) {
-      operation.cancel();
+    for (final MapEntry(key: tag, value: operation)
+        in container.debounceOperations.entries) {
+      operation.cancel(tag: tag);
     }
 
     for (final operation in container.throttleOperations.values) {
