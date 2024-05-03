@@ -19,7 +19,7 @@ class ToastCard extends StatefulHookConsumerWidget {
     super.key,
     required this.type,
     required this.duration,
-    required this.onDismissed,
+    this.onDismissed,
     this.text,
     this.title,
     this.debugText,
@@ -29,7 +29,7 @@ class ToastCard extends StatefulHookConsumerWidget {
 
   final ToastType type;
   final Duration duration;
-  final VoidCallback onDismissed;
+  final VoidCallback? onDismissed;
 
   final Text? text;
   final Text? title;
@@ -68,7 +68,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
           scaleAnimationController.reverseDuration!,
           () {
             if (mounted) {
-              widget.onDismissed();
+              widget.onDismissed?.call();
             }
           },
         );
@@ -188,23 +188,6 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                       if (text != null) text,
                                       const Gap(12),
                                     ],
-                                  ),
-                                ),
-                                Material(
-                                  type: MaterialType.transparency,
-                                  child: InkWell(
-                                    radius: 50,
-                                    borderRadius: BorderRadius.circular(50),
-                                    onTap: () =>
-                                        setTimerToHide(immediately: true),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 24,
-                                        color: textColor,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ],
