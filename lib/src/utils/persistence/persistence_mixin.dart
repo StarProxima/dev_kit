@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../core_dev_kit.dart';
+import '../../../dev_kit.dart';
 import '../../internal/logger/dev_kit_logger.dart';
 
 /// {@template [PersistenceMixin]}

@@ -3,6 +3,8 @@ extension DateUtilsX on DateTime {
 
   DateTime get yearAndMonthOnly => DateTime(year, month);
 
+  DateTime get mondayOfTheWeek => dateOnly.addDays(-weekday + 1);
+
   int get daysInMonth {
     if (month == DateTime.february) {
       final isLeapYear =
