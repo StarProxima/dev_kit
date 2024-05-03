@@ -132,7 +132,6 @@ class _ToastCardState extends ConsumerState<ToastCard> {
         child: GestureDetector(
           onTap: openCloseCard,
           child: Container(
-            margin: const EdgeInsets.only(bottom: 0),
             decoration: decoration ??
                 BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -148,7 +147,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.zero,
+                      padding: horizontalPadding,
                       child: Row(
                         children: [
                           Icon(
