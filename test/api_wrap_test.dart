@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dev_kit/dev_kit.dart';
 import 'package:dev_kit/src/export.dart';
 import 'package:dio/dio.dart';
@@ -28,6 +30,7 @@ void main() {
         options: ApiWrapController<int>(
           parseError: (error) => 0,
         ),
+        onError: (error) {},
       );
     });
 
