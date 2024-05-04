@@ -159,7 +159,8 @@ void main() {
       Future<String?> retryFn(Retry<int> retry) async {
         return apiWrapper.apiWrap(
           () {
-            if (attempt++ < 2) badResponse(statusCode: 503);
+            attempt++;
+            if (attempt < 3) badResponse(statusCode: 503);
             return 'Success after retries';
           },
           retry: retry,
@@ -168,7 +169,7 @@ void main() {
 
       final r1 = await retryFn(
         Retry(
-          maxAttempts: 2,
+          maxAttempts: 0,
           retryIf: (error) {
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
@@ -182,7 +183,7 @@ void main() {
       attempt = 0;
       final r2 = await retryFn(
         Retry(
-          maxAttempts: 1,
+          maxAttempts: 2,
           retryIf: (error) {
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
