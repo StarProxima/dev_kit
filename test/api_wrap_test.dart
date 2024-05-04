@@ -169,7 +169,7 @@ void main() {
 
       final r1 = await retryFn(
         Retry(
-          maxAttempts: 0,
+          maxAttempts: 3,
           retryIf: (error) {
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
