@@ -26,16 +26,16 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   ApiWrapper({
     required FutureOr<void> Function(ApiError<ErrorType> error) onError,
     ApiWrapController<ErrorType>? options,
-  })  : _handleError = onError,
+  })  : _onError = onError,
         wrapController = options ?? ApiWrapController<ErrorType>();
 
   @override
   final ApiWrapController<ErrorType> wrapController;
 
-  final OnError<ErrorType> _handleError;
+  final OnError<ErrorType> _onError;
 
   @override
-  FutureOr<void> onError(ApiError<ErrorType> error) => _handleError(error);
+  FutureOr<void> onError(ApiError<ErrorType> error) => _onError(error);
 }
 
 // /// Тип колбека, используемый для обработки ошибок API.
