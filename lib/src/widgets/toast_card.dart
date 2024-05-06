@@ -19,21 +19,18 @@ class ToastCard extends StatefulHookConsumerWidget {
   const ToastCard({
     super.key,
     required this.type,
-    this.duration = Duration.zero,
-    this.onDismissed,
+    required this.duration,
+    required this.onDismissed,
     this.text,
     this.title,
     this.debugText,
     this.isDebug = false,
     this.decoration,
-    this.hasBorder = false,
-    this.isAnimated = false,
-    this.isAutoHidden = false,
   });
 
   final ToastType type;
   final Duration duration;
-  final VoidCallback? onDismissed;
+  final VoidCallback onDismissed;
 
   final Text? text;
   final Text? title;
@@ -41,9 +38,6 @@ class ToastCard extends StatefulHookConsumerWidget {
   final bool isDebug;
 
   final Decoration? decoration;
-  final bool hasBorder;
-  final bool isAnimated;
-  final bool isAutoHidden;
 
   @override
   ConsumerState<ToastCard> createState() => _ToastCardState();
@@ -60,9 +54,6 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     final isDebug = widget.isDebug;
     final duration = widget.duration;
     final decoration = widget.decoration;
-    final hasBorder = widget.hasBorder;
-    final isAnimated = widget.isAnimated;
-    final isAutoHidden = widget.isAutoHidden;
 
     final scaleAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
@@ -78,7 +69,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
           scaleAnimationController.reverseDuration!,
           () {
             if (mounted) {
-              widget.onDismissed?.call();
+              widget.onDismissed();
             }
           },
         );
@@ -87,12 +78,8 @@ class _ToastCardState extends ConsumerState<ToastCard> {
 
     useEffect(
       () {
-        if (isAnimated) {
-          scaleAnimationController.forward();
-        } else {
-          scaleAnimationController.value = 1;
-        }
-        if (isAutoHidden) setTimerToHide();
+        scaleAnimationController.forward();
+        setTimerToHide();
         return timer?.cancel;
       },
       const [],
@@ -105,7 +92,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     void openCloseCard() {
       if (debugTextAnimationController.isCompleted) {
         debugTextAnimationController.reverse();
-        if (isAutoHidden) setTimerToHide();
+        setTimerToHide();
       } else if (widget.debugText != null) {
         debugTextAnimationController.forward();
         timer?.cancel();
@@ -132,11 +119,12 @@ class _ToastCardState extends ConsumerState<ToastCard> {
         child: GestureDetector(
           onTap: openCloseCard,
           child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
             decoration: decoration ??
                 BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: backgroundColor,
-                  border: hasBorder ? Border.all(color: textColor.withOpacity(0.2)) : null,
+                  border: Border.all(color: textColor.withOpacity(0.2)),
                 ),
             clipBehavior: Clip.antiAlias,
             child: ConstrainedBox(
@@ -203,6 +191,23 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                       if (text != null) text,
                                       const Gap(12),
                                     ],
+                                  ),
+                                ),
+                                Material(
+                                  type: MaterialType.transparency,
+                                  child: InkWell(
+                                    radius: 50,
+                                    borderRadius: BorderRadius.circular(50),
+                                    onTap: () =>
+                                        setTimerToHide(immediately: true),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 24,
+                                        color: textColor,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],

@@ -16,12 +16,11 @@ class AutoUnfocus extends StatelessWidget {
     return GestureDetector(
       onTap: enabled
           ? () {
-        final currentFocus = FocusScope.of(context);
-        if (currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-        currentFocus.focusedChild?.unfocus(); // для того, чтобы снимался фокус ребенка (без этого не работает с tooltip`ом)
-      }
+              final currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus) {
+                currentFocus.unfocus();
+              }
+            }
           : null,
       child: child,
     );
