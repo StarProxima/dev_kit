@@ -4,30 +4,17 @@ class ApiWrapController<ErrorType> {
   ApiWrapController({
     this.retry,
     this.parseError,
-    ErrorResponseOnError<ErrorType>? onError,
-    this.defaultShowErrorToast = true,
   }) {
-    this.onError = onError ?? _defaultOnError;
     container = RateOperationsContainer();
     internalApiWrap = InternalApiWrap(
-      retry: retry ?? Retry(maxAttempts: 0),
+      retry: retry ?? const Retry(maxAttempts: 1),
       parseError: parseError,
       container: container,
     );
   }
 
-  FutureOr<D?> _defaultOnError<D>({
-    required ApiError<ErrorType> error,
-    required bool showErrorToast,
-    required FutureOr<D?> Function(ApiError<ErrorType> error)? originalOnError,
-  }) {
-    return originalOnError?.call(error);
-  }
-
   final Retry<ErrorType>? retry;
   final ParseError<ErrorType>? parseError;
-  final bool defaultShowErrorToast;
-  late final ErrorResponseOnError<ErrorType> onError;
 
   late final RateOperationsContainer container;
   late final InternalApiWrap<ErrorType> internalApiWrap;
