@@ -16,6 +16,9 @@ dependencies:
 
   riverpod_async_builder:
     path: packages/riverpod_async_builder
+
+  riverpod_utils:
+    path: packages/riverpod_utils
     
   riverpod_validator:
     path: packages/riverpod_validator

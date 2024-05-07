@@ -1,11 +1,9 @@
 // ignore_for_file: depend_on_referenced_packages, implementation_imports, invalid_use_of_protected_member, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
 
-import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod/src/async_notifier.dart';
 
 extension AsyncUtils<State> on AsyncNotifierBase<State> {
-  @protected
   void setData(State newState) => state = AsyncData<State>(newState);
 
   Future<void> refresh() async {
@@ -26,7 +24,7 @@ extension ProviderSelectDataX<T> on ProviderListenable<AsyncValue<T>> {
   }
 }
 
-extension AsyncValueUtils<T> on AsyncValue<T> {
+extension AsyncValueSelectDataX<T> on AsyncValue<T> {
   /// Позволяет выбирать часть из состояния провайдера, похож на AsyncValue.whenData,
   /// но поддерживает skipLoadingOnReload, skipLoadingOnRefresh и skipError
   AsyncValue<Selected> selectData<Selected>(
