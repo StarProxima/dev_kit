@@ -2,12 +2,17 @@ name: dev_kit
 description: A set of developer utilities for xdev projects
 version: 1.0.0
 
+publish_to: 'none'
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
+
+  api_wrap:
+    path: packages/api_wrap
 
   collection: ^1.18.0
   flutter_hooks: ^0.20.5

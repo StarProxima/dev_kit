@@ -8,7 +8,6 @@ export 'package:dev_kit/src/extensions/duration_utils.dart';
 export 'package:dev_kit/src/extensions/list_utils.dart';
 export 'package:dev_kit/src/extensions/ref_cache.dart';
 export 'package:dev_kit/src/extensions/string_utils.dart';
-export 'package:dev_kit/src/utils/api_wrap/api_wrap.dart';
 export 'package:dev_kit/src/utils/interfaces.dart';
 export 'package:dev_kit/src/utils/persistence/persistence_mixin.dart';
 export 'package:dev_kit/src/utils/persistence/persistence_storage.dart';

@@ -61,7 +61,7 @@ class DebounceOperation<T> extends RateOperation<T> {
   final Timer timer;
   final Completer<RateOperationResult<T>> completer;
   final FutureOr<T> Function() function;
-  final VoidCallback onDelayEnd;
+  final void Function() onDelayEnd;
 
   void cancel({
     required String tag,
@@ -100,7 +100,7 @@ class ThrottleOperation<T> extends RateOperation<T> {
     required this.onCooldownEnd,
   });
 
-  final VoidCallback onCooldownEnd;
+  final void Function() onCooldownEnd;
   bool cooldownIsCancel = false;
   late Timer _timer;
 

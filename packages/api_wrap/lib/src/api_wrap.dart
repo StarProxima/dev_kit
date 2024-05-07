@@ -3,9 +3,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-
-import '../../internal/logger/dev_kit_logger.dart';
+import 'package:meta/meta.dart';
 
 part 'annotations.dart';
 part 'api_error.dart';
@@ -30,6 +28,7 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
         wrapController = options ?? ApiWrapController<ErrorType>();
 
   @override
+  @protected
   final ApiWrapController<ErrorType> wrapController;
 
   final OnError<ErrorType> _onError;
@@ -182,6 +181,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
             (e) {
               this.onError(e);
               if (shouldThrowError) throw e;
+              return null;
             },
         delay: delay,
         retry: retry,

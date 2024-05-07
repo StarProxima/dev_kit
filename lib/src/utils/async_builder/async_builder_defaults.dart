@@ -17,8 +17,7 @@ class AsyncBuilderError {
   final OnRetry? onRetry;
 
   @override
-  String toString() =>
-      '$error${error is InternalError ? '' : '\n\n$stackTrace'}';
+  String toString() => '$error';
 }
 
 /// Класс для предоставления дефолтных билдеров загрзки и ошибки для [AsyncBuilder]

@@ -8,6 +8,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  meta: ^1.0.0
+  dio: ^5.4.1
   # path: ^1.8.0
 
 dev_dependencies:
