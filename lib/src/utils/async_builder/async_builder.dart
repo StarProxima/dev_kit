@@ -269,7 +269,46 @@ class AsyncBuilder<T> extends StatelessWidget {
           );
   }
 
-  static AsyncBuilder<T1> group2<T1, T2>(
+  static final _groupGlobalKeys = <int, GlobalKey>{};
+
+  static Widget _groupBuilder<T>({
+    bool skipLoadingOnReload = false,
+    bool skipLoadingOnRefresh = true,
+    bool skipError = false,
+    OnRetry? onRetry,
+    Widget Function()? loading,
+    Widget Function(AsyncBuilderError e)? error,
+    Widget Function()? orElse,
+    required Widget Function(
+      Widget Function<D>(AsyncValue<D> value, Widget Function(D data) data)
+          asyncBuilder,
+    ) builder,
+  }) =>
+      Builder(
+        builder: (context) {
+          final hashcode = context.hashCode;
+          _groupGlobalKeys.putIfAbsent(hashcode, GlobalKey.new);
+          final gk = _groupGlobalKeys[hashcode]!;
+
+          return builder(
+            <D>(value, data) => AsyncBuilder<D>(
+              value,
+              skipLoadingOnReload: skipLoadingOnReload,
+              skipLoadingOnRefresh: skipLoadingOnRefresh,
+              skipError: skipError,
+              onRetry: onRetry,
+              loading: loading != null
+                  ? () => SizedBox(key: gk, child: loading())
+                  : null,
+              error: error,
+              orElse: orElse,
+              data: data,
+            ),
+          );
+        },
+      );
+
+  static Widget group2<T1, T2>(
     AsyncValue<T1> value1,
     AsyncValue<T2> value2, {
     bool skipLoadingOnReload = false,
@@ -280,13 +319,8 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
     required Widget Function(T1 data1, T2 data2) data,
-  }) {
-    AsyncBuilder<D> asyncBuilder<D>(
-      AsyncValue<D> value,
-      Widget Function(D data) data,
-    ) {
-      return AsyncBuilder<D>(
-        value,
+  }) =>
+      _groupBuilder(
         skipLoadingOnReload: skipLoadingOnReload,
         skipLoadingOnRefresh: skipLoadingOnRefresh,
         skipError: skipError,
@@ -294,17 +328,13 @@ class AsyncBuilder<T> extends StatelessWidget {
         loading: loading,
         error: error,
         orElse: orElse,
-        data: data,
+        builder: (asyncBuilder) => asyncBuilder(
+          value1,
+          (data1) => asyncBuilder(value2, (data2) => data(data1, data2)),
+        ),
       );
-    }
 
-    return asyncBuilder(
-      value1,
-      (data1) => asyncBuilder(value2, (data2) => data(data1, data2)),
-    );
-  }
-
-  static AsyncBuilder<T1> group3<T1, T2, T3>(
+  static Widget group3<T1, T2, T3>(
     AsyncValue<T1> value1,
     AsyncValue<T2> value2,
     AsyncValue<T3> value3, {
@@ -316,13 +346,8 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
     required Widget Function(T1 data1, T2 data2, T3 data3) data,
-  }) {
-    AsyncBuilder<D> asyncBuilder<D>(
-      AsyncValue<D> value,
-      Widget Function(D data) data,
-    ) {
-      return AsyncBuilder<D>(
-        value,
+  }) =>
+      _groupBuilder(
         skipLoadingOnReload: skipLoadingOnReload,
         skipLoadingOnRefresh: skipLoadingOnRefresh,
         skipError: skipError,
@@ -330,20 +355,17 @@ class AsyncBuilder<T> extends StatelessWidget {
         loading: loading,
         error: error,
         orElse: orElse,
-        data: data,
+        builder: (asyncBuilder) => asyncBuilder(
+          value1,
+          (data1) => asyncBuilder(
+            value2,
+            (data2) =>
+                asyncBuilder(value3, (data3) => data(data1, data2, data3)),
+          ),
+        ),
       );
-    }
 
-    return asyncBuilder(
-      value1,
-      (data1) => asyncBuilder(
-        value2,
-        (data2) => asyncBuilder(value3, (data3) => data(data1, data2, data3)),
-      ),
-    );
-  }
-
-  static AsyncBuilder<T1> group4<T1, T2, T3, T4>(
+  static Widget group4<T1, T2, T3, T4>(
     AsyncValue<T1> value1,
     AsyncValue<T2> value2,
     AsyncValue<T3> value3,
@@ -356,13 +378,8 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
     required Widget Function(T1 data1, T2 data2, T3 data3, T4 data4) data,
-  }) {
-    AsyncBuilder<D> asyncBuilder<D>(
-      AsyncValue<D> value,
-      Widget Function(D data) data,
-    ) {
-      return AsyncBuilder<D>(
-        value,
+  }) =>
+      _groupBuilder(
         skipLoadingOnReload: skipLoadingOnReload,
         skipLoadingOnRefresh: skipLoadingOnRefresh,
         skipError: skipError,
@@ -370,26 +387,22 @@ class AsyncBuilder<T> extends StatelessWidget {
         loading: loading,
         error: error,
         orElse: orElse,
-        data: data,
-      );
-    }
-
-    return asyncBuilder(
-      value1,
-      (data1) => asyncBuilder(
-        value2,
-        (data2) => asyncBuilder(
-          value3,
-          (data3) => asyncBuilder(
-            value4,
-            (data4) => data(data1, data2, data3, data4),
+        builder: (asyncBuilder) => asyncBuilder(
+          value1,
+          (data1) => asyncBuilder(
+            value2,
+            (data2) => asyncBuilder(
+              value3,
+              (data3) => asyncBuilder(
+                value4,
+                (data4) => data(data1, data2, data3, data4),
+              ),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
-  static AsyncBuilder<T1> group5<T1, T2, T3, T4, T5>(
+  static Widget group5<T1, T2, T3, T4, T5>(
     AsyncValue<T1> value1,
     AsyncValue<T2> value2,
     AsyncValue<T3> value3,
@@ -404,13 +417,8 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? orElse,
     required Widget Function(T1 data1, T2 data2, T3 data3, T4 data4, T5 data5)
         data,
-  }) {
-    AsyncBuilder<D> asyncBuilder<D>(
-      AsyncValue<D> value,
-      Widget Function(D data) data,
-    ) {
-      return AsyncBuilder<D>(
-        value,
+  }) =>
+      _groupBuilder(
         skipLoadingOnReload: skipLoadingOnReload,
         skipLoadingOnRefresh: skipLoadingOnRefresh,
         skipError: skipError,
@@ -418,25 +426,21 @@ class AsyncBuilder<T> extends StatelessWidget {
         loading: loading,
         error: error,
         orElse: orElse,
-        data: data,
-      );
-    }
-
-    return asyncBuilder(
-      value1,
-      (data1) => asyncBuilder(
-        value2,
-        (data2) => asyncBuilder(
-          value3,
-          (data3) => asyncBuilder(
-            value4,
-            (data4) => asyncBuilder(
-              value5,
-              (data5) => data(data1, data2, data3, data4, data5),
+        builder: (asyncBuilder) => asyncBuilder(
+          value1,
+          (data1) => asyncBuilder(
+            value2,
+            (data2) => asyncBuilder(
+              value3,
+              (data3) => asyncBuilder(
+                value4,
+                (data4) => asyncBuilder(
+                  value5,
+                  (data5) => data(data1, data2, data3, data4, data5),
+                ),
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
