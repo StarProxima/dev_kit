@@ -1,7 +1,5 @@
-library riverpod_async_builder;
+library;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/async_builder.dart';
+export 'src/async_builder_defaults.dart';
+export 'src/async_utils.dart';
