@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/foundation.dart';
-
-import '../../../dev_kit.dart';
+import 'package:meta/meta.dart';
+import 'package:riverpod/riverpod.dart';
+import 'package:riverpod_validator/validator/single_validator.dart';
 
 /// {@template [ValidatorMixin]}
 /// Предоставляет методы для создания и проверки обычных и асинхронных валидаторов.
@@ -108,4 +108,8 @@ mixin ValidatorMixin implements IRef {
 
     return errors;
   }
+}
+
+abstract class IRef {
+  Ref get ref;
 }
