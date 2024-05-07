@@ -3,12 +3,12 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:riverpod_validator/validator/single_validator.dart';
+import 'package:riverpod_validator/src/single_validator.dart';
 
 /// {@template [ValidatorMixin]}
 /// Предоставляет методы для создания и проверки обычных и асинхронных валидаторов.
 /// {@endtemplate}
-mixin ValidatorMixin implements IRef {
+mixin ValidatorMixin implements _IRef {
   @protected
   List<SingleValidatorBase> get allValidators =>
       UnmodifiableListView(_allValidators);
@@ -110,6 +110,6 @@ mixin ValidatorMixin implements IRef {
   }
 }
 
-abstract class IRef {
+abstract class _IRef {
   Ref get ref;
 }

@@ -14,6 +14,12 @@ dependencies:
   api_wrap:
     path: packages/api_wrap
 
+  riverpod_async_builder:
+    path: packages/riverpod_async_builder
+    
+  riverpod_validator:
+    path: packages/riverpod_validator
+
 
   collection: ^1.18.0
   flutter_hooks: ^0.20.5
