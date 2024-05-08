@@ -1,4 +1,4 @@
-name: dev_kit
+name: dev_kit_workspace
 
 packages:
   - .
@@ -10,7 +10,7 @@ scripts:
   # Запускает build_runner build
   build: 'melos exec "dart run build_runner build -d"'
 
-  # Запускает build_runner watch в core package
+  # Запускает build_runner watch
   watch: 'melos exec "dart run build_runner watch -d"'
 
   pub_get: 'melos exec "flutter pub get"'
