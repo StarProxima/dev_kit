@@ -2,7 +2,6 @@ name: riverpod_async_builder
 description: "A new Flutter package project."
 version: 0.0.1
 
-publish_to: 'none'
 # homepage: 
 
 environment:
@@ -15,8 +14,6 @@ dependencies:
 
   riverpod: ^2.5.0
 
-  riverpod_utils:
-    path: ../riverpod_utils
 
 dev_dependencies:
   flutter_test:

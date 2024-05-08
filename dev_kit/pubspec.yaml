@@ -2,8 +2,6 @@ name: dev_kit
 description: A set of developer utilities for flutter projects
 version: 1.0.0
 
-publish_to: 'none'
-
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
@@ -11,17 +9,20 @@ dependencies:
   flutter:
     sdk: flutter
 
-  api_wrap:
-    path: ../api_wrap
+  # api_wrap:
+  #   git:
+  #     url: https://sea.xdev.team/StarProxima/dev_kit
+  #     ref: package-restructuring
+  #     path: api_wrap
 
-  riverpod_async_builder:
-    path: ../riverpod_async_builder
+  # riverpod_async_builder:
+  #   path: ../riverpod_async_builder
 
-  riverpod_utils:
-    path: ../riverpod_utils
+  # riverpod_utils:
+  #   path: ../riverpod_utils
     
-  riverpod_validator:
-    path: ../riverpod_validator
+  # riverpod_validator:
+  #   path: ../riverpod_validator
 
 
   collection: ^1.18.0

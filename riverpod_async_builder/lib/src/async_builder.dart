@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:riverpod_async_builder/riverpod_utils/lib/src/async_utils.dart';
 import 'package:riverpod_async_builder/src/async_builder_defaults.dart';
-import 'package:riverpod_utils/riverpod_utils.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.

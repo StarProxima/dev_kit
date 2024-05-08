@@ -1,5 +1,5 @@
 name: api_wrap
-description: A starting point for Dart libraries or applications.
+description: Error handling, rate limiting and retry in one ergonomic api
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
