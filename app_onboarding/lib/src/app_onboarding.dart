@@ -157,7 +157,8 @@ class AppOnboarding extends StatefulWidget {
   State<AppOnboarding> createState() => AppOnboardingState();
 }
 
-class AppOnboardingState extends State<AppOnboarding> {
+class AppOnboardingState extends State<AppOnboarding>
+    with AutomaticKeepAliveClientMixin<AppOnboarding> {
   int get stepsLength => widget.controller._overlayControllers.length;
 
   int get currentIndex => widget.controller.currentIndex;
@@ -244,6 +245,10 @@ class AppOnboardingState extends State<AppOnboarding> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return widget.child;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
