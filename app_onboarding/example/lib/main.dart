@@ -155,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 tooltipSettings: const TooltipSettings(
-                  tooltipDirection: AppCustomTooltipDirection.bottom,
+                  tooltipDirection: AppOnboardingTooltipDirection.bottom,
                 ),
                 child: const Text(
                   'You have pushed the button this many times:',
@@ -210,8 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
           index: 3,
           tooltipOffset: const Offset(-113, -20),
           tooltipSettings: const TooltipSettings(
-            arrowPosition: AppCustomArrowPosition.right,
-            tooltipDirection: AppCustomTooltipDirection.bottom,
+            arrowPosition: AppOnboardingTooltipArrowPosition.right,
+            tooltipDirection: AppOnboardingTooltipDirection.bottom,
             completeText: 'Complete!',
           ),
           backgroundColor: Colors.blue.withOpacity(0.4),
@@ -262,8 +262,8 @@ class _MyHomePageState extends State<MyHomePage> {
             tooltipOffset: const Offset(-113, -20),
             tooltipSettings: const TooltipSettings(
               tooltipText: 'THIS IS AUTO TOOLTIP!',
-              tooltipDirection: AppCustomTooltipDirection.bottom,
-              arrowPosition: AppCustomArrowPosition.right,
+              tooltipDirection: AppOnboardingTooltipDirection.bottom,
+              arrowPosition: AppOnboardingTooltipArrowPosition.right,
             ),
             child: FloatingActionButton(
               onPressed: _incrementCounter,

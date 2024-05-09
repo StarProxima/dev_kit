@@ -1,30 +1,30 @@
 //ignore_for_file: unused_element
 import 'package:flutter/material.dart';
 
-enum AppCustomTooltipDirection {
+enum AppOnboardingTooltipDirection {
   top,
   bottom,
   left,
   right,
 }
 
-enum AppCustomArrowPosition {
+enum AppOnboardingTooltipArrowPosition {
   left,
   center,
   right;
 }
 
-class AppCustomTooltip extends StatelessWidget {
-  const AppCustomTooltip({
+class AppOnboardingTooltip extends StatelessWidget {
+  const AppOnboardingTooltip({
     super.key,
     required this.direction,
     required this.child,
-    this.arrowPosition = AppCustomArrowPosition.center,
+    this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
     this.backgroundColor,
   });
 
-  final AppCustomTooltipDirection direction;
-  final AppCustomArrowPosition arrowPosition;
+  final AppOnboardingTooltipDirection direction;
+  final AppOnboardingTooltipArrowPosition arrowPosition;
   final Widget child;
   final Color? backgroundColor;
 
@@ -51,8 +51,8 @@ class _CustomTooltip extends CustomPainter {
     this.arrowBase = 12,
   });
 
-  final AppCustomTooltipDirection direction;
-  final AppCustomArrowPosition arrowPosition;
+  final AppOnboardingTooltipDirection direction;
+  final AppOnboardingTooltipArrowPosition arrowPosition;
   final Color color;
   final double borderRadius;
   final double arrowLength;
@@ -74,28 +74,28 @@ class _CustomTooltip extends CustomPainter {
           Radius.circular(borderRadius),
         ),
       );
-    final startArrowX = switch(arrowPosition) {
-      AppCustomArrowPosition.left => 25.0,
-      AppCustomArrowPosition.center => width / 2,
-      AppCustomArrowPosition.right => width - 25,
+    final startArrowX = switch (arrowPosition) {
+      AppOnboardingTooltipArrowPosition.left => 25.0,
+      AppOnboardingTooltipArrowPosition.center => width / 2,
+      AppOnboardingTooltipArrowPosition.right => width - 25,
     };
     switch (direction) {
-      case AppCustomTooltipDirection.top:
+      case AppOnboardingTooltipDirection.top:
         path
           ..moveTo(startArrowX - arrowBase / 2, 0)
           ..lineTo(startArrowX, -arrowLength)
           ..lineTo(startArrowX + arrowBase / 2, 0);
-      case AppCustomTooltipDirection.bottom:
+      case AppOnboardingTooltipDirection.bottom:
         path
           ..moveTo(startArrowX - arrowBase / 2, height)
           ..lineTo(startArrowX, arrowLength + height)
           ..lineTo(startArrowX + arrowBase / 2, height);
-      case AppCustomTooltipDirection.left:
+      case AppOnboardingTooltipDirection.left:
         path
           ..moveTo(0, height / 2 - arrowBase / 2)
           ..lineTo(-arrowLength, height / 2)
           ..lineTo(0, height / 2 + arrowBase / 2);
-      case AppCustomTooltipDirection.right:
+      case AppOnboardingTooltipDirection.right:
         path
           ..moveTo(width, height / 2 - arrowBase / 2)
           ..lineTo(width + arrowLength, height / 2)

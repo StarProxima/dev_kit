@@ -86,7 +86,7 @@ class _DefaultAnimatedAutoTooltipState
           parent: scaleTransition,
           curve: Curves.easeIn,
         ),
-        child: AppCustomTooltip(
+        child: AppOnboardingTooltip(
           direction: settings.tooltipDirection,
           backgroundColor: backgroundColor,
           arrowPosition: settings.arrowPosition,
@@ -172,7 +172,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
           parent: animationController,
           curve: Curves.easeIn,
         ),
-        child: AppCustomTooltip(
+        child: AppOnboardingTooltip(
           direction: settings.tooltipDirection,
           backgroundColor: backgroundColor,
           arrowPosition: settings.arrowPosition,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app_onboarding/src/app_onboarding.dart';
-import 'package:app_onboarding/src/tooltip/app_custom_tooltip.dart';
+import 'package:app_onboarding/src/tooltip/app_onboarding_tooltip.dart';
 import 'package:flutter/material.dart';
 
 part 'tooltip/default_tooltip.dart';
@@ -20,10 +20,10 @@ class TooltipSettings {
   final String tooltipText;
 
   /// Tooltip arrow`s position
-  final AppCustomArrowPosition arrowPosition;
+  final AppOnboardingTooltipArrowPosition arrowPosition;
 
   /// Tooltip direction
-  final AppCustomTooltipDirection tooltipDirection;
+  final AppOnboardingTooltipDirection tooltipDirection;
 
   /// Callback for skip button. Call before hide [AppOnboardingEntry]
   final FutureVoidCallback? onSkipTap;
@@ -57,8 +57,8 @@ class TooltipSettings {
     this.skipText = 'Skip',
     this.nextText = 'Next',
     this.isAutoHidden = false,
-    this.arrowPosition = AppCustomArrowPosition.center,
-    this.tooltipDirection = AppCustomTooltipDirection.top,
+    this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
+    this.tooltipDirection = AppOnboardingTooltipDirection.top,
     this.completeText,
     this.onSkipTap,
     this.onCompleteTap,
@@ -152,8 +152,14 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
     } else {
       _appOnboardingState.add(index);
     }
-    _appOnboardingState.registerOnEntryShow(index, widget.onShow);
-    _appOnboardingState.registerOnEntryHide(index, widget.onHide);
+    _appOnboardingState.registerOnEntryShow(
+      index,
+      widget.onShow,
+    );
+    _appOnboardingState.registerOnEntryHide(
+      index,
+      widget.onHide,
+    );
     link = LayerLink();
     gk = GlobalKey();
     super.didChangeDependencies();
@@ -220,18 +226,18 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
                 link: link!,
                 targetAnchor: widget.targetAnchor ??
                     (tooltipSettings.tooltipDirection ==
-                            AppCustomTooltipDirection.bottom
+                            AppOnboardingTooltipDirection.bottom
                         ? Alignment.topCenter
                         : Alignment.bottomCenter),
                 showWhenUnlinked: false,
                 offset: widget.tooltipOffset ??
                     (tooltipSettings.tooltipDirection ==
-                            AppCustomTooltipDirection.top
+                            AppOnboardingTooltipDirection.top
                         ? const Offset(0, 20)
                         : const Offset(0, -20)),
                 followerAnchor: widget.followerAnchor ??
                     (tooltipSettings.tooltipDirection ==
-                            AppCustomTooltipDirection.bottom
+                            AppOnboardingTooltipDirection.bottom
                         ? Alignment.bottomCenter
                         : Alignment.topCenter),
                 child: ConstrainedBox(
