@@ -22,7 +22,7 @@ class AppOnboardingController {
   Future<void> start({int startIndex = 0}) async {
     currentIndex = startIndex;
     for (var controller in _overlayControllers.values) {
-      controller.hide();
+      if (controller.isShowing) controller.hide();
     }
     await _onStart?.call();
     show();
