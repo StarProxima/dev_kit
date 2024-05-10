@@ -199,19 +199,23 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   Row(
                     children: [
                       Expanded(
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: ElevatedButton(
-                            style: settings.completeButtonStyle,
-                            onPressed: () {
-                              settings.onCompleteTap?.call();
-                              widget.appOnboardingState.startAutoHidden();
-                            },
-                            child: Text(
-                              settings.completeText!,
-                            ),
-                          ),
-                        ),
+                        child: settings.completeButtonSettings.buttonBuilder ==
+                                null
+                            ? Material(
+                                type: MaterialType.transparency,
+                                child: ElevatedButton(
+                                  style: settings
+                                      .completeButtonSettings.buttonStyle,
+                                  onPressed: _onCompleteTap,
+                                  child: Text(
+                                    settings.completeText!,
+                                  ),
+                                ),
+                              )
+                            : settings.completeButtonSettings.buttonBuilder!(
+                                settings.completeText!,
+                                _onCompleteTap,
+                              ),
                       ),
                     ],
                   )
@@ -275,6 +279,11 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
         ),
       ),
     );
+  }
+
+  void _onCompleteTap() {
+    settings.onCompleteTap?.call();
+    widget.appOnboardingState.startAutoHidden();
   }
 
   void _onSkipTap() {

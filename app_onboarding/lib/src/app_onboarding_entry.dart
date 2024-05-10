@@ -61,14 +61,14 @@ class TooltipSettings {
   /// Tooltip inner padding
   final EdgeInsets? padding;
 
-  /// Skip button style
+  /// Skip button settings
   final ButtonSettings skipButtonSettings;
 
-  /// Next button style
+  /// Next button settings
   final ButtonSettings nextButtonSettings;
 
-  /// Complete button style
-  final ButtonStyle? completeButtonStyle;
+  /// Complete button settings
+  final ButtonSettings completeButtonSettings;
   final Duration? hideAfterDuration;
 
   const TooltipSettings({
@@ -85,7 +85,7 @@ class TooltipSettings {
     this.padding,
     this.skipButtonSettings = const ButtonSettings(),
     this.nextButtonSettings = const ButtonSettings(),
-    this.completeButtonStyle,
+    this.completeButtonSettings = const ButtonSettings(),
     this.hideAfterDuration,
   });
 }
