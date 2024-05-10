@@ -69,6 +69,7 @@ class TooltipSettings {
 
   /// Complete button settings
   final ButtonSettings completeButtonSettings;
+  final Widget Function(String text)? autoHiddenContentBuilder;
   final Duration? hideAfterDuration;
 
   const TooltipSettings({
@@ -87,6 +88,7 @@ class TooltipSettings {
     this.nextButtonSettings = const ButtonSettings(),
     this.completeButtonSettings = const ButtonSettings(),
     this.hideAfterDuration,
+    this.autoHiddenContentBuilder,
   });
 }
 

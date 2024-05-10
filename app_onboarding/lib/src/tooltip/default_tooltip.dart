@@ -98,11 +98,14 @@ class _DefaultAnimatedAutoTooltipState
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        settings.tooltipText,
-                        textAlign: TextAlign.start,
-                        maxLines: 50,
-                      ),
+                      child: settings.autoHiddenContentBuilder == null
+                          ? Text(
+                              settings.tooltipText,
+                              textAlign: TextAlign.start,
+                              maxLines: 50,
+                            )
+                          : settings
+                              .autoHiddenContentBuilder!(settings.tooltipText),
                     ),
                   ],
                 ),
