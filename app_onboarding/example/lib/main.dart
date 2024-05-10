@@ -166,14 +166,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 tooltipSettings: TooltipSettings(
                   tooltipText: 'Custom text',
                   backgroundColor: Colors.red.shade300,
-                  skipButtonStyle: buttonStyle.copyWith(
-                    backgroundColor: MaterialStatePropertyAll<Color>(
-                      Colors.blue.shade500,
+                  skipButtonSettings: ButtonSettings(
+                    buttonStyle: buttonStyle.copyWith(
+                      backgroundColor: MaterialStatePropertyAll<Color>(
+                        Colors.blue.shade500,
+                      ),
                     ),
                   ),
-                  nextButtonStyle: buttonStyle.copyWith(
-                    backgroundColor: MaterialStatePropertyAll<Color>(
-                      Colors.pink.shade400,
+                  nextButtonSettings: ButtonSettings(
+                    buttonStyle: buttonStyle.copyWith(
+                      backgroundColor: MaterialStatePropertyAll<Color>(
+                        Colors.pink.shade400,
+                      ),
                     ),
                   ),
                 ),

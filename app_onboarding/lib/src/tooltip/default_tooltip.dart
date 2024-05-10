@@ -219,44 +219,53 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   Row(
                     children: [
                       Expanded(
-                        child: ElevatedButton(
-                          style: settings.skipButtonStyle,
-                          onPressed: () {
-                            settings.onSkipTap?.call();
-                            widget.appOnboardingState.startAutoHidden();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(settings.skipText),
-                            ],
-                          ),
-                        ),
+                        child: settings.skipButtonSettings.buttonBuilder == null
+                            ? ElevatedButton(
+                                style: settings.skipButtonSettings.buttonStyle,
+                                onPressed: _onSkipTap,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(settings.skipText),
+                                  ],
+                                ),
+                              )
+                            : settings.skipButtonSettings.buttonBuilder!(
+                                settings.skipText,
+                                _onSkipTap,
+                              ),
                       ),
                       const SizedBox(width: 4),
                       Expanded(
-                        child: ElevatedButton(
-                          style: settings.nextButtonStyle,
-                          onPressed: () async {
-                            widget.appOnboardingState.hide();
-                            await settings.onNextTap?.call();
-                            widget.appOnboardingState.next();
-                            widget.appOnboardingState.show();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
+                        child: settings.nextButtonSettings.buttonBuilder == null
+                            ? ElevatedButton(
+                                style: settings.nextButtonSettings.buttonStyle,
+                                onPressed: _onNextTap,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      settings.nextText?.call(
+                                            widget.index,
+                                            widget
+                                                .appOnboardingState.stepsLength,
+                                            widget.appOnboardingState
+                                                .countAutoHidden,
+                                          ) ??
+                                          'Next',
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : settings.nextButtonSettings.buttonBuilder!(
                                 settings.nextText?.call(
                                       widget.index,
                                       widget.appOnboardingState.stepsLength,
                                       widget.appOnboardingState.countAutoHidden,
                                     ) ??
                                     'Next',
+                                _onNextTap,
                               ),
-                            ],
-                          ),
-                        ),
                       ),
                     ],
                   ),
@@ -266,6 +275,18 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
         ),
       ),
     );
+  }
+
+  void _onSkipTap() {
+    settings.onSkipTap?.call();
+    widget.appOnboardingState.startAutoHidden();
+  }
+
+  Future<void> _onNextTap() async {
+    widget.appOnboardingState.hide();
+    await settings.onNextTap?.call();
+    widget.appOnboardingState.next();
+    widget.appOnboardingState.show();
   }
 }
 

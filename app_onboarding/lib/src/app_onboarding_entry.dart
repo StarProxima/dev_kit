@@ -6,6 +6,22 @@ import 'package:flutter/material.dart';
 
 part 'tooltip/default_tooltip.dart';
 
+class ButtonSettings {
+  /// Style for default button
+  final ButtonStyle? buttonStyle;
+
+  /// Custom builder for button
+  final Widget Function(
+    String text,
+    VoidCallback onTap,
+  )? buttonBuilder;
+
+  const ButtonSettings({
+    this.buttonStyle,
+    this.buttonBuilder,
+  });
+}
+
 class TooltipSettings {
   /// Complete button`s text
   final String? completeText;
@@ -46,10 +62,10 @@ class TooltipSettings {
   final EdgeInsets? padding;
 
   /// Skip button style
-  final ButtonStyle? skipButtonStyle;
+  final ButtonSettings skipButtonSettings;
 
   /// Next button style
-  final ButtonStyle? nextButtonStyle;
+  final ButtonSettings nextButtonSettings;
 
   /// Complete button style
   final ButtonStyle? completeButtonStyle;
@@ -67,8 +83,8 @@ class TooltipSettings {
     this.onNextTap,
     this.backgroundColor,
     this.padding,
-    this.skipButtonStyle,
-    this.nextButtonStyle,
+    this.skipButtonSettings = const ButtonSettings(),
+    this.nextButtonSettings = const ButtonSettings(),
     this.completeButtonStyle,
     this.hideAfterDuration,
   });
