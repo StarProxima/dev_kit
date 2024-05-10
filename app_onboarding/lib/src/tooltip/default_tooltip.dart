@@ -119,10 +119,12 @@ class _DefaultAnimatedTooltip extends StatefulWidget {
   const _DefaultAnimatedTooltip({
     required this.settings,
     required this.appOnboardingState,
+    required this.index,
   });
 
   final TooltipSettings settings;
   final AppOnboardingState appOnboardingState;
+  final int index;
 
   @override
   State<_DefaultAnimatedTooltip> createState() =>
@@ -244,7 +246,14 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(settings.nextText),
+                              Text(
+                                settings.nextText?.call(
+                                      widget.index,
+                                      widget.appOnboardingState.stepsLength,
+                                      widget.appOnboardingState.countAutoHidden,
+                                    ) ??
+                                    'Next',
+                              ),
                             ],
                           ),
                         ),
