@@ -244,6 +244,12 @@ class AppOnboardingState extends State<AppOnboarding>
   }
 
   @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return widget.child;
