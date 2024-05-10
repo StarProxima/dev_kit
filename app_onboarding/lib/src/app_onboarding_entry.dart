@@ -53,14 +53,12 @@ class TooltipSettings {
 
   /// Complete button style
   final ButtonStyle? completeButtonStyle;
-  final bool isAutoHidden;
   final Duration? hideAfterDuration;
 
   const TooltipSettings({
     this.tooltipText = 'Text in tooltip',
     this.skipText = 'Skip',
     this.nextText,
-    this.isAutoHidden = false,
     this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
     this.tooltipDirection = AppOnboardingTooltipDirection.top,
     this.completeText,
