@@ -15,6 +15,9 @@ enum ToastType {
   error,
 }
 
+const _rotationFactor = 30;
+const _fadeFactor = 2;
+
 class ToastCard extends StatefulHookConsumerWidget {
   const ToastCard({
     super.key,
@@ -138,10 +141,10 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                 ? details.progress
                 : -details.progress;
             if (widget.isRotated) {
-              rotationController.value = progress / 30;
+              rotationController.value = progress / _rotationFactor;
             }
             if (widget.isFaded) {
-              fadeController.value = 1 - (details.progress / 2);
+              fadeController.value = 1 - (details.progress / _fadeFactor);
             }
           },
           child: DefaultTextStyle(
