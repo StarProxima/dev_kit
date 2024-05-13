@@ -119,6 +119,7 @@ final class AppLoggerInitializer {
     bool printLogs = true,
     bool useCrLoggerInReleaseBuild = false,
     bool useDatabase = false,
+    bool isShareProviders = false,
     ThemeData? theme,
     List<String>? hiddenFields,
     List<String>? hiddenHeaders,
@@ -135,6 +136,7 @@ final class AppLoggerInitializer {
     _printLogs = printLogs;
     _useCrLoggerInReleaseBuild = useCrLoggerInReleaseBuild;
     _debugScreen = debugScreen;
+    AppLoggerHelper.instance.isShareProviders = isShareProviders;
 
     if (inited) {
       return;
