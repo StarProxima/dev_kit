@@ -37,7 +37,7 @@ class ToastCard extends StatefulHookConsumerWidget {
   final ToastType type;
   final Duration duration;
   final VoidCallback onDismissed;
-  final VoidCallback? onShare;
+  final Future<void> Function()? onShare;
 
   final Text? text;
   final Text? title;
@@ -239,8 +239,8 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                           radius: 50,
                                           borderRadius:
                                               BorderRadius.circular(50),
-                                          onTap: () {
-                                            widget.onShare?.call();
+                                          onTap: () async {
+                                            await widget.onShare?.call();
                                             setTimerToHide(immediately: true);
                                           },
                                           child: const Padding(
