@@ -104,6 +104,10 @@ class AppOnboardingController {
     _onEntryHide[index] = callback;
   }
 
+  bool hasEntry(int index) {
+    return _overlayControllers[index] != null;
+  }
+
   OverlayPortalController get(int index) {
     final controller = _overlayControllers[index];
     if (controller == null) {
@@ -196,6 +200,7 @@ class AppOnboardingState extends State<AppOnboarding>
   }
 
   void addAutoHidden(int index) {
+    if (widget.controller.hasEntry(index)) return;
     widget.controller.addEntry(index);
     widget.controller.firstAutoHiddenIndex ??= index;
     widget.controller.firstAutoHiddenIndex =
