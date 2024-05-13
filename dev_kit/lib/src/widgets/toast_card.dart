@@ -21,6 +21,7 @@ class ToastCard extends StatefulHookConsumerWidget {
     required this.type,
     required this.duration,
     required this.onDismissed,
+    this.onShare,
     this.text,
     this.title,
     this.debugText,
@@ -31,6 +32,7 @@ class ToastCard extends StatefulHookConsumerWidget {
   final ToastType type;
   final Duration duration;
   final VoidCallback onDismissed;
+  final VoidCallback? onShare;
 
   final Text? text;
   final Text? title;
@@ -198,12 +200,14 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                   child: InkWell(
                                     radius: 50,
                                     borderRadius: BorderRadius.circular(50),
-                                    onTap: () =>
-                                        setTimerToHide(immediately: true),
+                                    onTap: () {
+                                      widget.onShare?.call();
+                                      setTimerToHide(immediately: true);
+                                    },
                                     child: const Padding(
                                       padding: EdgeInsets.all(8),
                                       child: Icon(
-                                        Icons.close,
+                                        Icons.share,
                                         size: 24,
                                         color: textColor,
                                       ),
