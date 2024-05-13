@@ -200,11 +200,12 @@ class AppOnboardingState extends State<AppOnboarding>
   }
 
   void addAutoHidden(int index) {
-    if (widget.controller.hasEntry(index)) return;
+    final hasEntry = widget.controller.hasEntry(index);
     widget.controller.addEntry(index);
     widget.controller.firstAutoHiddenIndex ??= index;
     widget.controller.firstAutoHiddenIndex =
         min(widget.controller.firstAutoHiddenIndex!, index);
+    if (hasEntry) return;
     widget.controller.countAutoHidden++;
   }
 
