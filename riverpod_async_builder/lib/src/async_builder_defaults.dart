@@ -19,26 +19,16 @@ class AsyncBuilderError {
 }
 
 /// Класс для предоставления дефолтных билдеров загрзки и ошибки для [AsyncBuilder]
-class AsyncBuilderDefaults {
-  AsyncBuilderDefaults.init({
+class AsyncBuilderDefaults extends InheritedWidget {
+  AsyncBuilderDefaults({
+    required super.child,
     required this.loading,
     required this.error,
     required this.paginationPointer,
     this.paginationLoading,
     this.paginationError,
     required this.animationSettings,
-  }) {
-    _instance = this;
-  }
-
-  static AsyncBuilderDefaults? _instance;
-
-  static AsyncBuilderDefaults get instance =>
-      _instance ??
-      (throw Exception(
-        'AsyncBuilderDefaults is not initialized. '
-        'You should use AsyncBuilderDefaults.init',
-      ));
+  });
 
   final Widget Function() loading;
   final Widget Function(AsyncBuilderError error) error;
@@ -48,6 +38,34 @@ class AsyncBuilderDefaults {
   final int Function(int index, int pageSize) paginationPointer;
   final Widget Function()? paginationLoading;
   final Widget Function(AsyncBuilderError error)? paginationError;
+
+  static AsyncBuilderDefaults of(BuildContext context) {
+    final asyncBuilderDefaults =
+        context.dependOnInheritedWidgetOfExactType<AsyncBuilderDefaults>();
+    if (asyncBuilderDefaults == null) {
+      throw FlutterError.fromParts(<DiagnosticsNode>[
+        ErrorSummary(
+          'AsyncBuilderDefaults.of() called with a context that does not contain a AsyncBuilderDefaults.',
+        ),
+        ErrorDescription(
+          'No AsyncBuilderDefaults ancestor could be found starting from the context that was passed to AsyncBuilderDefaults.of(). '
+          'This usually happens when the context provided is from the same Widget as that '
+          'whose build function actually creates the AsyncBuilderDefaults widget being sought.',
+        ),
+        context.describeElement('The context used was'),
+      ]);
+    }
+    return asyncBuilderDefaults;
+  }
+
+  @override
+  bool updateShouldNotify(AsyncBuilderDefaults oldWidget) =>
+      loading != oldWidget.loading ||
+      error != oldWidget.error ||
+      animationSettings != oldWidget.animationSettings ||
+      paginationPointer != oldWidget.paginationPointer ||
+      paginationLoading != oldWidget.paginationLoading ||
+      paginationError != oldWidget.paginationError;
 }
 
 class ItemAnimationSettingsDefaults {
