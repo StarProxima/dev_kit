@@ -94,6 +94,7 @@ class ItemAnimationSettingsDefaults {
 
   ItemAnimationSettingsDefaults apply(ItemAnimationSettings? settings) =>
       ItemAnimationSettingsDefaults(
+        enabled: settings?.enabled ?? enabled,
         itemAnimationDuration:
             settings?.itemAnimationDuration ?? itemAnimationDuration,
         delayBeforeStartAnimation:
@@ -114,6 +115,7 @@ class ItemAnimationSettingsDefaults {
 class ItemAnimationSettings {
   /// Получает параметры по умолчанию из [ItemAnimationSettingsDefaults]
   ItemAnimationSettings({
+    this.enabled,
     this.itemAnimationDuration,
     this.delayBeforeStartAnimation,
     this.animatedItemsCount,
@@ -141,6 +143,8 @@ class ItemAnimationSettings {
   final int? concurrentAnimationsCount;
   final bool? animationAutoStart;
   final bool? shouldAnimateOnlyAfterLoading;
+  // TODO: Добавил поле, если понадобится где-нибудь в списке отменить анимацию
+  final bool? enabled;
 
   final Widget Function(Widget child, Animation<double> animation)? builder;
 }
