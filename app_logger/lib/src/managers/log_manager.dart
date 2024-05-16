@@ -324,7 +324,13 @@ final class LogManager {
 
     logs.add(log);
     localLogs.add(log);
-    allLogs.add(log);
+    final isProvider = log.title?.toLowerCase().contains('provider') ?? false;
+    if (!isProvider) {
+      allLogs.add(log);
+    }
+    if (isProvider && (AppLoggerHelper.instance.isShareProviders ?? false)) {
+      allLogs.add(log);
+    }
 
     /// Display snack bar
     if (log.showToast) {

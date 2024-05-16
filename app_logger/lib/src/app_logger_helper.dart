@@ -21,6 +21,7 @@ final class AppLoggerHelper {
   final maxDBLogsCount = AppLoggerInitializer.instance.maxDBLogsCount;
   late final PackageInfo packageInfo;
   late final SharedPreferences _prefs;
+  bool? isShareProviders;
 
   ThemeData theme = loggerTheme;
 

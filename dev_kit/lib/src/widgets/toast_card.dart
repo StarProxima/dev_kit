@@ -15,27 +15,36 @@ enum ToastType {
   error,
 }
 
+const _rotationFactor = 30;
+const _fadeFactor = 2;
+
 class ToastCard extends StatefulHookConsumerWidget {
   const ToastCard({
     super.key,
     required this.type,
     required this.duration,
     required this.onDismissed,
+    this.onShare,
     this.text,
     this.title,
     this.debugText,
     this.isDebug = false,
+    this.isFaded = false,
+    this.isRotated = false,
     this.decoration,
   });
 
   final ToastType type;
   final Duration duration;
   final VoidCallback onDismissed;
+  final Future<void> Function()? onShare;
 
   final Text? text;
   final Text? title;
   final Text? debugText;
   final bool isDebug;
+  final bool isFaded;
+  final bool isRotated;
 
   final Decoration? decoration;
 
@@ -54,6 +63,16 @@ class _ToastCardState extends ConsumerState<ToastCard> {
     final isDebug = widget.isDebug;
     final duration = widget.duration;
     final decoration = widget.decoration;
+
+    final rotationController = useAnimationController(
+      duration: const Duration(milliseconds: 200),
+      lowerBound: -5,
+      upperBound: 5,
+    );
+    final fadeController = useAnimationController(
+      duration: const Duration(milliseconds: 200),
+      initialValue: 1,
+    );
 
     final scaleAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
@@ -110,142 +129,169 @@ class _ToastCardState extends ConsumerState<ToastCard> {
       ToastType.error => Colors.red,
     };
 
-    return DefaultTextStyle(
-      style: const TextStyle(color: textColor),
-      child: ScaleTransition(
-        scale: scaleAnimationController.drive(
-          CurveTween(curve: Curves.easeOutBack),
-        ),
-        child: GestureDetector(
-          onTap: openCloseCard,
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: decoration ??
-                BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: backgroundColor,
-                  border: Border.all(color: textColor.withOpacity(0.2)),
-                ),
-            clipBehavior: Clip.antiAlias,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+    return FadeTransition(
+      opacity: fadeController,
+      child: RotationTransition(
+        turns: rotationController,
+        child: Dismissible(
+          key: UniqueKey(),
+          onDismissed: (direction) => widget.onDismissed(),
+          onUpdate: (details) {
+            final progress = details.direction == DismissDirection.startToEnd
+                ? details.progress
+                : -details.progress;
+            if (widget.isRotated) {
+              rotationController.value = progress / _rotationFactor;
+            }
+            if (widget.isFaded) {
+              fadeController.value = 1 - (details.progress / _fadeFactor);
+            }
+          },
+          child: DefaultTextStyle(
+            style: const TextStyle(color: textColor),
+            child: ScaleTransition(
+              scale: scaleAnimationController.drive(
+                CurveTween(curve: Curves.easeOutBack),
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: horizontalPadding,
-                      child: Row(
+              child: GestureDetector(
+                onTap: openCloseCard,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: decoration ??
+                      BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: backgroundColor,
+                        border: Border.all(color: textColor.withOpacity(0.2)),
+                      ),
+                  clipBehavior: Clip.antiAlias,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
                         children: [
-                          Icon(
-                            switch (widget.type) {
-                              ToastType.success => Icons.check_circle_outline,
-                              ToastType.info => Icons.info_outline,
-                              ToastType.warning => Icons.info_outline,
-                              ToastType.error => Icons.cancel_outlined,
-                            },
-                            color: iconColor,
-                          ),
-                          const Gap(12),
-                          Expanded(
+                          Padding(
+                            padding: horizontalPadding,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
+                                Icon(
+                                  switch (widget.type) {
+                                    ToastType.success =>
+                                      Icons.check_circle_outline,
+                                    ToastType.info => Icons.info_outline,
+                                    ToastType.warning => Icons.info_outline,
+                                    ToastType.error => Icons.cancel_outlined,
+                                  },
+                                  color: iconColor,
+                                ),
+                                const Gap(12),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Gap(12),
-                                      if (title != null || isDebug)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 2,
-                                          ),
-                                          child: Text.rich(
-                                            TextSpan(
-                                              children: [
-                                                if (isDebug)
-                                                  const WidgetSpan(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                        right: 4,
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.bug_report,
-                                                        color: textColor,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                if (title != null)
+                                      Flexible(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Gap(12),
+                                            if (title != null || isDebug)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  bottom: 2,
+                                                ),
+                                                child: Text.rich(
                                                   TextSpan(
-                                                    text: title.data,
-                                                    style: title.style,
+                                                    children: [
+                                                      if (isDebug)
+                                                        const WidgetSpan(
+                                                          child: Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                              right: 4,
+                                                            ),
+                                                            child: Icon(
+                                                              Icons.bug_report,
+                                                              color: textColor,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      if (title != null)
+                                                        TextSpan(
+                                                          text: title.data,
+                                                          style: title.style,
+                                                        ),
+                                                    ],
                                                   ),
-                                              ],
+                                                ),
+                                              ),
+                                            if (text != null) text,
+                                            const Gap(12),
+                                          ],
+                                        ),
+                                      ),
+                                      Material(
+                                        type: MaterialType.transparency,
+                                        child: InkWell(
+                                          radius: 50,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          onTap: () async {
+                                            await widget.onShare?.call();
+                                            setTimerToHide(immediately: true);
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8),
+                                            child: Icon(
+                                              Icons.share,
+                                              size: 24,
+                                              color: textColor,
                                             ),
                                           ),
                                         ),
-                                      if (text != null) text,
-                                      const Gap(12),
-                                    ],
-                                  ),
-                                ),
-                                Material(
-                                  type: MaterialType.transparency,
-                                  child: InkWell(
-                                    radius: 50,
-                                    borderRadius: BorderRadius.circular(50),
-                                    onTap: () =>
-                                        setTimerToHide(immediately: true),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8),
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 24,
-                                        color: textColor,
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          if (debugText != null)
+                            SizeTransition(
+                              sizeFactor: CurvedAnimation(
+                                curve: Curves.easeInOut,
+                                parent: debugTextAnimationController,
+                              ),
+                              axisAlignment: -1,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Divider(
+                                    color: textColor.withOpacity(0.1),
+                                    thickness: 2,
+                                    height: 2,
+                                  ),
+                                  Padding(
+                                    padding: horizontalPadding,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 8,
+                                        bottom: 4,
+                                      ),
+                                      child: debugText,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                    if (debugText != null)
-                      SizeTransition(
-                        sizeFactor: CurvedAnimation(
-                          curve: Curves.easeInOut,
-                          parent: debugTextAnimationController,
-                        ),
-                        axisAlignment: -1,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Divider(
-                              color: textColor.withOpacity(0.1),
-                              thickness: 2,
-                              height: 2,
-                            ),
-                            Padding(
-                              padding: horizontalPadding,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8,
-                                  bottom: 4,
-                                ),
-                                child: debugText,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
               ),
             ),
