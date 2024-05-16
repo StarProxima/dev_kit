@@ -111,7 +111,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     ItemAnimationSettings? animationSettings,
     required Widget Function(Item item) data,
   }) {
-    final defaults = AsyncBuilderDefaults.instance;
+    final defaults = AsyncBuilderDefaults.of(context);
 
     final calculatePointer =
         calculatePaginationPointer ?? defaults.paginationPointer;
@@ -221,7 +221,7 @@ class AsyncBuilder<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaults = AsyncBuilderDefaults.instance;
+    final defaults = AsyncBuilderDefaults.of(context);
 
     Widget loadingBuilder() {
       final child = loading?.call() ?? defaults.loading();
