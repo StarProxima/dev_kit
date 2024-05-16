@@ -143,7 +143,7 @@ class ItemAnimationSettings {
   final int? concurrentAnimationsCount;
   final bool? animationAutoStart;
   final bool? shouldAnimateOnlyAfterLoading;
-  // TODO: Добавил поле, если понадобится где-нибудь в списке отменить анимацию
+  // TODO: Добавил поле, если понадобится сделать AsyncBuilder.paginated без анимации
   final bool? enabled;
 
   final Widget Function(Widget child, Animation<double> animation)? builder;
