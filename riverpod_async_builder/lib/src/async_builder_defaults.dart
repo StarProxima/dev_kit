@@ -20,7 +20,8 @@ class AsyncBuilderError {
 
 /// Класс для предоставления дефолтных билдеров загрзки и ошибки для [AsyncBuilder]
 class AsyncBuilderDefaults extends InheritedWidget {
-  AsyncBuilderDefaults({
+  const AsyncBuilderDefaults({
+    super.key,
     required super.child,
     required this.loading,
     required this.error,
