@@ -29,6 +29,8 @@ class ToastCard extends StatefulHookConsumerWidget {
     this.title,
     this.debugText,
     this.isDebug = false,
+    this.shouldHideShare = false,
+    this.shouldHideClose = false,
     this.isFaded = false,
     this.isRotated = false,
     this.decoration,
@@ -43,6 +45,8 @@ class ToastCard extends StatefulHookConsumerWidget {
   final Text? title;
   final Text? debugText;
   final bool isDebug;
+  final bool shouldHideShare;
+  final bool shouldHideClose;
   final bool isFaded;
   final bool isRotated;
 
@@ -233,26 +237,32 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                           ],
                                         ),
                                       ),
-                                      Material(
-                                        type: MaterialType.transparency,
-                                        child: InkWell(
-                                          radius: 50,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          onTap: () async {
-                                            await widget.onShare?.call();
-                                            setTimerToHide(immediately: true);
-                                          },
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(8),
-                                            child: Icon(
-                                              Icons.share,
-                                              size: 24,
-                                              color: textColor,
+                                      if (!widget.shouldHideShare ||
+                                          !widget.shouldHideClose)
+                                        Material(
+                                          type: MaterialType.transparency,
+                                          child: InkWell(
+                                            radius: 50,
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            onTap: () async {
+                                              if (!widget.shouldHideShare) {
+                                                await widget.onShare?.call();
+                                              }
+                                              setTimerToHide(immediately: true);
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8),
+                                              child: Icon(
+                                                !widget.shouldHideShare
+                                                    ? Icons.share
+                                                    : Icons.close,
+                                                size: 24,
+                                                color: textColor,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                 ),
