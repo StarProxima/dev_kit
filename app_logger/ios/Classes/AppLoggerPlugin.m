@@ -10,6 +10,6 @@
 
 @implementation AppLoggerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftCrLoggerPlugin registerWithRegistrar:registrar];
+  [SwiftAppLoggerPlugin registerWithRegistrar:registrar];
 }
 @end

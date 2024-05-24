@@ -5,9 +5,9 @@ public class SwiftAppLoggerPlugin: NSObject, FlutterPlugin {
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "app_logger", binaryMessenger: registrar.messenger())
-    let instance = SwiftCrLoggerPlugin()
+    let instance = SwiftAppLoggerPlugin()
     FlutterEventChannel(name: "com.crefter.app_logger/logger", binaryMessenger: registrar.messenger())
-                  .setStreamHandler(CrLogger())
+                  .setStreamHandler(AppLogger())
       
 
     registrar.addMethodCallDelegate(instance, channel: channel)

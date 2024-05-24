@@ -10,7 +10,7 @@ public class AppLogger : NSObject, FlutterStreamHandler {
     private static let jsonStringKey = "jsonString"
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        CrLogger.loggerEvents = events
+        AppLogger.loggerEvents = events
         return nil
     }
     
