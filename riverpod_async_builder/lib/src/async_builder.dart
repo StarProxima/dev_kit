@@ -5,6 +5,28 @@ import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_async_builder/riverpod_async_builder.dart';
 
+class PaginatedData<T> {
+  const PaginatedData({
+    required this.index,
+    required this.pageSize,
+    required this.pointer,
+    required this.indexOnPage,
+    required this.itemsOnPage,
+    required this.item,
+  });
+
+  final int index;
+  final int pageSize;
+  final int pointer;
+  final int indexOnPage;
+  final List<T> itemsOnPage;
+  final T item;
+
+  T? get prevItem =>
+      indexOnPage > 0 ? itemsOnPage.elementAtOrNull(indexOnPage - 1) : null;
+  T? get nextItem => itemsOnPage.elementAtOrNull(indexOnPage + 1);
+}
+
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
 ///
@@ -109,13 +131,14 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? orElse,
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
-    required Widget Function(Item item) data,
+    required Widget Function(PaginatedData<Item> data) data,
   }) {
     final defaults = AsyncBuilderDefaults.of(context);
 
     final calculatePointer =
         calculatePaginationPointer ?? defaults.paginationPointer;
     final pointer = calculatePointer(index, pageSize);
+
     final indexOnPage = index % pageSize;
 
     final asyncValue = value(pointer);
@@ -125,7 +148,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     final asyncItem =
-        value(pointer).selectData((items) => items.elementAt(indexOnPage));
+        asyncValue.selectData((items) => items.elementAt(indexOnPage));
 
     final stop = asyncItem.when(
       skipLoadingOnReload: skipLoadingOnReload,
@@ -152,17 +175,32 @@ class AsyncBuilder<T> extends StatelessWidget {
       value(calculatePointer(index - pageSize, pageSize));
     }
 
-    var dataFn = data;
+    // Преобразуем в PaginatedData, чтобы можно было использовать эти данные при построении виджета
+    Widget Function(Item) dataFn = (item) => data(
+          PaginatedData(
+            index: index,
+            pageSize: pageSize,
+            pointer: pointer,
+            indexOnPage: indexOnPage,
+            // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
+            itemsOnPage: asyncValue.requireValue.toList(),
+            item: item,
+          ),
+        );
+
     final settings = defaults.animationSettings.apply(animationSettings);
 
+    // Анимация элементов
     if (animationController != null && settings.enabled) {
-      dataFn = (item) {
+      dataFn = (data) {
         final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
         final animatedItemsCount = settings.animatedItemsCount;
 
         if (animationController.isDismissed) {
           animationController.duration =
               settings.itemAnimationDuration * itemCountForDuration;
+
+          // TODO: Попробовать без _animationControllerMap;
           final hash = animationController.hashCode;
           _animationControllerMap[context.hashCode] = hash;
 
@@ -198,7 +236,7 @@ class AsyncBuilder<T> extends StatelessWidget {
           CurveTween(curve: Interval(begin, end)),
         );
 
-        final child = data(item);
+        final child = dataFn(data);
         return SizedBox(
           key: child.key,
           child: settings.builder(child, animation),
@@ -206,6 +244,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       };
     }
 
+    // Возращаем AsyncBuilder для нашего элемента на странице
     return AsyncBuilder(
       asyncItem,
       skipLoadingOnReload: skipLoadingOnReload,
