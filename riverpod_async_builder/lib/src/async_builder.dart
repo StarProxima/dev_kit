@@ -251,15 +251,17 @@ class AsyncBuilder<T> extends StatelessWidget {
         );
 
     // Анимация элементов
-    Widget animatedDataFn(Item _) => AsyncBuilder.animatedItem<Item>(
-          asyncItems.requireValue,
-          context: context,
-          index: indexOnPage,
-          animationController: animationController,
-          animationSettings: animationSettings,
-          data: (item, _) => dataFn(item),
-          // Результат точно не null, т.к. indexOnPage < asyncItems.requireValue.length
-        )!;
+    Widget animatedDataFn(Item item) => animationController != null
+        ? AsyncBuilder.animatedItem<Item>(
+            asyncItems.requireValue,
+            context: context,
+            index: indexOnPage,
+            animationController: animationController,
+            animationSettings: animationSettings,
+            data: (item, _) => dataFn(item),
+            // Результат точно не null, т.к. indexOnPage < asyncItems.requireValue.length
+          )!
+        : dataFn(item);
 
     // Возращаем AsyncBuilder для нашего элемента на странице
     return AsyncBuilder(
