@@ -72,6 +72,6 @@ class PaginatedListData<T> {
   T? get prevItem => itemAt(indexOnPage - 1);
   T? get nextItem => itemAt(indexOnPage + 1);
 
-  bool get isFisrt => index == 0;
+  bool get isFirst => index == 0;
   bool get isLast => isLastOnPage && nextItem == null;
 }
