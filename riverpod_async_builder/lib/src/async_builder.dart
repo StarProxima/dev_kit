@@ -52,7 +52,7 @@ class AsyncBuilder<T> extends StatelessWidget {
   final Widget Function()? orElse;
   final Widget Function(T data) data;
 
-  static Widget? item<Item>(
+  static Widget? animatedItem<Item>(
     Iterable<Item> items, {
     required BuildContext context,
     required int index,
@@ -135,7 +135,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     return child;
   }
 
-  /// For synk list use [AsyncBuilder.item]
+  /// For synk list use [AsyncBuilder.animatedItem]
   ///
   /// Функция для организации пагинации списков с дополнительным функционалом.
   ///
@@ -172,8 +172,8 @@ class AsyncBuilder<T> extends StatelessWidget {
   /// после возникновения ошибки.
   ///
   /// [animationController] - Для отложенной анимации элементов должен передаваться один [AnimationController],
-  /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
-  static AsyncBuilder<Item>? paginated<Item>(
+  /// управление происходит внутри [AsyncBuilder.paginatedItem], передавать duration не нужно.
+  static AsyncBuilder<Item>? paginatedItem<Item>(
     AsyncValue<Iterable<Item>> Function(int pointer) value, {
     required BuildContext context,
     required int index,
@@ -190,7 +190,6 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? loading,
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
-    // TODO: AnimatedListBuilder
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
     required Widget Function(Item item, PaginatedListData<Item> data) data,
@@ -252,7 +251,7 @@ class AsyncBuilder<T> extends StatelessWidget {
         );
 
     // Анимация элементов
-    Widget animatedDataFn(Item _) => AsyncBuilder.item<Item>(
+    Widget animatedDataFn(Item _) => AsyncBuilder.animatedItem<Item>(
           asyncItems.requireValue,
           context: context,
           index: indexOnPage,
