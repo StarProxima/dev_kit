@@ -65,7 +65,7 @@ class PaginatedListData<T> {
           itemsOnPage.elementAtOrNull(index),
         _ when index >= pageSize && index < 2 * pageSize =>
           itemsOnNextPage?.elementAtOrNull(index - pageSize),
-        _ => null,
+        _ => throw RangeError.range(index, -pageSize + 1, 2 * pageSize - 1),
       };
 
   T? get prevItem => itemAt(indexOnPage - 1);

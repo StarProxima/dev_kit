@@ -233,8 +233,13 @@ class AsyncBuilder<T> extends StatelessWidget {
         : error ?? defaults.paginationError ?? defaults.paginationError;
 
     // Preload - предзагрузка предыдущей или следующей страницы, чтобы избежать загрузок
-    final prevPagePointer = calculatePointer(index - pageSize, pageSize);
-    if (indexOnPage <= preloadPrevPageOffset && index % pageSize > 1) {
+    final prevPagePointer =
+        index >= pageSize ? calculatePointer(index - pageSize, pageSize) : null;
+
+    if (indexOnPage <= preloadPrevPageOffset &&
+        index % pageSize > 1 &&
+        prevPagePointer != null) {
+      // Просто вызываем метод value, ui должен подписаться, элементы начать грузиться
       value(prevPagePointer);
     }
 
@@ -253,8 +258,9 @@ class AsyncBuilder<T> extends StatelessWidget {
             indexOnPage: indexOnPage,
             // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
             itemsOnPage: asyncItems.requireValue.toList(),
-            itemsOnPrevPageFn: () =>
-                value(prevPagePointer).valueOrNull?.toList(),
+            itemsOnPrevPageFn: () => prevPagePointer != null
+                ? value(prevPagePointer).valueOrNull?.toList()
+                : null,
             itemsOnNextPageFn: () =>
                 value(nextPagePointer).valueOrNull?.toList(),
             item: item,
