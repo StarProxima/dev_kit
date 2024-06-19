@@ -1,40 +1,41 @@
-class PaginatedListData<T> {
+class PaginatedListData<T> extends ListData<T> {
   const PaginatedListData({
-    required this.index,
+    required super.index,
     required this.pageSize,
     required this.pointer,
     required this.indexOnPage,
     required this.itemsOnPage,
-    required this.item,
-  });
+    required super.item,
+  }) : super(
+          indexOnPage: indexOnPage,
+          items: itemsOnPage,
+        );
 
-  final int index;
   final int pageSize;
   final int pointer;
   final int indexOnPage;
   final List<T> itemsOnPage;
-  final T item;
-
-  T? itemAt(int index) =>
-      index >= 0 ? itemsOnPage.elementAtOrNull(index) : null;
-
-  T? get prevItem => itemAt(indexOnPage - 1);
-  T? get nextItem => itemAt(indexOnPage + 1);
 }
 
 class ListData<T> {
-  ListData({
+  const ListData({
     required this.index,
-    required this.items,
+    required List<T> items,
     required this.item,
-  });
+    int? indexOnPage,
+  })  : _index = indexOnPage ?? index,
+        _items = items;
 
   final int index;
-  final List<T> items;
+  final int _index;
+  final List<T> _items;
   final T item;
 
-  T? itemAt(int index) => index >= 0 ? items.elementAtOrNull(index) : null;
+  T? itemAt(int index) => index >= 0 ? _items.elementAtOrNull(index) : null;
 
-  T? get prevItem => itemAt(index - 1);
-  T? get nextItem => itemAt(index + 1);
+  T? get prevItem => itemAt(_index - 1);
+  T? get nextItem => itemAt(_index + 1);
+
+  bool get isFirst => _index == 0;
+  bool get isLast => _index == _items.length - 1;
 }
