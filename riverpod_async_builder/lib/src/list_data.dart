@@ -60,11 +60,11 @@ class PaginatedListData<T> {
   // Учитывает предыдущую и следущую страницу, если они есть
   T? itemAt(int index) => switch (index) {
         _ when index < 0 && index > -pageSize =>
-          itemsOnPrevPage?.elementAtOrNull(index),
+          itemsOnPrevPage?.elementAtOrNull(pageSize + index),
         _ when index >= 0 && index < pageSize =>
           itemsOnPage.elementAtOrNull(index),
         _ when index >= pageSize && index < 2 * pageSize =>
-          itemsOnNextPage?.elementAtOrNull(index),
+          itemsOnNextPage?.elementAtOrNull(index - pageSize),
         _ => null,
       };
 
