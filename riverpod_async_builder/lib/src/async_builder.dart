@@ -56,6 +56,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     Iterable<Item> items, {
     required BuildContext context,
     required int index,
+    int? indexForAnimation,
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
     required Widget Function(Item item, ListData<Item> data) data,
@@ -100,10 +101,12 @@ class AsyncBuilder<T> extends StatelessWidget {
           }
         }
 
-        final isLimited =
-            animatedItemsCount != null && index > animatedItemsCount;
+        final indexForAnim = indexForAnimation ?? index;
 
-        final limitedIndex = isLimited ? animatedItemsCount : index;
+        final isLimited =
+            animatedItemsCount != null && indexForAnim > animatedItemsCount;
+
+        final limitedIndex = isLimited ? animatedItemsCount : indexForAnim;
 
         final curConcurrentAnimationsCount = max(
           settings.concurrentAnimationsCount +
@@ -256,6 +259,7 @@ class AsyncBuilder<T> extends StatelessWidget {
             asyncItems.requireValue,
             context: context,
             index: indexOnPage,
+            indexForAnimation: index,
             animationController: animationController,
             animationSettings: animationSettings,
             data: (item, _) => dataFn(item),
