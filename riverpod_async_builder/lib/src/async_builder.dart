@@ -156,10 +156,10 @@ class AsyncBuilder<T> extends StatelessWidget {
   /// [pageSize] - размер страницы.
   ///
   /// [preloadNextPageOffset] - количество элементов от конца текущего списка, при достижении
-  /// которого начнется предзагрузка следующей страницы. По умолчанию равно 0.
+  /// которого начнется предзагрузка следующей страницы, чтобы избежать загрузки. По умолчанию 0.
   ///
   /// [preloadPrevPageOffset] - количество элементов от начала текущего списка, при достижении
-  /// которого начнется предзагрузка предыдущей страницы. По умолчанию равно 0.
+  /// которого начнется предзагрузка предыдущей страницы, чтобы избежать загрузки. По умолчанию 0.
   ///
   /// [stopOnLoad] - если `true`, то страницы будут загружаться подряд, а при загрузке скролл будет ограничен.
   /// По умолчанию равно `true`.
@@ -232,14 +232,18 @@ class AsyncBuilder<T> extends StatelessWidget {
         ? (_) => const SizedBox.shrink()
         : error ?? defaults.paginationError ?? defaults.paginationError;
 
-    if (pageSize - indexOnPage <= preloadNextPageOffset) {
-      value(calculatePointer(index + pageSize, pageSize));
-    }
+    // Preload - предзагрузка предыдущей или следующей страницы, чтобы избежать загрузок
+    final prevPagePointer = calculatePointer(index - pageSize, pageSize);
     if (indexOnPage <= preloadPrevPageOffset && index % pageSize > 1) {
-      value(calculatePointer(index - pageSize, pageSize));
+      value(prevPagePointer);
     }
 
-    // Добавляем PaginatedData, чтобы можно было использовать эти данные при построении виджета
+    final nextPagePointer = calculatePointer(index + pageSize, pageSize);
+    if (pageSize - indexOnPage <= preloadNextPageOffset) {
+      value(nextPagePointer);
+    }
+
+    // Добавляем PaginatedListData, чтобы можно было использовать эти данные при построении виджета
     Widget dataFn(Item item) => data(
           item,
           PaginatedListData(
@@ -249,6 +253,10 @@ class AsyncBuilder<T> extends StatelessWidget {
             indexOnPage: indexOnPage,
             // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
             itemsOnPage: asyncItems.requireValue.toList(),
+            itemsOnPrevPageFn: () =>
+                value(prevPagePointer).valueOrNull?.toList(),
+            itemsOnNextPageFn: () =>
+                value(nextPagePointer).valueOrNull?.toList(),
             item: item,
           ),
         );
@@ -259,6 +267,7 @@ class AsyncBuilder<T> extends StatelessWidget {
             asyncItems.requireValue,
             context: context,
             index: indexOnPage,
+            // Нужно, чтобы разные страницы анимироваль подряд, а не одновременно
             indexForAnimation: index,
             animationController: animationController,
             animationSettings: animationSettings,
