@@ -15,7 +15,9 @@ class PaginatedData<T> {
   final List<T> itemsOnPage;
   final T item;
 
-  T? get prevItem =>
-      indexOnPage > 0 ? itemsOnPage.elementAtOrNull(indexOnPage - 1) : null;
-  T? get nextItem => itemsOnPage.elementAtOrNull(indexOnPage + 1);
+  T? itemAt(int index) =>
+      index >= 0 ? itemsOnPage.elementAtOrNull(index) : null;
+
+  T? get prevItem => itemAt(indexOnPage - 1);
+  T? get nextItem => itemAt(indexOnPage + 1);
 }
