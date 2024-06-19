@@ -35,6 +35,9 @@ class PaginatedListData<T> {
   })  : _itemsOnPrevPageFn = itemsOnPrevPageFn,
         _itemsOnNextPageFn = itemsOnNextPageFn;
 
+  final List<T>? Function() _itemsOnPrevPageFn;
+  final List<T>? Function() _itemsOnNextPageFn;
+
   final int index;
   final int pageSize;
   final int pointer;
@@ -44,8 +47,6 @@ class PaginatedListData<T> {
 
   List<T>? get itemsOnPrevPage => _itemsOnPrevPageFn();
   List<T>? get itemsOnNextPage => _itemsOnNextPageFn();
-  final List<T>? Function() _itemsOnPrevPageFn;
-  final List<T>? Function() _itemsOnNextPageFn;
 
   // Учитывает только текущую страницу
   T? itemOnPageAt(int index) =>
@@ -70,4 +71,7 @@ class PaginatedListData<T> {
 
   T? get prevItem => itemAt(indexOnPage - 1);
   T? get nextItem => itemAt(indexOnPage + 1);
+
+  bool get isFisrt => prevItem == null;
+  bool get isLast => nextItem == null;
 }
