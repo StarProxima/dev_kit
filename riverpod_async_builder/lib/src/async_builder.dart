@@ -176,7 +176,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     // Добавляем PaginatedData, чтобы можно было использовать эти данные при построении виджета
-    Widget Function(Item) dataFn = (item) => data(
+    Widget dataFn(Item item) => data(
           item,
           PaginatedData(
             index: index,
@@ -189,11 +189,13 @@ class AsyncBuilder<T> extends StatelessWidget {
           ),
         );
 
+    Widget Function(Item)? animatedDataFn;
+
     final settings = defaults.animationSettings.apply(animationSettings);
 
     // Анимация элементов
     if (animationController != null && settings.enabled) {
-      dataFn = (data) {
+      animatedDataFn = (data) {
         final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
         final animatedItemsCount = settings.animatedItemsCount;
 
@@ -255,7 +257,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       loading: loadingBuilder,
       error: errorBuilder,
       orElse: orElse,
-      data: dataFn,
+      data: animatedDataFn ?? dataFn,
     );
   }
 
