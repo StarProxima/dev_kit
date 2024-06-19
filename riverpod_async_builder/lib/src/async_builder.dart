@@ -54,6 +54,89 @@ class AsyncBuilder<T> extends StatelessWidget {
 
   static final Map<int, int> _animationControllerMap = {};
 
+  static Widget? list<Item>(
+    Iterable<Item> items, {
+    required BuildContext context,
+    required int index,
+    AnimationController? animationController,
+    ItemAnimationSettings? animationSettings,
+    required Widget Function(Item item, ListData<Item> data) data,
+  }) {
+    final defaults = AsyncBuilderDefaults.of(context);
+
+    if (index >= items.length) {
+      return null;
+    }
+
+    // Добавляем ListData, чтобы можно было использовать эти данные при построении виджета
+    Widget dataFn(Item item) => data(
+          item,
+          ListData(
+            index: index,
+            items: items.toList(),
+            item: item,
+          ),
+        );
+
+    Widget Function(Item)? animatedDataFn;
+
+    final settings = defaults.animationSettings.apply(animationSettings);
+
+    // Анимация элементов
+    if (animationController != null && settings.enabled) {
+      animatedDataFn = (data) {
+        final itemCountForDuration =
+            settings.animatedItemsCount ?? items.length;
+        final animatedItemsCount = settings.animatedItemsCount;
+
+        if (animationController.isDismissed) {
+          animationController.duration =
+              settings.itemAnimationDuration * itemCountForDuration;
+
+          if (settings.animationAutoStart) {
+            Future.delayed(settings.delayBeforeStartAnimation, () {
+              if (context.mounted && animationController.isDismissed) {
+                animationController.forward();
+              }
+            });
+          }
+        }
+
+        final isLimited =
+            animatedItemsCount != null && index > animatedItemsCount;
+
+        final limitedIndex = isLimited ? animatedItemsCount : index;
+
+        final curConcurrentAnimationsCount = max(
+          settings.concurrentAnimationsCount +
+              limitedIndex * settings.itemIndexConcurrentFactor,
+          0.01,
+        );
+
+        final animationBegin = limitedIndex / curConcurrentAnimationsCount;
+
+        final begin =
+            min(animationBegin, itemCountForDuration) / itemCountForDuration;
+        final end = min(animationBegin + 1, itemCountForDuration) /
+            itemCountForDuration;
+
+        final animation = animationController.drive(
+          CurveTween(curve: Interval(begin, end)),
+        );
+
+        final child = dataFn(data);
+        return SizedBox(
+          key: child.key,
+          child: settings.builder(child, animation),
+        );
+      };
+    }
+
+    final item = items.elementAt(index);
+    final child = animatedDataFn?.call(item) ?? dataFn(item);
+    return child;
+  }
+
   /// For synk list use [AnimatedListBuilder]
   ///
   /// Функция для организации пагинации списков с дополнительным функционалом.
