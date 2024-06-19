@@ -129,6 +129,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? loading,
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
+    // TODO: AnimatedListBuilder
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
     required Widget Function(Item item, PaginatedData<Item> data) data,
