@@ -107,15 +107,17 @@ class AsyncBuilder<T> extends StatelessWidget {
     Widget Function()? loading,
     Widget Function(AsyncBuilderError e)? error,
     Widget Function()? orElse,
+    // TODO: AnimatedListBuilder
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
-    required Widget Function(Item item) data,
+    required Widget Function(Item item, PaginatedData<Item> data) data,
   }) {
     final defaults = AsyncBuilderDefaults.of(context);
 
     final calculatePointer =
         calculatePaginationPointer ?? defaults.paginationPointer;
     final pointer = calculatePointer(index, pageSize);
+
     final indexOnPage = index % pageSize;
 
     final asyncValue = value(pointer);
@@ -125,7 +127,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     }
 
     final asyncItem =
-        value(pointer).selectData((items) => items.elementAt(indexOnPage));
+        asyncValue.selectData((items) => items.elementAt(indexOnPage));
 
     final stop = asyncItem.when(
       skipLoadingOnReload: skipLoadingOnReload,
@@ -152,17 +154,35 @@ class AsyncBuilder<T> extends StatelessWidget {
       value(calculatePointer(index - pageSize, pageSize));
     }
 
-    var dataFn = data;
+    // Добавляем PaginatedData, чтобы можно было использовать эти данные при построении виджета
+    Widget dataFn(Item item) => data(
+          item,
+          PaginatedData(
+            index: index,
+            pageSize: pageSize,
+            pointer: pointer,
+            indexOnPage: indexOnPage,
+            // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
+            itemsOnPage: asyncValue.requireValue.toList(),
+            item: item,
+          ),
+        );
+
+    Widget Function(Item)? animatedDataFn;
+
     final settings = defaults.animationSettings.apply(animationSettings);
 
+    // Анимация элементов
     if (animationController != null && settings.enabled) {
-      dataFn = (item) {
+      animatedDataFn = (data) {
         final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
         final animatedItemsCount = settings.animatedItemsCount;
 
         if (animationController.isDismissed) {
           animationController.duration =
               settings.itemAnimationDuration * itemCountForDuration;
+
+          // TODO: Попробовать без _animationControllerMap;
           final hash = animationController.hashCode;
           _animationControllerMap[context.hashCode] = hash;
 
@@ -198,7 +218,7 @@ class AsyncBuilder<T> extends StatelessWidget {
           CurveTween(curve: Interval(begin, end)),
         );
 
-        final child = data(item);
+        final child = dataFn(data);
         return SizedBox(
           key: child.key,
           child: settings.builder(child, animation),
@@ -206,6 +226,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       };
     }
 
+    // Возращаем AsyncBuilder для нашего элемента на странице
     return AsyncBuilder(
       asyncItem,
       skipLoadingOnReload: skipLoadingOnReload,
@@ -215,7 +236,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       loading: loadingBuilder,
       error: errorBuilder,
       orElse: orElse,
-      data: dataFn,
+      data: animatedDataFn ?? dataFn,
     );
   }
 
