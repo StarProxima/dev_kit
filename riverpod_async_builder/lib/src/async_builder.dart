@@ -54,6 +54,8 @@ class AsyncBuilder<T> extends StatelessWidget {
 
   static final Map<int, int> _animationControllerMap = {};
 
+  /// For synk list use [AnimatedListBuilder]
+  ///
   /// Функция для организации пагинации списков с дополнительным функционалом.
   ///
   /// Этот метод помогает управлять загрузкой данных с пагинацией, предоставляя
@@ -110,7 +112,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     // TODO: AnimatedListBuilder
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
-    required Widget Function(Item item, PaginatedData<Item> data) data,
+    required Widget Function(Item item, PaginatedListData<Item> data) data,
   }) {
     final defaults = AsyncBuilderDefaults.of(context);
 
@@ -157,7 +159,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     // Добавляем PaginatedData, чтобы можно было использовать эти данные при построении виджета
     Widget dataFn(Item item) => data(
           item,
-          PaginatedData(
+          PaginatedListData(
             index: index,
             pageSize: pageSize,
             pointer: pointer,
