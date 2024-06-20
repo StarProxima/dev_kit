@@ -110,6 +110,7 @@ class AppOnboardingEntry extends StatefulWidget {
     this.onShow,
     this.onHide,
     this.isAutoHidden = false,
+    this.hasHole = true,
     this.hideAfterDuration,
   });
 
@@ -144,6 +145,9 @@ class AppOnboardingEntry extends StatefulWidget {
   /// If [enabled] = false, return only [child]
   /// Useful if [child] is a list item
   final bool enabled;
+
+  /// if [hasHole] = false, then do not draw hole around [child]
+  final bool hasHole;
   final Alignment? targetAnchor;
   final Alignment? followerAnchor;
 
@@ -202,6 +206,7 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
     final backgroundColor =
         widget.backgroundColor ?? Colors.black.withOpacity(0.6);
     final settings = widget.tooltipSettings;
+    final hasHole = widget.hasHole;
 
     late Widget child;
     if (widget.isAutoHidden) {
@@ -226,7 +231,7 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
         return Positioned.fill(
           child: Stack(
             children: [
-              if (!isAutoHidden)
+              if (!isAutoHidden && hasHole)
                 Positioned.fill(
                   child: ColoredBox(
                     color: Colors.black.withOpacity(0.001),
