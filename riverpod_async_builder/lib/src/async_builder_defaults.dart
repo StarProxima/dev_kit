@@ -87,7 +87,7 @@ class ItemAnimationSettingsDefaults {
   final Duration delayBeforeStartAnimation;
   final int? animatedItemsCount;
   final double itemIndexConcurrentFactor;
-  final int concurrentAnimationsCount;
+  final double concurrentAnimationsCount;
   final bool animationAutoStart;
   final bool shouldAnimateOnlyAfterLoading;
   final Widget Function(Widget child, Animation<double> animation) builder;
@@ -138,7 +138,7 @@ class ItemAnimationSettings {
   /// По умолчанию, элементы анимируются поочерёдно. Увеличение этого значения позволяет запускать
   /// несколько анимаций одновременно. Например, при значении 2, вторая анимация начнётся
   /// после завершения половины времени первой анимации.
-  final int? concurrentAnimationsCount;
+  final double? concurrentAnimationsCount;
   final bool? animationAutoStart;
   final bool? shouldAnimateOnlyAfterLoading;
 
