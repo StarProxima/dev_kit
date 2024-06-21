@@ -52,118 +52,27 @@ class AsyncBuilder<T> extends StatelessWidget {
   final Widget Function()? orElse;
   final Widget Function(T data) data;
 
-  static final Map<int, int> _animationControllerMap = {};
-
-  /// Функция для организации пагинации списков с дополнительным функционалом.
-  ///
-  /// Этот метод помогает управлять загрузкой данных с пагинацией, предоставляя
-  /// удобный интерфейс для отображения загруженных элементов, обработки состояний
-  /// загрузки и ошибок, а также предварительной загрузки данных для следующих страниц.
-  /// Он обеспечивает гибкое и мощное средство для реализации пагинации с возможностью
-  /// настройки различных аспектов отображения и обработки данных.
-  ///
-  /// [value] - функция, которая принимает указатель страницы/смещения и возвращает
-  /// `AsyncValue` с итерируемым списком элементов.
-  ///
-  /// [index] - абсолютный индекс элемента.
-  ///
-  /// [pageSize] - размер страницы.
-  ///
-  /// [preloadNextPageOffset] - количество элементов от конца текущего списка, при достижении
-  /// которого начнется предзагрузка следующей страницы. По умолчанию равно 0.
-  ///
-  /// [preloadPrevPageOffset] - количество элементов от начала текущего списка, при достижении
-  /// которого начнется предзагрузка предыдущей страницы. По умолчанию равно 0.
-  ///
-  /// [stopOnLoad] - если `true`, то страницы будут загружаться подряд, а при загрузке скролл будет ограничен.
-  /// По умолчанию равно `true`.
-  ///
-  /// [useSingleError] - если `true`, при возникновении ошибки будет отображаться только первый элемент,
-  /// а для остальных скрыты, загрузка при это не прерывается. По умолчанию равно `true`.
-  ///
-  /// [calculatePaginationPointer] - функция для вычисления указателя пагинации (например, номера страницы
-  /// или смещения) на основе текущего индекса и размера страницы. Если не предоставлена, используется
-  /// стандартная логика вычисления.
-  ///
-  /// [onRetry] - функция обратного вызова, вызываемая при попытке повторного выполнения операции
-  /// после возникновения ошибки.
-  ///
-  /// [animationController] - Для отложенной анимации элементов должен передаваться один [AnimationController],
-  /// управление происходит внутри [AsyncBuilder.paginated], передавать duration не нужно.
-  static AsyncBuilder<Item>? paginated<Item>(
-    AsyncValue<Iterable<Item>> Function(int pointer) value, {
+  static Widget? animatedItem<Item>(
+    Iterable<Item> items, {
     required BuildContext context,
     required int index,
-    required int pageSize,
-    int preloadNextPageOffset = 0,
-    int preloadPrevPageOffset = 0,
-    bool stopOnLoad = true,
-    bool useSingleError = true,
-    int Function(int index, int pageSize)? calculatePaginationPointer,
-    bool skipLoadingOnReload = false,
-    bool skipLoadingOnRefresh = true,
-    bool skipError = false,
-    OnRetry? onRetry,
-    Widget Function()? loading,
-    Widget Function(AsyncBuilderError e)? error,
-    Widget Function()? orElse,
-    // TODO: AnimatedListBuilder
+    int? indexForAnimation,
     AnimationController? animationController,
     ItemAnimationSettings? animationSettings,
-    required Widget Function(Item item, PaginatedData<Item> data) data,
+    required Widget Function(Item item, ListData<Item> data) data,
   }) {
     final defaults = AsyncBuilderDefaults.of(context);
 
-    final calculatePointer =
-        calculatePaginationPointer ?? defaults.paginationPointer;
-    final pointer = calculatePointer(index, pageSize);
-
-    final indexOnPage = index % pageSize;
-
-    final asyncValue = value(pointer);
-
-    if (asyncValue.hasValue && indexOnPage >= asyncValue.value!.length) {
+    if (index >= items.length) {
       return null;
     }
 
-    final asyncItem =
-        asyncValue.selectData((items) => items.elementAt(indexOnPage));
-
-    final stop = asyncItem.when(
-      skipLoadingOnReload: skipLoadingOnReload,
-      skipLoadingOnRefresh: skipLoadingOnRefresh,
-      skipError: skipError,
-      error: (_, __) => false,
-      loading: () => stopOnLoad && indexOnPage != 0,
-      data: (items) => false,
-    );
-
-    if (stop) return null;
-
-    final loadingBuilder =
-        loading ?? defaults.paginationLoading ?? defaults.loading;
-
-    final errorBuilder = useSingleError && indexOnPage != 0
-        ? (_) => const SizedBox.shrink()
-        : error ?? defaults.paginationError ?? defaults.paginationError;
-
-    if (pageSize - indexOnPage <= preloadNextPageOffset) {
-      value(calculatePointer(index + pageSize, pageSize));
-    }
-    if (indexOnPage <= preloadPrevPageOffset && index % pageSize > 1) {
-      value(calculatePointer(index - pageSize, pageSize));
-    }
-
-    // Добавляем PaginatedData, чтобы можно было использовать эти данные при построении виджета
+    // Добавляем ListData, чтобы можно было использовать эти данные при построении виджета
     Widget dataFn(Item item) => data(
           item,
-          PaginatedData(
+          ListData(
             index: index,
-            pageSize: pageSize,
-            pointer: pointer,
-            indexOnPage: indexOnPage,
-            // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
-            itemsOnPage: asyncValue.requireValue.toList(),
+            items: items.toList(),
             item: item,
           ),
         );
@@ -175,31 +84,29 @@ class AsyncBuilder<T> extends StatelessWidget {
     // Анимация элементов
     if (animationController != null && settings.enabled) {
       animatedDataFn = (data) {
-        final itemCountForDuration = settings.animatedItemsCount ?? pageSize;
+        final itemCountForDuration =
+            settings.animatedItemsCount ?? items.length;
         final animatedItemsCount = settings.animatedItemsCount;
 
         if (animationController.isDismissed) {
           animationController.duration =
               settings.itemAnimationDuration * itemCountForDuration;
 
-          // TODO: Попробовать без _animationControllerMap;
-          final hash = animationController.hashCode;
-          _animationControllerMap[context.hashCode] = hash;
-
           if (settings.animationAutoStart) {
             Future.delayed(settings.delayBeforeStartAnimation, () {
-              if (context.mounted &&
-                  _animationControllerMap[context.hashCode] == hash) {
+              if (context.mounted && animationController.isDismissed) {
                 animationController.forward();
               }
             });
           }
         }
 
-        final isLimited =
-            animatedItemsCount != null && index > animatedItemsCount;
+        final indexForAnim = indexForAnimation ?? index;
 
-        final limitedIndex = isLimited ? animatedItemsCount : index;
+        final isLimited =
+            animatedItemsCount != null && indexForAnim > animatedItemsCount;
+
+        final limitedIndex = isLimited ? animatedItemsCount : indexForAnim;
 
         final curConcurrentAnimationsCount = max(
           settings.concurrentAnimationsCount +
@@ -226,6 +133,155 @@ class AsyncBuilder<T> extends StatelessWidget {
       };
     }
 
+    final item = items.elementAt(index);
+    final child = animatedDataFn?.call(item) ?? dataFn(item);
+    return child;
+  }
+
+  /// For synk list use [AsyncBuilder.animatedItem]
+  ///
+  /// Функция для организации пагинации списков с дополнительным функционалом.
+  ///
+  /// Этот метод помогает управлять загрузкой данных с пагинацией, предоставляя
+  /// удобный интерфейс для отображения загруженных элементов, обработки состояний
+  /// загрузки и ошибок, а также предварительной загрузки данных для следующих страниц.
+  /// Он обеспечивает гибкое и мощное средство для реализации пагинации с возможностью
+  /// настройки различных аспектов отображения и обработки данных.
+  ///
+  /// [value] - функция, которая принимает указатель страницы/смещения и возвращает
+  /// `AsyncValue` с итерируемым списком элементов.
+  ///
+  /// [index] - абсолютный индекс элемента.
+  ///
+  /// [pageSize] - размер страницы.
+  ///
+  /// [preloadNextPageOffset] - количество элементов от конца текущего списка, при достижении
+  /// которого начнется предзагрузка следующей страницы, чтобы избежать загрузки. По умолчанию 0.
+  ///
+  /// [preloadPrevPageOffset] - количество элементов от начала текущего списка, при достижении
+  /// которого начнется предзагрузка предыдущей страницы, чтобы избежать загрузки. По умолчанию 0.
+  ///
+  /// [stopOnLoad] - если `true`, то страницы будут загружаться подряд, а при загрузке скролл будет ограничен.
+  /// По умолчанию равно `true`.
+  ///
+  /// [useSingleError] - если `true`, при возникновении ошибки будет отображаться только первый элемент,
+  /// а для остальных скрыты, загрузка при это не прерывается. По умолчанию равно `true`.
+  ///
+  /// [calculatePaginationPointer] - функция для вычисления указателя пагинации (например, номера страницы
+  /// или смещения) на основе текущего индекса и размера страницы. Если не предоставлена, используется
+  /// стандартная логика вычисления.
+  ///
+  /// [onRetry] - функция обратного вызова, вызываемая при попытке повторного выполнения операции
+  /// после возникновения ошибки.
+  ///
+  /// [animationController] - Для отложенной анимации элементов должен передаваться один [AnimationController],
+  /// управление происходит внутри [AsyncBuilder.paginatedItem], передавать duration не нужно.
+  static AsyncBuilder<Item>? paginatedItem<Item>(
+    AsyncValue<Iterable<Item>> Function(int pointer) value, {
+    required BuildContext context,
+    required int index,
+    required int pageSize,
+    int preloadNextPageOffset = 0,
+    int preloadPrevPageOffset = 0,
+    bool stopOnLoad = true,
+    bool useSingleError = true,
+    int Function(int index, int pageSize)? calculatePaginationPointer,
+    bool skipLoadingOnReload = false,
+    bool skipLoadingOnRefresh = true,
+    bool skipError = false,
+    OnRetry? onRetry,
+    Widget Function()? loading,
+    Widget Function(AsyncBuilderError e)? error,
+    Widget Function()? orElse,
+    AnimationController? animationController,
+    ItemAnimationSettings? animationSettings,
+    required Widget Function(Item item, PaginatedListData<Item> data) data,
+  }) {
+    final defaults = AsyncBuilderDefaults.of(context);
+
+    final calculatePointer =
+        calculatePaginationPointer ?? defaults.paginationPointer;
+    final pointer = calculatePointer(index, pageSize);
+
+    final indexOnPage = index % pageSize;
+
+    final asyncItems = value(pointer);
+
+    if (asyncItems.hasValue && indexOnPage >= asyncItems.requireValue.length) {
+      return null;
+    }
+
+    final asyncItem =
+        asyncItems.selectData((items) => items.elementAt(indexOnPage));
+
+    final stop = asyncItem.when(
+      skipLoadingOnReload: skipLoadingOnReload,
+      skipLoadingOnRefresh: skipLoadingOnRefresh,
+      skipError: skipError,
+      error: (_, __) => false,
+      loading: () => stopOnLoad && indexOnPage != 0,
+      data: (items) => false,
+    );
+
+    if (stop) return null;
+
+    final loadingBuilder =
+        loading ?? defaults.paginationLoading ?? defaults.loading;
+
+    final errorBuilder = useSingleError && indexOnPage != 0
+        ? (_) => const SizedBox.shrink()
+        : error ?? defaults.paginationError ?? defaults.paginationError;
+
+    // Preload - предзагрузка предыдущей или следующей страницы, чтобы избежать загрузок
+    final prevPagePointer =
+        index >= pageSize ? calculatePointer(index - pageSize, pageSize) : null;
+
+    if (indexOnPage <= preloadPrevPageOffset &&
+        index % pageSize > 1 &&
+        prevPagePointer != null) {
+      // Просто вызываем метод value, ui должен подписаться, элементы начать грузиться
+      value(prevPagePointer);
+    }
+
+    final nextPagePointer = calculatePointer(index + pageSize, pageSize);
+    if (pageSize - indexOnPage <= preloadNextPageOffset) {
+      value(nextPagePointer);
+    }
+
+    // Добавляем PaginatedListData, чтобы можно было использовать эти данные при построении виджета
+    Widget dataFn(Item item) => data(
+          item,
+          PaginatedListData(
+            index: index,
+            pageSize: pageSize,
+            pointer: pointer,
+            indexOnPage: indexOnPage,
+            // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
+            itemsOnPage: asyncItems.requireValue.toList(),
+            itemsOnPrevPageFn: () => prevPagePointer != null
+                ? value(prevPagePointer).valueOrNull?.toList()
+                : null,
+            itemsOnNextPageFn: () =>
+                value(nextPagePointer).valueOrNull?.toList(),
+            item: item,
+          ),
+        );
+
+    // Анимация элементов
+    Widget animatedDataFn(Item item) => animationController != null
+        ? AsyncBuilder.animatedItem<Item>(
+            asyncItems.requireValue,
+            context: context,
+            index: indexOnPage,
+            // Нужно, чтобы разные страницы анимироваль подряд, а не одновременно
+            indexForAnimation: index,
+            animationController: animationController,
+            animationSettings: animationSettings,
+            data: (item, _) => dataFn(item),
+            // Результат точно не null, т.к. indexOnPage < asyncItems.requireValue.length
+          )!
+        : dataFn(item);
+
     // Возращаем AsyncBuilder для нашего элемента на странице
     return AsyncBuilder(
       asyncItem,
@@ -236,7 +292,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       loading: loadingBuilder,
       error: errorBuilder,
       orElse: orElse,
-      data: animatedDataFn ?? dataFn,
+      data: animatedDataFn,
     );
   }
 
