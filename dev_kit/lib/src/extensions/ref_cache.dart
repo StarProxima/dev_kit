@@ -37,12 +37,14 @@ extension RefCacheX on AutoDisposeRef {
     }
   }
 
-  void cacheFor(Duration duration) {
+  KeepAliveLink cacheFor(Duration duration) {
     listenUserChanges();
 
     final link = keepAlive();
     final timer = Timer(duration, link.close);
     onDispose(timer.cancel);
+
+    return link;
   }
 
   void cacheByTag(String cacheTag) {
