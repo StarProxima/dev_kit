@@ -34,6 +34,26 @@ sealed class RateLimiter {
     this.duration = Duration.zero,
   });
 
+  factory RateLimiter.debounce({
+    String? tag,
+    Duration duration,
+    bool shouldCancelRunningOperations,
+    Duration delayTickInterval,
+    void Function()? onDelayStart,
+    void Function(RateTimings timings)? onDelayTick,
+    void Function()? onDelayEnd,
+  }) = Debounce;
+
+  factory RateLimiter.throttle({
+    String? tag,
+    Duration duration,
+    CooldownLaunch cooldownLaunch,
+    Duration cooldownTickInterval,
+    void Function()? onCooldownStart,
+    void Function(RateTimings timings)? onCooldownTick,
+    void Function()? onCooldownEnd,
+  }) = Throttle;
+
   final String? tag;
   final Duration duration;
 
