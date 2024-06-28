@@ -1,19 +1,45 @@
+/// Provides additional time utility getters for the Duration class.
+///
+/// ```
+/// Duration duration = Duration(days: 1, hours: 5, minutes: 30, seconds: 45);
+///
+/// print(duration.days);         // 1
+/// print(duration.hours);        // 5
+/// print(duration.minutes);      // 30
+/// print(duration.seconds);      // 45
+/// print(duration.milliseconds); // 0
+/// ```
 extension DurationUtilsX on Duration {
-  /// Количество полных дней в продолжительности
+  // Total number of days.
   int get days => inDays;
 
-  /// Количество полных часов, исключая дни
+  // Number of hours that are not part of a full day.
   int get hours => inHours % Duration.hoursPerDay;
 
-  /// Количество полных минут, исключая часы
+  // Number of minutes that are not part of a full hour.
   int get minutes => inMinutes % Duration.minutesPerHour;
 
-  /// Количество полных секунд, исключая минуты
+  // Number of seconds that are not part of a full minute.
   int get seconds => inSeconds % Duration.secondsPerMinute;
 
-  /// Количество полных миллисекунд, исключая секунды
+  // Number of milliseconds that are not part of a full second.
   int get milliseconds => inMilliseconds % Duration.millisecondsPerSecond;
 
-  /// Количество полных микросекунд, исключая миллисекунды
+  // Number of microseconds that are not part of a full millisecond.
   int get microseconds => inMicroseconds % Duration.microsecondsPerMillisecond;
+}
+
+/// Adds extensions to num (ie. int & double) to make creating durations simple:
+///
+/// ```
+/// 200.ms // equivalent to Duration(milliseconds: 200)
+/// 3.5.seconds // equivalent to Duration(milliseconds: 3500)
+/// 1.5.days // equivalent to Duration(hours: 36)
+/// ```
+extension DurationFromNumX on num {
+  Duration get days => Duration(milliseconds: this ~/ 86400000);
+  Duration get hours => Duration(milliseconds: this ~/ 3600000);
+  Duration get min => Duration(milliseconds: this ~/ 60000);
+  Duration get sec => Duration(milliseconds: this ~/ 1000);
+  Duration get ms => Duration(milliseconds: toInt());
 }
