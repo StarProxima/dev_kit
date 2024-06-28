@@ -49,8 +49,9 @@ class InternalApiWrap<ErrorType> {
           final res = e.response;
           if (res != null) {
             error = ErrorResponse(
-              statusCode: res.statusCode ?? 0,
               error: _parseError?.call(res.data) ?? res.data,
+              data: e.requestOptions.data,
+              statusCode: res.statusCode ?? 0,
               method: res.requestOptions.method,
               url: res.requestOptions.uri,
               stackTrace: e.stackTrace,
@@ -66,9 +67,6 @@ class InternalApiWrap<ErrorType> {
 
         if (attempt < maxAttempts && await retryIf(error)) {
           final delay = finalRetry.calculateDelay(attempt);
-          // if (kDebugMode) {
-          //   logger.debug('Retry', 'Attempt: $attempt, delay: $delay');
-          // }
           await Future.delayed(delay);
           continue;
         }

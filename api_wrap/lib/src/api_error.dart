@@ -7,6 +7,7 @@ sealed class ApiError<ErrorType> implements Exception {
 class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
   const ErrorResponse({
     required this.error,
+    required this.data,
     required this.statusCode,
     required this.method,
     required this.url,
@@ -14,6 +15,7 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
   });
 
   final ErrorType error;
+  final dynamic data;
   final int statusCode;
   final String method;
   final Uri url;
