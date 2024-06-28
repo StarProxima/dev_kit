@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../dev_kit.dart';
@@ -47,12 +48,18 @@ extension RefCacheX on AutoDisposeRef {
     return link;
   }
 
-  void cacheByTag(String cacheTag) {
+  KeepAliveLink cacheByTag(String cacheTag) {
     listenUserChanges();
 
     _cacheMap[cacheTag]?.timer?.cancel();
     _cacheMap[cacheTag] ??= (timer: null, links: {});
     _cacheMap[cacheTag]?.links.add(keepAlive());
+
+    return FamilyKeepAliveLink(() {
+      _cacheMap[cacheTag]?.links.forEach((e) {
+        e.close();
+      });
+    });
   }
 
   @Deprecated('Пока не работает должным образом')
@@ -98,4 +105,16 @@ void useCacheFamilyProvider(String cacheTag, Duration duration) {
       );
     };
   });
+}
+
+class FamilyKeepAliveLink implements KeepAliveLink {
+  FamilyKeepAliveLink(this._close);
+
+  final void Function() _close;
+
+  /// Release this [KeepAliveLink], allowing the associated provider to
+  /// be disposed if the provider is no-longer listener nor has any
+  /// remaining [KeepAliveLink].
+  @override
+  void close() => _close();
 }
