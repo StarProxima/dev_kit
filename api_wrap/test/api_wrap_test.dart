@@ -138,12 +138,62 @@ void main() {
       expect(r1, equals('Error handled: InternalErrorMessage'));
     });
 
+    test('Min execution time', () async {
+      final stopwatch = Stopwatch()..start();
+      final result = await apiWrapper.apiWrap(
+        () => Future.delayed(Duration(milliseconds: 500), () => 'Result'),
+        minExecutionTime: const Duration(seconds: 1),
+      );
+      stopwatch.stop();
+
+      expect(result, equals('Result'));
+      expect(
+        stopwatch.elapsed,
+        greaterThanOrEqualTo(const Duration(milliseconds: 1000)),
+      );
+      expect(
+        stopwatch.elapsed,
+        lessThan(const Duration(milliseconds: 1100)),
+      );
+    });
+
+    test('Min execution time Error', () async {
+      final stopwatch = Stopwatch()..start();
+      final result = await apiWrapper.apiWrapStrictSingle(
+        () => Future.delayed(
+          Duration(milliseconds: 500),
+          () => throw 'TEST ERROR',
+        ),
+        minExecutionTime: const Duration(seconds: 1),
+        onError: (e) {
+          switch (e) {
+            case InternalError(error: 'TEST ERROR'):
+              return 'HANDLED ERROR';
+            default:
+              throw e;
+          }
+        },
+      );
+      stopwatch.stop();
+
+      expect(result, equals('HANDLED ERROR'));
+      expect(
+        stopwatch.elapsed,
+        greaterThanOrEqualTo(const Duration(milliseconds: 1000)),
+      );
+      expect(
+        stopwatch.elapsed,
+        lessThan(const Duration(milliseconds: 1100)),
+      );
+    });
+
     test('Delay', () async {
       final stopwatch = Stopwatch()..start();
       final result = await apiWrapper.apiWrap(
         () => 'Delayed',
         delay: const Duration(seconds: 1),
       );
+      stopwatch.stop();
 
       expect(result, equals('Delayed'));
       expect(

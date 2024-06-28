@@ -22,6 +22,7 @@ class InternalApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
@@ -75,10 +76,20 @@ class InternalApiWrap<ErrorType> {
       }
     }
 
+    Future<D?> minExecutionTimeFn() async {
+      if (minExecutionTime == null) return fn();
+
+      final rec = await Future.wait(
+        [fn(), Future.delayed(minExecutionTime)],
+      );
+
+      return rec.first as D?;
+    }
+
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         container: _operationsContainer,
-        function: fn,
+        function: minExecutionTimeFn,
         defaultTag: '$hashCode${StackTrace.current}',
       );
 
@@ -100,6 +111,6 @@ class InternalApiWrap<ErrorType> {
       }
     }
 
-    return fn();
+    return minExecutionTimeFn();
   }
 }

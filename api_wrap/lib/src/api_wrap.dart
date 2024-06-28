@@ -68,6 +68,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T res)? onSuccess,
     FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -76,6 +77,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -95,6 +97,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T res) onSuccess,
     FutureOr<D> Function(ApiError<ErrorType> error)? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -103,6 +106,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -124,6 +128,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T?> Function(T res)? onSuccess,
     FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -132,6 +137,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -151,6 +157,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T res)? onSuccess,
     FutureOr<T> Function(ApiError<ErrorType> error)? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -159,6 +166,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -169,6 +177,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     FutureOr<T> Function() function, {
     required FutureOr<D?> Function(T res)? onSuccess,
     required FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    required Duration? minExecutionTime,
     required Duration? delay,
     required Retry<ErrorType>? retry,
     required RateLimiter? rateLimiter,
@@ -183,6 +192,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
               if (shouldThrowError) throw e;
               return null;
             },
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
