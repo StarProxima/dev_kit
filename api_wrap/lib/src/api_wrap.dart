@@ -22,7 +22,7 @@ part 'retry.dart';
 class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    required GlobalOnError onError,
+    required GlobalOnError<ErrorType> onError,
     ApiWrapController<ErrorType>? options,
   })  : _onError = onError,
         wrapController = options ?? ApiWrapController<ErrorType>();

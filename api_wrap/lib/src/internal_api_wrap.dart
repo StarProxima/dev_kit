@@ -9,7 +9,11 @@ class InternalApiWrap<ErrorType> {
     ParseError<ErrorType>? parseError,
   })  : _retry = retry,
         _parseError = parseError,
-        _operationsContainer = container;
+        _operationsContainer = container {
+    if (parseError == null && ErrorType != dynamic) {
+      throw ParseErrorMissingError();
+    }
+  }
 
   final Retry<ErrorType> _retry;
   final ParseError<ErrorType>? _parseError;

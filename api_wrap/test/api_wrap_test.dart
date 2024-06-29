@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:api_wrap/api_wrap.dart';
 import 'package:dio/dio.dart';
 import 'package:test/test.dart' hide Retry;
@@ -20,6 +18,37 @@ void main() {
       ),
     );
   }
+
+  test('ParseError missing error', () async {
+    void apiWrapper() {
+      ApiWrapper<int>(
+        options: ApiWrapController(),
+        onError: (error) {},
+      );
+    }
+
+    void internalApiWrap() {
+      InternalApiWrap<DateTime>(
+        retry: Retry.no(),
+        container: RateOperationsContainer(),
+      );
+    }
+
+    expect(apiWrapper, throwsArgumentError);
+    expect(internalApiWrap, throwsArgumentError);
+  });
+
+  group('Retry', () {
+    test('maxAttempts', () async {
+      Retry positiveAttemts() => Retry(maxAttempts: 1);
+      Retry zeroAttemts() => Retry(maxAttempts: 0);
+      Retry negativeAttemts() => Retry(maxAttempts: -1);
+
+      expect(positiveAttemts(), isA<Retry>());
+      expect(zeroAttemts, throwsA(anything));
+      expect(negativeAttemts, throwsA(anything));
+    });
+  });
 
   group('ApiWrap Common Tests', () {
     late ApiWrapper<int> apiWrapper;

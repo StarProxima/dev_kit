@@ -35,6 +35,9 @@ class Retry<ErrorType> {
     this.randomizationFactor = 0.25,
   }) : assert(maxAttempts > 0, 'maxAttempts must be greater than 0');
 
+  // Without retry
+  factory Retry.no() => Retry(maxAttempts: 1);
+
   /// Retry for Dio connection errors
   const Retry.connection({
     this.maxAttempts = 3,
