@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:api_wrap/api_wrap.dart';
 import 'package:dio/dio.dart';
 import 'package:test/test.dart' hide Retry;
@@ -140,32 +142,88 @@ void main() {
 
     test('Min execution time', () async {
       final stopwatch = Stopwatch()..start();
+
+      Duration? onSuccessElapsed;
       final result = await apiWrapper.apiWrap(
-        () => Future.delayed(Duration(milliseconds: 500), () => 'Result'),
-        minExecutionTime: const Duration(seconds: 1),
+        () => Future.delayed(Duration(milliseconds: 500), () => 'RESULT'),
+        minExecutionTime: const Duration(milliseconds: 1000),
+        onSuccess: (res) async {
+          onSuccessElapsed = stopwatch.elapsed;
+          await Future.delayed(Duration(milliseconds: 200));
+          return res;
+        },
       );
       stopwatch.stop();
 
-      expect(result, equals('Result'));
       expect(
-        stopwatch.elapsed,
+        onSuccessElapsed,
         greaterThanOrEqualTo(const Duration(milliseconds: 1000)),
       );
       expect(
-        stopwatch.elapsed,
+        onSuccessElapsed,
         lessThan(const Duration(milliseconds: 1100)),
+      );
+
+      expect(result, equals('RESULT'));
+      expect(
+        stopwatch.elapsed,
+        greaterThanOrEqualTo(const Duration(milliseconds: 1200)),
+      );
+      expect(
+        stopwatch.elapsed,
+        lessThan(const Duration(milliseconds: 1300)),
+      );
+    });
+
+    test('Min execution time with sync function', () async {
+      final stopwatch = Stopwatch()..start();
+
+      Duration? onSuccessElapsed;
+      final result = await apiWrapper.apiWrap(
+        () => 'RESULT',
+        minExecutionTime: const Duration(milliseconds: 1000),
+        onSuccess: (res) async {
+          onSuccessElapsed = stopwatch.elapsed;
+          await Future.delayed(Duration(milliseconds: 200));
+          return res;
+        },
+      );
+      stopwatch.stop();
+
+      expect(
+        onSuccessElapsed,
+        greaterThanOrEqualTo(const Duration(milliseconds: 1000)),
+      );
+      expect(
+        onSuccessElapsed,
+        lessThan(const Duration(milliseconds: 1100)),
+      );
+
+      expect(result, equals('RESULT'));
+      expect(
+        stopwatch.elapsed,
+        greaterThanOrEqualTo(const Duration(milliseconds: 1200)),
+      );
+      expect(
+        stopwatch.elapsed,
+        lessThan(const Duration(milliseconds: 1300)),
       );
     });
 
     test('Min execution time Error', () async {
       final stopwatch = Stopwatch()..start();
+      Duration? onErrorElapsed;
       final result = await apiWrapper.apiWrapStrictSingle(
         () => Future.delayed(
           Duration(milliseconds: 500),
           () => throw 'TEST ERROR',
         ),
         minExecutionTime: const Duration(seconds: 1),
-        onError: (e) {
+        onError: (e) async {
+          onErrorElapsed = stopwatch.elapsed;
+
+          await Future.delayed(Duration(milliseconds: 200));
+
           switch (e) {
             case InternalError(error: 'TEST ERROR'):
               return 'HANDLED ERROR';
@@ -176,14 +234,23 @@ void main() {
       );
       stopwatch.stop();
 
-      expect(result, equals('HANDLED ERROR'));
       expect(
-        stopwatch.elapsed,
+        onErrorElapsed,
         greaterThanOrEqualTo(const Duration(milliseconds: 1000)),
       );
       expect(
-        stopwatch.elapsed,
+        onErrorElapsed,
         lessThan(const Duration(milliseconds: 1100)),
+      );
+
+      expect(result, equals('HANDLED ERROR'));
+      expect(
+        stopwatch.elapsed,
+        greaterThanOrEqualTo(const Duration(milliseconds: 1200)),
+      );
+      expect(
+        stopwatch.elapsed,
+        lessThan(const Duration(milliseconds: 1300)),
       );
     });
 
