@@ -21,7 +21,7 @@ class InternalApiWrap<ErrorType> {
   Future<D?> execute<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
-    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    OnError<ErrorType, D?>? onError,
     Duration? minExecutionTime,
     Duration? delay,
     RateLimiter? rateLimiter,
@@ -42,6 +42,7 @@ class InternalApiWrap<ErrorType> {
         try {
           final T response;
 
+          // Processing  minExecutionTime
           if (minExecutionTime == null) {
             response = await function();
           } else {
@@ -63,11 +64,11 @@ class InternalApiWrap<ErrorType> {
           if (res != null) {
             error = ErrorResponse(
               error: _parseError?.call(res.data) ?? res.data,
+              stackTrace: e.stackTrace,
               data: e.requestOptions.data,
               statusCode: res.statusCode ?? 0,
               method: res.requestOptions.method,
               url: res.requestOptions.uri,
-              stackTrace: e.stackTrace,
             );
           } else {
             error = InternalError(error: e, stackTrace: e.stackTrace);
