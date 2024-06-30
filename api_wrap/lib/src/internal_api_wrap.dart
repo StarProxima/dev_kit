@@ -41,15 +41,18 @@ class InternalApiWrap<ErrorType> {
 
     Future<D?> fn() async {
       var attempt = 0;
+      var isMinExecutionTimeUsed = false;
       while (true) {
         attempt++;
         try {
           final T response;
 
           // Processing  minExecutionTime
-          if (minExecutionTime == null) {
+          if (minExecutionTime == null || isMinExecutionTimeUsed) {
             response = await function();
           } else {
+            isMinExecutionTimeUsed = true;
+
             final futureOr = function();
             final future = switch (futureOr) {
               Future() => futureOr,
