@@ -5,8 +5,11 @@ class ApiWrapController<ErrorType> {
     this.retry,
     this.parseError,
   }) {
-    if (parseError == null && ErrorType != dynamic) {
-      throw ParseErrorMissingError();
+    if (parseError == null) {
+      if (ErrorType.toString() case 'dynamic' || 'Object?') {
+      } else {
+        throw ParseErrorMissingError();
+      }
     }
 
     container = RateOperationsContainer();
