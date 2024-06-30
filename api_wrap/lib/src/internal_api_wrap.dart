@@ -2,6 +2,8 @@ part of 'api_wrap.dart';
 
 typedef ParseError<ErrorType> = ErrorType Function(Object? error);
 
+/// Оболочка API для внутреннего использования, управляет повторными попытками,
+/// ограничением частоты операций и обработкой ошибок.
 class InternalApiWrap<ErrorType> {
   InternalApiWrap({
     required Retry<ErrorType> retry,
@@ -10,6 +12,7 @@ class InternalApiWrap<ErrorType> {
   })  : _retry = retry,
         _parseError = parseError,
         _operationsContainer = container {
+    // Проверяем наличие обработчика ошибок, если тип ошибки был задан.
     if (parseError == null && ErrorType != dynamic) {
       throw ParseErrorMissingError();
     }
@@ -18,7 +21,7 @@ class InternalApiWrap<ErrorType> {
   final Retry<ErrorType> _retry;
   final ParseError<ErrorType>? _parseError;
 
-  /// Операции debounce и thottle, доступные по тегу.
+  /// Контейнер операций, хранящий throttle и debounce операции по тегу.
   final RateOperationsContainer _operationsContainer;
 
   @visibleForTesting
@@ -37,6 +40,7 @@ class InternalApiWrap<ErrorType> {
 
     ApiError<ErrorType> error;
 
+    // Обрабатываем начальную задержку запроса.
     if (delay != null) await Future.delayed(delay);
 
     Future<D?> fn() async {
@@ -47,7 +51,7 @@ class InternalApiWrap<ErrorType> {
         try {
           final T response;
 
-          // Processing  minExecutionTime
+          // Обработка минимального времени выполнения запроса.
           if (minExecutionTime == null || isMinExecutionTimeUsed) {
             response = await function();
           } else {
@@ -64,9 +68,11 @@ class InternalApiWrap<ErrorType> {
             response = rec.first as T;
           }
 
+          // Возвращаем успешный результат или непосредственно сам ответ.
           return (await onSuccess?.call(response)) ??
               (response is D ? response as D : null);
         } on DioException catch (e) {
+          // Обработка ошибок Dio, включая парсинг ответа.
           final res = e.response;
           if (res != null) {
             error = ErrorResponse(
@@ -83,19 +89,23 @@ class InternalApiWrap<ErrorType> {
         } on ApiError<ErrorType> catch (e) {
           error = e;
         } catch (e, s) {
+          // Обработка неопределенных ошибок.
           error = InternalError(error: e, stackTrace: s);
         }
 
+        // Попытка повтора запроса в соответствии с заданными параметрами.
         if (attempt < maxAttempts && await retryIf(error)) {
           final delay = finalRetry.calculateDelay(attempt);
           await Future.delayed(delay);
           continue;
         }
 
+        // Возвращаем результат вызова функции обработки ошибок, если она задана.
         return onError?.call(error);
       }
     }
 
+    // Обёртываем запрос через RateLimiter, если задан.
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         container: _operationsContainer,
