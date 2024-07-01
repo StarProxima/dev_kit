@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_utils/riverpod_utils.dart' as cache_utils;
+import 'package:riverpod_utils/riverpod_utils.dart' as cu;
 
 import '../../dev_kit.dart';
 
@@ -35,12 +35,15 @@ extension RefCacheX on AutoDisposeRef {
     Duration duration = const Duration(minutes: 60),
     String? tag,
     int? key,
-    cache_utils.MomentDisposeCache moment =
-        cache_utils.MomentDisposeCache.immediately,
+    cu.MomentDisposeCache moment = cu.MomentDisposeCache.immediately,
   }) {
     listenUserChanges();
 
-    return cache_utils.RefCacheUtils(this)
-        .cacheFor(duration: duration, tag: tag, key: key, moment: moment);
+    return cu.RefCacheUtils(this).cacheFor(
+      duration: duration,
+      tag: tag,
+      key: key,
+      moment: moment,
+    );
   }
 }
