@@ -35,7 +35,7 @@ extension RefCacheX on AutoDisposeRef {
     Duration duration, {
     String? tag,
     int? key,
-    cu.MomentDisposeCache moment = cu.MomentDisposeCache.immediately,
+    cu.StartCacheTimer start = cu.StartCacheTimer.immediately,
   }) {
     listenUserChanges();
 
@@ -43,7 +43,7 @@ extension RefCacheX on AutoDisposeRef {
       duration,
       tag: tag,
       key: key,
-      moment: moment,
+      start: start,
     );
   }
 }

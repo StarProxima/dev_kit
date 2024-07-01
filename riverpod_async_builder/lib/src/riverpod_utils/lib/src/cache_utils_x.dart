@@ -1,42 +1,44 @@
 part of 'cache_utils.dart';
 
-/// Используется для кэширования family-провайдеров
-final Map<String, _CachedFamilyProvidersContainer> _cachedFamilyTagProviders =
-    {};
+/// Перечисление, для определения момента запуска таймера для закрытия связанного [KeepAliveLink] с провайдером.
+enum StartCacheTimer {
+  /// Запускаем таймер сразу
+  immediately,
 
-/// Используется для кэширования провайдеров по тегу
-final Map<String, Set<KeepAliveLink>> _cachedByTag = {};
+  /// Запускаем таймер, когда нет слушателей (отложенно)
+  afterCancel;
+}
 
 extension RefCacheUtils on AutoDisposeRef {
   KeepAliveLink cacheFor(
     Duration duration, {
     String? tag,
     int? key,
-    MomentDisposeCache moment = MomentDisposeCache.immediately,
+    StartCacheTimer start = StartCacheTimer.immediately,
   }) {
     if (tag != null && key != null) {
       return _cacheFamilyForByTag(
         duration,
         tag: tag,
         key: key,
-        moment: moment,
+        start: start,
       );
     } else if (tag != null) {
-      return _cacheForByTag(duration, tag: tag, moment: moment);
+      return _cacheForByTag(duration, tag: tag, start: start);
     }
-    return _cacheFor(duration, moment: moment);
+    return _cacheFor(duration, start: start);
   }
 
   KeepAliveLink _cacheFor(
     Duration duration, {
-    MomentDisposeCache moment = MomentDisposeCache.immediately,
+    StartCacheTimer start = StartCacheTimer.immediately,
   }) {
     final link = keepAlive();
     Timer? timer;
-    switch (moment) {
-      case MomentDisposeCache.immediately:
+    switch (start) {
+      case StartCacheTimer.immediately:
         timer = Timer(duration, link.close);
-      case MomentDisposeCache.deffered:
+      case StartCacheTimer.afterCancel:
         onCancel(
           () {
             timer = Timer(duration, link.close);
@@ -50,19 +52,19 @@ extension RefCacheUtils on AutoDisposeRef {
   FamilyKeepAliveLink _cacheForByTag(
     Duration duration, {
     required String tag,
-    MomentDisposeCache moment = MomentDisposeCache.immediately,
+    StartCacheTimer start = StartCacheTimer.immediately,
   }) {
     _cachedByTag[tag] ??= {};
     final link = keepAlive();
     _cachedByTag[tag]?.add(link);
     Timer? timer;
-    switch (moment) {
-      case MomentDisposeCache.immediately:
+    switch (start) {
+      case StartCacheTimer.immediately:
         timer = Timer(
           duration,
           () => _cachedByTag[tag]?.forEach((e) => e.close),
         );
-      case MomentDisposeCache.deffered:
+      case StartCacheTimer.afterCancel:
         onCancel(
           () {
             timer = Timer(
@@ -82,7 +84,7 @@ extension RefCacheUtils on AutoDisposeRef {
     Duration duration, {
     required String tag,
     required int key,
-    MomentDisposeCache moment = MomentDisposeCache.immediately,
+    StartCacheTimer start = StartCacheTimer.immediately,
   }) {
     _cachedFamilyTagProviders[tag] ??= _CachedFamilyProvidersContainer();
     var link = keepAlive();
@@ -117,10 +119,10 @@ extension RefCacheUtils on AutoDisposeRef {
       );
     }
 
-    switch (moment) {
-      case MomentDisposeCache.immediately:
+    switch (start) {
+      case StartCacheTimer.immediately:
         createProviderImmediately();
-      case MomentDisposeCache.deffered:
+      case StartCacheTimer.afterCancel:
         createProviderDeferred();
     }
 
@@ -129,7 +131,7 @@ extension RefCacheUtils on AutoDisposeRef {
 
       /// Отменяем предыдущий таймер
       _cachedFamilyTagProviders[tag]?.cancelTimerByKey(key);
-      if (moment == MomentDisposeCache.immediately) {
+      if (start == StartCacheTimer.immediately) {
         /// Запускаем новый таймер
         timer = Timer(
           duration,
@@ -157,3 +159,10 @@ extension RefCacheUtils on AutoDisposeRef {
     );
   }
 }
+
+/// Используется для кэширования family-провайдеров
+final Map<String, _CachedFamilyProvidersContainer> _cachedFamilyTagProviders =
+    {};
+
+/// Используется для кэширования провайдеров по тегу
+final Map<String, Set<KeepAliveLink>> _cachedByTag = {};

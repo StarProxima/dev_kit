@@ -5,15 +5,6 @@ import 'package:riverpod/riverpod.dart';
 
 part 'cache_utils_x.dart';
 
-/// Перечисление, для определения момента запуска таймера для закрытия связанного [KeepAliveLink] с провайдером.
-enum MomentDisposeCache {
-  /// Запускаем таймер сразу
-  immediately,
-
-  /// Запускаем таймер, когда нет слушателей (отложенно)
-  deffered;
-}
-
 /// Равен обычному [KeepAliveLink], но с открытым конструктором для задачи [_close] извне riverpod
 class FamilyKeepAliveLink implements KeepAliveLink {
   FamilyKeepAliveLink(this._close);
