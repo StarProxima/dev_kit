@@ -1,7 +1,12 @@
 name: dev_kit_workspace
 
 packages:
-  - .
+  - api_wrap
+  - app_logger
+  - app_onboarding
+  - dev_kit
+  - riverpod_async_builder
+  - riverpod_validator
 
 scripts:
   # Исправляет линты и форматирует все файлы в проекте. 
