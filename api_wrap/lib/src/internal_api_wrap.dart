@@ -9,7 +9,11 @@ class InternalApiWrap<ErrorType> {
     ParseError<ErrorType>? parseError,
   })  : _retry = retry,
         _parseError = parseError,
-        _operationsContainer = container;
+        _operationsContainer = container {
+    if (parseError == null && ErrorType != dynamic) {
+      throw ParseErrorMissingError();
+    }
+  }
 
   final Retry<ErrorType> _retry;
   final ParseError<ErrorType>? _parseError;
@@ -21,7 +25,8 @@ class InternalApiWrap<ErrorType> {
   Future<D?> execute<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
-    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    OnError<ErrorType, D?>? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
@@ -41,7 +46,20 @@ class InternalApiWrap<ErrorType> {
         try {
           final T response;
 
-          response = await function();
+          // Processing  minExecutionTime
+          if (minExecutionTime == null) {
+            response = await function();
+          } else {
+            final futureOr = function();
+            final future = switch (futureOr) {
+              Future() => futureOr,
+              _ => Future.value(futureOr),
+            };
+            final rec = await Future.wait(
+              [future, Future.delayed(minExecutionTime)],
+            );
+            response = rec.first as T;
+          }
 
           return (await onSuccess?.call(response)) ??
               (response is D ? response as D : null);
@@ -49,11 +67,12 @@ class InternalApiWrap<ErrorType> {
           final res = e.response;
           if (res != null) {
             error = ErrorResponse(
-              statusCode: res.statusCode ?? 0,
               error: _parseError?.call(res.data) ?? res.data,
+              stackTrace: e.stackTrace,
+              data: e.requestOptions.data,
+              statusCode: res.statusCode ?? 0,
               method: res.requestOptions.method,
               url: res.requestOptions.uri,
-              stackTrace: e.stackTrace,
             );
           } else {
             error = InternalError(error: e, stackTrace: e.stackTrace);
@@ -66,9 +85,6 @@ class InternalApiWrap<ErrorType> {
 
         if (attempt < maxAttempts && await retryIf(error)) {
           final delay = finalRetry.calculateDelay(attempt);
-          // if (kDebugMode) {
-          //   logger.debug('Retry', 'Attempt: $attempt, delay: $delay');
-          // }
           await Future.delayed(delay);
           continue;
         }

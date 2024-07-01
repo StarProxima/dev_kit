@@ -22,7 +22,7 @@ part 'retry.dart';
 class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    required FutureOr<void> Function(ApiError<ErrorType> error) onError,
+    required GlobalOnError<ErrorType> onError,
     ApiWrapController<ErrorType>? options,
   })  : _onError = onError,
         wrapController = options ?? ApiWrapController<ErrorType>();
@@ -31,14 +31,18 @@ class ApiWrapper<ErrorType> implements IApiWrap<ErrorType> {
   @protected
   final ApiWrapController<ErrorType> wrapController;
 
-  final OnError<ErrorType> _onError;
+  final GlobalOnError<ErrorType> _onError;
 
   @override
   FutureOr<void> onError(ApiError<ErrorType> error) => _onError(error);
 }
 
-// /// Тип колбека, используемый для обработки ошибок API.
-typedef OnError<ErrorType> = FutureOr<void> Function(ApiError<ErrorType> error);
+/// Тип колбека, используемый для обработки ошибок API.
+typedef OnError<ErrorType, Result> = FutureOr<Result> Function(
+    ApiError<ErrorType> error);
+// Колбэк, задаваемый в контроллере, который по умолчанию обрабатывает все ошибки.
+typedef GlobalOnError<ErrorType> = FutureOr<void> Function(
+    ApiError<ErrorType> error);
 
 abstract class IApiWrap<ErrorType> {
   FutureOr<void> onError(ApiError<ErrorType> error);
@@ -67,7 +71,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   Future<D?> apiWrap<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T res)? onSuccess,
-    FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    OnError<ErrorType, D?>? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -76,6 +81,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -94,7 +100,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   Future<D> apiWrapStrict<T, D>(
     FutureOr<T> Function() function, {
     required FutureOr<D> Function(T res) onSuccess,
-    FutureOr<D> Function(ApiError<ErrorType> error)? onError,
+    OnError<ErrorType, D>? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -103,6 +110,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -123,7 +131,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   Future<T?> apiWrapSingle<T>(
     FutureOr<T> Function() function, {
     FutureOr<T?> Function(T res)? onSuccess,
-    FutureOr<T?> Function(ApiError<ErrorType> error)? onError,
+    OnError<ErrorType, T?>? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -132,6 +141,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -150,7 +160,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   Future<T> apiWrapStrictSingle<T>(
     FutureOr<T> Function() function, {
     FutureOr<T> Function(T res)? onSuccess,
-    FutureOr<T> Function(ApiError<ErrorType> error)? onError,
+    OnError<ErrorType, T>? onError,
+    Duration? minExecutionTime,
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
@@ -159,6 +170,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         function,
         onSuccess: onSuccess,
         onError: onError,
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,
@@ -168,7 +180,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
     required FutureOr<D?> Function(T res)? onSuccess,
-    required FutureOr<D?> Function(ApiError<ErrorType> error)? onError,
+    required OnError<ErrorType, D?>? onError,
+    required Duration? minExecutionTime,
     required Duration? delay,
     required Retry<ErrorType>? retry,
     required RateLimiter? rateLimiter,
@@ -183,6 +196,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
               if (shouldThrowError) throw e;
               return null;
             },
+        minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
         rateLimiter: rateLimiter,

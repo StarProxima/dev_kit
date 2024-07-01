@@ -5,6 +5,10 @@ class ApiWrapController<ErrorType> {
     this.retry,
     this.parseError,
   }) {
+    if (parseError == null && ErrorType != dynamic) {
+      throw ParseErrorMissingError();
+    }
+
     container = RateOperationsContainer();
     internalApiWrap = InternalApiWrap(
       retry: retry ?? const Retry(maxAttempts: 1),
