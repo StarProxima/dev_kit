@@ -195,27 +195,27 @@ final Map<String, _CachedFamilyProvidersContainer> _cachedFamilyTagProviders =
 final Map<String, Set<KeepAliveLink>> _cachedByTag = {};
 
 extension RefCacheUtils on AutoDisposeRef {
-  KeepAliveLink cacheFor({
-    Duration duration = const Duration(minutes: 60),
+  KeepAliveLink cacheFor(
+    Duration duration, {
     String? tag,
     int? key,
     MomentDisposeCache moment = MomentDisposeCache.immediately,
   }) {
     if (tag != null && key != null) {
       return _cacheFamilyForByTag(
+        duration,
         tag: tag,
         key: key,
-        duration: duration,
         moment: moment,
       );
     } else if (tag != null) {
-      return _cacheForByTag(tag: tag, duration: duration, moment: moment);
+      return _cacheForByTag(duration, tag: tag, moment: moment);
     }
-    return _cacheFor(duration: duration, moment: moment);
+    return _cacheFor(duration, moment: moment);
   }
 
-  KeepAliveLink _cacheFor({
-    Duration duration = const Duration(minutes: 60),
+  KeepAliveLink _cacheFor(
+    Duration duration, {
     MomentDisposeCache moment = MomentDisposeCache.immediately,
   }) {
     final link = keepAlive();
@@ -234,9 +234,9 @@ extension RefCacheUtils on AutoDisposeRef {
     return link;
   }
 
-  FamilyKeepAliveLink _cacheForByTag({
+  FamilyKeepAliveLink _cacheForByTag(
+    Duration duration, {
     required String tag,
-    Duration duration = const Duration(minutes: 60),
     MomentDisposeCache moment = MomentDisposeCache.immediately,
   }) {
     _cachedByTag[tag] ??= {};
@@ -265,10 +265,10 @@ extension RefCacheUtils on AutoDisposeRef {
     );
   }
 
-  FamilyKeepAliveLink _cacheFamilyForByTag({
+  FamilyKeepAliveLink _cacheFamilyForByTag(
+    Duration duration, {
     required String tag,
     required int key,
-    Duration duration = const Duration(minutes: 60),
     MomentDisposeCache moment = MomentDisposeCache.immediately,
   }) {
     _cachedFamilyTagProviders[tag] ??= _CachedFamilyProvidersContainer();

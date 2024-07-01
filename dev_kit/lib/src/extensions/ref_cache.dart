@@ -31,8 +31,8 @@ extension RefCacheX on AutoDisposeRef {
     }
   }
 
-  KeepAliveLink cacheFor({
-    Duration duration = const Duration(minutes: 60),
+  KeepAliveLink cacheFor(
+    Duration duration, {
     String? tag,
     int? key,
     cu.MomentDisposeCache moment = cu.MomentDisposeCache.immediately,
@@ -40,7 +40,7 @@ extension RefCacheX on AutoDisposeRef {
     listenUserChanges();
 
     return cu.RefCacheUtils(this).cacheFor(
-      duration: duration,
+      duration,
       tag: tag,
       key: key,
       moment: moment,
