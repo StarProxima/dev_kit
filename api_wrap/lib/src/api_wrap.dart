@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
-part 'annotations.dart';
+part 'utils.dart';
 part 'api_error.dart';
 part 'api_wrapper.dart';
 part 'api_wrap_controller.dart';
