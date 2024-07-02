@@ -11,12 +11,7 @@ class InternalApiWrap<ErrorType> {
     ParseError<ErrorType>? parseError,
   })  : _retry = retry,
         _parseError = parseError,
-        _operationsContainer = container {
-    // Проверяем наличие обработчика ошибок, если тип ошибки был задан.
-    if (parseError == null && ErrorType != dynamic) {
-      throw ParseErrorMissingError();
-    }
-  }
+        _operationsContainer = container;
 
   final Retry<ErrorType> _retry;
   final ParseError<ErrorType>? _parseError;
@@ -35,8 +30,6 @@ class InternalApiWrap<ErrorType> {
     Retry<ErrorType>? retry,
   }) async {
     final finalRetry = retry ?? _retry;
-    final maxAttempts = finalRetry.maxAttempts;
-    final retryIf = finalRetry.retryIf;
 
     ApiError<ErrorType> error;
 
@@ -94,8 +87,10 @@ class InternalApiWrap<ErrorType> {
         }
 
         // Попытка повтора запроса в соответствии с заданными параметрами.
-        if (attempt < maxAttempts && await retryIf(error)) {
+        if (attempt < finalRetry.maxAttempts &&
+            await finalRetry.retryIf(error)) {
           final delay = finalRetry.calculateDelay(attempt);
+          finalRetry.onError?.call(error, delay);
           await Future.delayed(delay);
           continue;
         }

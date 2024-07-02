@@ -2,33 +2,26 @@ part of 'api_wrap.dart';
 
 final _rand = math.Random();
 
-bool _defaultRetryIf(ApiError e) {
-  if (e is! InternalError) return false;
+bool _alwaysRetryIf(ApiError e) => true;
 
-  return switch (e.error) {
-    DioException(type: DioExceptionType.badResponse) => false,
-    DioException() => true,
-    SocketException() || TimeoutException() => true,
-    _ => false,
-  };
-}
-
-bool _defaultConnectionRetryIf(ApiError e) {
+bool _connectionRetryIf(ApiError e) {
   if (e is! InternalError) return false;
   final error = e.error;
   return switch (error) {
     DioException(type: DioExceptionType.badResponse) => false,
     DioException(requestOptions: RequestOptions(method: 'GET')) => true,
+    SocketException() || TimeoutException() => true,
     _ => false,
   };
 }
 
-typedef RetryIf<ErrorType> = FutureOr<bool> Function(ApiError<ErrorType> error);
+typedef RetryIf<ErrorType> = FutureOr<bool> Function(ApiError<ErrorType> e);
 
 class Retry<ErrorType> {
   const Retry({
     required this.maxAttempts,
-    this.retryIf = _defaultRetryIf,
+    this.retryIf = _alwaysRetryIf,
+    this.onError,
     this.delayFactor = const Duration(milliseconds: 500),
     this.minDelay = Duration.zero,
     this.maxDelay = const Duration(seconds: 10),
@@ -41,7 +34,8 @@ class Retry<ErrorType> {
   /// Retry for Dio connection errors
   const Retry.connection({
     this.maxAttempts = 3,
-    this.retryIf = _defaultConnectionRetryIf,
+    this.retryIf = _connectionRetryIf,
+    this.onError,
     this.delayFactor = const Duration(milliseconds: 500),
     this.minDelay = const Duration(seconds: 1),
     this.maxDelay = const Duration(seconds: 10),
@@ -49,6 +43,10 @@ class Retry<ErrorType> {
   }) : assert(maxAttempts > 0, 'maxAttempts must be greater than 0');
 
   final RetryIf<ErrorType> retryIf;
+  final FutureOr<void> Function(
+    ApiError<ErrorType> e,
+    Duration delayBeforeNextAttemt,
+  )? onError;
   final int maxAttempts;
   final Duration delayFactor;
   final Duration minDelay;
