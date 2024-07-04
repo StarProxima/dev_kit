@@ -86,6 +86,8 @@ class _CachedFamilyProvidersContainer {
   /// Очищены ли все провайдеры
   bool get hasAllDisposed => countDisposed == cachedProviders.length;
 
+  bool get isEmpty => cachedProviders.isEmpty;
+
   void dispose(int key) {
     if (cachedProviders.isEmpty) return;
     final provider = cachedProviders[key];
@@ -125,9 +127,7 @@ class _CachedFamilyProvidersContainer {
 
     /// Если все провайдеры отменены, то закрываем связанные с ними KeepAliveLink
     if (isAllCanceled) {
-      for (final provider in cachedProviders.values) {
-        provider.close();
-      }
+      closeLinks();
     }
   }
 

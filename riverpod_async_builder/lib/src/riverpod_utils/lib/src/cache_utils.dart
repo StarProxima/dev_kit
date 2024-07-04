@@ -63,25 +63,38 @@ extension RefCacheUtils on AutoDisposeRef {
     final link = keepAlive();
     _cachedByTag[tag]?.add(link);
     Timer? timer;
-    switch (start) {
-      case StartCacheTimer.immediately:
-        timer = Timer(
-          duration,
-          () => _cachedByTag[tag]?.forEach((e) => e.close),
-        );
-      case StartCacheTimer.afterCancel:
-        onCancel(
-          () {
-            timer = Timer(
-              duration,
-              () => _cachedByTag[tag]?.forEach((e) => e.close),
-            );
-          },
-        );
+    if (duration != Duration.zero) {
+      switch (start) {
+        case StartCacheTimer.immediately:
+          timer = Timer(
+            duration,
+            () => _cachedByTag[tag]?.forEach((e) => e.close()),
+          );
+        case StartCacheTimer.afterCancel:
+          onCancel(
+            () {
+              timer = Timer(
+                duration,
+                () => _cachedByTag[tag]?.forEach((e) => e.close()),
+              );
+            },
+          );
+      }
     }
-    onDispose(() => timer?.cancel);
+    onCancel(
+      () {
+        final isDurationEqZero = duration == Duration.zero;
+        final isNotTimerActive =
+            !(timer?.isActive ?? false) && start != StartCacheTimer.afterCancel;
+        if (isDurationEqZero || isNotTimerActive) {
+          _cachedByTag[tag]?.forEach((e) => e.close());
+        }
+      },
+    );
+    onDispose(() => timer?.cancel());
+
     return FamilyKeepAliveLink(
-      () => _cachedByTag[tag]?.forEach((e) => e.close),
+      () => _cachedByTag[tag]?.forEach((e) => e.close()),
     );
   }
 
@@ -124,14 +137,24 @@ extension RefCacheUtils on AutoDisposeRef {
       );
     }
 
-    switch (start) {
-      case StartCacheTimer.immediately:
-        createProviderImmediately();
-      case StartCacheTimer.afterCancel:
-        createProviderDeferred();
+    if (duration != Duration.zero) {
+      switch (start) {
+        case StartCacheTimer.immediately:
+          createProviderImmediately();
+        case StartCacheTimer.afterCancel:
+          createProviderDeferred();
+      }
+    } else {
+      final cachedProvider = _CachedProvider(link: link, timer: null);
+      _cachedFamilyTagProviders[tag]?.addProvider(key, cachedProvider);
     }
 
     void resume() {
+      if (duration == Duration.zero) {
+        _cachedFamilyTagProviders[tag]?.onResume(key);
+        return;
+      }
+
       Timer? timer;
 
       /// Отменяем предыдущий таймер
@@ -157,10 +180,15 @@ extension RefCacheUtils on AutoDisposeRef {
 
     onCancel(() => _cachedFamilyTagProviders[tag]?.onCancel(key));
     onResume(resume);
-    onDispose(() => _cachedFamilyTagProviders[tag]?.dispose(key));
+    onDispose(() {
+      _cachedFamilyTagProviders[tag]?.dispose(key);
+      if (_cachedFamilyTagProviders[tag]?.isEmpty ?? false) {
+        _cachedFamilyTagProviders.remove(tag);
+      }
+    });
 
     return FamilyKeepAliveLink(
-      () => _cachedFamilyTagProviders[tag]?.closeLinks(),
+      () => _cachedFamilyTagProviders.remove(tag)?.closeLinks(),
     );
   }
 }
