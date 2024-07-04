@@ -7,9 +7,6 @@ import 'package:app_logger/src/res/theme.dart';
 import 'package:app_logger/src/widget/build_number.dart';
 import 'package:flutter/material.dart';
 
-/// Key to access the pop-up menu widget
-final popupButtonKey = GlobalKey<PopupMenuButtonState>();
-
 class DraggableButtonWidget extends StatefulWidget {
   const DraggableButtonWidget({
     required this.leftPos,
@@ -68,8 +65,6 @@ class _DraggableButtonWidgetState extends State<DraggableButtonWidget> {
                 data: loggerTheme,
                 child: GestureDetector(
                   onTap: () => _defaultClick(context),
-                  onLongPress: _onPressDraggableButton,
-                  onDoubleTap: _onPressDraggableButton,
                   onPanUpdate: _dragUpdate,
                   child: Container(
                     width: widget.btnSize + spaceForBuildNumberText,
@@ -117,15 +112,6 @@ class _DraggableButtonWidgetState extends State<DraggableButtonWidget> {
         AppLoggerHelper.instance.showLogger();
       }
     });
-  }
-
-  void _onPressDraggableButton() {
-    if (!AppLoggerHelper.instance.isLoggerShowing) {
-      setState(() {
-        isShow = false;
-      });
-      popupButtonKey.currentState?.showButtonMenu();
-    }
   }
 
   void _dragUpdate(DragUpdateDetails detail) {
