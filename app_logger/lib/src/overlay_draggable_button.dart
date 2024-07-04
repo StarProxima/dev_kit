@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:app_logger/src/app_logger_helper.dart';
-import 'package:app_logger/src/page/widgets/popup_menu.dart';
 import 'package:app_logger/src/res/colors.dart';
 import 'package:app_logger/src/res/theme.dart';
 import 'package:app_logger/src/widget/build_number.dart';
@@ -67,40 +66,36 @@ class _DraggableButtonWidgetState extends State<DraggableButtonWidget> {
             child: Material(
               child: Theme(
                 data: loggerTheme,
-                child: PopupMenu(
-                  popupKey: popupButtonKey,
-                  onCanceled: _onCanceledPopup,
-                  child: GestureDetector(
-                    onTap: () => _defaultClick(context),
-                    onLongPress: _onPressDraggableButton,
-                    onDoubleTap: _onPressDraggableButton,
-                    onPanUpdate: _dragUpdate,
-                    child: Container(
-                      width: widget.btnSize + spaceForBuildNumberText,
-                      height: widget.btnSize,
-                      color: CRLoggerColors.primaryColor,
-                      child: Center(
-                        child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 2,
-                          children: [
-                            ValueListenableBuilder(
-                              valueListenable: AppLoggerHelper
-                                  .instance.loggerShowingNotifier,
-                              //ignore:prefer-trailing-comma
-                              builder: (context, loggerShowing, child) {
-                                return Icon(
-                                  loggerShowing
-                                      ? Icons.visibility_off
-                                      : Icons.bug_report,
-                                  color: Colors.white,
-                                  size: 20,
-                                );
-                              },
-                            ),
-                            const BuildNumber(),
-                          ],
-                        ),
+                child: GestureDetector(
+                  onTap: () => _defaultClick(context),
+                  onLongPress: _onPressDraggableButton,
+                  onDoubleTap: _onPressDraggableButton,
+                  onPanUpdate: _dragUpdate,
+                  child: Container(
+                    width: widget.btnSize + spaceForBuildNumberText,
+                    height: widget.btnSize,
+                    color: CRLoggerColors.primaryColor,
+                    child: Center(
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 2,
+                        children: [
+                          ValueListenableBuilder(
+                            valueListenable:
+                                AppLoggerHelper.instance.loggerShowingNotifier,
+                            //ignore:prefer-trailing-comma
+                            builder: (context, loggerShowing, child) {
+                              return Icon(
+                                loggerShowing
+                                    ? Icons.visibility_off
+                                    : Icons.bug_report,
+                                color: Colors.white,
+                                size: 20,
+                              );
+                            },
+                          ),
+                          const BuildNumber(),
+                        ],
                       ),
                     ),
                   ),
@@ -131,12 +126,6 @@ class _DraggableButtonWidgetState extends State<DraggableButtonWidget> {
       });
       popupButtonKey.currentState?.showButtonMenu();
     }
-  }
-
-  void _onCanceledPopup() {
-    setState(() {
-      isShow = true;
-    });
   }
 
   void _dragUpdate(DragUpdateDetails detail) {
