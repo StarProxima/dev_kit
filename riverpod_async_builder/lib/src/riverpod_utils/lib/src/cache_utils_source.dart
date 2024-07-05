@@ -124,12 +124,11 @@ class _CachedByTagProvidersContainer {
   }
 
   /// Помечаем закешированный [_CachedProvider] как активный (hasCanceled = false) по связанному [KeepAliveLink]
-  void resumeByLink(KeepAliveLink link, KeepAliveLink newLink) {
+  void resumeByLink(KeepAliveLink link) {
     final provider = cachedProviders.firstWhereOrNull((p) => p.link == link);
     if (provider == null) return;
     final index = cachedProviders.indexOf(provider);
-    cachedProviders[index] =
-        provider.copyWith(link: newLink, hasCanceled: false);
+    cachedProviders[index] = provider.copyWith(hasCanceled: false);
   }
 }
 

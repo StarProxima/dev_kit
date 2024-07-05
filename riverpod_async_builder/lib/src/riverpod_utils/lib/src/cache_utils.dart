@@ -37,6 +37,7 @@ extension RefCacheUtils on AutoDisposeRef {
   /// [start] - определяет момент запуска таймера, после выполнения которого будет закрыт связанный [KeepAliveLink] с провайдером.
   /// При [StartCacheTimer.immediately] таймер будет запущен сразу после создания провайдера.
   /// При [StartCacheTimer.afterCancel] таймер будет запущен после того, как не останется ни одного слушателя для провайдера.
+  /// Если появится слушатель, то текущий таймер будет отменен, а после запущен новый.
   /// Возвращает [KeepAliveLink], что дает возможность вручную уничтожать закешированные провайдеры.
   KeepAliveLink _cacheFor(
     Duration duration, {
@@ -54,6 +55,13 @@ extension RefCacheUtils on AutoDisposeRef {
           },
         );
     }
+    onResume(
+      () {
+        if (start == StartCacheTimer.afterCancel) {
+          timer?.cancel();
+        }
+      },
+    );
     onDispose(() => timer?.cancel);
     return link;
   }
@@ -82,7 +90,7 @@ extension RefCacheUtils on AutoDisposeRef {
   /// по окончании которого будет выполнена попытка уничтожить (задиспоузить) все провайдеры по тегу [tag]
   /// Условия регистрации таймера: Все [_CachedProvider] должны быть отменены [hasCanceled] = true, а также не должно быть действующего таймера
   /// 5. При [onCancel] помечаем [_CachedProvider] как отменный [hasCanceled] = true.
-  /// Проубем запустить таймер [startTimerAfterCancel], так как в этот момент все провайдеры могут быть отменены.
+  /// Пробуем запустить таймер [startTimerAfterCancel], так как в этот момент все провайдеры могут быть отменены.
   /// 6. При [onResume] создаем новый [KeepAliveLink], и обновляем [_CachedProvider], также помечаем его как активный [hasCanceled] = false.
   /// Также, если все [_CachedProvider] были отменены, то обнуляем таймер.
   /// При [onDispose] очищаем список [_CachedProvider] в контейнере [_CachedByTagProvidersContainer], также уничтожаем таймеры
@@ -96,7 +104,7 @@ extension RefCacheUtils on AutoDisposeRef {
     _cachedByTag[tag] ??= _CachedByTagProvidersContainer();
 
     /// Создаем [KeepAliveLink]
-    var link = keepAlive();
+    final link = keepAlive();
 
     /// Создаем [_CachedProvider] и добавляем в контейнер
     final cachedProvider = _CachedProvider(link: link);
@@ -140,6 +148,9 @@ extension RefCacheUtils on AutoDisposeRef {
       case StartCacheTimer.afterCancel:
         onCancel(startTimerAfterCancel);
     }
+
+    /// Если нет ни одного слушателя на провайдер (например, проскроллили до 5-й страницы,
+    /// то 2-я перестанет прослушиваться, и будет вызван для него [onCancel])
     onCancel(
       () {
         final container = _cachedByTag[tag];
@@ -158,6 +169,7 @@ extension RefCacheUtils on AutoDisposeRef {
       },
     );
 
+    /// Вызывается, если снова появился слушатель провайдера
     onResume(
       () {
         final container = _cachedByTag[tag];
@@ -170,11 +182,7 @@ extension RefCacheUtils on AutoDisposeRef {
           _cachedByTag[tag]?.timer = null;
         }
 
-        /// Создаем новый [KeepAliveLink], так как нет возможности пометить старый [KeepAliveLink], как активный
-        final newLink = keepAlive();
-        container.resumeByLink(link, newLink);
-        link.close();
-        link = newLink;
+        container.resumeByLink(link);
       },
     );
 
