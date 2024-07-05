@@ -11,35 +11,28 @@ class FamilyKeepAliveLink implements KeepAliveLink {
 }
 
 /// Представляет закешированный провайдер.
-/// Хранит [link] для кэширования провайдера и [timer] для закрытия [link]
+/// Хранит [link] для кэширования провайдера
 @immutable
 class _CachedProvider {
   const _CachedProvider({
     required this.link,
-    required this.timer,
     this.hasCanceled = false,
-    this.hasDisposed = false,
   });
 
   final KeepAliveLink? link;
-  final Timer? timer;
 
-  /// Был ли вызван onCancel и закрыт [link]
+  /// Был ли вызван onCancel
   final bool hasCanceled;
-
-  /// Был ли вызван onDispose, закрыт [link] и отменен [timer]
-  final bool hasDisposed;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is _CachedProvider &&
           runtimeType == other.runtimeType &&
-          link == other.link &&
-          timer == other.timer;
+          link == other.link;
 
   @override
-  int get hashCode => link.hashCode ^ timer.hashCode;
+  int get hashCode => link.hashCode;
 
   _CachedProvider copyWith({
     KeepAliveLink? link,
@@ -49,129 +42,103 @@ class _CachedProvider {
   }) {
     return _CachedProvider(
       link: link ?? this.link,
-      timer: timer ?? this.timer,
       hasCanceled: hasCanceled ?? this.hasCanceled,
-      hasDisposed: hasDisposed ?? this.hasDisposed,
     );
   }
 
-  void close() => link?.close();
-
-  void cancel() => timer?.cancel();
-
+  /// Закрыть [link]
   void dispose() {
-    close();
-    cancel();
+    link?.close();
   }
 }
 
-/// Используется для кэширования family-провайдеров
-class _CachedFamilyProvidersContainer {
-  _CachedFamilyProvidersContainer() : cachedProviders = {};
+class _CachedByTagProvidersContainer {
+  _CachedByTagProvidersContainer() : cachedProviders = [];
 
-  /// Закэшированные провайдеры
-  Map<int, _CachedProvider> cachedProviders;
+  /// Список закешированных провайдеров [_CachedProvider]
+  final List<_CachedProvider> cachedProviders;
+
+  /// Таймер, который используется для кеширования на определенную длительность
+  Timer? timer;
 
   /// Количество отмененных провайдеров
-  int get countCanceled =>
-      cachedProviders.values.where((p) => p.hasCanceled).length;
-
-  /// Количество очищеных провайдеров
-  int get countDisposed =>
-      cachedProviders.values.where((p) => p.hasDisposed).length;
+  int get countCanceled => cachedProviders.where((p) => p.hasCanceled).length;
 
   /// Необходимо ли очистить все провайдеры
-  bool get isAllCanceled => countCanceled == cachedProviders.length;
+  bool get isAllCanceled =>
+      countCanceled == cachedProviders.length && cachedProviders.isNotEmpty;
 
-  /// Очищены ли все провайдеры
-  bool get hasAllDisposed => countDisposed == cachedProviders.length;
+  /// Активен ли таймер
+  bool get isActive => timer?.isActive ?? false;
 
-  bool get isEmpty => cachedProviders.isEmpty;
+  /// Был ли вызван метод [dispose]
+  bool wasDisposed = false;
 
-  void dispose(int key) {
+  /// Добавляем [cachedProvider] в [cachedProviders]
+  void addProvider(_CachedProvider cachedProvider) {
+    cachedProviders.add(cachedProvider);
+
+    /// Используем future, чтобы избежать случая:
+    /// Закешировано несколько провайдеров. Обновляем family-провайдер (invalidate)
+    /// Вызывается onDispose для первого случайного закешированного провайдера, также отрабаывает [dispose],
+    /// а после вызывается addProvider и добавляется новый провайдер.
+    /// Но после этого отрабатывает onDispose для остальных закешированных провайдеров и вызывается [dispose],
+    /// из-за чего этот добавленный провайдер теряется. Поэтому необходимо выполнить это позже.
+    Future(() => wasDisposed = false);
+  }
+
+  /// Уничтожает (закрывает [KeepAliveLink] для каждого закешированного провайдера),
+  /// а также отменяет таймер [timer]
+  void dispose() {
+    /// Если нет ни одного закешированного [_CachedProvider], то выходим
     if (cachedProviders.isEmpty) return;
-    final provider = cachedProviders[key];
-    if (provider == null) return;
 
-    /// Помечаем провайдер, как очищенный
-    cachedProviders[key] = provider.copyWith(hasDisposed: true);
-
-    /// Если все провайдеры отменены, то сразу очищаем все провайдеры.
-    /// Иначе очищаем конкретный провайдер по [key]
-    if (isAllCanceled) {
-      for (final p in cachedProviders.values) {
-        p.dispose();
-      }
-      cachedProviders.updateAll(
-        (key, value) => value.copyWith(hasDisposed: true),
-      );
-    } else {
-      final provider = cachedProviders[key];
-      provider?.dispose();
+    /// Если контейнер уже был уничтожен (задиспоужен) недавно, и не был добавлен хотя бы один провайдер, то выходим
+    if (wasDisposed) return;
+    for (final p in cachedProviders) {
+      p.dispose();
     }
-
-    /// Если еще не все провайдеры очищены, то выходим,
-    /// иначе очищаем [cachedProviders]
-    if (!hasAllDisposed) return;
+    cancelTimer();
+    timer = null;
     cachedProviders.clear();
+    wasDisposed = true;
   }
 
-  void addProvider(int key, _CachedProvider provider) {
-    cachedProviders[key] = provider;
+  /// Метод, для совершения попытки уничтожения (очищения) контейнера
+  void tryDispose() {
+    /// Если не все [_CachedProvider] помечены как отмененные или активен таймер, то выходим
+    if (!isAllCanceled || isActive) return;
+    dispose();
   }
 
-  void onCancel(int key) {
-    final provider = cachedProviders[key];
+  void cancelTimer() {
+    timer?.cancel();
+  }
+
+  /// Помечаем закешированный [_CachedProvider] как отмененный (hasCanceled = true) по связанному [KeepAliveLink]
+  void closeByLink(KeepAliveLink link) {
+    final provider = cachedProviders.firstWhereOrNull((p) => p.link == link);
     if (provider == null) return;
-    cachedProviders[key] = provider.copyWith(hasCanceled: true);
-
-    /// Если все провайдеры отменены, то закрываем связанные с ними KeepAliveLink
-    if (isAllCanceled) {
-      closeLinks();
-    }
+    final index = cachedProviders.indexOf(provider);
+    cachedProviders[index] = provider.copyWith(hasCanceled: true);
   }
 
-  void onResume(int key) {
-    final provider = cachedProviders[key];
+  /// Помечаем закешированный [_CachedProvider] как активный (hasCanceled = false) по связанному [KeepAliveLink]
+  void resumeByLink(KeepAliveLink link, KeepAliveLink newLink) {
+    final provider = cachedProviders.firstWhereOrNull((p) => p.link == link);
     if (provider == null) return;
-    cachedProviders[key] = provider.copyWith(
-      hasCanceled: false,
-      hasDisposed: false,
-    );
+    final index = cachedProviders.indexOf(provider);
+    cachedProviders[index] =
+        provider.copyWith(link: newLink, hasCanceled: false);
   }
+}
 
-  void closeLinkByKey(int key) {
-    final provider = cachedProviders[key];
-    provider?.close();
-  }
-
-  void closeLinks() {
-    for (final provider in cachedProviders.values) {
-      provider.close();
+extension FirstWhereOrNullX<T> on Iterable<T> {
+  /// The first element satisfying [test], or `null` if there are none.
+  T? firstWhereOrNull(bool Function(T element) test) {
+    for (var element in this) {
+      if (test(element)) return element;
     }
-  }
-
-  void cancelTimerByKey(int key) {
-    final provider = cachedProviders[key];
-    provider?.close();
-  }
-
-  void updateProviderByKey(
-    int key, {
-    Timer? timer,
-    KeepAliveLink? link,
-  }) {
-    final provider = cachedProviders[key];
-    if (provider == null) {
-      cachedProviders[key] = _CachedProvider(link: link, timer: timer);
-    } else {
-      final newProvider = provider.copyWith(
-        timer: timer,
-        link: link,
-        hasCanceled: false,
-        hasDisposed: false,
-      );
-      cachedProviders[key] = newProvider;
-    }
+    return null;
   }
 }

@@ -34,7 +34,6 @@ extension RefCacheX on AutoDisposeRef {
   KeepAliveLink cacheFor(
     Duration duration, {
     String? tag,
-    int? key,
     cu.StartCacheTimer start = cu.StartCacheTimer.immediately,
   }) {
     listenUserChanges();
@@ -42,7 +41,6 @@ extension RefCacheX on AutoDisposeRef {
     return cu.RefCacheUtils(this).cacheFor(
       duration,
       tag: tag,
-      key: key,
       start: start,
     );
   }
