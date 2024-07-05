@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_utils/riverpod_utils.dart' as cu;
+import 'package:riverpod_async_builder/riverpod_async_builder.dart' as cu;
 
 import '../../dev_kit.dart';
 
