@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_async_builder/riverpod_async_builder.dart';
+import 'package:riverpod_async_builder/riverpod_utils.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.

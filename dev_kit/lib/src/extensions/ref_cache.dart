@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_async_builder/riverpod_async_builder.dart' as cu;
+import 'package:riverpod_async_builder/riverpod_utils.dart' as utils;
 
 import '../../dev_kit.dart';
 
@@ -34,11 +34,11 @@ extension RefCacheX on AutoDisposeRef {
   KeepAliveLink cacheFor(
     Duration duration, {
     String? tag,
-    cu.StartCacheTimer start = cu.StartCacheTimer.immediately,
+    utils.StartCacheTimer start = utils.StartCacheTimer.immediately,
   }) {
     listenUserChanges();
 
-    return cu.RefCacheUtils(this).cacheFor(
+    return utils.RefCacheUtils(this).cacheFor(
       duration,
       tag: tag,
       start: start,
