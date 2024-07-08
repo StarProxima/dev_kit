@@ -177,7 +177,7 @@ class AsyncBuilder<T> extends StatelessWidget {
   ///
   /// [animationController] - Для отложенной анимации элементов должен передаваться один [AnimationController],
   /// управление происходит внутри [AsyncBuilder.paginatedItem], передавать duration не нужно.
-  static AsyncBuilder<Item>? paginatedItem<Item>(
+  static Widget? paginatedItem<Item>(
     AsyncValue<Iterable<Item>> Function(int pointer) value, {
     required BuildContext context,
     required int index,
@@ -284,7 +284,7 @@ class AsyncBuilder<T> extends StatelessWidget {
         : dataFn(item);
 
     // Возращаем AsyncBuilder для нашего элемента на странице
-    return AsyncBuilder(
+    final asyncBuilder = AsyncBuilder(
       asyncItem,
       skipLoadingOnReload: skipLoadingOnReload,
       skipLoadingOnRefresh: skipLoadingOnRefresh,
@@ -295,6 +295,8 @@ class AsyncBuilder<T> extends StatelessWidget {
       orElse: orElse,
       data: animatedDataFn,
     );
+
+    return asyncBuilder.build(context);
   }
 
   @override
