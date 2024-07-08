@@ -184,7 +184,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     required int pageSize,
     int preloadNextPageOffset = 0,
     int preloadPrevPageOffset = 0,
-    bool stopOnLoad = true,
+    bool canStop = true,
     bool useSingleError = true,
     int Function(int index, int pageSize)? calculatePaginationPointer,
     bool skipLoadingOnReload = false,
@@ -209,7 +209,7 @@ class AsyncBuilder<T> extends StatelessWidget {
     final asyncItems = value(pointer);
 
     if (asyncItems.hasValue && indexOnPage >= asyncItems.requireValue.length) {
-      return null;
+      return canStop ? null : const SizedBox.shrink();
     }
 
     final asyncItem =
@@ -220,7 +220,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       skipLoadingOnRefresh: skipLoadingOnRefresh,
       skipError: skipError,
       error: (_, __) => false,
-      loading: () => stopOnLoad && indexOnPage != 0,
+      loading: () => canStop && indexOnPage != 0,
       data: (items) => false,
     );
 
@@ -283,7 +283,7 @@ class AsyncBuilder<T> extends StatelessWidget {
           )!
         : dataFn(item);
 
-    // Возращаем AsyncBuilder для нашего элемента на странице
+    // Созздаём AsyncBuilder для нашего элемента на странице
     final asyncBuilder = AsyncBuilder(
       asyncItem,
       skipLoadingOnReload: skipLoadingOnReload,
@@ -296,6 +296,7 @@ class AsyncBuilder<T> extends StatelessWidget {
       data: animatedDataFn,
     );
 
+    // Возращаем результат build, а не сам виджет, чтобы сохранить переданные ключи
     return asyncBuilder.build(context);
   }
 
