@@ -225,8 +225,11 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
           );
     }
 
+    var overlayController = _appOnboardingState.getOverlayController(index);
+
     return OverlayPortal(
-      controller: _appOnboardingState.getOverlayController(index),
+      key: ValueKey(overlayController.hashCode),
+      controller: overlayController,
       overlayChildBuilder: (context) {
         return Positioned.fill(
           child: Stack(
