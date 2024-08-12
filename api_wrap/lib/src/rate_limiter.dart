@@ -120,8 +120,12 @@ class Debounce extends RateLimiter {
       completer: completer,
       function: function,
       onDelayEnd: () {
+        final operation = operations[tag];
         delayTickTimer?.cancel();
         onDelayEnd?.call();
+        onDelayTick?.call(operation!.calculateRateTimings(
+          elapsedTime: operation.rateLimiter.duration,
+        ));
       },
     );
     operations[tag] = operation;

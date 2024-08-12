@@ -2,6 +2,8 @@ part of 'api_wrap.dart';
 
 sealed class ApiError<ErrorType> implements Exception {
   const ApiError();
+
+  String toShortString();
 }
 
 class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
@@ -22,6 +24,9 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
   final Uri url;
 
   @override
+  String toShortString() => '$statusCode $method $url\n\n$error';
+
+  @override
   String toString() =>
       'ErrorResponse:\n$statusCode $method $url\n\n$error\n\n$stackTrace';
 }
@@ -34,6 +39,9 @@ class InternalError<ErrorType> extends ApiError<ErrorType> {
 
   final Object error;
   final StackTrace stackTrace;
+
+  @override
+  String toShortString() => '$error';
 
   @override
   String toString() => 'InternalError:\n\n$error\n\n$stackTrace';
@@ -49,6 +57,10 @@ class RateCancelError<ErrorType> implements ApiError<ErrorType> {
   final String rateLimiter;
   final String tag;
   final RateTimings timings;
+
+  @override
+  String toShortString() =>
+      'Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation tag:\n$tag';
 
   @override
   String toString() =>
