@@ -89,17 +89,18 @@ class AsyncBuilder<T> extends StatelessWidget {
             settings.animatedItemsCount ?? items.length;
         final animatedItemsCount = settings.animatedItemsCount;
 
-        if (animationController.isDismissed) {
-          animationController.duration =
-              settings.itemAnimationDuration * itemCountForDuration;
+        switch (animationController.status) {
+          case AnimationStatus.dismissed:
+            animationController.duration = const Duration(hours: 1);
 
-          if (settings.animationAutoStart) {
-            Future.delayed(settings.delayBeforeStartAnimation, () {
-              if (context.mounted && animationController.isDismissed) {
-                animationController.forward();
-              }
-            });
-          }
+            if (settings.animationAutoStart) {
+              Future.delayed(settings.delayBeforeStartAnimation, () {
+                if (context.mounted && animationController.isDismissed) {
+                  animationController.forward();
+                }
+              });
+            }
+          default:
         }
 
         final indexForAnim = indexForAnimation ?? index;
