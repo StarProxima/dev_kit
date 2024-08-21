@@ -1,0 +1,20 @@
+name: app_update_checker
+description: A utility to handle app updates
+version: 0.0.1
+homepage: https://github.com/StarProxima/dev_kit
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+
