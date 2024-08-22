@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Update README
+
 ## 0.0.2
 
 * Update README with initial specification of config api
