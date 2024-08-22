@@ -55,9 +55,16 @@ releases:
       - googlePlay
       - appStore
       - ruStore
-    # Optional, from stores by default. Support custom platforms
-    platforms: 
-      - android
-      - ios
-      - aurora
+    storesV2:
+      - store: googlePlay
+      - store: appStore
+      - store: ruStore
+      - store: github
+         # Optional, from stores by default. Support custom platforms
+        platforms: 
+          - android
+          - ios
+          - aurora
+   
+    
 ```
