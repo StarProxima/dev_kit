@@ -1,9 +1,9 @@
 ## App Update Checker
 
-![Thumbnail (2)](https://github.com/user-attachments/assets/11e46aea-8451-44e8-88c9-495bbefe18a4)
+![App Checker Thumbnail](https://github.com/user-attachments/assets/11e46aea-8451-44e8-88c9-495bbefe18a4)
 
 > [!IMPORTANT]
-> This package is in the API design phase.
+> This package is in the early API design phase.
 
 To support its development, you can give it a like and a star on [GitHub](https://github.com/StarProxima/dev_kit).
 
