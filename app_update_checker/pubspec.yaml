@@ -2,6 +2,9 @@ name: app_update_checker
 description: A utility to handle app updates
 version: 0.0.1
 homepage: https://github.com/StarProxima/dev_kit
+screenshots:
+  - description: 'App Update Checker Thumbnail'
+    path: assets/package_thumbnail.png
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
