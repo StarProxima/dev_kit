@@ -4,26 +4,23 @@ This package is in the API design phase.
 
 To support its development, you can give it a like and a star on [GitHub](https://github.com/StarProxima/dev_kit).
 
-The appcast api under consideration:
+The config api structure under consideration:
 ```yaml
 # Description of the api structure
 # https://pub.dev/packages/app_update_checker
 
 
-# Versions up to this one will receive a deprecation notice but can postpone the update.
-deprecationNoticeUntilVersion: 0.1.0 
-# Versions up to this one must update to the latest version, with no option to postpone.
-requiredUpdateUntilVersion: 0.3.7 
+# Versions prior to this one will receive an obsolescence notice, but may defer the update.
+deprecatedBeforeVersion: 0.3.7
+# Versions prior to this one must be updated to the latest version, with no option to defer the update.
+requiredMinimumVersion: 0.1.0 
 
 # Optional, will be set based on the platform and app ID.
 links:
-  googlePlay: 
-    url: 'https://example.com'
-  appStore: 
-    url: 'https://example.com'
-  appGallery: 
-    url: 'https://example.com'
-  ruStore: 
+  googlePlay: 'https://example.com'
+  appStore: 'https://example.com'
+  appGallery: 'https://example.com'
+  ruStore: # You can set it like this
     url: 'https://example.com'
   # Custom store
   gitHub:
@@ -35,8 +32,12 @@ links:
       - linux
 releases:
   - version: 0.3.7 # Required
-    isActive: true # Optional, true by default
-    isCritical: false # Optional, false by default
+    # Optional, should use the update
+    isActive: true 
+    # Optional, the update is mandatory for installation by all with a lesser version
+    isRequired: false 
+    # Optional, if true - becomes inactive, will be required to upgrade to any higher version
+    isBroken: false
     # Optional, will be override
     title: 
       en: Version $version is available
@@ -55,16 +56,9 @@ releases:
       - googlePlay
       - appStore
       - ruStore
-    storesV2:
-      - googlePlay
-      - appStore
-      - ruStore
       - store: github
-         # Optional, from stores by default. Support custom platforms
         platforms: 
           - android
           - ios
           - aurora
-   
-    
 ```
