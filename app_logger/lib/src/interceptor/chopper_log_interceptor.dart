@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:chopper/chopper.dart';
 import 'package:app_logger/app_logger.dart';
+import 'package:chopper/chopper.dart';
 import 'package:http/http.dart' as http;
 
 final class ChopperLogInterceptor
