@@ -56,9 +56,9 @@ releases:
       - appStore
       - ruStore
     storesV2:
-      - store: googlePlay
-      - store: appStore
-      - store: ruStore
+      - googlePlay
+      - appStore
+      - ruStore
       - store: github
          # Optional, from stores by default. Support custom platforms
         platforms: 
