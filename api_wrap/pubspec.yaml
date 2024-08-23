@@ -1,10 +1,14 @@
 name: api_wrap
-description: Error handling, rate limiting and retry in one ergonomic api
-version: 1.0.0
-repository: https://github.com/StarProxima/dev_kit
+description: Error handling, rate limiting, delay and retry in one ergonomic api
+version: 0.0.1
+repository: https://github.com/StarProxima/dev_kit/tree/develop/api_wrap
+homepage: https://github.com/StarProxima/dev_kit
+screenshots:
+ - description: 'Package Thumbnail'
+   path: assets/package_thumbnail.png
 
 environment:
-  sdk: ^3.3.0
+  sdk: ^3.0.0
 
 dependencies:
   meta: ^1.0.0
