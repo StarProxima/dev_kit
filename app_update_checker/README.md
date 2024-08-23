@@ -1,13 +1,17 @@
 ## App Update Checker
 
-![App Checker Thumbnail](https://github.com/user-attachments/assets/11e46aea-8451-44e8-88c9-495bbefe18a4)
+![Package Thumbnail](https://github.com/user-attachments/assets/11e46aea-8451-44e8-88c9-495bbefe18a4)
 
 > [!IMPORTANT]
 > This package is in the early API design phase.
 
 ---
 
+#### Work in progress 🏗️
+
 To support its development, you can give it a like and a star on [GitHub](https://github.com/StarProxima/dev_kit).
+
+---
 
 The config api structure under consideration:
 ```yaml
