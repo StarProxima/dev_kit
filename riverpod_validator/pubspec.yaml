@@ -1,7 +1,11 @@
 name: riverpod_validator
-description: A starting point for Dart libraries or applications.
+description: Allows you to create user data validators directly in Notifier`s using Riverpod
 version: 0.0.1
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/StarProxima/dev_kit/tree/develop/api_wrap
+homepage: https://github.com/StarProxima/dev_kit
+screenshots:
+ - description: 'Package Thumbnail'
+   path: assets/package_thumbnail.png
 
 environment:
   sdk: ^3.3.0
