@@ -1,7 +1,7 @@
 name: riverpod_validator
 description: Allows you to create user data validators directly in Notifier`s using Riverpod
-version: 0.0.1
-repository: https://github.com/StarProxima/dev_kit/tree/develop/api_wrap
+version: 0.0.2
+repository: https://github.com/StarProxima/dev_kit/tree/develop/riverpod_validator
 homepage: https://github.com/StarProxima/dev_kit
 screenshots:
  - description: 'Package Thumbnail'
