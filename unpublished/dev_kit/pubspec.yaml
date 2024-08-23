@@ -21,7 +21,7 @@ dependencies:
 
   # хз, как нужно?
   riverpod_async_builder:
-    path: ../riverpod_async_builder
+    path: ../../riverpod_async_builder
     
   # riverpod_validator:
   #   path: ../riverpod_validator
