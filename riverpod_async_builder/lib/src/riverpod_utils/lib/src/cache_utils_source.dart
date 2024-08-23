@@ -12,7 +12,6 @@ class FamilyKeepAliveLink implements KeepAliveLink {
 
 /// Представляет закешированный провайдер.
 /// Хранит [link] для кэширования провайдера
-@immutable
 class _CachedProvider {
   const _CachedProvider({
     required this.link,
