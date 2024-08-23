@@ -1,11 +1,15 @@
-# dev_kit
+# Dev Kit
 
-## Различные утилиты разделены по пакетам, чтобы упростить их установку, использование и поддержку
+## A set of various useful solutions for Flutter app
 
-TODO: Добавить описание пакетов
-TODO: Привести документацию к актульному виду
-TODO: Перевести документацию на английский язык
-TODO: Возможно, добавить примеры использования в example папку пакетов
+These include error handling, validation, asynchronous data management, and delayed list animation.
 
-TODO: Добавить пакет для debug`a (fork cr_logger)
-TODO: Добавить пакет для построения онбордингов с тултипами (мб и не только с ними?)
+## Contributors ✨
+
+[![Alt](https://opencollective.com/dev_kit/contributors.svg?width=890&button=false)](https://github.com/remarkablemark/dev_kit/graphs/contributors)
+
+Contributions of any kind welcome!
+
+## Activities
+
+![Alt](https://repobeats.axiom.co/api/embed/732b41cfc45839e3b078304e6b46ca0da7bd7f15.svg "Repobeats analytics image")
