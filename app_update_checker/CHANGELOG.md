@@ -1,3 +1,11 @@
+## 0.0.5
+
+* Update README
+
+## 0.0.4
+
+* Add initial example
+
 ## 0.0.3
 
 * Update README
