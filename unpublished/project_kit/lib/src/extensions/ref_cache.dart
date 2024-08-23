@@ -1,7 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_async_builder/riverpod_utils.dart' as utils;
 
-import '../../dev_kit.dart';
+import '../../project_kit.dart';
 
 extension RefCacheX on AutoDisposeRef {
   void listenUserChanges() {

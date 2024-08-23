@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../dev_kit.dart';
+import '../../../project_kit.dart';
 import '../../internal/logger/dev_kit_logger.dart';
 import '../notifier_async_utils/notifier_async_utils.dart';
 

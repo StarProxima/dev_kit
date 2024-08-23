@@ -1,4 +1,4 @@
-include: package:dev_kit/analysis_options.yaml
+include: package:project_kit/analysis_options.yaml
 
 linter:
   rules:
