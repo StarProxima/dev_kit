@@ -1,39 +1,24 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+## Riverpod Async Builder
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+![Package Thumbnail](https://github.com/user-attachments/assets/7240a6b8-f4e3-4b2c-8665-81b16abf5a6d)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+> [!IMPORTANT]
+> This package is in the early API design phase.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+---
 
-## Features
+#### Docs in progress 🏗️
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+To support its development, you can give it a like and a star on [GitHub](https://github.com/StarProxima/dev_kit).
 
-## Getting started
+---
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Contributors ✨
 
-## Usage
+[![Alt](https://opencollective.com/dev_kit/contributors.svg?width=890&button=false)](https://github.com/remarkablemark/dev_kit/graphs/contributors)
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Contributions of any kind welcome!
 
-```dart
-const like = 'sample';
-```
+## Activities
 
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+![Alt](https://repobeats.axiom.co/api/embed/732b41cfc45839e3b078304e6b46ca0da7bd7f15.svg "Repobeats analytics image")
