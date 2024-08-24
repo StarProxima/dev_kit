@@ -32,6 +32,8 @@ dependencies:
   flutter_svg: ^2.0.9
   gap: ^3.0.1
 
+  dart_code_metrics_presets: ^2.15.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
