@@ -8,7 +8,7 @@ class CheckerConfigDTO {
   final Duration? releaseDelay;
   final Version? deprecatedBeforeVersion;
   final Version? requiredMinimumVersion;
-  final List<StoreDTO>? stores;
+  final List<StoreDTO> stores;
   final List<ReleaseDTO> releases;
   final Map<String, dynamic>? customData;
 

@@ -1,14 +1,16 @@
 part of 'store.dart';
 
 class CustomStore extends Store {
-  const CustomStore({
-    required this.customName,
-    required super.url,
-    required super.platforms,
-  }) : super(store: Stores.customStore);
-
-  final String customName;
+  final String _name;
 
   @override
-  String get name => customName;
+  // ignore: avoid-unnecessary-getter
+  String get name => _name;
+
+  const CustomStore({
+    required String name,
+    required super.url,
+    required super.platforms,
+  })  : _name = name,
+        super(store: Stores.custom);
 }

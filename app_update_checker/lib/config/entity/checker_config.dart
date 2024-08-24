@@ -1,6 +1,5 @@
-import 'package:app_update_checker/config/entity/stores/store.dart';
-
 import 'release.dart';
+import 'stores/store.dart';
 import 'version.dart';
 
 class CheckerConfig {

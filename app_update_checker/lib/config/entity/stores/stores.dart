@@ -1,10 +1,10 @@
 enum Stores {
   googlePlay,
   appStore,
-  customStore;
+  custom;
 
   factory Stores.fromString(String name) => values.firstWhere(
         (e) => e.name == name,
-        orElse: () => customStore,
+        orElse: () => custom,
       );
 }

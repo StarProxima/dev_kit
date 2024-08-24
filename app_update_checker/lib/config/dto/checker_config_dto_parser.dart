@@ -36,17 +36,19 @@ class CheckerConfigDTOParser {
     );
     requiredMinimumVersion as Version?;
 
-    if (stores is! List<Map<String, dynamic>>?) {
+    if (stores == null) throw const DtoParserException();
+
+    if (stores is! List<Map<String, dynamic>>) {
       if (isDebug) throw const DtoParserException();
       stores = null;
-    } else if (stores != null) {
+    } else {
       stores = stores
           .map((e) => parseStore(e, isStrict: false))
           .toList()
           .whereType<StoreDTO>();
     }
-    stores as List<Object>?;
-    stores as List<StoreDTO>?;
+    stores as List<Object>;
+    stores as List<StoreDTO>;
 
     if (releases == null) throw const DtoParserException();
 
