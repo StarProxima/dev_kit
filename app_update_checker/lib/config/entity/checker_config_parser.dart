@@ -2,11 +2,11 @@ import '../dto/models/checker_config_dto.dart';
 import 'checker_config.dart';
 import 'release.dart';
 import 'stores/store.dart';
-import 'stores/stores.dart';
 
 class CheckerConfigParser {
   const CheckerConfigParser();
 
+  // TODO: Зависимость от сторов, сложности при добавлении новых
   // TODO: Avoid long methods. This method contains 107 lines with code.
   // ignore: avoid-long-functions
   CheckerConfig parseFromDTO(CheckerConfigDTO checkerConfigDTO) {
@@ -20,7 +20,7 @@ class CheckerConfigParser {
       final url = storeDTO.url;
       final platforms = storeDTO.platforms;
       if (url != null && platforms != null) {
-        stores.add(CustomStore(
+        stores.add(Store.custom(
           name: name,
           url: url,
           platforms: platforms,
@@ -29,10 +29,10 @@ class CheckerConfigParser {
         // TODO take url for default store?
         switch (Stores.fromString(name)) {
           case Stores.googlePlay:
-            stores.add(GooglePlay(url: url));
+            stores.add(Store.googlePlay(url: url));
 
           case Stores.appStore:
-            stores.add(AppStore(url: url));
+            stores.add(Store.appStore(url: url));
 
           case Stores.custom:
             throw const FormatException('CustomStore must have platforms');
@@ -68,7 +68,7 @@ class CheckerConfigParser {
 
         // TODO: А если name уже существует в сторах?
         if (url != null && platforms != null) {
-          releaseStores.add(CustomStore(
+          releaseStores.add(Store.custom(
             name: name,
             url: url,
             platforms: platforms,
@@ -89,7 +89,7 @@ class CheckerConfigParser {
         }
 
         if (url == null) {
-          releaseStores.add(CustomStore(
+          releaseStores.add(Store.custom(
             name: globalStore.name,
             url: url ?? globalStore.url,
             platforms: platforms ?? globalStore.platforms,
@@ -99,13 +99,13 @@ class CheckerConfigParser {
 
         switch (Stores.fromString(globalStore.name)) {
           case Stores.googlePlay:
-            releaseStores.add(GooglePlay(url: url));
+            releaseStores.add(Store.googlePlay(url: url));
 
           case Stores.appStore:
-            releaseStores.add(AppStore(url: url));
+            releaseStores.add(Store.appStore(url: url));
 
           case Stores.custom:
-            releaseStores.add(CustomStore(
+            releaseStores.add(Store.custom(
               name: globalStore.name,
               url: url,
               platforms: platforms ?? globalStore.platforms,

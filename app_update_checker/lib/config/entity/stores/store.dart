@@ -1,19 +1,38 @@
-import 'stores.dart';
+enum Stores {
+  googlePlay,
+  appStore,
+  custom;
 
-part 'app_store.dart';
-part 'custom_store.dart';
-part 'google_play.dart';
+  factory Stores.fromString(String name) => values.firstWhere(
+        (e) => e.name == name,
+        orElse: () => custom,
+      );
+}
 
-sealed class Store {
+class Store {
   final Stores store;
   final Uri url;
   final List<String> platforms;
 
-  String get name => store.name;
+  final String? _name;
+  String get name => _name ?? store.name;
 
-  const Store({
-    required this.store,
+  const Store.googlePlay({
+    required this.url,
+  })  : store = Stores.googlePlay,
+        platforms = const ['android'],
+        _name = null;
+
+  const Store.appStore({
+    required this.url,
+  })  : store = Stores.appStore,
+        platforms = const ['ios', 'macos'],
+        _name = null;
+
+  const Store.custom({
+    required String name,
     required this.url,
     required this.platforms,
-  });
+  })  : store = Stores.custom,
+        _name = name;
 }
