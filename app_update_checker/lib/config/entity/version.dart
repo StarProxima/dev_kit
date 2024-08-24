@@ -1,6 +1,8 @@
 // Copyright (c) 2021, Matthew Barbour. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
+// ignore_for_file: prefer_constructors_over_static_methods, prefer_single_quotes, avoid-explicit-type-declaration, avoid_multiple_declarations_per_line, avoid-unsafe-collection-methods, prefer-first, avoid-non-null-assertion, prefer-correct-identifier-length, arguments-ordering, prefer-trailing-comma, prefer-conditional-expressions, avoid-redundant-else, prefer-moving-to-variable, prefer-boolean-prefixes, newline-before-return, prefer-returning-conditional-expressions, prefer_final_locals, prefer-type-over-var, member-ordering, format-comment, prefer-named-parameters, noop_primitive_operations, avoid-collection-mutating-methods, prefer-iterable-of, avoid-dynamic, avoid_equals_and_hash_code_on_mutable_classes
+
 /// Provides version objects to enforce conformance to the Semantic Versioning 2.0 spec. The spec can be read at http://semver.org/
 library version;
 
