@@ -320,3 +320,138 @@ linter:
     use_to_and_as_if_applicable: true
     valid_regexps: true
     void_checks: true
+
+
+dart_code_metrics:
+  extends:
+    - package:dart_code_metrics_presets/all.yaml
+    - package:dart_code_metrics_presets/riverpod.yaml
+    - package:dart_code_metrics_presets/flutter_hooks.yaml
+
+  rules:
+
+    # Гемор
+    - no-magic-number: false
+    - avoid-ignoring-return-values: false
+    - prefer-single-declaration-per-file: false
+    - prefer-commenting-analyzer-ignores: false
+    - parameters-ordering: false
+    - prefer-typedefs-for-callbacks: false
+    - avoid-substring: false
+  
+
+    # Не думаю, что это читаемей
+    - avoid-local-functions: false
+    - prefer-getter-over-method: false
+    - prefer-immediate-return: false
+    - enum-constants-ordering: false
+
+
+    # Думаю, это норм и иногда полезно
+    - avoid-shadowing: false
+    - avoid-mutating-parameters: false
+    - avoid-passing-async-when-sync-expected: false
+
+ 
+    # Слишком много false positive
+    - avoid-async-call-in-sync-function: false
+    - no-empty-block: false
+    - function-always-returns-null: false
+    - avoid-unused-parameters: false
+    - avoid-single-child-column-or-row: false
+
+    # Гемор, мб потом.
+    - avoid-missing-image-alt: false
+    - prefer-extracting-callbacks: false
+
+    # Зачем?
+    - prefer-correct-switch-length: false
+    - prefer-correct-handler-name: false
+    - avoid-duplicate-collection-elements: false
+    - avoid-extensions-on-records: false
+    - prefer-addition-subtraction-assignments: false
+    - avoid-slow-collection-methods: false
+    - prefer-number-format: false
+  
+
+    # Мб при вводе локализации
+    - avoid-non-ascii-symbols: false
+    - no-magic-string: false
+
+    # Неудобно для стейтов контроллеров и провайдеров
+    - prefer-match-file-name: false
+
+    # Конфликты с prefer-trailing-comma
+    - unnecessary-trailing-comma: false
+
+    # Без файлов экспорта из-за большого кол-ва кастомных сущностей тяжело
+    - avoid-barrel-files: false
+
+    # Создание валидаторов
+    - avoid-late-keyword:
+        allow-initialized: true
+
+    # Гемор. Плохо работает с ApiWrap
+    - prefer-extracting-function-callbacks: false
+
+    - arguments-ordering:
+        last:
+          - onTap
+          - child
+          - children
+          - builder
+          - body
+          - onSuccess
+          - onError
+
+    # Гемор для временно закоменченного кода
+    - format-comment:
+        only-doc-comments: true
+
+    - prefer-correct-identifier-length:
+        exceptions: [ e, s, i, j, tr ]
+
+    - avoid-long-functions:
+        max-length: 80
+        ignored-names:
+          - build
+          - builder
+
+    - avoid-similar-names:
+        show-similarity: true
+        similarity-threshold: 0.9
+        ignored-names:
+          - route
+
+    - avoid-banned-types:
+        entries:
+        - paths: ['.*\.dart']
+          types: ['^Text$']
+          message: 'Use SText instead'
+
+    - prefer-static-class:
+        ignore-annotations:
+          - Riverpod
+          - riverpod
+        ignore-private: true
+        ignore-names:
+          - (.*)Provider
+          - use(.*)
+
+    - prefer-correct-error-name:
+        allowed-names:
+          - e
+
+    - prefer-boolean-prefixes:
+        ignored-names:
+          - enabled
+        prefixes: [check, request, validate, is, are, was, were, has, have, had, can, should, will, do, does, did]
+
+    - no-equal-arguments:
+        ignored-parameters:
+          - height
+          - width
+
+    - avoid-long-files:
+        severity: warning
+        max-length: 350
