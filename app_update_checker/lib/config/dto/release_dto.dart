@@ -5,7 +5,7 @@ import '../entity/version.dart';
 import 'store_dto.dart';
 
 class ReleaseDTO {
-  final Version? version;
+  final Version version;
   final bool? isActive;
   final bool? isRequired;
   final bool? isBroken;

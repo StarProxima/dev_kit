@@ -1,9 +1,10 @@
-// ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods
+// ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
-import 'package:yaml/yaml.dart';
+import 'dart:ui';
 
 import '../entity/version.dart';
 import 'checker_config_dto.dart';
+import 'dto_parser_exception.dart';
 import 'release_dto.dart';
 import 'store_dto.dart';
 
@@ -12,75 +13,56 @@ class CheckerConfigDTOParser {
 
   const CheckerConfigDTOParser({required this.isDebug});
 
-  CheckerConfigDTO parseFromYaml(String yamlString) {
-    final parsedConfig = loadYaml(yamlString);
-
-    return parseConfig(parsedConfig as Map<String, dynamic>);
-  }
-
   CheckerConfigDTO parseConfig(Map<String, dynamic> map) {
-    var reminderPeriodInHours = map.remove('reminderPeriodInHours');
-    var releaseDelayInHours = map.remove('releaseDelayInHours');
+    final reminderPeriodInHours = map.remove('reminderPeriodInHours');
+    final releaseDelayInHours = map.remove('releaseDelayInHours');
     var deprecatedBeforeVersion = map.remove('deprecatedBeforeVersion');
     var requiredMinimumVersion = map.remove('requiredMinimumVersion');
     var stores = map.remove('stores');
     var releases = map.remove('releases');
 
-    if (reminderPeriodInHours is! int?) {
-      if (isDebug) throw const Err();
-      reminderPeriodInHours = null;
-    } else if (reminderPeriodInHours != null && reminderPeriodInHours < 0) {
-      throw const Err();
-    }
+    final reminderPeriod = parseHours(reminderPeriodInHours);
+    final releaseDelay = parseHours(releaseDelayInHours);
 
-    if (releaseDelayInHours is! int?) {
-      if (isDebug) throw const Err();
-      releaseDelayInHours = null;
-    } else if (releaseDelayInHours != null && releaseDelayInHours < 0) {
-      throw const Err();
-    }
+    deprecatedBeforeVersion = parseVersion(
+      deprecatedBeforeVersion,
+      isStrict: false,
+    );
+    deprecatedBeforeVersion as Version?;
 
-    if (deprecatedBeforeVersion is! String?) {
-      if (isDebug) throw const Err();
-      deprecatedBeforeVersion = null;
-    } else if (deprecatedBeforeVersion != null) {
-      deprecatedBeforeVersion =
-          _safeParse<Version>(() => Version.parse(deprecatedBeforeVersion));
-    }
-
-    if (requiredMinimumVersion is! String?) {
-      if (isDebug) throw const Err();
-      requiredMinimumVersion = null;
-    } else if (requiredMinimumVersion != null) {
-      requiredMinimumVersion =
-          _safeParse<Version>(() => Version.parse(requiredMinimumVersion));
-    }
+    requiredMinimumVersion = parseVersion(
+      requiredMinimumVersion,
+      isStrict: false,
+    );
+    requiredMinimumVersion as Version?;
 
     if (stores is! List<Map<String, dynamic>>?) {
-      if (isDebug) throw const Err();
+      if (isDebug) throw const DtoParserException();
       stores = null;
     } else if (stores != null) {
-      stores = stores.map(parseStore).toList().whereType<StoreDTO>();
-      stores as List<Object>;
-      stores as List<StoreDTO>;
+      stores = stores
+          .map((e) => parseStore(e, isStrict: false))
+          .toList()
+          .whereType<StoreDTO>();
+    }
+    stores as List<Object>?;
+    stores as List<StoreDTO>?;
+
+    if (releases == null) throw const DtoParserException();
+
+    if (releases is! List<Map<String, dynamic>>) {
+      if (isDebug) throw const DtoParserException();
+      releases = null;
+    } else {
+      releases = releases.map(parseRelease).toList().whereType<ReleaseDTO>();
     }
 
-    if (releases is! List<Map<String, dynamic>>?) {
-      if (isDebug) throw const Err();
-      releases = null;
-    } else if (releases != null) {
-      releases = releases.map(parseRelease).toList().whereType<ReleaseDTO>();
-      releases as List<Object>;
-      releases as List<ReleaseDTO>;
-    }
+    releases as List<Object>;
+    releases as List<ReleaseDTO>;
 
     return CheckerConfigDTO(
-      reminderPeriod: reminderPeriodInHours != null
-          ? Duration(hours: reminderPeriodInHours)
-          : null,
-      releaseDelay: releaseDelayInHours != null
-          ? Duration(hours: releaseDelayInHours)
-          : null,
+      reminderPeriod: reminderPeriod,
+      releaseDelay: releaseDelay,
       deprecatedBeforeVersion: deprecatedBeforeVersion,
       requiredMinimumVersion: requiredMinimumVersion,
       stores: stores,
@@ -89,32 +71,176 @@ class CheckerConfigDTOParser {
     );
   }
 
-  StoreDTO? parseStore(Map<String, dynamic> map) {
-    return null;
+  StoreDTO? parseStore(
+    Map<String, dynamic> map, {
+    required bool isStrict,
+  }) {
+    var name = map.remove('name');
+    var url = map.remove('url');
+    var platforms = map.remove('platforms');
+
+    if (name is! String?) {
+      if (isDebug) throw const DtoParserException();
+      name = null;
+    }
+
+    if (name == null) {
+      if (isDebug) throw const DtoParserException();
+
+      return null;
+    }
+
+    if (url is! String?) {
+      if (isDebug) throw const DtoParserException();
+      url = null;
+    }
+
+    if (isStrict && url == null) return null;
+
+    url = url != null ? Uri.tryParse(url) : null;
+
+    if (platforms is! List<String>?) {
+      if (isDebug) throw const DtoParserException();
+      platforms = null;
+    }
+
+    return StoreDTO(
+      name: name,
+      url: url,
+      platforms: platforms,
+      customData: map,
+    );
   }
 
+  // ignore: avoid-unnecessary-nullable-return-type
   ReleaseDTO? parseRelease(Map<String, dynamic> map) {
-    return null;
+    var version = map.remove('version');
+    var isActive = map.remove('isActive');
+    var isRequired = map.remove('isRequired');
+    var isBroken = map.remove('isBroken');
+    var title = map.remove('title');
+    var description = map.remove('description');
+    var releaseNote = map.remove('releaseNote');
+    final reminderPeriodInHours = map.remove('reminderPeriodInHours');
+    final releaseDelayInHours = map.remove('releaseDelayInHours');
+    var stores = map.remove('stores');
+
+    version = parseVersion(version, isStrict: true);
+    version as Version;
+
+    if (isActive is! bool?) {
+      if (isDebug) throw const DtoParserException();
+      isActive = null;
+    }
+
+    if (isRequired is! bool?) {
+      if (isDebug) throw const DtoParserException();
+      isRequired = null;
+    }
+
+    if (isBroken is! bool?) {
+      if (isDebug) throw const DtoParserException();
+      isBroken = null;
+    }
+
+    title = parseText(title);
+    title as Map<Locale, Object>?;
+    title as Map<Locale, String>?;
+
+    description = parseText(description);
+    description as Map<Locale, Object>?;
+    description as Map<Locale, String>?;
+
+    releaseNote = parseText(releaseNote);
+    releaseNote as Map<Locale, Object>?;
+    releaseNote as Map<Locale, String>?;
+
+    final reminderPeriod = parseHours(reminderPeriodInHours);
+    final releaseDelay = parseHours(releaseDelayInHours);
+
+    if (stores is! List<Map<String, dynamic>>?) {
+      if (isDebug) throw const DtoParserException();
+      stores = null;
+    } else if (stores != null) {
+      stores = stores
+          .map((e) => parseStore(e, isStrict: false))
+          .toList()
+          .whereType<StoreDTO>();
+      stores as List<Object>;
+      stores as List<StoreDTO>;
+    }
+
+    return ReleaseDTO(
+      version: version,
+      isActive: isActive,
+      isRequired: isRequired,
+      isBroken: isBroken,
+      title: title,
+      description: description,
+      releaseNote: releaseNote,
+      reminderPeriod: reminderPeriod,
+      releaseDelay: releaseDelay,
+      stores: stores,
+      customData: map,
+    );
   }
 
-  // ignore: unused_element
-  T? _safeParse<T>(T Function() parse) {
+  // ignore: avoid-dynamic
+  Map<Locale, String> parseText(dynamic textWithLocales) {
+    var text = textWithLocales;
+    if (text is! Map<String, dynamic>?) {
+      if (text is String) {
+        return {const Locale('en'): text};
+      }
+
+      if (isDebug) throw const DtoParserException();
+      text = null;
+    } else if (text != null) {
+      text = Map<Locale, String>.fromEntries(
+        text.entries.map((e) => MapEntry(Locale(e.key), e.value)),
+      );
+      text as Map<Locale, Object>?;
+      text as Map<Locale, String>?;
+    }
+
+    return text;
+  }
+
+  // ignore: avoid-dynamic
+  Duration? parseHours(dynamic hours) {
+    if (hours is! int?) {
+      if (isDebug) throw const DtoParserException();
+      hours = null;
+    } else if (hours != null && hours < 0) {
+      throw const DtoParserException();
+    }
+
+    final duraton = hours != null ? Duration(hours: hours) : null;
+
+    return duraton;
+  }
+
+  Version? parseVersion(
+    // ignore: avoid-dynamic
+    dynamic version, {
+    required bool isStrict,
+  }) {
+    if (version is! String?) {
+      if (isDebug) throw const DtoParserException();
+      version = null;
+    }
+    if (version == null) {
+      if (isStrict) throw const DtoParserException();
+
+      return null;
+    }
+
     try {
-      return parse();
+      return Version.parse(version);
     } catch (e) {
       if (isDebug) rethrow;
 
       return null;
     }
-  }
-}
-
-class Err implements Exception {
-  const Err();
-
-  @override
-  String toString() {
-    // TODO: implement toString
-    return super.toString();
   }
 }
