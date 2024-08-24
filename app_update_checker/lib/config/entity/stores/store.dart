@@ -1,5 +1,6 @@
 import 'stores.dart';
 
+part 'app_store.dart';
 part 'custom_store.dart';
 part 'google_play.dart';
 
@@ -11,7 +12,7 @@ sealed class Store {
   });
 
   final Stores store;
-  final String url;
+  final Uri url;
   final List<String> platforms;
 
   String get name => store.name;

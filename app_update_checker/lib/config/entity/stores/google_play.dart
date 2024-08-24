@@ -1,6 +1,6 @@
 part of 'store.dart';
 
-class GooglePlayStore extends Store {
-  const GooglePlayStore({required super.url})
+class GooglePlay extends Store {
+  const GooglePlay({required super.url})
       : super(store: Stores.googlePlay, platforms: const ['android']);
 }

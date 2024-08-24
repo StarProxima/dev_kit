@@ -8,7 +8,7 @@ class CheckerConfig {
   final Version? requiredMinimumVersion;
   final List<Store> stores;
   final List<Release> releases;
-  final Map customData;
+  final Map<String, dynamic> customData;
 
   const CheckerConfig({
     required this.deprecatedBeforeVersion,
