@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app_update_checker/config/entity/version.dart';
 
 import 'store_dto.dart';
@@ -20,9 +22,9 @@ class ReleaseDTO {
   final bool? isActive;
   final bool? isRequired;
   final bool? isBroken;
-  final Map<String, String>? title;
-  final Map<String, String>? description;
-  final Map<String, String>? releaseNote;
+  final Map<Locale, String>? title;
+  final Map<Locale, String>? description;
+  final Map<Locale, String>? releaseNote;
   final Duration? reminderPeriod;
   final Duration? releaseDelay;
   final List<StoreDTO>? stores;
