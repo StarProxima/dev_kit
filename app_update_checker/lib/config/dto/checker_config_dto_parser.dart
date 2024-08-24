@@ -1,6 +1,11 @@
+// ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods
+
 import 'package:yaml/yaml.dart';
 
+import '../entity/version.dart';
 import 'checker_config_dto.dart';
+import 'release_dto.dart';
+import 'store_dto.dart';
 
 class CheckerConfigDTOParser {
   final bool isDebug;
@@ -10,74 +15,86 @@ class CheckerConfigDTOParser {
   CheckerConfigDTO parseFromYaml(String yamlString) {
     final parsedConfig = loadYaml(yamlString);
 
-    return parseFromMap(parsedConfig as Map);
+    return parseConfig(parsedConfig as Map<String, dynamic>);
   }
 
-  CheckerConfigDTO parseFromMap(Map configMap) {
-    return const CheckerConfigDTO(
-      reminderPeriod: null,
-      releaseDelay: null,
-      deprecatedBeforeVersion: null,
-      requiredMinimumVersion: null,
-      stores: null,
-      releases: null,
-      customData: null,
+  CheckerConfigDTO parseConfig(Map<String, dynamic> map) {
+    var reminderPeriodInHours = map.remove('reminderPeriodInHours');
+    var releaseDelayInHours = map.remove('releaseDelayInHours');
+    var deprecatedBeforeVersion = map.remove('deprecatedBeforeVersion');
+    var requiredMinimumVersion = map.remove('requiredMinimumVersion');
+    var stores = map.remove('stores');
+    var releases = map.remove('releases');
+
+    if (reminderPeriodInHours is! int?) {
+      if (isDebug) throw const Err();
+      reminderPeriodInHours = null;
+    } else if (reminderPeriodInHours != null && reminderPeriodInHours < 0) {
+      throw const Err();
+    }
+
+    if (releaseDelayInHours is! int?) {
+      if (isDebug) throw const Err();
+      releaseDelayInHours = null;
+    } else if (releaseDelayInHours != null && releaseDelayInHours < 0) {
+      throw const Err();
+    }
+
+    if (deprecatedBeforeVersion is! String?) {
+      if (isDebug) throw const Err();
+      deprecatedBeforeVersion = null;
+    } else if (deprecatedBeforeVersion != null) {
+      deprecatedBeforeVersion =
+          _safeParse<Version>(() => Version.parse(deprecatedBeforeVersion));
+    }
+
+    if (requiredMinimumVersion is! String?) {
+      if (isDebug) throw const Err();
+      requiredMinimumVersion = null;
+    } else if (requiredMinimumVersion != null) {
+      requiredMinimumVersion =
+          _safeParse<Version>(() => Version.parse(requiredMinimumVersion));
+    }
+
+    if (stores is! List<Map<String, dynamic>>?) {
+      if (isDebug) throw const Err();
+      stores = null;
+    } else if (stores != null) {
+      stores = stores.map(parseStore).toList().whereType<StoreDTO>();
+      stores as List<Object>;
+      stores as List<StoreDTO>;
+    }
+
+    if (releases is! List<Map<String, dynamic>>?) {
+      if (isDebug) throw const Err();
+      releases = null;
+    } else if (releases != null) {
+      releases = releases.map(parseRelease).toList().whereType<ReleaseDTO>();
+      releases as List<Object>;
+      releases as List<ReleaseDTO>;
+    }
+
+    return CheckerConfigDTO(
+      reminderPeriod: reminderPeriodInHours != null
+          ? Duration(hours: reminderPeriodInHours)
+          : null,
+      releaseDelay: releaseDelayInHours != null
+          ? Duration(hours: releaseDelayInHours)
+          : null,
+      deprecatedBeforeVersion: deprecatedBeforeVersion,
+      requiredMinimumVersion: requiredMinimumVersion,
+      stores: stores,
+      releases: releases,
+      customData: map,
     );
-    // final deprecatedBeforeVersion =
-    //     switch (configMap['deprecatedBeforeVersion']) {
-    //   String str => _safeParse(() => Version.parse(str)),
-    //   _ => null,
-    // };
+  }
 
-    // final requiredMinimumVersion =
-    //     switch (configMap['requiredMinimumVersion']) {
-    //   String str => _safeParse(() => Version.parse(str)),
-    //   _ => null,
-    // };
+  StoreDTO? parseStore(Map<String, dynamic> map) {
+    return null;
+  }
 
-    // // TODO свои ошибки
-    // List<Store> stores = [];
-
-    // if (configMap['stores'] case List storesList) {
-    //   for (final Map storeMap in storesList) {
-    //     final String? name = storeMap['name'];
-    //     final String? url = storeMap['url'];
-    //     final List<String>? platforms = storeMap['platforms'] is List<String>
-    //         ? storeMap['platforms']
-    //         : null;
-    //     if (name != null && url != null && platforms != null) {
-    //       stores.add(CustomStore(
-    //         customName: name,
-    //         url: url,
-    //         platforms: platforms,
-    //       ));
-    //     } else if (name != null && url != null) {
-    //       // TODO take url for default store?
-    //       switch (Stores.fromString(name)) {
-    //         case Stores.googlePlay:
-    //           break;
-    //         case Stores.appStore:
-    //           break;
-    //         case Stores.customStore:
-    //           break;
-    //       }
-    //       name;
-    //     } else {
-    //       if (isDebug) throw FormatException('ti loh');
-    //     }
-    //   }
-    // }
-
-    // List<Release> releases = [];
-    // Map customData = {};
-
-    // return CheckerConfig(
-    //   deprecatedBeforeVersion: deprecatedBeforeVersion,
-    //   requiredMinimumVersion: requiredMinimumVersion,
-    //   stores: stores,
-    //   releases: releases,
-    //   customData: customData,
-    // );
+  ReleaseDTO? parseRelease(Map<String, dynamic> map) {
+    return null;
   }
 
   // ignore: unused_element
@@ -89,5 +106,15 @@ class CheckerConfigDTOParser {
 
       return null;
     }
+  }
+}
+
+class Err implements Exception {
+  const Err();
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return super.toString();
   }
 }

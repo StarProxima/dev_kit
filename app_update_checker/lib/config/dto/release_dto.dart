@@ -15,6 +15,7 @@ class ReleaseDTO {
   final Duration? reminderPeriod;
   final Duration? releaseDelay;
   final List<StoreDTO>? stores;
+  final Map<String, dynamic>? customData;
 
   const ReleaseDTO({
     required this.version,
@@ -27,5 +28,6 @@ class ReleaseDTO {
     required this.reminderPeriod,
     required this.releaseDelay,
     required this.stores,
+    required this.customData,
   });
 }
