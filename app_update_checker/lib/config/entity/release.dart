@@ -1,9 +1,13 @@
-import '../stores/store.dart';
+import 'dart:ui';
+
+import 'package:app_update_checker/config/entity/stores/store.dart';
+
 import 'version.dart';
 
 class Release {
   const Release({
     required this.version,
+    required this.buildNumber,
     required this.isActive,
     required this.isRequired,
     required this.isBroken,
@@ -14,12 +18,13 @@ class Release {
   });
 
   final Version version;
+  final int buildNumber;
   final bool isActive;
   final bool isRequired;
   final bool isBroken;
-  final Map<String, String> title;
-  final Map<String, String> description;
-  final Map<String, String> releaseNote;
+  final Map<Locale, String> title;
+  final Map<Locale, String> description;
+  final Map<Locale, String> releaseNote;
   final List<Store> stores;
   // - googlePlay
   // - appStore

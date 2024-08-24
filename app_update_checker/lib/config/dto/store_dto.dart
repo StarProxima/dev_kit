@@ -6,6 +6,6 @@ class StoreDTO {
   });
 
   final String? name;
-  final String? url;
+  final Uri? url;
   final List<String>? platforms;
 }

@@ -21,6 +21,15 @@ class CheckerConfigDTOParser {
   }
 
   CheckerConfigDTO parseFromMap(Map configMap) {
+    return CheckerConfigDTO(
+      deprecatedBeforeVersion: null,
+      requiredMinimumVersion: null,
+      stores: null,
+      releases: null,
+      customData: null,
+      reminderPeriod: null,
+      releaseDelay: null,
+    );
     // final deprecatedBeforeVersion =
     //     switch (configMap['deprecatedBeforeVersion']) {
     //   String str => _safeParse(() => Version.parse(str)),

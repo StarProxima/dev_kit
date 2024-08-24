@@ -1,9 +1,9 @@
+import 'package:app_update_checker/config/entity/stores/store.dart';
 import 'package:yaml/yaml.dart';
 
 import 'entity/checker_config.dart';
 import 'entity/release.dart';
 import 'entity/stores/stores.dart';
-import 'stores/store.dart';
 import 'entity/version.dart';
 
 class ConfigParser {
