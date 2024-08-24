@@ -1,4 +1,4 @@
-import 'default_store.dart';
+import 'stores.dart';
 
 part 'custom_store.dart';
 part 'google_play.dart';

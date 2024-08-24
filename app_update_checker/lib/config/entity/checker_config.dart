@@ -1,5 +1,5 @@
 import 'release.dart';
-import 'stores/store.dart';
+import '../stores/store.dart';
 import 'version.dart';
 
 class CheckerConfig {

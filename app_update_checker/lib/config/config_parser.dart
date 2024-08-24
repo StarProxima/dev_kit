@@ -1,9 +1,10 @@
-import 'package:app_update_checker/config/checker_config.dart';
 import 'package:yaml/yaml.dart';
 
-import 'release.dart';
+import 'entity/checker_config.dart';
+import 'entity/release.dart';
+import 'entity/stores/stores.dart';
 import 'stores/store.dart';
-import 'version.dart';
+import 'entity/version.dart';
 
 class ConfigParser {
   ConfigParser({required this.isDebug});
@@ -47,11 +48,22 @@ class ConfigParser {
             ? storeMap['platforms']
             : null;
         if (name != null && url != null && platforms != null) {
-          stores.add(
-              CustomStore(customName: name, url: url, platforms: platforms));
-          // TODO take url for default store
+          stores.add(CustomStore(
+            customName: name,
+            url: url,
+            platforms: platforms,
+          ));
         } else if (name != null && url != null) {
-          name; // TODO work in progress
+          // TODO take url for default store?
+          switch (Stores.fromString(name)) {
+            case Stores.googlePlay:
+              break;
+            case Stores.appStore:
+              break;
+            case Stores.customStore:
+              break;
+          }
+          name;
         } else {
           if (isDebug) throw FormatException('ti loh');
         }

@@ -1,4 +1,4 @@
-import 'stores/store.dart';
+import '../stores/store.dart';
 import 'version.dart';
 
 class Release {
