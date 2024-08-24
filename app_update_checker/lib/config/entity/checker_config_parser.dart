@@ -1,4 +1,4 @@
-import '../dto/checker_config_dto.dart';
+import '../dto/models/checker_config_dto.dart';
 import 'checker_config.dart';
 import 'release.dart';
 import 'stores/store.dart';

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../entity/version.dart';
+import '../../entity/version.dart';
 
 import 'store_dto.dart';
 

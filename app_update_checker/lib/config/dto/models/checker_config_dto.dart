@@ -1,4 +1,4 @@
-import '../entity/version.dart';
+import '../../entity/version.dart';
 
 import 'release_dto.dart';
 import 'store_dto.dart';
