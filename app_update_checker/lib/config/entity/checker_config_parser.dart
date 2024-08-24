@@ -65,45 +65,51 @@ class CheckerConfigParser {
         final name = releaseStoreDTO.name;
         final url = releaseStoreDTO.url;
         final platforms = releaseStoreDTO.platforms;
+
+        // TODO: А если name уже существует в сторах?
         if (url != null && platforms != null) {
           releaseStores.add(CustomStore(
             name: name,
             url: url,
             platforms: platforms,
           ));
-        } else {
-          final globalStore = List<Store?>.from(stores).firstWhere(
-            (store) => store?.name == name,
-            orElse: () => null,
-          );
-          if (globalStore == null) {
-            throw FormatException(
-              'In release $version used store name, what not contains in global stores',
-            );
-          }
 
-          if (url == null) {
+          continue;
+        }
+
+        final globalStore = List<Store?>.from(stores).firstWhere(
+          (store) => store?.name == name,
+          orElse: () => null,
+        );
+
+        if (globalStore == null) {
+          throw FormatException(
+            'In release $version used store name, what not contains in global stores',
+          );
+        }
+
+        if (url == null) {
+          releaseStores.add(CustomStore(
+            name: globalStore.name,
+            url: url ?? globalStore.url,
+            platforms: platforms ?? globalStore.platforms,
+          ));
+          continue;
+        }
+
+        switch (Stores.fromString(globalStore.name)) {
+          case Stores.googlePlay:
+            releaseStores.add(GooglePlay(url: url));
+
+          case Stores.appStore:
+            releaseStores.add(AppStore(url: url));
+
+          case Stores.custom:
             releaseStores.add(CustomStore(
               name: globalStore.name,
-              url: url ?? globalStore.url,
+              url: url,
               platforms: platforms ?? globalStore.platforms,
             ));
-          } else {
-            switch (Stores.fromString(globalStore.name)) {
-              case Stores.googlePlay:
-                releaseStores.add(GooglePlay(url: url));
-
-              case Stores.appStore:
-                releaseStores.add(AppStore(url: url));
-
-              case Stores.custom:
-                releaseStores.add(CustomStore(
-                  name: globalStore.name,
-                  url: url,
-                  platforms: platforms ?? globalStore.platforms,
-                ));
-            }
-          }
         }
       }
 
