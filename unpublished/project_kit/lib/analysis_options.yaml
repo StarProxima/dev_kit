@@ -14,6 +14,14 @@ analyzer:
 
 linter:
   rules:
+
+    # Конфликты с member-ordering
+    sort_constructors_first: false
+    # Конфликты с dcm
+    require_trailing_commas: false
+    # Конфликт с prefer-type-over-var
+    omit_local_variable_types: false
+
     # False positive for custom enum-like classes (such as Flutter's "Colors")
     avoid_classes_with_only_static_members: false
 
@@ -206,7 +214,6 @@ linter:
     noop_primitive_operations: true
     null_check_on_nullable_type_parameter: true
     null_closures: true
-    omit_local_variable_types: true
     # one_member_abstracts: true
     only_throw_errors: true
     overridden_fields: true
@@ -256,13 +263,11 @@ linter:
     provide_deprecation_message: true
     # public_member_api_docs: true
     recursive_getters: true
-    require_trailing_commas: true
     secure_pubspec_urls: true
     sized_box_for_whitespace: true
     sized_box_shrink_expand: true
     slash_for_doc_comments: true
     sort_child_properties_last: true
-    sort_constructors_first: true
     # sort_pub_dependencies: true
     sort_unnamed_constructors_first: true
     test_types_in_equals: true
@@ -338,6 +343,7 @@ dart_code_metrics:
     - parameters-ordering: false
     - prefer-typedefs-for-callbacks: false
     - avoid-substring: false
+    - prefer-correct-throws: false
   
 
     # Не думаю, что это читаемей

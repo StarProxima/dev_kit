@@ -3,32 +3,25 @@ import 'package:yaml/yaml.dart';
 import 'checker_config_dto.dart';
 
 class CheckerConfigDTOParser {
-  CheckerConfigDTOParser({required this.isDebug});
-
   final bool isDebug;
-  T? _safeParse<T>(T Function() parse) {
-    try {
-      return parse();
-    } catch (e) {
-      if (isDebug) rethrow;
-      return null;
-    }
-  }
+
+  const CheckerConfigDTOParser({required this.isDebug});
 
   CheckerConfigDTO parseFromYaml(String yamlString) {
     final parsedConfig = loadYaml(yamlString);
+
     return parseFromMap(parsedConfig as Map);
   }
 
   CheckerConfigDTO parseFromMap(Map configMap) {
-    return CheckerConfigDTO(
+    return const CheckerConfigDTO(
+      reminderPeriod: null,
+      releaseDelay: null,
       deprecatedBeforeVersion: null,
       requiredMinimumVersion: null,
       stores: null,
       releases: null,
       customData: null,
-      reminderPeriod: null,
-      releaseDelay: null,
     );
     // final deprecatedBeforeVersion =
     //     switch (configMap['deprecatedBeforeVersion']) {
@@ -85,5 +78,16 @@ class CheckerConfigDTOParser {
     //   releases: releases,
     //   customData: customData,
     // );
+  }
+
+  // ignore: unused_element
+  T? _safeParse<T>(T Function() parse) {
+    try {
+      return parse();
+    } catch (e) {
+      if (isDebug) rethrow;
+
+      return null;
+    }
   }
 }

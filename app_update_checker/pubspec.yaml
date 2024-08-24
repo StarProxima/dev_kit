@@ -24,3 +24,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+
+  project_kit:
+    path: ../unpublished/project_kit
