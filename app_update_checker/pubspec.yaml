@@ -20,6 +20,9 @@ dependencies:
     sdk: flutter
   yaml: ^3.1.2
 
+  package_info_plus: ^8.0.2
+  os_detect: ^2.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
