@@ -18,6 +18,10 @@ The config api structure under consideration:
 # Description of the api structure
 # https://pub.dev/packages/app_update_checker
 
+# Interval at which the update notification will be repeatedly shown to the user.
+reminderPeriodInHours: 48
+# Delay that must pass after the release before it begins to be shown to all users.
+releaseDelayInHours: 48
 
 # Versions prior to this one will receive an obsolescence notice, but may defer the update.
 deprecatedBeforeVersion: 0.3.7
@@ -25,15 +29,18 @@ deprecatedBeforeVersion: 0.3.7
 requiredMinimumVersion: 0.1.0 
 
 # Optional, will be set based on the platform and app ID.
-links:
-  googlePlay: 'https://example.com'
-  appStore: 'https://example.com'
-  appGallery: 'https://example.com'
-  ruStore: # You can set it like this
-    url: 'https://example.com'
+stores:
+  - name: googlePlay 
+    url: https://example.com
+  - name: appStore
+    url: https://example.com
+  - name: appGallery 
+    url: https://example.com
+  - name: ruStore 
+    url: https://example.com
   # Custom store
-  gitHub:
-    url: 'https://example.com'
+  - name: gitHub
+    url: https://example.com
     platforms:
       - android
       - windows
@@ -41,6 +48,8 @@ links:
       - linux
 releases:
   - version: 0.3.7 # Required
+    # Optional, uses to specify the version
+    buildNumber: 21 
     # Optional, should use the update
     isActive: true 
     # Optional, the update is mandatory for installation by all with a lesser version
@@ -60,12 +69,19 @@ releases:
       en: 'Added bugs, fixed features'
       es: 'Bugs añadidos, correcciones arregladas'
       ru: 'Добавлены баги, устранены фичи'
+    # Optional, Used to delay the release using releaseDelayInHours
+    releaseDateUtc: '2024-08-24 15:35:00',
+    # Optional, will be override
+    reminderPeriodInHours: 48,
+    # Optional, will be override
+    releaseDelayInHours: 48,
     # Optional, all by default. Support custom stores
     stores:
       - googlePlay
       - appStore
       - ruStore
-      - store: github
+      - name: github
+        url: https://example.com
         platforms: 
           - android
           - ios
