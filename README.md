@@ -6,7 +6,7 @@ These include error handling, validation, asynchronous data management, and dela
 
 ## App Update Checker
 
-![Package Thumbnail](https://github.com/user-attachments/assets/11e46aea-8451-44e8-88c9-495bbefe18a4)
+![Package Thumbnail](https://github.com/user-attachments/assets/bae1226a-0680-41bf-a4e8-5f08ae483122)
 
 ## Api Wrap
 
