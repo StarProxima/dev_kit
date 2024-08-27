@@ -1,4 +1,4 @@
-## App Update Checker
+# App Update Checker
 
 ![Package Thumbnail](https://github.com/user-attachments/assets/bae1226a-0680-41bf-a4e8-5f08ae483122)
 
@@ -7,7 +7,7 @@
 
 ---
 
-#### Work in progress 🏗️
+### Work in progress 🏗️
 
 To support its development, you can give it a like and a star on [GitHub](https://github.com/StarProxima/dev_kit).
 
@@ -15,7 +15,7 @@ To support its development, you can give it a like and a star on [GitHub](https:
 
 
 
-## Overview
+# Overview
 
 This package is designed to help handle updates to your application in a more flexible way.
 
@@ -27,7 +27,7 @@ The package also supports features such as deprecation for older versions, requi
 
 
 
-## Setup methods
+# Setup methods
 
 There are 2 methods to get information about updates: 
 1) From the stores where the app is available 
@@ -39,7 +39,7 @@ The second method requires some customization, but works on all platforms, with 
 
 We want to support both methods, but for now we're focusing on the second method.
 
-### Update Config
+## Update Config
 
 Here is the full config api structure under consideration:
 ```yaml
@@ -89,27 +89,29 @@ stores:
 releases:
   - version: 0.3.7 # Required
     # Optional, uses to refine the version
-    buildNumber: 21 
-    # Optional, should use the update
-    isActive: true 
-    # Optional, the update is mandatory for installation by all with a lesser version
-    isRequired: false 
-    # Optional, if true - becomes inactive,
-    # will be required to upgrade to any higher version
-    isBroken: false
+    buildNumber: 21
+    # Optional, active by default
+    # May be one of:
+    # active - The release is available.
+    # inactive - The release is hidden from users.
+    # required - The release is required be installed by all users with older versions.
+    # deprecated - The release is outdated and is strictly recommended to be updated.
+    # broken - The release has critical bugs and requires an update.
+    type: active
     # Optional, will be override
-    title: 
-      en: Version $releaseVersion is available
-    # Optional, will be override
-    description: 
-      en: |-
-        A new version of $appName is available!
-        Version $releaseVersion is now available. You have a $appVersion
-    # Optional, may not be displayed
-    releaseNote: 
-      en: 'Added bugs, fixed features'
-      es: 'Bugs añadidos, correcciones arregladas'
-      ru: 'Добавлены баги, устранены фичи'
+    title:
+      # Any text (title, description, releaseNote)
+      # supports optional localization and interpolation.
+      # Also supports short syntax without localization.
+      en: Version $releaseVersion is available!
+      es: La versión $releaseVersion está disponible!
+      ru: Версия $releaseVersion доступна!
+    # Optional, will be override 
+    description: |-
+      A new version of $appName is available!
+      Version $releaseVersion is now available. You have a $appVersion
+    # Optional, may not to be displayed
+    releaseNote: 'Added bugs, fixed features'
     # Optional, used to delay the release using releaseDelayHours
     pubDateUtc: '2024-08-24 15:35:00',
     # Optional, will be override
@@ -134,14 +136,13 @@ releases:
     # Reference to another release by version,
     # uses all of its parameters by default
     ref: 0.3.7
-    # Аlso supports short syntax without localization
     releaseNote: Minor improvements
     
 ```
 
 
 
-## Shorebird
+# Shorebird
 
 If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with release notes with the ability to restart the application.
 
@@ -151,13 +152,8 @@ releases:
   - version: 1.3.7
     patches:
       - patchNumber: 1 # Required
-        # Optional, should use the patch
-        isActive: true 
-        # Optional, the patch is mandatory for installation by all before using the app
-        isRequired: false 
-        # Optional, if true - becomes inactive, 
-        # will be required to upgrade to any higher patch
-        isBroken: false
+        # Optional, active by default
+        type: active
         # Optional, you can set the title, description and patchNote
         patchNote: 
           en: 'Critical fix'
@@ -178,7 +174,7 @@ releases:
 
 
 
-## Contributors ✨
+# Contributors ✨
 
 [![Alt](https://opencollective.com/dev_kit/contributors.svg?width=890&button=false)](https://github.com/remarkablemark/dev_kit/graphs/contributors)
 
@@ -186,6 +182,6 @@ Contributions of any kind welcome!
 
 
 
-## Activities
+# Activities
 
 ![Alt](https://repobeats.axiom.co/api/embed/732b41cfc45839e3b078304e6b46ca0da7bd7f15.svg "Repobeats analytics image")
