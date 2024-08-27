@@ -1,3 +1,7 @@
+## 0.0.10
+
+* Update README with shields
+
 ## 0.0.9
 
 * Update README with markdown support
