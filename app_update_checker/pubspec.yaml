@@ -1,6 +1,6 @@
 name: app_update_checker
 description: Check for updates to your app with the possibility of deprecation, required updates and various app stores
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/StarProxima/dev_kit/tree/develop/app_update_checker
 screenshots:
  - description: 'App Update Checker Thumbnail'
@@ -20,8 +20,8 @@ dependencies:
     sdk: flutter
   yaml: ^3.1.2
 
-  package_info_plus: ^8.0.2
-  os_detect: ^2.0.1
+  package_info_plus: '>=4.2.0 <9.0.0'
+  # os_detect: ^2.0.1
 
 dev_dependencies:
   flutter_test:

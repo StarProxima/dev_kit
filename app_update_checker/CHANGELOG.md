@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Update README with a little overview and shorebird support
+
 ## 0.0.5
 
 * Update README
