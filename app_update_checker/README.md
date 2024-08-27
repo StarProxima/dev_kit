@@ -49,13 +49,21 @@ Here is the full config api structure under consideration:
 # Default settings for releases
 releaseSettings:
   # Optional
-  title: 
-    en: Version $releaseVersion is available
-  # Optional
-  description: 
+  title:
+    # Any text (title, description, releaseNote)
+    # supports optional localization, interpolation and markdown.
+    # Also supports short syntax without localization.
     en: |-
-      A new version of $appName is available!
-      Version $releaseVersion is now available. You have a $appVersion
+      ## New version for ($appName)[https://example.com]
+      ### Version $releaseVersion is available!
+    es: La versión $releaseVersion está disponible!
+    ru: Доступна новая версия!
+
+    
+  # Optional
+  description: |-
+    A new version of $appName is available!
+    Version $releaseVersion is now available. You have a $appVersion
   # Interval at which the update notification will be repeatedly shown to the user.
   reminderPeriodHours: 48
   # Delay that must pass after the release before it begins to be shown to all users.
@@ -98,22 +106,16 @@ releases:
     # deprecated - The release is outdated and is strictly recommended to be updated.
     # broken - The release has critical bugs and requires an update.
     type: active
-    # Optional, will be override
-    title:
-      # Any text (title, description, releaseNote)
-      # supports optional localization and interpolation.
-      # Also supports short syntax without localization.
-      en: Version $releaseVersion is available!
-      es: La versión $releaseVersion está disponible!
-      ru: Версия $releaseVersion доступна!
-    # Optional, will be override 
-    description: |-
-      A new version of $appName is available!
-      Version $releaseVersion is now available. You have a $appVersion
-    # Optional, may not to be displayed
-    releaseNote: 'Added bugs, fixed features'
-    # Optional, used to delay the release using releaseDelayHours
-    pubDateUtc: '2024-08-24 15:35:00',
+    # You can also override the title and description here.
+    # Optional, may not to be displayed.
+    releaseNote: |-
+      # Big update!
+      [click](https://example.com) - full changelog.
+      ### Short notes
+      - Added bugs
+      - Fixed features
+    # Optional, used to delay the release using releaseDelayHours. Time is optional.
+    pubDateUtc: '2024-08-24 15:35:00'
     # Optional, will be override
     reminderPeriodHours: 48,
     # Optional, will be override
@@ -141,7 +143,6 @@ releases:
 ```
 
 
-
 # Shorebird
 
 If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with release notes with the ability to restart the application.
@@ -154,9 +155,9 @@ releases:
       - patchNumber: 1 # Required
         # Optional, active by default
         type: active
-        # Optional, you can set the title, description and patchNote
-        patchNote: 
-          en: 'Critical fix'
+        # Optional, you can set the title, description and patchNote.
+        title: New patch for $appVersion
+        patchNote: Critical fix
         # Optional, uses to refine the version
         buildNumber: 21
 
