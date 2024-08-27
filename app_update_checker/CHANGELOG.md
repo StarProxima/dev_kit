@@ -1,3 +1,7 @@
+## 0.0.8
+
+* Update README
+
 ## 0.0.7
 
 * Update README with api clarification
