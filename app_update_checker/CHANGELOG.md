@@ -1,3 +1,7 @@
+## 0.0.9
+
+* Update README with markdown support
+
 ## 0.0.8
 
 * Update README
