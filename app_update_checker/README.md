@@ -48,7 +48,7 @@ stores:
       - linux
 releases:
   - version: 0.3.7 # Required
-    # Optional, uses to specify the version
+    # Optional, uses to refine the version
     buildNumber: 21 
     # Optional, should use the update
     isActive: true 
@@ -69,7 +69,7 @@ releases:
       en: 'Added bugs, fixed features'
       es: 'Bugs añadidos, correcciones arregladas'
       ru: 'Добавлены баги, устранены фичи'
-    # Optional, Used to delay the release using releaseDelayInHours
+    # Optional, used to delay the release using releaseDelayInHours
     releaseDateUtc: '2024-08-24 15:35:00',
     # Optional, will be override
     reminderPeriodInHours: 48,
@@ -87,6 +87,36 @@ releases:
           - ios
           - aurora
 ```
+
+## Shorebird
+
+If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with release notes with the ability to restart the application.
+
+```yaml
+
+releases:
+  - version: 1.3.7
+    patches:
+      - patchNumber: 1 # Required
+        # Optional, should use the patch
+        isActive: true 
+        # Optional, the patch is mandatory for installation by all before using the app
+        isRequired: false 
+        # Optional, if true - becomes inactive, will be required to upgrade to any higher patch
+        isBroken: false
+        # Optional, you can set the title, description and releaseNote
+        releaseNote: 
+          en: 'Critical fix'
+        # Optional, uses to refine the version
+        buildNumber: 21
+    platforms:
+      - android
+      - ios 
+        
+```
+
+
+
 
 ## Contributors ✨
 
