@@ -2,6 +2,12 @@
 
 ![Package Thumbnail](https://github.com/user-attachments/assets/bae1226a-0680-41bf-a4e8-5f08ae483122)
 
+<p align="center">
+<a href="https://pub.dev/packages/app_update_checker"><img alt="Pub Version" src="https://img.shields.io/pub/v/app_update_checker"></a>
+<a href="https://pub.dev/packages/app_update_checker"><img alt="Pub Points" src="https://img.shields.io/pub/points/app_update_checker"></a>
+<a href="https://github.com/StarProxima/dev_kit"><img src="https://img.shields.io/github/stars/StarProxima/dev_kit?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github"></a>
+</p>
+
 > [!IMPORTANT]
 > This package is in the early API design phase.
 
@@ -58,8 +64,6 @@ releaseSettings:
       ### Version $releaseVersion is available!
     es: La versión $releaseVersion está disponible!
     ru: Доступна новая версия!
-
-    
   # Optional
   description: |-
     A new version of $appName is available!
