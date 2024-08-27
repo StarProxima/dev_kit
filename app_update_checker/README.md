@@ -13,6 +13,8 @@ To support its development, you can give it a like and a star on [GitHub](https:
 
 ---
 
+
+
 ## Overview
 
 This package is designed to help handle updates to your application in a more flexible way.
@@ -25,11 +27,11 @@ The package also supports features such as deprecation for older versions, requi
 
 
 
-## Setup
+## Setup methods
 
 There are 2 methods to get information about updates: 
 1) From the stores where the app is available 
-2) From your own config, which can be hosted, for example, on your public github repository.
+2) From your own update config, which can be hosted, for example, on your public github repository.
 
 The first method is easier to use, but is not flexible and does not support many features.
 
@@ -37,20 +39,33 @@ The second method requires some customization, but works on all platforms, with 
 
 We want to support both methods, but for now we're focusing on the second method.
 
-Here is the config api structure under consideration:
+### Update Config
+
+Here is the full config api structure under consideration:
 ```yaml
 # Description of the api structure
 # https://pub.dev/packages/app_update_checker
 
-# Interval at which the update notification will be repeatedly shown to the user.
-reminderPeriodInHours: 48
-# Delay that must pass after the release before it begins to be shown to all users.
-releaseDelayInHours: 48
-
-# Versions prior to this one will receive an obsolescence notice, but may defer the update.
-deprecatedBeforeVersion: 0.3.7
-# Versions prior to this one must be updated to the latest version, with no option to defer the update.
-requiredMinimumVersion: 0.1.0 
+# Default settings for releases
+releaseSettings:
+  # Optional
+  title: 
+    en: Version $releaseVersion is available
+  # Optional
+  description: 
+    en: |-
+      A new version of $appName is available!
+      Version $releaseVersion is now available. You have a $appVersion
+  # Interval at which the update notification will be repeatedly shown to the user.
+  reminderPeriodHours: 48
+  # Delay that must pass after the release before it begins to be shown to all users.
+  releaseDelayHours: 48
+  # Versions prior to this one will receive an obsolescence notice,
+  # but may defer the update.
+  deprecatedBeforeVersion: 0.3.7
+  # Versions prior to this one must be updated to the latest version,
+  # with no option to defer the update.
+  requiredMinimumVersion: 0.1.0 
 
 # Optional, will be set based on the platform and app ID.
 stores:
@@ -62,7 +77,7 @@ stores:
     url: https://example.com
   - name: ruStore 
     url: https://example.com
-  # Custom store
+    # Custom store
   - name: gitHub
     url: https://example.com
     platforms:
@@ -70,6 +85,7 @@ stores:
       - windows
       - macos
       - linux
+
 releases:
   - version: 0.3.7 # Required
     # Optional, uses to refine the version
@@ -78,39 +94,52 @@ releases:
     isActive: true 
     # Optional, the update is mandatory for installation by all with a lesser version
     isRequired: false 
-    # Optional, if true - becomes inactive, will be required to upgrade to any higher version
+    # Optional, if true - becomes inactive,
+    # will be required to upgrade to any higher version
     isBroken: false
     # Optional, will be override
     title: 
-      en: Version $version is available
+      en: Version $releaseVersion is available
     # Optional, will be override
     description: 
       en: |-
         A new version of $appName is available!
-        Version $version is now available. You have a $currentVersion
+        Version $releaseVersion is now available. You have a $appVersion
     # Optional, may not be displayed
     releaseNote: 
       en: 'Added bugs, fixed features'
       es: 'Bugs añadidos, correcciones arregladas'
       ru: 'Добавлены баги, устранены фичи'
-    # Optional, used to delay the release using releaseDelayInHours
-    releaseDateUtc: '2024-08-24 15:35:00',
+    # Optional, used to delay the release using releaseDelayHours
+    pubDateUtc: '2024-08-24 15:35:00',
     # Optional, will be override
-    reminderPeriodInHours: 48,
+    reminderPeriodHours: 48,
     # Optional, will be override
-    releaseDelayInHours: 48,
+    releaseDelayHours: 48,
     # Optional, all by default. Support custom stores
     stores:
+        # Supports short syntax
       - googlePlay
       - appStore
       - ruStore
+        # Also supports full syntax if you need to override parametrs
       - name: github
         url: https://example.com
         platforms: 
           - android
           - ios
           - aurora
+    
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default
+    ref: 0.3.7
+    # Аlso supports short syntax without localization
+    releaseNote: Minor improvements
+    
 ```
+
+
 
 ## Shorebird
 
@@ -126,13 +155,21 @@ releases:
         isActive: true 
         # Optional, the patch is mandatory for installation by all before using the app
         isRequired: false 
-        # Optional, if true - becomes inactive, will be required to upgrade to any higher patch
+        # Optional, if true - becomes inactive, 
+        # will be required to upgrade to any higher patch
         isBroken: false
-        # Optional, you can set the title, description and releaseNote
-        releaseNote: 
+        # Optional, you can set the title, description and patchNote
+        patchNote: 
           en: 'Critical fix'
         # Optional, uses to refine the version
         buildNumber: 21
+
+        # Related patch for another platform with different patch number
+      - patchNumber: 2
+        # Reference to another patch by patchNumber,  
+        # uses all of its parameters by default
+        ref: 1
+        buildNumber: 23
     platforms:
       - android
       - ios 
@@ -141,12 +178,13 @@ releases:
 
 
 
-
 ## Contributors ✨
 
 [![Alt](https://opencollective.com/dev_kit/contributors.svg?width=890&button=false)](https://github.com/remarkablemark/dev_kit/graphs/contributors)
 
 Contributions of any kind welcome!
+
+
 
 ## Activities
 
