@@ -1,6 +1,6 @@
 ## App Update Checker
 
-![Package Thumbnail](https://github.com/user-attachments/assets/11e46aea-8451-44e8-88c9-495bbefe18a4)
+![Package Thumbnail](https://github.com/user-attachments/assets/bae1226a-0680-41bf-a4e8-5f08ae483122)
 
 > [!IMPORTANT]
 > This package is in the early API design phase.
@@ -13,7 +13,31 @@ To support its development, you can give it a like and a star on [GitHub](https:
 
 ---
 
-The config api structure under consideration:
+## Overview
+
+This package is designed to help handle updates to your application in a more flexible way.
+
+It should also help fix problems and get around some annoying limitations of the [Upgrader](https://pub.dev/packages/upgrader) package.
+
+You can show anything you want - a customizable dialog, a modal sheet or a small card to motivate or compel users to update your app. 
+
+The package also supports features such as deprecation for older versions, required updates and rolling back updates.
+
+
+
+## Setup
+
+There are 2 methods to get information about updates: 
+1) From the stores where the app is available 
+2) From your own config, which can be hosted, for example, on your public github repository.
+
+The first method is easier to use, but is not flexible and does not support many features.
+
+The second method requires some customization, but works on all platforms, with all stores, and allows for full control and customization of your update process.
+
+We want to support both methods, but for now we're focusing on the second method.
+
+Here is the config api structure under consideration:
 ```yaml
 # Description of the api structure
 # https://pub.dev/packages/app_update_checker
