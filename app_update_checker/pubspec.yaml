@@ -1,6 +1,6 @@
 name: app_update_checker
 description: Check for updates to your app with the possibility of deprecation, required updates and various app stores
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/StarProxima/dev_kit/tree/develop/app_update_checker
 screenshots:
  - description: 'App Update Checker Thumbnail'
