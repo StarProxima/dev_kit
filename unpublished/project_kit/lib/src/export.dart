@@ -13,7 +13,7 @@ export 'package:project_kit/src/hooks/use_listener.dart';
 export 'package:project_kit/src/utils/interfaces.dart';
 export 'package:project_kit/src/utils/persistence/persistence_mixin.dart';
 export 'package:project_kit/src/utils/persistence/persistence_storage.dart';
-export 'package:project_kit/src/utils/token_storage/token_storage.dart';
+export 'package:project_kit/src/utils/token_storage/security_token_storage.dart';
 export 'package:project_kit/src/widgets/auto_unfocus.dart';
 export 'package:project_kit/src/widgets/sliver_bottom_align.dart';
 export 'package:project_kit/src/widgets/toast_card.dart';

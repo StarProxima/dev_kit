@@ -2,25 +2,7 @@
 
 // ignore_for_file: lines_longer_than_80_chars, prefer_expression_function_bodies, unused_import, require_trailing_commas, library_private_types_in_public_api
 
-part of 'token_storage.dart';
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_$TokenStorageStateImpl _$$TokenStorageStateImplFromJson(
-        Map<String, dynamic> json) =>
-    _$TokenStorageStateImpl(
-      refreshToken: json['refreshToken'] as String,
-      accessToken: json['accessToken'] as String,
-    );
-
-Map<String, dynamic> _$$TokenStorageStateImplToJson(
-        _$TokenStorageStateImpl instance) =>
-    <String, dynamic>{
-      'refreshToken': instance.refreshToken,
-      'accessToken': instance.accessToken,
-    };
+part of 'security_token_storage.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -59,18 +41,18 @@ String _$tokenStorageHash() => r'e02e879dd840006d6c90339976b5adbd1cc00b78';
 
 /// Отвечает за управление и хранение токенов авторизации пользователя
 ///
-/// Copied from [TokenStorage].
-@ProviderFor(TokenStorage)
-final tokenStorageProvider =
-    AsyncNotifierProvider<TokenStorage, TokenStorageState?>.internal(
-  TokenStorage.new,
-  name: r'tokenStorageProvider',
+/// Copied from [SecurityTokenStorage].
+@ProviderFor(SecurityTokenStorage)
+final securityTokenStorageProvider =
+    AsyncNotifierProvider<SecurityTokenStorage, OAuth2Token?>.internal(
+  SecurityTokenStorage.new,
+  name: r'securityTokenStorageProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$tokenStorageHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$TokenStorage = AsyncNotifier<TokenStorageState?>;
+typedef _$SecurityTokenStorage = AsyncNotifier<OAuth2Token?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
