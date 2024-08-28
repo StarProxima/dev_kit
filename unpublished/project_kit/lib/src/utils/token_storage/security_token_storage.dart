@@ -9,6 +9,17 @@ import '../notifier_async_utils/notifier_async_utils.dart';
 
 part 'security_token_storage.g.dart';
 
+/// Обертка над OAuth2Token, чтобы напрямую не зависить от Fresh
+class AuthToken extends OAuth2Token {
+  AuthToken({
+    required super.accessToken,
+    super.tokenType = 'bearer',
+    super.expiresIn,
+    super.refreshToken,
+    super.scope,
+  });
+}
+
 @Riverpod(keepAlive: true)
 class UserChanged extends _$UserChanged {
   @override
@@ -31,13 +42,13 @@ bool userAuthorized(UserAuthorizedRef ref) {
 /// Отвечает за управление и хранение токенов авторизации пользователя
 @Riverpod(keepAlive: true)
 class SecurityTokenStorage extends _$SecurityTokenStorage
-    implements IRef, TokenStorage<OAuth2Token> {
+    implements IRef, TokenStorage<AuthToken> {
   static const _storage = FlutterSecureStorage();
   static const _refreshKey = 'refreshToken';
   static const _accessKey = 'accessToken';
 
   @override
-  Future<OAuth2Token?> build() async {
+  Future<AuthToken?> build() async {
     await read();
   }
 
@@ -45,19 +56,18 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<void> delete() async {
     await _storage.delete(key: _refreshKey);
     await _storage.delete(key: _accessKey);
-
     setData(null);
   }
 
   @override
-  Future<OAuth2Token?> read() async {
+  Future<AuthToken?> read() async {
     try {
       final refreshToken = await _storage.read(key: _refreshKey);
       final accessToken = await _storage.read(key: _accessKey);
 
       if (refreshToken == null || accessToken == null) return null;
 
-      return OAuth2Token(
+      return AuthToken(
         accessToken: accessToken,
         refreshToken: refreshToken,
       );
@@ -68,12 +78,12 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   }
 
   @override
-  Future<void> write(OAuth2Token token) async {
+  Future<void> write(AuthToken token) async {
     await _storage.write(key: _refreshKey, value: token.refreshToken);
     await _storage.write(key: _accessKey, value: token.accessToken);
 
     setData(
-      OAuth2Token(
+      AuthToken(
         refreshToken: token.refreshToken,
         accessToken: token.accessToken,
       ),

@@ -1,14 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: lines_longer_than_80_chars, prefer_expression_function_bodies, unused_import, require_trailing_commas, library_private_types_in_public_api
-
 part of 'security_token_storage.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userAuthorizedHash() => r'8be5a35cf08bec16caec026df7f15d4542a5bd2b';
+String _$userAuthorizedHash() => r'e10e8b6cd23db18ae0cee057f90e0e883c58a368';
 
 /// See also [userAuthorized].
 @ProviderFor(userAuthorized)
@@ -23,7 +21,7 @@ final userAuthorizedProvider = Provider<bool>.internal(
 );
 
 typedef UserAuthorizedRef = ProviderRef<bool>;
-String _$userChangedHash() => r'f63b8885c578eb539b41dcf8424eed2f53931006';
+String _$userChangedHash() => r'8c2adffc3908d1693b8dc7df03d539305769a014';
 
 /// See also [UserChanged].
 @ProviderFor(UserChanged)
@@ -37,7 +35,8 @@ final userChangedProvider = NotifierProvider<UserChanged, void>.internal(
 );
 
 typedef _$UserChanged = Notifier<void>;
-String _$tokenStorageHash() => r'e02e879dd840006d6c90339976b5adbd1cc00b78';
+String _$securityTokenStorageHash() =>
+    r'5657cd9a2f3f056ff8d14790dc3fce26e9235e75';
 
 /// Отвечает за управление и хранение токенов авторизации пользователя
 ///
@@ -47,8 +46,9 @@ final securityTokenStorageProvider =
     AsyncNotifierProvider<SecurityTokenStorage, OAuth2Token?>.internal(
   SecurityTokenStorage.new,
   name: r'securityTokenStorageProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$tokenStorageHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$securityTokenStorageHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
