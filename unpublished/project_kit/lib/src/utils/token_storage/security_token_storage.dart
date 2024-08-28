@@ -10,17 +10,6 @@ import '../notifier_async_utils/notifier_async_utils.dart';
 
 part 'security_token_storage.g.dart';
 
-/// Обертка над OAuth2Token, чтобы напрямую не зависить от Fresh
-class AuthToken extends OAuth2Token {
-  AuthToken({
-    required super.accessToken,
-    super.tokenType = 'bearer',
-    super.expiresIn,
-    super.refreshToken,
-    super.scope,
-  });
-}
-
 @Riverpod(keepAlive: true)
 class UserChanged extends _$UserChanged {
   @override
