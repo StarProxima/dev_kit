@@ -1,3 +1,5 @@
+import 'package:fresh_dio/fresh_dio.dart';
+
 import '../../../../project_kit.dart';
 
 /// Обертка над Fresh, чтобы напрямую не зависить от него, а только от project_kit
