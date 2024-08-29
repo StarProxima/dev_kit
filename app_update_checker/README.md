@@ -141,7 +141,7 @@ releases:
   - version: 0.3.8
     # Reference to another release by version,
     # uses all of its parameters by default
-    ref: 0.3.7
+    ref_version: 0.3.7
     release_note: Minor improvements
     
 ```
@@ -169,7 +169,10 @@ releases:
       - patch_number: 2
         # Optional, reference to another patch by patchNumber,  
         # uses all of its parameters by default
-        ref: 1
+        ref_patch_number: 1
+        # Optional, used to reference a patch of a different version
+        ref_version: 1.3.7
+        # Optional, uses to refine the version
         build_number: 23
     platforms:
       - android
