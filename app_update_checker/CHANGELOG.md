@@ -1,3 +1,7 @@
+## 0.0.11
+
+* Update README. Change config case to snake_case
+
 ## 0.0.10
 
 * Update README with shields

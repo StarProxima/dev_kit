@@ -53,7 +53,7 @@ Here is the full config api structure under consideration:
 # https://pub.dev/packages/app_update_checker
 
 # Default settings for releases
-releaseSettings:
+release_settings:
   # Optional
   title:
     # Any text (title, description, releaseNote)
@@ -68,18 +68,20 @@ releaseSettings:
   description: |-
     A new version of $appName is available!
     Version $releaseVersion is now available. You have a $appVersion
-  # Interval at which the update notification will be repeatedly shown to the user.
-  reminderPeriodHours: 48
-  # Delay that must pass after the release before it begins to be shown to all users.
-  releaseDelayHours: 48
+  # Optional, allows users to ignore this specific release until a new one is available
+  can_ignore_release: true
+  # Interval at which the update notification will be repeatedly shown to the user
+  reminder_period_hours: 48
+  # Delay that must pass after the release before it begins to be shown to all users
+  release_delay_hours: 48
   # Versions prior to this one will receive an obsolescence notice,
   # but may defer the update.
-  deprecatedBeforeVersion: 0.3.7
+  deprecated_before_version: 0.3.7
   # Versions prior to this one must be updated to the latest version,
   # with no option to defer the update.
-  requiredMinimumVersion: 0.1.0 
+  required_minimum_version: 0.1.0 
 
-# Optional, will be set based on the platform and app ID.
+# Optional, will be set based on the platform and app ID
 stores:
   - name: googlePlay 
     url: https://example.com
@@ -101,7 +103,7 @@ stores:
 releases:
   - version: 0.3.7 # Required
     # Optional, uses to refine the version
-    buildNumber: 21
+    build_number: 21
     # Optional, active by default
     # May be one of:
     # active - The release is available.
@@ -112,18 +114,20 @@ releases:
     type: active
     # You can also override the title and description here.
     # Optional, may not to be displayed.
-    releaseNote: |-
+    release_note: |-
       # Big update!
       [click](https://example.com) - full changelog.
       ### Short notes
       - Added bugs
       - Fixed features
     # Optional, used to delay the release using releaseDelayHours. Time is optional.
-    pubDateUtc: '2024-08-24 15:35:00'
+    pub_date_utc: '2024-08-24 15:35:00'
     # Optional, will be override
-    reminderPeriodHours: 48,
+    can_ignore_release: true
     # Optional, will be override
-    releaseDelayHours: 48,
+    reminder_period_hours: 48
+    # Optional, will be override
+    required_minimum_version: 48
     # Optional, all by default. Support custom stores
     stores:
         # Supports short syntax
@@ -140,9 +144,12 @@ releases:
     
   - version: 0.3.8
     # Reference to another release by version,
-    # uses all of its parameters by default
-    ref: 0.3.7
-    releaseNote: Minor improvements
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
     
 ```
 
@@ -151,26 +158,38 @@ releases:
 
 If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with release notes with the ability to restart the application.
 
+If you don't need a patch note and a custom title and description, you can omit specific patches from the release. Information about new patches is also provided by shorebird.
+
 ```yaml
+
+# Default settings for patches
+path_settings:
+  # Optional, similar to release title
+  title: The new patch is available!
+  # Optional, similar to release description
+  description: It is needed to fix errors in the app.
 
 releases:
   - version: 1.3.7
     patches:
-      - patchNumber: 1 # Required
-        # Optional, active by default
+      - patch_number: 1 # Required
+        # Optional, similar to release type
         type: active
         # Optional, you can set the title, description and patchNote.
         title: New patch for $appVersion
-        patchNote: Critical fix
+        patch_note: Critical fix
         # Optional, uses to refine the version
-        buildNumber: 21
+        build_number: 21
 
         # Related patch for another platform with different patch number
-      - patchNumber: 2
-        # Reference to another patch by patchNumber,  
+      - patch_number: 2
+        # Optional, reference to another patch by patchNumber,  
         # uses all of its parameters by default
-        ref: 1
-        buildNumber: 23
+        ref_patch_number: 1
+        # Optional, used to reference a patch of a different version
+        ref_version: 1.3.7
+        # Optional, uses to refine the version
+        build_number: 23
     platforms:
       - android
       - ios 
