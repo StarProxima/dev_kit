@@ -167,7 +167,7 @@ releases:
 
         # Related patch for another platform with different patch number
       - patchNumber: 2
-        # Reference to another patch by patchNumber,  
+        # Optional, reference to another patch by patchNumber,  
         # uses all of its parameters by default
         ref: 1
         buildNumber: 23

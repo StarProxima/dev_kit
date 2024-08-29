@@ -7,11 +7,6 @@ analyzer:
     invalid_annotation_target: ignore
     invalid_use_of_protected_member: error
 
-  language:
-    # strict-casts: true
-    # strict-inference: true
-    # strict-raw-types: true
-
 linter:
   rules:
 
