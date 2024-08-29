@@ -68,9 +68,11 @@ release_settings:
   description: |-
     A new version of $appName is available!
     Version $releaseVersion is now available. You have a $appVersion
-  # Interval at which the update notification will be repeatedly shown to the user.
+  # Optional, allows users to ignore this specific release until a new one is available
+  can_ignore_release: true
+  # Interval at which the update notification will be repeatedly shown to the user
   reminder_period_hours: 48
-  # Delay that must pass after the release before it begins to be shown to all users.
+  # Delay that must pass after the release before it begins to be shown to all users
   release_delay_hours: 48
   # Versions prior to this one will receive an obsolescence notice,
   # but may defer the update.
@@ -79,7 +81,7 @@ release_settings:
   # with no option to defer the update.
   required_minimum_version: 0.1.0 
 
-# Optional, will be set based on the platform and app ID.
+# Optional, will be set based on the platform and app ID
 stores:
   - name: googlePlay 
     url: https://example.com
@@ -121,6 +123,8 @@ releases:
     # Optional, used to delay the release using releaseDelayHours. Time is optional.
     pub_date_utc: '2024-08-24 15:35:00'
     # Optional, will be override
+    can_ignore_release: true
+    # Optional, will be override
     reminder_period_hours: 48
     # Optional, will be override
     required_minimum_version: 48
@@ -140,9 +144,12 @@ releases:
     
   - version: 0.3.8
     # Reference to another release by version,
-    # uses all of its parameters by default
+    # uses all of its parameters by default.
     ref_version: 0.3.7
     release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
     
 ```
 
@@ -151,13 +158,22 @@ releases:
 
 If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with release notes with the ability to restart the application.
 
+If you don't need a patch note and a custom title and description, you can omit specific patches from the release. Information about new patches is also provided by shorebird.
+
 ```yaml
+
+# Default settings for patches
+path_settings:
+  # Optional, similar to release title
+  title: The new patch is available!
+  # Optional, similar to release description
+  description: It is needed to fix errors in the app.
 
 releases:
   - version: 1.3.7
     patches:
       - patch_number: 1 # Required
-        # Optional, active by default
+        # Optional, similar to release type
         type: active
         # Optional, you can set the title, description and patchNote.
         title: New patch for $appVersion
