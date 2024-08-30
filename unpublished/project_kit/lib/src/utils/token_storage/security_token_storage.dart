@@ -16,7 +16,9 @@ class UserChanged extends _$UserChanged {
   void build() {
     ref.listen(securityTokenStorageProvider,
         (asyncPrevToken, asyncCurrentToken) {
-      final prevUserId = asyncPrevToken?.requireValue?.userId;
+      if (asyncPrevToken == null) return;
+      if (!asyncPrevToken.hasValue) return;
+      final prevUserId = asyncPrevToken.requireValue?.userId;
       final currentUserId = asyncCurrentToken.requireValue?.userId;
       if (prevUserId != currentUserId) ref.invalidateSelf();
     });
@@ -45,6 +47,7 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   );
   static const _refreshKey = 'refreshToken';
   static const _accessKey = 'accessToken';
+  static const _userId = 'userId';
 
   @override
   Future<AuthToken?> build() async {
@@ -56,8 +59,10 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<void> delete() async {
     await _encryptedStorage.delete(key: _refreshKey);
     await _encryptedStorage.delete(key: _accessKey);
+    await _encryptedStorage.delete(key: _userId);
     await _storage.delete(key: _refreshKey);
     await _storage.delete(key: _accessKey);
+    await _storage.delete(key: _userId);
     setData(null);
   }
 
@@ -66,18 +71,24 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
     try {
       var refreshToken = await _encryptedStorage.read(key: _refreshKey);
       var accessToken = await _encryptedStorage.read(key: _accessKey);
+      var userId = await _encryptedStorage.read(key: _userId);
 
-      if (refreshToken == null || accessToken == null) {
+      if (refreshToken == null || accessToken == null || userId == null) {
         refreshToken = await _storage.read(key: _refreshKey);
         accessToken = await _storage.read(key: _accessKey);
-        if (refreshToken == null || accessToken == null) return null;
+        userId = await _storage.read(key: _userId);
+        if (refreshToken == null || accessToken == null || userId == null) {
+          return null;
+        }
         await _encryptedStorage.write(key: _refreshKey, value: refreshToken);
         await _encryptedStorage.write(key: _accessKey, value: accessToken);
+        await _encryptedStorage.write(key: _userId, value: userId);
       }
 
       return AuthToken(
         accessToken: accessToken,
         refreshToken: refreshToken,
+        userId: int.tryParse(userId),
       );
     } catch (e, s) {
       logger.error(title: 'SecurityTokenStorage', error: e, stack: s);
@@ -89,11 +100,14 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<void> write(AuthToken token) async {
     await _encryptedStorage.write(key: _refreshKey, value: token.refreshToken);
     await _encryptedStorage.write(key: _accessKey, value: token.accessToken);
+    await _encryptedStorage.write(
+        key: _userId, value: token.userId?.toString());
 
     setData(
       AuthToken(
         refreshToken: token.refreshToken,
         accessToken: token.accessToken,
+        userId: token.userId,
       ),
     );
   }
