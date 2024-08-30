@@ -8,5 +8,8 @@ class AuthToken extends OAuth2Token {
     super.expiresIn,
     super.refreshToken,
     super.scope,
+    this.userId,
   });
+
+  final int? userId;
 }

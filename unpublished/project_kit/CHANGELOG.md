@@ -1,3 +1,8 @@
+## 1.14.3 - 30.08.2024
+* Добавлен `AuthToken` для представления токена пользователя
+* Добавлен `AuthTokenHandler` для обработки токена авторизации `AuthToken` пользователя
+* Переименован `TokenStorage` в `SecurityTokenStorage`
+
 ## 1.14.0 - 04.2024
 * `RateLimiter` добавлен в `Sctrict` методы `ApiWrap`
 * Теперь вместо вызова onCancelOperation в `RateLimiter`, будет вызываться `onError` c `RateCancelError`

@@ -3,8 +3,8 @@ import 'package:fresh_dio/fresh_dio.dart';
 import '../model/auth_token.dart';
 
 /// Обертка над Fresh, чтобы напрямую не зависить от него, а только от project_kit
-class AuthTokenInterceptor extends Fresh<AuthToken> {
-  AuthTokenInterceptor._({
+class AuthTokenHandler extends Fresh<AuthToken> {
+  AuthTokenHandler._({
     required super.tokenHeader,
     required super.tokenStorage,
     required super.refreshToken,
@@ -12,14 +12,14 @@ class AuthTokenInterceptor extends Fresh<AuthToken> {
     super.httpClient,
   });
 
-  factory AuthTokenInterceptor.build({
+  factory AuthTokenHandler.build({
     required TokenStorage<AuthToken> tokenStorage,
     required RefreshToken<AuthToken> refreshToken,
     ShouldRefresh? shouldRefresh,
     Dio? httpClient,
     TokenHeaderBuilder<AuthToken>? tokenHeader,
   }) {
-    return AuthTokenInterceptor._(
+    return AuthTokenHandler._(
       tokenStorage: tokenStorage,
       refreshToken: refreshToken,
       shouldRefresh: shouldRefresh,
