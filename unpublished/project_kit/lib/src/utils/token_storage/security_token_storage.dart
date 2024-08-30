@@ -54,8 +54,12 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
 
   @override
   Future<AuthToken?> build() async {
-    final token = await read();
-    return token;
+    try {
+      final token = await read();
+      return token;
+    } catch (_) {
+      return null;
+    }
   }
 
   @override

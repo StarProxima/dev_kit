@@ -33,3 +33,5 @@ class AuthTokenHandler extends Fresh<AuthToken> {
     );
   }
 }
+
+class RevokeAuthTokenException implements RevokeTokenException {}
