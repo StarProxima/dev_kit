@@ -1,6 +1,6 @@
 name: project_kit
 description: A set of developer utilities for flutter projects
-version: 1.14.7
+version: 1.14.8
 publish_to: 'none'
 
 environment:

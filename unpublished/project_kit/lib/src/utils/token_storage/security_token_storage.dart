@@ -73,24 +73,22 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<AuthToken?> read() async {
     var refreshToken = await _encryptedStorage.read(key: _refreshKey);
     var accessToken = await _encryptedStorage.read(key: _accessKey);
-    var userId = await _encryptedStorage.read(key: _userId);
+    final userId = await _encryptedStorage.read(key: _userId);
 
     if (refreshToken == null || accessToken == null || userId == null) {
       refreshToken = await _storage.read(key: _refreshKey);
       accessToken = await _storage.read(key: _accessKey);
-      userId = await _storage.read(key: _userId);
-      if (refreshToken == null || accessToken == null || userId == null) {
+      if (refreshToken == null || accessToken == null) {
         return null;
       }
       await _encryptedStorage.write(key: _refreshKey, value: refreshToken);
       await _encryptedStorage.write(key: _accessKey, value: accessToken);
-      await _encryptedStorage.write(key: _userId, value: userId);
     }
 
     return AuthToken(
       accessToken: accessToken,
       refreshToken: refreshToken,
-      userId: int.tryParse(userId),
+      userId: userId == null ? null : int.tryParse(userId),
     );
   }
 
