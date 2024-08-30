@@ -30,8 +30,12 @@ class UserChanged extends _$UserChanged {
 
 @Riverpod(keepAlive: true)
 bool userAuthorized(UserAuthorizedRef ref) {
-  final token = ref.watch(securityTokenStorageProvider);
-  return token.requireValue != null;
+  try {
+    final token = ref.watch(securityTokenStorageProvider);
+    return token.requireValue != null;
+  } catch (e) {
+    return false;
+  }
 }
 
 /// Отвечает за управление и хранение токенов авторизации пользователя
