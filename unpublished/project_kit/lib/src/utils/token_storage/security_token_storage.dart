@@ -5,7 +5,6 @@ import 'package:fresh_dio/fresh_dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../project_kit.dart';
-import '../../internal/logger/dev_kit_logger.dart';
 import '../notifier_async_utils/notifier_async_utils.dart';
 
 part 'security_token_storage.g.dart';
@@ -72,32 +71,27 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
 
   @override
   Future<AuthToken?> read() async {
-    try {
-      var refreshToken = await _encryptedStorage.read(key: _refreshKey);
-      var accessToken = await _encryptedStorage.read(key: _accessKey);
-      var userId = await _encryptedStorage.read(key: _userId);
+    var refreshToken = await _encryptedStorage.read(key: _refreshKey);
+    var accessToken = await _encryptedStorage.read(key: _accessKey);
+    var userId = await _encryptedStorage.read(key: _userId);
 
+    if (refreshToken == null || accessToken == null || userId == null) {
+      refreshToken = await _storage.read(key: _refreshKey);
+      accessToken = await _storage.read(key: _accessKey);
+      userId = await _storage.read(key: _userId);
       if (refreshToken == null || accessToken == null || userId == null) {
-        refreshToken = await _storage.read(key: _refreshKey);
-        accessToken = await _storage.read(key: _accessKey);
-        userId = await _storage.read(key: _userId);
-        if (refreshToken == null || accessToken == null || userId == null) {
-          return null;
-        }
-        await _encryptedStorage.write(key: _refreshKey, value: refreshToken);
-        await _encryptedStorage.write(key: _accessKey, value: accessToken);
-        await _encryptedStorage.write(key: _userId, value: userId);
+        return null;
       }
-
-      return AuthToken(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        userId: int.tryParse(userId),
-      );
-    } catch (e, s) {
-      logger.error(title: 'SecurityTokenStorage', error: e, stack: s);
-      rethrow;
+      await _encryptedStorage.write(key: _refreshKey, value: refreshToken);
+      await _encryptedStorage.write(key: _accessKey, value: accessToken);
+      await _encryptedStorage.write(key: _userId, value: userId);
     }
+
+    return AuthToken(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      userId: int.tryParse(userId),
+    );
   }
 
   @override
