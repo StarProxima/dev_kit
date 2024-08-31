@@ -7,10 +7,10 @@ class _TextParser {
 
   Map<Locale, String> parse(
     // ignore: avoid-dynamic
-    dynamic textWithLocales, {
+    dynamic value, {
     required bool isDebug,
   }) {
-    var text = textWithLocales;
+    var text = value;
     if (text is! Map<String, dynamic>?) {
       if (text is String) {
         return {const Locale('en'): text};

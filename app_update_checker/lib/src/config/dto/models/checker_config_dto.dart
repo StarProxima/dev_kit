@@ -6,7 +6,7 @@ class CheckerConfigDTO {
   final ReleaseSettingsDTO releaseSettings;
   final List<StoreDTO> stores;
   final List<ReleaseDTO> releases;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic> customData;
 
   const CheckerConfigDTO({
     required this.releaseSettings,

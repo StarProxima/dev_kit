@@ -2,7 +2,7 @@ class StoreDTO {
   final String name;
   final Uri? url;
   final List<String>? platforms;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic> customData;
 
   const StoreDTO({
     required this.name,

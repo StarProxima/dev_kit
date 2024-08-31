@@ -49,7 +49,7 @@ class CheckerConfigDTOParser {
       stores = null;
     } else {
       stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug))
+          .map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug))
           .toList()
           .whereType<StoreDTO>();
     }

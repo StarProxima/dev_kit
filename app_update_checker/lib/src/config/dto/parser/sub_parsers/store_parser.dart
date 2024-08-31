@@ -6,10 +6,31 @@ class _StoreParser {
   const _StoreParser();
 
   StoreDTO? parse(
-    Map<String, dynamic> map, {
+    // ignore: avoid-dynamic
+    dynamic value, {
     required bool isStrict,
     required bool isDebug,
   }) {
+    // short string syntax
+    if (value is! Map<String, dynamic>) {
+      if (isStrict && value is String) {
+        return StoreDTO(
+          name: value,
+          url: null,
+          platforms: null,
+          customData: {},
+        );
+      }
+
+      if (isDebug) throw const DtoParserException();
+
+      return null;
+    }
+
+    // full syntax
+
+    final map = value;
+
     // name
     var name = map.remove('name');
 

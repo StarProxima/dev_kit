@@ -9,7 +9,7 @@ class ReleaseSettingsDTO {
   final Duration? releaseDelay;
   final Version? deprecatedBeforeVersion;
   final Version? requiredMinimumVersion;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic> customData;
 
   const ReleaseSettingsDTO({
     required this.title,
