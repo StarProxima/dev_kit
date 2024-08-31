@@ -18,9 +18,7 @@ part 'sub_parsers/version_parser.dart';
 class CheckerConfigDTOParser {
   _StoreParser get _storeParser => const _StoreParser();
   _DurationParser get _durationParser => const _DurationParser();
-  _TextParser get _textParser => const _TextParser();
   _VersionParser get _versionParser => const _VersionParser();
-
   _ReleaseParser get _releaseParser => const _ReleaseParser();
 
   const CheckerConfigDTOParser();
