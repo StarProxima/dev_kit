@@ -3,17 +3,17 @@
 part of '../checker_config_dto_parser.dart';
 
 class _ReleaseParser {
-  final bool isDebug;
+  _StoreParser get _storeParser => const _StoreParser();
+  _DurationParser get _durationParser => const _DurationParser();
+  _TextParser get _textParser => const _TextParser();
+  _VersionParser get _versionParser => const _VersionParser();
 
-  _StoreParser get _storeParser => _StoreParser(isDebug: isDebug);
+  const _ReleaseParser();
 
-  _DurationParser get _durationParser => _DurationParser(isDebug: isDebug);
-  _TextParser get _textParser => _TextParser(isDebug: isDebug);
-  _VersionParser get _versionParser => _VersionParser(isDebug: isDebug);
-
-  const _ReleaseParser({required this.isDebug});
-
-  ReleaseDTO? parse(Map<String, dynamic> map) {
+  ReleaseDTO? parse(
+    Map<String, dynamic> map, {
+    required bool isDebug,
+  }) {
     var version = map.remove('version');
     var isActive = map.remove('isActive');
     var isRequired = map.remove('isRequired');
@@ -25,7 +25,7 @@ class _ReleaseParser {
     final releaseDelayInHours = map.remove('releaseDelayInHours');
     var stores = map.remove('stores');
 
-    version = _versionParser.parse(version, isStrict: true);
+    version = _versionParser.parse(version, isStrict: true, isDebug: isDebug);
 
     if (version == null) return null;
 
@@ -46,27 +46,33 @@ class _ReleaseParser {
       isBroken = null;
     }
 
-    title = _textParser.parse(title);
+    title = _textParser.parse(title, isDebug: isDebug);
     title as Map<Locale, Object>?;
     title as Map<Locale, String>?;
 
-    description = _textParser.parse(description);
+    description = _textParser.parse(description, isDebug: isDebug);
     description as Map<Locale, Object>?;
     description as Map<Locale, String>?;
 
-    releaseNote = _textParser.parse(releaseNote);
+    releaseNote = _textParser.parse(releaseNote, isDebug: isDebug);
     releaseNote as Map<Locale, Object>?;
     releaseNote as Map<Locale, String>?;
 
-    final reminderPeriod = _durationParser.parse(hours: reminderPeriodInHours);
-    final releaseDelay = _durationParser.parse(hours: releaseDelayInHours);
+    final reminderPeriod = _durationParser.parse(
+      hours: reminderPeriodInHours,
+      isDebug: isDebug,
+    );
+    final releaseDelay = _durationParser.parse(
+      hours: releaseDelayInHours,
+      isDebug: isDebug,
+    );
 
     if (stores is! List<Map<String, dynamic>>?) {
       if (isDebug) throw const DtoParserException();
       stores = null;
     } else if (stores != null) {
       stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: false))
+          .map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug))
           .toList()
           .whereType<StoreDTO>();
       stores as List<Object>;

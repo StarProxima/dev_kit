@@ -3,13 +3,12 @@
 part of '../checker_config_dto_parser.dart';
 
 class _StoreParser {
-  final bool isDebug;
-
-  const _StoreParser({required this.isDebug});
+  const _StoreParser();
 
   StoreDTO? parse(
     Map<String, dynamic> map, {
     required bool isStrict,
+    required bool isDebug,
   }) {
     var name = map.remove('name');
     var url = map.remove('url');

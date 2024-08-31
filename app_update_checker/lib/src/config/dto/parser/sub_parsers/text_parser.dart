@@ -3,12 +3,13 @@
 part of '../checker_config_dto_parser.dart';
 
 class _TextParser {
-  final bool isDebug;
+  const _TextParser();
 
-  const _TextParser({required this.isDebug});
-
-  // ignore: avoid-dynamic
-  Map<Locale, String> parse(dynamic textWithLocales) {
+  Map<Locale, String> parse(
+    // ignore: avoid-dynamic
+    dynamic textWithLocales, {
+    required bool isDebug,
+  }) {
     var text = textWithLocales;
     if (text is! Map<String, dynamic>?) {
       if (text is String) {

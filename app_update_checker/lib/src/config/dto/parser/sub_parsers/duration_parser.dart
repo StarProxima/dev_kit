@@ -1,13 +1,12 @@
 part of '../checker_config_dto_parser.dart';
 
 class _DurationParser {
-  final bool isDebug;
-
-  const _DurationParser({required this.isDebug});
+  const _DurationParser();
 
   Duration? parse({
     // ignore: avoid-dynamic
     required dynamic hours,
+    required bool isDebug,
   }) {
     if (hours is! int?) {
       if (isDebug) throw const DtoParserException();
