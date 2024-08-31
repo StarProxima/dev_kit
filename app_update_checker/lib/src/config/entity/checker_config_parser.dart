@@ -27,7 +27,7 @@ class CheckerConfigParser {
         ));
       } else if (url != null) {
         // TODO take url for default store?
-        switch (Stores.fromString(name)) {
+        switch (Stores.parse(name)) {
           case Stores.googlePlay:
             stores.add(Store.googlePlay(url: url));
 
@@ -97,7 +97,7 @@ class CheckerConfigParser {
           continue;
         }
 
-        switch (Stores.fromString(globalStore.name)) {
+        switch (Stores.parse(globalStore.name)) {
           case Stores.googlePlay:
             releaseStores.add(Store.googlePlay(url: url));
 
@@ -127,7 +127,7 @@ class CheckerConfigParser {
       ));
     }
 
-    final customData = checkerConfigDTO.customData ?? <String, dynamic>{};
+    final customData = checkerConfigDTO.customData;
 
     return CheckerConfig(
       deprecatedBeforeVersion: deprecatedBeforeVersion,

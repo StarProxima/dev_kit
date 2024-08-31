@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var
+// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 part of '../checker_config_dto_parser.dart';
 
@@ -64,6 +64,10 @@ class _StoreParser {
       if (isDebug) throw const DtoParserException();
       platforms = null;
     }
+
+    platforms = platforms?.map(UpdatePlatform.new);
+    platforms as List<Object>?;
+    platforms as List<UpdatePlatform>?;
 
     return StoreDTO(
       name: name,

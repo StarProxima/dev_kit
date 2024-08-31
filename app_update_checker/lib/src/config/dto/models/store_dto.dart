@@ -1,7 +1,9 @@
+import '../../entity/update_platform.dart';
+
 class StoreDTO {
   final String name;
   final Uri? url;
-  final List<String>? platforms;
+  final List<UpdatePlatform>? platforms;
   final Map<String, dynamic> customData;
 
   const StoreDTO({
