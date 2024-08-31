@@ -13,4 +13,10 @@ enum ReleaseType {
 
   // The release has critical bugs and requires an update.
   broken;
+
+  static ReleaseType? parse(String? str) =>
+      List<ReleaseType?>.of(values).firstWhere(
+        (e) => e?.name == str,
+        orElse: () => null,
+      );
 }

@@ -3,14 +3,15 @@
 import 'dart:ui';
 
 import '../../entity/version.dart';
+import '../exceptions/dto_parser_exception.dart';
 import '../models/checker_config_dto.dart';
-
-import '../models/dto_parser_exception.dart';
 import '../models/release_dto.dart';
+import '../models/release_settings_dto.dart';
 import '../models/store_dto.dart';
 
 part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
+part 'sub_parsers/release_settings_parser.dart';
 part 'sub_parsers/store_parser.dart';
 part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
@@ -27,31 +28,8 @@ class CheckerConfigDTOParser {
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
-    final reminderPeriodInHours = map.remove('reminderPeriodInHours');
-    final releaseDelayInHours = map.remove('releaseDelayInHours');
-    var deprecatedBeforeVersion = map.remove('deprecatedBeforeVersion');
-    var requiredMinimumVersion = map.remove('requiredMinimumVersion');
     var stores = map.remove('stores');
     var releases = map.remove('releases');
-
-    final reminderPeriod =
-        _durationParser.parse(hours: reminderPeriodInHours, isDebug: isDebug);
-    final releaseDelay =
-        _durationParser.parse(hours: releaseDelayInHours, isDebug: isDebug);
-
-    deprecatedBeforeVersion = _versionParser.parse(
-      deprecatedBeforeVersion,
-      isStrict: false,
-      isDebug: isDebug,
-    );
-    deprecatedBeforeVersion as Version?;
-
-    requiredMinimumVersion = _versionParser.parse(
-      requiredMinimumVersion,
-      isStrict: false,
-      isDebug: isDebug,
-    );
-    requiredMinimumVersion as Version?;
 
     if (stores == null) throw const DtoParserException();
 
@@ -83,10 +61,6 @@ class CheckerConfigDTOParser {
     releases as List<ReleaseDTO>;
 
     return CheckerConfigDTO(
-      reminderPeriod: reminderPeriod,
-      releaseDelay: releaseDelay,
-      deprecatedBeforeVersion: deprecatedBeforeVersion,
-      requiredMinimumVersion: requiredMinimumVersion,
       stores: stores,
       releases: releases,
       customData: map,
