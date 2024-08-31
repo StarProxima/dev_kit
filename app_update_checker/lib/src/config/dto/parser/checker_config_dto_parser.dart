@@ -2,54 +2,45 @@
 
 import 'dart:ui';
 
+import '../../entity/release_type.dart';
 import '../../entity/version.dart';
+import '../exceptions/dto_parser_exception.dart';
 import '../models/checker_config_dto.dart';
-
-import '../models/dto_parser_exception.dart';
 import '../models/release_dto.dart';
+import '../models/release_settings_dto.dart';
 import '../models/store_dto.dart';
 
 part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
+part 'sub_parsers/release_settings_parser.dart';
 part 'sub_parsers/store_parser.dart';
 part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
 
 class CheckerConfigDTOParser {
-  final bool isDebug;
+  _StoreParser get _storeParser => const _StoreParser();
+  _ReleaseSettingsParser get _releaseSettingsParser =>
+      const _ReleaseSettingsParser();
+  _ReleaseParser get _releaseParser => const _ReleaseParser();
 
-  _DurationParser get _durationParser => _DurationParser(isDebug: isDebug);
-  _ReleaseParser get _releaseParser => _ReleaseParser(isDebug: isDebug);
-  _StoreParser get _storeParser => _StoreParser(isDebug: isDebug);
+  const CheckerConfigDTOParser();
 
-  // ignore: unused_element
-  _TextParser get _textParser => _TextParser(isDebug: isDebug);
-  _VersionParser get _versionParser => _VersionParser(isDebug: isDebug);
+  CheckerConfigDTO parseConfig(
+    Map<String, dynamic> map, {
+    required bool isDebug,
+  }) {
+    // releaseSettings
+    var releaseSettings = map.remove('release_settings');
 
-  const CheckerConfigDTOParser({required this.isDebug});
+    releaseSettings = _releaseSettingsParser.parse(
+      releaseSettings,
+      isDebug: isDebug,
+    );
 
-  CheckerConfigDTO parseConfig(Map<String, dynamic> map) {
-    final reminderPeriodInHours = map.remove('reminderPeriodInHours');
-    final releaseDelayInHours = map.remove('releaseDelayInHours');
-    var deprecatedBeforeVersion = map.remove('deprecatedBeforeVersion');
-    var requiredMinimumVersion = map.remove('requiredMinimumVersion');
+    releaseSettings as ReleaseSettingsDTO;
+
+    // stores
     var stores = map.remove('stores');
-    var releases = map.remove('releases');
-
-    final reminderPeriod = _durationParser.parse(hours: reminderPeriodInHours);
-    final releaseDelay = _durationParser.parse(hours: releaseDelayInHours);
-
-    deprecatedBeforeVersion = _versionParser.parse(
-      deprecatedBeforeVersion,
-      isStrict: false,
-    );
-    deprecatedBeforeVersion as Version?;
-
-    requiredMinimumVersion = _versionParser.parse(
-      requiredMinimumVersion,
-      isStrict: false,
-    );
-    requiredMinimumVersion as Version?;
 
     if (stores == null) throw const DtoParserException();
 
@@ -58,12 +49,15 @@ class CheckerConfigDTOParser {
       stores = null;
     } else {
       stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: false))
+          .map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug))
           .toList()
           .whereType<StoreDTO>();
     }
     stores as List<Object>;
     stores as List<StoreDTO>;
+
+    // releases
+    var releases = map.remove('releases');
 
     if (releases == null) throw const DtoParserException();
 
@@ -71,18 +65,17 @@ class CheckerConfigDTOParser {
       if (isDebug) throw const DtoParserException();
       releases = null;
     } else {
-      releases =
-          releases.map(_releaseParser.parse).toList().whereType<ReleaseDTO>();
+      releases = releases
+          .map((e) => _releaseParser.parse(e, isDebug: isDebug))
+          .toList()
+          .whereType<ReleaseDTO>();
     }
 
     releases as List<Object>;
     releases as List<ReleaseDTO>;
 
     return CheckerConfigDTO(
-      reminderPeriod: reminderPeriod,
-      releaseDelay: releaseDelay,
-      deprecatedBeforeVersion: deprecatedBeforeVersion,
-      requiredMinimumVersion: requiredMinimumVersion,
+      releaseSettings: releaseSettings,
       stores: stores,
       releases: releases,
       customData: map,

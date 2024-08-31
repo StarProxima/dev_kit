@@ -3,14 +3,13 @@
 part of '../checker_config_dto_parser.dart';
 
 class _VersionParser {
-  final bool isDebug;
-
-  const _VersionParser({required this.isDebug});
+  const _VersionParser();
 
   Version? parse(
     // ignore: avoid-dynamic
     dynamic version, {
     required bool isStrict,
+    required bool isDebug,
   }) {
     if (version is! String?) {
       if (isDebug) throw const DtoParserException();

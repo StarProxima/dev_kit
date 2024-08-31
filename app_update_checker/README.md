@@ -121,13 +121,13 @@ releases:
       - Added bugs
       - Fixed features
     # Optional, used to delay the release using releaseDelayHours. Time is optional.
-    pub_date_utc: '2024-08-24 15:35:00'
+    publish_date_utc: '2024-08-24 15:35:00'
     # Optional, will be override
     can_ignore_release: true
     # Optional, will be override
     reminder_period_hours: 48
     # Optional, will be override
-    required_minimum_version: 48
+    release_delay_hours: 48
     # Optional, all by default. Support custom stores
     stores:
         # Supports short syntax
