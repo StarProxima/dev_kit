@@ -1,17 +1,15 @@
 import 'release.dart';
+import 'release_settings.dart';
 import 'stores/store.dart';
-import 'version.dart';
 
 class CheckerConfig {
-  final Version? deprecatedBeforeVersion;
-  final Version? requiredMinimumVersion;
+  final ReleaseSettings releaseSettings;
   final List<Store> stores;
   final List<Release> releases;
   final Map<String, dynamic> customData;
 
   const CheckerConfig({
-    required this.deprecatedBeforeVersion,
-    required this.requiredMinimumVersion,
+    required this.releaseSettings,
     required this.stores,
     required this.releases,
     required this.customData,
