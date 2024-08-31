@@ -29,6 +29,7 @@ class _ReleaseSettingsParser {
 
     // canIgnoreRelease
     var canIgnoreRelease = map.remove('can_ignore_release');
+
     if (canIgnoreRelease is! bool?) {
       if (isDebug) throw const DtoParserException();
       canIgnoreRelease = null;
@@ -46,7 +47,6 @@ class _ReleaseSettingsParser {
 
     // deprecatedBeforeVersion
     var deprecatedBeforeVersion = map.remove('deprecated_before_version');
-
     deprecatedBeforeVersion = _versionParser.parse(
       deprecatedBeforeVersion,
       isStrict: false,
@@ -56,7 +56,6 @@ class _ReleaseSettingsParser {
 
     // requiredMinimumVersion
     var requiredMinimumVersion = map.remove('required_minimum_version');
-
     requiredMinimumVersion = _versionParser.parse(
       requiredMinimumVersion,
       isStrict: false,

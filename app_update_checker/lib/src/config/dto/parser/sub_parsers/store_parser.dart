@@ -10,9 +10,8 @@ class _StoreParser {
     required bool isStrict,
     required bool isDebug,
   }) {
+    // name
     var name = map.remove('name');
-    var url = map.remove('url');
-    var platforms = map.remove('platforms');
 
     if (name is! String?) {
       if (isDebug) throw const DtoParserException();
@@ -25,6 +24,9 @@ class _StoreParser {
       return null;
     }
 
+    // url
+    var url = map.remove('url');
+
     if (url is! String?) {
       if (isDebug) throw const DtoParserException();
       url = null;
@@ -33,6 +35,9 @@ class _StoreParser {
     if (isStrict && url == null) return null;
 
     url = url == null ? null : Uri.tryParse(url);
+
+    // platforms
+    var platforms = map.remove('platforms');
 
     if (platforms is! List<String>?) {
       if (isDebug) throw const DtoParserException();

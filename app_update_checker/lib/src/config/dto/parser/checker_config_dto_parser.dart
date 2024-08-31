@@ -2,6 +2,7 @@
 
 import 'dart:ui';
 
+import '../../entity/release_type.dart';
 import '../../entity/version.dart';
 import '../exceptions/dto_parser_exception.dart';
 import '../models/checker_config_dto.dart';
@@ -18,8 +19,8 @@ part 'sub_parsers/version_parser.dart';
 
 class CheckerConfigDTOParser {
   _StoreParser get _storeParser => const _StoreParser();
-  _DurationParser get _durationParser => const _DurationParser();
-  _VersionParser get _versionParser => const _VersionParser();
+  _ReleaseSettingsParser get _releaseSettingsParser =>
+      const _ReleaseSettingsParser();
   _ReleaseParser get _releaseParser => const _ReleaseParser();
 
   const CheckerConfigDTOParser();
@@ -28,8 +29,18 @@ class CheckerConfigDTOParser {
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
+    // releaseSettings
+    var releaseSettings = map.remove('release_settings');
+
+    releaseSettings = _releaseSettingsParser.parse(
+      releaseSettings,
+      isDebug: isDebug,
+    );
+
+    releaseSettings as ReleaseSettingsDTO;
+
+    // stores
     var stores = map.remove('stores');
-    var releases = map.remove('releases');
 
     if (stores == null) throw const DtoParserException();
 
@@ -44,6 +55,9 @@ class CheckerConfigDTOParser {
     }
     stores as List<Object>;
     stores as List<StoreDTO>;
+
+    // releases
+    var releases = map.remove('releases');
 
     if (releases == null) throw const DtoParserException();
 
@@ -61,6 +75,7 @@ class CheckerConfigDTOParser {
     releases as List<ReleaseDTO>;
 
     return CheckerConfigDTO(
+      releaseSettings: releaseSettings,
       stores: stores,
       releases: releases,
       customData: map,
