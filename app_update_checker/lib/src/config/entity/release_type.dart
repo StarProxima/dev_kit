@@ -19,4 +19,14 @@ enum ReleaseType {
         (e) => e?.name == str,
         orElse: () => null,
       );
+
+  bool get isActive => this == active;
+
+  bool get isInactive => this == inactive;
+
+  bool get isRequired => this == required;
+
+  bool get isDeprecated => this == deprecated;
+
+  bool get isBroken => this == broken;
 }
