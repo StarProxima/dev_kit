@@ -1,5 +1,5 @@
 import 'localized_text.dart';
-import 'release_type.dart';
+import 'release_status.dart';
 import 'stores/store.dart';
 import 'version.dart';
 
@@ -7,7 +7,7 @@ class Release {
   final Version version;
   final Version? refVersion;
   final int? buildNumber;
-  final ReleaseType type;
+  final ReleaseStatus status;
   final LocalizedText title;
   final LocalizedText description;
   final LocalizedText? releaseNote;
@@ -22,7 +22,7 @@ class Release {
     required this.version,
     required this.refVersion,
     required this.buildNumber,
-    required this.type,
+    required this.status,
     required this.title,
     required this.description,
     required this.releaseNote,

@@ -1,5 +1,5 @@
 import '../../entity/localized_text.dart';
-import '../../entity/release_type.dart';
+import '../../entity/release_status.dart';
 import '../../entity/version.dart';
 
 import 'store_dto.dart';
@@ -8,7 +8,7 @@ class ReleaseDTO {
   final Version version;
   final Version? refVersion;
   final int? buildNumber;
-  final ReleaseType? type;
+  final ReleaseStatus? status;
   final LocalizedText? title;
   final LocalizedText? description;
   final LocalizedText? releaseNote;
@@ -23,7 +23,7 @@ class ReleaseDTO {
     required this.version,
     required this.refVersion,
     required this.buildNumber,
-    required this.type,
+    required this.status,
     required this.title,
     required this.description,
     required this.releaseNote,

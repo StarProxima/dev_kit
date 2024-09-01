@@ -111,7 +111,7 @@ releases:
     # required - The release is required be installed by all users with older versions.
     # deprecated - The release is outdated and is strictly recommended to be updated.
     # broken - The release has critical bugs and requires an update.
-    type: active
+    status: active
     # You can also override the title and description here.
     # Optional, may not to be displayed.
     release_note: |-
@@ -174,7 +174,7 @@ releases:
     patches:
       - patch_number: 1 # Required
         # Optional, similar to release type
-        type: active
+        status: active
         # Optional, you can set the title, description and patchNote.
         title: New patch for $appVersion
         patch_note: Critical fix

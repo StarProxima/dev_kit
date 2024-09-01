@@ -2,7 +2,8 @@
 
 import 'dart:ui';
 
-import '../../entity/release_type.dart';
+import '../../entity/release_status.dart';
+import '../../entity/update_platform.dart';
 import '../../entity/version.dart';
 import '../exceptions/dto_parser_exception.dart';
 import '../models/checker_config_dto.dart';
