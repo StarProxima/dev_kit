@@ -13,14 +13,16 @@ part 'security_token_storage.g.dart';
 class UserChanged extends _$UserChanged {
   @override
   void build() {
-    ref.listen(securityTokenStorageProvider,
-        (asyncPrevToken, asyncCurrentToken) {
-      if (asyncPrevToken == null) return;
-      if (!asyncPrevToken.hasValue) return;
-      final prevUserId = asyncPrevToken.requireValue?.userId;
-      final currentUserId = asyncCurrentToken.requireValue?.userId;
-      if (prevUserId != currentUserId) ref.invalidateSelf();
-    });
+    ref.listen(
+      securityTokenStorageProvider,
+      (asyncPrevToken, asyncCurrentToken) {
+        if (asyncPrevToken == null) return;
+        if (!asyncPrevToken.hasValue) return;
+        final prevUserId = asyncPrevToken.requireValue?.userId;
+        final currentUserId = asyncCurrentToken.requireValue?.userId;
+        if (prevUserId != currentUserId) ref.invalidateSelf();
+      },
+    );
   }
 
   @override
@@ -28,16 +30,18 @@ class UserChanged extends _$UserChanged {
 }
 
 @Riverpod(keepAlive: true)
+// ignore: prefer-boolean-prefixes
 bool userAuthorized(UserAuthorizedRef ref) {
   try {
     final token = ref.watch(securityTokenStorageProvider);
+
     return token.requireValue != null;
   } catch (e) {
     return false;
   }
 }
 
-/// Отвечает за управление и хранение токенов авторизации пользователя
+/// Отвечает за управление и хранение токенов авторизации пользователя.
 @Riverpod(keepAlive: true)
 class SecurityTokenStorage extends _$SecurityTokenStorage
     implements IRef, TokenStorage<AuthToken> {
@@ -56,6 +60,7 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<AuthToken?> build() async {
     try {
       final token = await read();
+
       return token;
     } catch (_) {
       return null;
@@ -75,8 +80,9 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
 
   @override
   Future<AuthToken?> read() async {
-    var refreshToken = await _encryptedStorage.read(key: _refreshKey);
-    var accessToken = await _encryptedStorage.read(key: _accessKey);
+    String? refreshToken = await _encryptedStorage.read(key: _refreshKey);
+    String? accessToken = await _encryptedStorage.read(key: _accessKey);
+
     final userId = await _encryptedStorage.read(key: _userId);
 
     if (refreshToken == null || accessToken == null || userId == null) {
@@ -101,12 +107,14 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
     await _encryptedStorage.write(key: _refreshKey, value: token.refreshToken);
     await _encryptedStorage.write(key: _accessKey, value: token.accessToken);
     await _encryptedStorage.write(
-        key: _userId, value: token.userId?.toString());
+      key: _userId,
+      value: token.userId?.toString(),
+    );
 
     setData(
       AuthToken(
-        refreshToken: token.refreshToken,
         accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
         userId: token.userId,
       ),
     );
