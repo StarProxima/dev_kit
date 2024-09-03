@@ -98,7 +98,7 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
     return AuthToken(
       accessToken: accessToken,
       refreshToken: refreshToken,
-      userId: userId == null ? null : int.tryParse(userId),
+      userId: userId,
     );
   }
 
