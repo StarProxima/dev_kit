@@ -6,10 +6,10 @@ import '../model/auth_token.dart';
 class AuthTokenHandler extends Fresh<AuthToken> {
   factory AuthTokenHandler({
     required TokenStorage<AuthToken> tokenStorage,
-    required RefreshToken<AuthToken> refreshToken,
-    ShouldRefresh? shouldRefresh,
     Dio? httpClient,
     TokenHeaderBuilder<AuthToken>? tokenHeader,
+    ShouldRefresh? shouldRefresh,
+    required RefreshToken<AuthToken> refreshToken,
   }) {
     return AuthTokenHandler._(
       tokenHeader: tokenHeader ??
