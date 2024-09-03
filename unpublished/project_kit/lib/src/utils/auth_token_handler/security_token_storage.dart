@@ -4,8 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fresh_dio/fresh_dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../project_kit.dart';
+import '../interfaces.dart';
 import '../notifier_async_utils/notifier_async_utils.dart';
+import 'auth_token.dart';
 
 part 'security_token_storage.g.dart';
 
