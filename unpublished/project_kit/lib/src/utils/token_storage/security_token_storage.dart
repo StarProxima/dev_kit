@@ -82,10 +82,9 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<AuthToken?> read() async {
     String? refreshToken = await _encryptedStorage.read(key: _refreshKey);
     String? accessToken = await _encryptedStorage.read(key: _accessKey);
-
     final userId = await _encryptedStorage.read(key: _userId);
 
-    if (refreshToken == null || accessToken == null || userId == null) {
+    if (refreshToken == null || accessToken == null) {
       refreshToken = await _storage.read(key: _refreshKey);
       accessToken = await _storage.read(key: _accessKey);
       if (refreshToken == null || accessToken == null) {
