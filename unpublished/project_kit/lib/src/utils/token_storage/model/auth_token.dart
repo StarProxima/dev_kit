@@ -1,8 +1,10 @@
 import 'package:fresh_dio/fresh_dio.dart';
 
-/// Обертка над OAuth2Token, чтобы напрямую не зависить от Fresh
+/// Обертка над OAuth2Token, чтобы напрямую не зависить от Fresh.
 class AuthToken extends OAuth2Token {
-  AuthToken({
+  final int? userId;
+
+  const AuthToken({
     required super.accessToken,
     super.tokenType = 'bearer',
     super.expiresIn,
@@ -10,6 +12,4 @@ class AuthToken extends OAuth2Token {
     super.scope,
     this.userId,
   });
-
-  final int? userId;
 }
