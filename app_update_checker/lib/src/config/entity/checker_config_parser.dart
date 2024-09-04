@@ -1,7 +1,5 @@
 import '../dto/models/checker_config_dto.dart';
 import 'checker_config.dart';
-import 'release.dart';
-import 'stores/store.dart';
 
 class CheckerConfigParser {
   const CheckerConfigParser();
