@@ -443,10 +443,13 @@ dart_code_metrics:
         allowed-names:
           - e
 
+    - prefer-named-boolean-parameters:
+        ignore-single: true
+
     - prefer-boolean-prefixes:
         ignored-names:
           - enabled
-        prefixes: [check, request, validate, is, are, was, were, has, have, had, can, should, will, do, does, did]
+        prefixes: [value, check, request, validate, is, are, was, were, has, have, had, can, should, will, do, does, did]
 
     - no-equal-arguments:
         ignored-parameters:
