@@ -2,6 +2,26 @@ import '../config/entity/checker_config.dart';
 import '../config/entity/release.dart';
 import '../config/entity/version.dart';
 
+class UpdateNotFoundException implements Exception {
+  const UpdateNotFoundException();
+}
+
+class UpdateSkippedException implements Exception {
+  final UpdateData updateData;
+
+  const UpdateSkippedException({
+    required this.updateData,
+  });
+}
+
+class UpdatePostponedException implements Exception {
+  final UpdateData updateData;
+
+  const UpdatePostponedException({
+    required this.updateData,
+  });
+}
+
 class UpdateData {
   final String appName;
   final Version appVersion;

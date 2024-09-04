@@ -1,34 +1,34 @@
+// ignore_for_file: unused_field
+
 import 'dart:async';
 
-import '../config/dto/models/release_settings_dto.dart';
-import '../config/dto/models/store_dto.dart';
-import '../config/entity/stores/fetchers/store_fetcher.dart';
-import 'update_config_provider.dart';
+import '../config/entity/release.dart';
 import 'update_data.dart';
 
-typedef OnUpdate = FutureOr<void> Function(UpdateData data);
+typedef OnUpdateAvailable = FutureOr<void> Function(UpdateData update);
 
 abstract class UpdateContollerBase {
-  // ignore: prefer-boolean-prefixes
-  final bool autoFetch;
-  final UpdateConfigProvider? updateConfigProvider;
-  final StoreFetcherCoordinator? storeFetcherCoordinator;
-  final ReleaseSettingsDTO? releaseSettings;
-  final List<StoreDTO>? stores;
-  final OnUpdate? onUpdate;
+  Stream<UpdateData?> get availableUpdateStream;
 
-  Stream<UpdateData> get updateStream;
-
-  UpdateContollerBase({
-    this.updateConfigProvider,
-    this.autoFetch = true,
-    this.storeFetcherCoordinator,
-    this.releaseSettings,
-    this.stores,
-    this.onUpdate,
-  }) {
-    if (autoFetch) fetch();
-  }
-
+  /// Check releases from the config and stores.
   Future<void> fetch();
+
+  /// Finds an update
+  ///
+  /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
+  Future<UpdateData> findUpdate();
+
+  /// Finds an update
+  ///
+  /// If update not available return null.
+  Future<UpdateData?> findAvailableUpdate();
+
+  /// Skip a release, a release with this version will no longer be displayed.
+  Future<void> skipRelease(Release release);
+
+  /// Postpone the release, it will display later after a set amount of time.
+  Future<void> postponeRelease(Release release);
+
+  /// Launches a link to the correct store to update the app.
+  Future<void> launchReleaseStore(Release release);
 }

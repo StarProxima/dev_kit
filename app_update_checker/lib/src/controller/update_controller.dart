@@ -1,13 +1,19 @@
+// ignore_for_file: unused_field
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../config/dto/models/release_settings_dto.dart';
+import '../config/dto/models/store_dto.dart';
 import '../config/dto/parser/checker_config_dto_parser.dart';
 import '../config/entity/checker_config.dart';
 import '../config/entity/checker_config_parser.dart';
 import '../config/entity/release.dart';
+import '../config/entity/stores/fetchers/store_fetcher.dart';
 import '../config/entity/version.dart';
+import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 import 'update_data.dart';
 
@@ -20,23 +26,29 @@ class UpdateController extends UpdateContollerBase {
 
   Completer<CheckerConfig>? _configDataCompleter;
 
+  final UpdateConfigProvider? _updateConfigProvider;
+  final StoreFetcherCoordinator? _storeFetcherCoordinator;
+  final ReleaseSettingsDTO? _releaseSettings;
+  final List<StoreDTO>? _stores;
+
   @override
-  Stream<UpdateData> get updateStream => throw UnimplementedError();
+  Stream<UpdateData> get availableUpdateStream => throw UnimplementedError();
 
   UpdateController({
-    required super.updateConfigProvider,
-    super.autoFetch,
-    super.storeFetcherCoordinator,
-    super.releaseSettings,
-    super.stores,
-    super.onUpdate,
-  });
+    UpdateConfigProvider? updateConfigProvider,
+    StoreFetcherCoordinator? storeFetcherCoordinator,
+    ReleaseSettingsDTO? releaseSettings,
+    List<StoreDTO>? stores,
+  })  : _updateConfigProvider = updateConfigProvider,
+        _storeFetcherCoordinator = storeFetcherCoordinator,
+        _releaseSettings = releaseSettings,
+        _stores = stores;
 
   @override
   Future<void> fetch() async {
     _configDataCompleter = Completer();
 
-    final provider = updateConfigProvider;
+    final provider = _updateConfigProvider;
     if (provider == null) return;
 
     final rawConfig = await provider.fetch();
@@ -49,27 +61,21 @@ class UpdateController extends UpdateContollerBase {
 
     _configDataCompleter?.complete(configData);
 
-    final updateData = await _buildUpdateData();
+    // final updateData = await findAvailableUpdate();
 
-    if (updateData == null) return;
-
-    onUpdate?.call(updateData);
+    // if (updateData == null) return;
 
     throw UnimplementedError();
   }
 
-  Future<Release?> findLatestRelease() async {
-    // ignore: unused_local_variable, avoid-non-null-assertion
-    final configData = await _configDataCompleter!.future;
-    // ignore: unused_local_variable
-    final packageInfo = await _asyncPackageInfo;
-
-    // TODO: implement it
-    return configData.releases.lastOrNull;
+  @override
+  Future<UpdateData> findUpdate() {
+    throw UnimplementedError();
   }
 
-  Future<UpdateData?> _buildUpdateData() async {
-    final latestRelease = await findLatestRelease();
+  @override
+  Future<UpdateData?> findAvailableUpdate() async {
+    final latestRelease = await _findLatestRelease();
 
     if (latestRelease == null) return null;
 
@@ -95,5 +101,33 @@ class UpdateController extends UpdateContollerBase {
     );
 
     return updateData;
+  }
+
+  @override
+  Future<void> launchReleaseStore(Release release) {
+    // TODO: implement launchStore
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> postponeRelease(Release release) {
+    // TODO: implement postponeRelease
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> skipRelease(Release release) {
+    // TODO: implement skipRelease
+    throw UnimplementedError();
+  }
+
+  Future<Release?> _findLatestRelease() async {
+    // ignore: unused_local_variable, avoid-non-null-assertion
+    final configData = await _configDataCompleter!.future;
+    // ignore: unused_local_variable
+    final packageInfo = await _asyncPackageInfo;
+
+    // TODO: implement it
+    return configData.releases.lastOrNull;
   }
 }
