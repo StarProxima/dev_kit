@@ -1,11 +1,11 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_async_builder/riverpod_async_builder.dart';
 import 'package:riverpod_async_builder/riverpod_utils.dart';
-import 'package:riverpod_async_builder/src/key.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -40,6 +40,35 @@ class AsyncBuilder<T> extends StatelessWidget {
     this.orElse,
     required this.data,
   }) : shouldWrapInSliverAdapter = true;
+
+  static Widget keyed<T>(
+    AsyncValue<T> value, {
+    required BuildContext context,
+    bool shouldWrapInSliverAdapter = false,
+    bool skipLoadingOnReload = false,
+    bool skipLoadingOnRefresh = true,
+    bool skipError = false,
+    OnRetry? onRetry,
+    Widget Function()? loading,
+    Widget Function(AsyncBuilderError e)? error,
+    Widget Function()? orElse,
+    required Widget Function(T data) data,
+  }) {
+    final asyncBuilder = AsyncBuilder(
+      value,
+      skipLoadingOnReload: skipLoadingOnReload,
+      skipLoadingOnRefresh: skipLoadingOnRefresh,
+      skipError: skipError,
+      onRetry: onRetry,
+      loading: loading,
+      error: error,
+      orElse: orElse,
+      data: data,
+    );
+
+    // Возращаем результат build, а не сам виджет, чтобы сохранить переданные ключи
+    return asyncBuilder.build(context);
+  }
 
   final AsyncValue<T> value;
   final bool shouldWrapInSliverAdapter;
@@ -348,11 +377,6 @@ class AsyncBuilder<T> extends StatelessWidget {
             loading: loadingBuilder,
             data: data,
           );
-
-    final key = super.key;
-    if (key is AutoVariableKey) {
-      key.key = widget.key;
-    }
 
     return widget;
   }
