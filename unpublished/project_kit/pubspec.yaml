@@ -10,8 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  riverpod_async_builder: ^0.0.2
-    
+  riverpod_async_builder:
+    path: ../../riverpod_async_builder
+
   collection: ^1.18.0
   flutter_hooks: ^0.20.5
   hooks_riverpod: ^2.4.10
