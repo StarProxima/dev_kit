@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_async_builder/riverpod_async_builder.dart';
 import 'package:riverpod_async_builder/riverpod_utils.dart';
+import 'package:riverpod_async_builder/src/key.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -324,7 +325,7 @@ class AsyncBuilder<T> extends StatelessWidget {
           : child;
     }
 
-    return orElse != null
+    final widget = orElse != null
         ? value.maybeWhen(
             skipLoadingOnReload: skipLoadingOnReload,
             skipLoadingOnRefresh: skipLoadingOnRefresh,
@@ -347,6 +348,13 @@ class AsyncBuilder<T> extends StatelessWidget {
             loading: loadingBuilder,
             data: data,
           );
+
+    final key = super.key;
+    if (key is AutoVariableKey) {
+      key.key = widget.key;
+    }
+
+    return widget;
   }
 
   static final _groupGlobalKeys = <int, GlobalKey>{};
