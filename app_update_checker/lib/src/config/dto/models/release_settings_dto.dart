@@ -1,4 +1,4 @@
-import '../../entity/locale_textl.dart';
+import '../../entity/localized_text.dart';
 import '../../entity/version.dart';
 
 class ReleaseSettingsDTO {

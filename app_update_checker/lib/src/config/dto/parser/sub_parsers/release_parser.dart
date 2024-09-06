@@ -45,11 +45,11 @@ class _ReleaseParser {
       buildNumber = null;
     }
 
-    // type
-    var type = map.remove('type');
+    // status
+    var status = map.remove('status');
 
-    type = ReleaseType.parse(type);
-    type as ReleaseType?;
+    status = ReleaseStatus.parse(status);
+    status as ReleaseStatus?;
 
     // releaseSettings
     final releaseSettings = _releaseSettingsParser.parse(map, isDebug: isDebug);
@@ -91,7 +91,7 @@ class _ReleaseParser {
       version: version,
       refVersion: refVersion,
       buildNumber: buildNumber,
-      type: type,
+      status: status,
       title: releaseSettings.title,
       description: releaseSettings.description,
       releaseNote: releaseNote,

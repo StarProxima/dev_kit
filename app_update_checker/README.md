@@ -1,6 +1,6 @@
-# App Update Checker
+# Update Check
 
-![Package Thumbnail](https://github.com/user-attachments/assets/bae1226a-0680-41bf-a4e8-5f08ae483122)
+![Package Thumbnail](https://github.com/user-attachments/assets/c6407043-0941-4ed3-aae4-a4323702eb29)
 
 <p align="center">
 <a href="https://pub.dev/packages/app_update_checker"><img alt="Pub Version" src="https://img.shields.io/pub/v/app_update_checker"></a>
@@ -50,7 +50,7 @@ We want to support both methods, but for now we're focusing on the second method
 Here is the full config api structure under consideration:
 ```yaml
 # Description of the api structure
-# https://pub.dev/packages/app_update_checker
+# https://pub.dev/packages/update_check
 
 # Default settings for releases
 release_settings:
@@ -111,7 +111,7 @@ releases:
     # required - The release is required be installed by all users with older versions.
     # deprecated - The release is outdated and is strictly recommended to be updated.
     # broken - The release has critical bugs and requires an update.
-    type: active
+    status: active
     # You can also override the title and description here.
     # Optional, may not to be displayed.
     release_note: |-
@@ -174,7 +174,7 @@ releases:
     patches:
       - patch_number: 1 # Required
         # Optional, similar to release type
-        type: active
+        status: active
         # Optional, you can set the title, description and patchNote.
         title: New patch for $appVersion
         patch_note: Critical fix
