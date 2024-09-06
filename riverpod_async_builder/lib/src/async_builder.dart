@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
@@ -27,7 +28,7 @@ class AsyncBuilder<T> extends StatelessWidget {
   }) : shouldWrapInSliverAdapter = false;
 
   /// Обёртывает [error], [loading] и [orElse] в [SliverToBoxAdapter]
-  const AsyncBuilder.sliver(
+  const AsyncBuilder.sliverAdapter(
     this.value, {
     super.key,
     this.skipLoadingOnReload = false,
@@ -39,6 +40,36 @@ class AsyncBuilder<T> extends StatelessWidget {
     this.orElse,
     required this.data,
   }) : shouldWrapInSliverAdapter = true;
+
+  /// Возвращает виджеты напрямую, сохраняя их ключи
+  static Widget keyed<T>(
+    AsyncValue<T> value, {
+    required BuildContext context,
+    bool shouldWrapInSliverAdapter = false,
+    bool skipLoadingOnReload = false,
+    bool skipLoadingOnRefresh = true,
+    bool skipError = false,
+    OnRetry? onRetry,
+    Widget Function()? loading,
+    Widget Function(AsyncBuilderError e)? error,
+    Widget Function()? orElse,
+    required Widget Function(T data) data,
+  }) {
+    final asyncBuilder = AsyncBuilder(
+      value,
+      skipLoadingOnReload: skipLoadingOnReload,
+      skipLoadingOnRefresh: skipLoadingOnRefresh,
+      skipError: skipError,
+      onRetry: onRetry,
+      loading: loading,
+      error: error,
+      orElse: orElse,
+      data: data,
+    );
+
+    // Возращаем результат build, а не сам виджет, чтобы сохранить переданные ключи
+    return asyncBuilder.build(context);
+  }
 
   final AsyncValue<T> value;
   final bool shouldWrapInSliverAdapter;
@@ -53,6 +84,7 @@ class AsyncBuilder<T> extends StatelessWidget {
   final Widget Function()? orElse;
   final Widget Function(T data) data;
 
+  /// Анимирует элементы списка с разной задержкой
   static Widget? animatedItem<Item>(
     Iterable<Item> items, {
     required BuildContext context,
@@ -324,7 +356,7 @@ class AsyncBuilder<T> extends StatelessWidget {
           : child;
     }
 
-    return orElse != null
+    final widget = orElse != null
         ? value.maybeWhen(
             skipLoadingOnReload: skipLoadingOnReload,
             skipLoadingOnRefresh: skipLoadingOnRefresh,
@@ -347,6 +379,8 @@ class AsyncBuilder<T> extends StatelessWidget {
             loading: loadingBuilder,
             data: data,
           );
+
+    return widget;
   }
 
   static final _groupGlobalKeys = <int, GlobalKey>{};
