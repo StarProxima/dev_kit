@@ -10,12 +10,18 @@ analyzer:
 linter:
   rules:
 
+    # DCM conflicts
+
     # Конфликты с member-ordering
     sort_constructors_first: false
     # Конфликты с dcm
     require_trailing_commas: false
     # Конфликт с prefer-type-over-var
     omit_local_variable_types: false
+    # Конфликт с prefer-named-boolean-parameters 
+    avoid_positional_boolean_parameters: false
+    
+    # ---
 
     # False positive for custom enum-like classes (such as Flutter's "Colors")
     avoid_classes_with_only_static_members: false
@@ -130,7 +136,6 @@ linter:
     avoid_js_rounded_ints: true
     avoid_multiple_declarations_per_line: true
     avoid_null_checks_in_equality_operators: true
-    avoid_positional_boolean_parameters: true
     avoid_print: true
     avoid_private_typedef_functions: true
     avoid_redundant_argument_values: true
