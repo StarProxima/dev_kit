@@ -1,6 +1,6 @@
 name: riverpod_async_builder
 description: Async data handling with default loading and errors builders, built-in pagination and grouping
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/StarProxima/dev_kit/tree/develop/riverpod_async_builder
 homepage: https://github.com/StarProxima/dev_kit
 screenshots:
@@ -26,4 +26,3 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 
-flutter:
