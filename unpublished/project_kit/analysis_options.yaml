@@ -1,5 +1,1 @@
 include: package:project_kit/analysis_options.yaml
-
-analyzer:
-  plugins:
-    - custom_lint
