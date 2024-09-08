@@ -1,12 +1,12 @@
 import '../../models/update_platform.dart';
 
-class StoreDTO {
+class StoreConfig {
   final String name;
   final Uri? url;
   final List<UpdatePlatform>? platforms;
   final Map<String, dynamic> customData;
 
-  const StoreDTO({
+  const StoreConfig({
     required this.name,
     required this.url,
     required this.platforms,

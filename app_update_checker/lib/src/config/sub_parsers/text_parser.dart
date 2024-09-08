@@ -16,7 +16,7 @@ class _TextParser {
         return {const Locale('en'): text};
       }
 
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       text = null;
     } else if (text != null) {
       text = Map<Locale, String>.fromEntries(

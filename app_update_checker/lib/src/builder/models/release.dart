@@ -1,5 +1,5 @@
+import '../../stores/store.dart';
 import '../../models/release_status.dart';
-import '../../data/stores/store.dart';
 import '../../models/version.dart';
 
 class Release {

@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../models/localized_text.dart';
-import '../data/models/release.dart' as data;
+import '../data/models/release_data.dart' as data;
 import '../models/version.dart';
 import 'models/release.dart';
 
@@ -18,7 +18,7 @@ class UpdateBuilder {
     required this.packageInfo,
   });
 
-  Release fromReleaseData(data.Release releaseData) {
+  Release fromReleaseData(data.ReleaseData releaseData) {
     String interpolation(String text) => text
         .replaceAll(r'$appName', packageInfo.appName)
         .replaceAll(r'$appVersion', Version.parse(packageInfo.version).toString())

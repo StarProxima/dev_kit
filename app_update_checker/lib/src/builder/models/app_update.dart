@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../../data/models/checker_config.dart';
+import '../../data/models/update_config_data.dart';
 import '../../models/version.dart';
 
 import 'release.dart';
@@ -9,7 +9,7 @@ class AppUpdate {
   final String appName;
   final Version appVersion;
   final Locale appLocale;
-  final CheckerConfig config;
+  final UpdateConfigData config;
   final Release availableRelease;
 
   const AppUpdate({

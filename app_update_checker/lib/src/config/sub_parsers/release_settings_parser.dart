@@ -9,7 +9,7 @@ class _ReleaseSettingsParser {
 
   const _ReleaseSettingsParser();
 
-  ReleaseSettingsDTO parse(
+  ReleaseSettingsConfig parse(
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
@@ -31,7 +31,7 @@ class _ReleaseSettingsParser {
     var canIgnoreRelease = map.remove('can_ignore_release');
 
     if (canIgnoreRelease is! bool?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       canIgnoreRelease = null;
     }
 
@@ -61,7 +61,7 @@ class _ReleaseSettingsParser {
     );
     requiredMinimumVersion as Version?;
 
-    return ReleaseSettingsDTO(
+    return ReleaseSettingsConfig(
       title: title,
       description: description,
       canIgnoreRelease: canIgnoreRelease,

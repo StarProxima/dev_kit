@@ -12,11 +12,11 @@ class _VersionParser {
     required bool isDebug,
   }) {
     if (version is! String?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       version = null;
     }
     if (version == null) {
-      if (isStrict) throw const DtoParserException();
+      if (isStrict) throw const UpdateConfigException();
 
       return null;
     }

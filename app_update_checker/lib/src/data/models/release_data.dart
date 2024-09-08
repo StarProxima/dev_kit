@@ -1,9 +1,9 @@
 import '../../models/localized_text.dart';
 import '../../models/release_status.dart';
-import '../stores/store.dart';
 import '../../models/version.dart';
+import '../../stores/store.dart';
 
-class Release {
+class ReleaseData {
   final Version version;
   final Version? refVersion;
   final int? buildNumber;
@@ -18,7 +18,7 @@ class Release {
   final List<Store> stores;
   final Map<String, dynamic> customData;
 
-  const Release({
+  const ReleaseData({
     required this.version,
     required this.refVersion,
     required this.buildNumber,

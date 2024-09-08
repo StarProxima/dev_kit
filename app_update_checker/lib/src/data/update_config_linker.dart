@@ -1,19 +1,19 @@
 // ignore_for_file: avoid-recursive-calls
 
-import '../config/models/checker_config_dto.dart';
-import '../config/models/release_dto.dart';
-import '../config/models/store_dto.dart';
-import 'models/checker_config.dart';
-import 'models/release.dart';
-import 'models/release_settings.dart';
+import '../config/models/release_config.dart';
+import '../config/models/store_config.dart';
+import '../config/models/update_config.dart';
 import '../models/release_status.dart';
-import 'stores/store.dart';
 import '../models/version.dart';
+import '../stores/store.dart';
+import 'models/release_data.dart';
+import 'models/release_settings.dart';
+import 'models/update_config_data.dart';
 
-class CheckerConfigLinker {
-  const CheckerConfigLinker();
+class UpdateConfigLinker {
+  const UpdateConfigLinker();
 
-  CheckerConfig parseFromDTO(CheckerConfigDTO checkerConfigDTO) {
+  UpdateConfigData parseFromDTO(UpdateConfig checkerConfigDTO) {
     final releaseSettings = ReleaseSettings.fromDTO(checkerConfigDTO.releaseSettings);
 
     final stores = _parseStore(checkerConfigDTO.stores);
@@ -26,7 +26,7 @@ class CheckerConfigLinker {
 
     final customData = checkerConfigDTO.customData;
 
-    return CheckerConfig(
+    return UpdateConfigData(
       releaseSettings: releaseSettings,
       stores: stores,
       releases: releases,
@@ -34,7 +34,7 @@ class CheckerConfigLinker {
     );
   }
 
-  List<Store> _parseStore(List<StoreDTO> storesDTO) {
+  List<Store> _parseStore(List<StoreConfig> storesDTO) {
     final stores = <Store>[];
     for (final storeDTO in storesDTO) {
       final name = storeDTO.name;
@@ -57,18 +57,18 @@ class CheckerConfigLinker {
     return stores;
   }
 
-  List<Release> _parseReleases({
+  List<ReleaseData> _parseReleases({
     required List<Store> stores,
-    required CheckerConfigDTO checkerConfigDTO,
+    required UpdateConfig checkerConfigDTO,
     required ReleaseSettings releaseSettings,
   }) {
-    final releases = <Release>[];
+    final releases = <ReleaseData>[];
 
     final releaseByVersion = {
       for (final release in checkerConfigDTO.releases) release.version: release,
     };
-    final releaseStraightRef = <Version, ReleaseDTO>{};
-    ReleaseDTO mergedReleaseRefDFS(ReleaseDTO node) {
+    final releaseStraightRef = <Version, ReleaseConfig>{};
+    ReleaseConfig mergedReleaseRefDFS(ReleaseConfig node) {
       if (releaseStraightRef[node.version] != null) {
         return releaseStraightRef[node.version]!;
       }
@@ -87,7 +87,7 @@ class CheckerConfigLinker {
       return inheritedRelease;
     }
 
-    for (ReleaseDTO releaseDTO in checkerConfigDTO.releases) {
+    for (ReleaseConfig releaseDTO in checkerConfigDTO.releases) {
       final refVersion = releaseDTO.refVersion;
       if (refVersion != null) {
         releaseDTO = mergedReleaseRefDFS(releaseDTO);
@@ -130,7 +130,7 @@ class CheckerConfigLinker {
         }
       }
 
-      releases.add(Release(
+      releases.add(ReleaseData(
         version: version,
         refVersion: refVersion,
         buildNumber: buildNumber,
