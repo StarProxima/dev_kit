@@ -24,6 +24,8 @@ class UpdatePlatform {
         kIsWeb ? web.platform : Platform.operatingSystem,
       );
 
+  factory UpdatePlatform.custom(String platform) => UpdatePlatform(platform);
+
   // ignore: member-ordering
   @override
   int get hashCode => platform.hashCode;

@@ -390,6 +390,9 @@ dart_code_metrics:
     # Конфликты с prefer-trailing-comma
     - unnecessary-trailing-comma: false
 
+    # Конфликт c avoid_redundant_argument_values
+    - avoid-passing-default-values: false
+
     # Без файлов экспорта из-за большого кол-ва кастомных сущностей тяжело
     - avoid-barrel-files: false
 

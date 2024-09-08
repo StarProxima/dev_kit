@@ -4,25 +4,45 @@ import 'package:flutter/material.dart';
 
 import '../builder/models/app_update.dart';
 import '../controller/update_controller.dart';
+import 'update_alert_type.dart';
 
 // ignore: prefer-named-parameters
 typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update, UpdateController controller);
+
+// Отдельные виджеты, принимающие AppUpdate и UpdateController?
+// enum UpdateAlertType {
+//   adaptiveDialog,
+//   // materialDialog,
+//   // cupertinoDialog,
+//   // bottomModalSheet,
+//   // screen,
+//   // snackbar,
+// }
 
 class UpdateAlert extends StatefulWidget {
   const UpdateAlert({
     super.key,
     this.enabled = true,
-    this.shouldCheckUpdateAfterAppResume = true,
     this.controller,
+    UpdateAlertType this.type = const UpdateAlertType.adaptiveDialog(),
+    this.shouldCheckUpdateAfterAppResume = true,
+    required this.child,
+  }) : onUpdateAvailable = null;
+
+  const UpdateAlert.custom({
+    super.key,
+    this.enabled = true,
+    this.controller,
+    this.shouldCheckUpdateAfterAppResume = true,
     this.onUpdateAvailable,
     required this.child,
-  });
+  }) : type = null;
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
   final UpdateController? controller;
   final OnUpdateAvailable? onUpdateAvailable;
-
+  final UpdateAlertType? type;
   final Widget child;
 
   @override

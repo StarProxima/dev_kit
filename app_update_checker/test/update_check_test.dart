@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:update_check/src/builder/models/release.dart';
 import 'package:update_check/src/controller/update_controller.dart';
 import 'package:update_check/src/widgets/update_alert.dart';
 
@@ -10,7 +9,7 @@ void main() async {
 
   // ignore: unused_local_variable
   final widget = Scaffold(
-    body: UpdateAlert(
+    body: UpdateAlert.custom(
       controller: controller,
       onUpdateAvailable: (update, controller) {
         // ignore: avoid-unsafe-collection-methods
@@ -36,6 +35,16 @@ void main() async {
         // Update
         controller.launchReleaseStore(release);
       },
+      child: const SizedBox(),
+    ),
+  );
+
+  // ignore: unused_local_variable, avoid-similar-names
+  final widget2 = Scaffold(
+    body: UpdateAlert(
+      controller: controller,
+      // ignore: avoid_redundant_argument_values
+      type: UpdateAlertType.adaptiveDialog,
       child: const SizedBox(),
     ),
   );
