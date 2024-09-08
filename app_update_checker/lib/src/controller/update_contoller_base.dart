@@ -5,10 +5,10 @@ import 'dart:async';
 import '../config/entity/release.dart';
 import 'update_data.dart';
 
-typedef OnUpdateAvailable = FutureOr<void> Function(UpdateData update);
+typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update);
 
 abstract class UpdateContollerBase {
-  Stream<UpdateData?> get availableUpdateStream;
+  Stream<AppUpdate?> get availableUpdateStream;
 
   /// Check releases from the config and stores.
   Future<void> fetch();
@@ -16,12 +16,12 @@ abstract class UpdateContollerBase {
   /// Finds an update
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
-  Future<UpdateData> findUpdate();
+  Future<AppUpdate> findUpdate();
 
   /// Finds an update
   ///
   /// If update not available return null.
-  Future<UpdateData?> findAvailableUpdate();
+  Future<AppUpdate?> findAvailableUpdate();
 
   /// Skip a release, a release with this version will no longer be displayed.
   Future<void> skipRelease(Release release);

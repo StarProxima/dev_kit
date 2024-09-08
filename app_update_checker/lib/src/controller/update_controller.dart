@@ -32,7 +32,7 @@ class UpdateController extends UpdateContollerBase {
   final List<StoreDTO>? _stores;
 
   @override
-  Stream<UpdateData> get availableUpdateStream => throw UnimplementedError();
+  Stream<AppUpdate> get availableUpdateStream => throw UnimplementedError();
 
   UpdateController({
     UpdateConfigProvider? updateConfigProvider,
@@ -69,12 +69,12 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<UpdateData> findUpdate() {
+  Future<AppUpdate> findUpdate() {
     throw UnimplementedError();
   }
 
   @override
-  Future<UpdateData?> findAvailableUpdate() async {
+  Future<AppUpdate?> findAvailableUpdate() async {
     final latestRelease = await _findLatestRelease();
 
     if (latestRelease == null) return null;
@@ -86,18 +86,11 @@ class UpdateController extends UpdateContollerBase {
     final appName = packageInfo.appName;
     final appVersion = Version.parse(packageInfo.version);
 
-    final deprecatedBeforeVersion =
-        configData.releaseSettings.deprecatedBeforeVersion;
-    // ignore: prefer-boolean-prefixes
-    final appVersonIsDeprecated =
-        deprecatedBeforeVersion != null && appVersion < deprecatedBeforeVersion;
-
-    final updateData = UpdateData(
+    final updateData = AppUpdate(
       appName: appName,
       appVersion: appVersion,
-      appVersonIsDeprecated: appVersonIsDeprecated,
       config: configData,
-      release: latestRelease,
+      availableRelease: latestRelease,
     );
 
     return updateData;

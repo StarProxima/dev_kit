@@ -1,3 +1,16 @@
 {
-    "dart.flutterSdkPath": "C:\\Git\\dev_kit_github\\.fvm\\versions\\3.22.2"
+    "dart.flutterSdkPath": "C:\\Git\\dev_kit_github\\.fvm\\versions\\3.22.2",
+    "search.exclude": {
+        "**/.fvm": true
+    },
+    "files.watcherExclude": {
+        "**/.fvm": true
+    },
+    "dart.lineLength": 120,
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+            120
+        ]
+    }
 }

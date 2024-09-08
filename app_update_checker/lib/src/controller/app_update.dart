@@ -7,34 +7,31 @@ class UpdateNotFoundException implements Exception {
 }
 
 class UpdateSkippedException implements Exception {
-  final UpdateData updateData;
+  final AppUpdate update;
 
   const UpdateSkippedException({
-    required this.updateData,
+    required this.update,
   });
 }
 
 class UpdatePostponedException implements Exception {
-  final UpdateData updateData;
+  final AppUpdate update;
 
   const UpdatePostponedException({
-    required this.updateData,
+    required this.update,
   });
 }
 
-class UpdateData {
+class AppUpdate {
   final String appName;
   final Version appVersion;
-  // ignore: prefer-boolean-prefixes
-  final bool appVersonIsDeprecated;
   final CheckerConfig config;
-  final Release release;
+  final Release availableRelease;
 
-  const UpdateData({
+  const AppUpdate({
     required this.appName,
     required this.appVersion,
-    required this.appVersonIsDeprecated,
     required this.config,
-    required this.release,
+    required this.availableRelease,
   });
 }
