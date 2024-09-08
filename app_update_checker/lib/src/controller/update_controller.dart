@@ -15,7 +15,7 @@ import '../config/entity/stores/fetchers/store_fetcher.dart';
 import '../config/entity/version.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
-import 'update_data.dart';
+import '../builder/models/app_update.dart';
 
 class UpdateController extends UpdateContollerBase {
   final _parser = const CheckerConfigDTOParser();

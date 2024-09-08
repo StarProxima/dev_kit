@@ -55,8 +55,7 @@ class CheckerConfigParser {
       final description = releaseDTO.description;
       final releaseNote = releaseDTO.releaseNote;
       final releaseDelay = releaseDTO.releaseDelay ?? Duration.zero;
-      final reminderPeriod =
-          releaseDTO.reminderPeriod ?? const Duration(days: 7);
+      final reminderPeriod = releaseDTO.reminderPeriod ?? const Duration(days: 7);
 
       final releaseStores = <Store>[];
       // TODO: Все сторы по умолчанию?

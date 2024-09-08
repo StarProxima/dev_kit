@@ -1,9 +1,10 @@
-import 'localized_text.dart';
+import 'dart:ui';
+
 import 'version.dart';
 
 class ReleaseSettings {
-  final LocalizedText title;
-  final LocalizedText description;
+  final Map<Locale, String> title;
+  final Map<Locale, String> description;
   final bool canIgnoreRelease;
   final Duration reminderPeriod;
   final Duration releaseDelay;
