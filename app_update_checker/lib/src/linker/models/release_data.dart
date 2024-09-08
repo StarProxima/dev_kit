@@ -16,7 +16,7 @@ class ReleaseData {
   final Duration reminderPeriod;
   final Duration releaseDelay;
   final List<Store> stores;
-  final Map<String, dynamic> customData;
+  final Map<String, dynamic>? customData;
 
   const ReleaseData({
     required this.version,

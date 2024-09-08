@@ -16,7 +16,7 @@ class ReleaseConfig {
   final Duration? reminderPeriod;
   final Duration? releaseDelay;
   final List<StoreConfig>? stores;
-  final Map<String, dynamic> customData;
+  final Map<String, dynamic>? customData;
 
   const ReleaseConfig({
     required this.version,
@@ -48,7 +48,7 @@ class ReleaseConfig {
       reminderPeriod: reminderPeriod ?? parent.reminderPeriod,
       releaseDelay: releaseDelay ?? parent.releaseDelay,
       stores: stores ?? parent.stores,
-      customData: customData.isNotEmpty ? customData : parent.customData,
+      customData: customData ?? parent.customData,
     );
   }
 }

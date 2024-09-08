@@ -47,10 +47,11 @@ class UpdateConfigLinker {
           "Can't parse store with parameters: $name, $url, $platforms",
         );
       }
-      stores.add(Store.fromConfig(
+      stores.add(Store(
         name: name,
         url: url,
         platforms: platforms,
+        customData: storeDTO.customData,
       ));
     }
 
@@ -122,10 +123,11 @@ class UpdateConfigLinker {
           final storeUrl = url ?? globalStore?.url;
           if (storeUrl == null) continue;
 
-          releaseStores.add(Store.fromConfig(
+          releaseStores.add(Store(
             name: name,
             url: storeUrl,
             platforms: platforms ?? globalStore?.platforms,
+            customData: releaseStoreDTO.customData ?? globalStore?.customData,
           ));
         }
       }

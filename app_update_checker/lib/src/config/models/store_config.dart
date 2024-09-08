@@ -4,7 +4,7 @@ class StoreConfig {
   final String name;
   final Uri? url;
   final List<UpdatePlatform>? platforms;
-  final Map<String, dynamic> customData;
+  final Map<String, dynamic>? customData;
 
   const StoreConfig({
     required this.name,

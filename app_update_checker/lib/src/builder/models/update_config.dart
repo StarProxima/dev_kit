@@ -6,7 +6,7 @@ class UpdateConfig {
   final ReleaseSettings releaseSettings;
   final List<Store> stores;
   final List<Release> releases;
-  final Map<String, dynamic> customData;
+  final Map<String, dynamic>? customData;
 
   const UpdateConfig({
     required this.releaseSettings,

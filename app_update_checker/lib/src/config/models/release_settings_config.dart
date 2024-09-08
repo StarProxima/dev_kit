@@ -9,7 +9,7 @@ class ReleaseSettingsConfig {
   final Duration? releaseDelay;
   final Version? deprecatedBeforeVersion;
   final Version? requiredMinimumVersion;
-  final Map<String, dynamic> customData;
+  final Map<String, dynamic>? customData;
 
   const ReleaseSettingsConfig({
     required this.title,
