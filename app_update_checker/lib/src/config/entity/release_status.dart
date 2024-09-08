@@ -1,12 +1,15 @@
 enum ReleaseStatus {
+  // The release is required be installed by all users with older versions.
+  required,
+
+  // The release is outdated and is strictly recommended to be updated.
+  recommended,
+
   // The release is available.
   active,
 
   // The release is hidden from users.
   inactive,
-
-  // The release is required be installed by all users with older versions.
-  required,
 
   // The release is outdated and is strictly recommended to be updated.
   deprecated,
@@ -20,11 +23,13 @@ enum ReleaseStatus {
         orElse: () => null,
       );
 
+  bool get isRequired => this == required;
+
+  bool get isRecommended => this == recommended;
+
   bool get isActive => this == active;
 
   bool get isInactive => this == inactive;
-
-  bool get isRequired => this == required;
 
   bool get isDeprecated => this == deprecated;
 

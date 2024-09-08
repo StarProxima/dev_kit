@@ -1,10 +1,12 @@
 // ignore_for_file: unused_field
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../builder/models/app_update.dart';
 import '../config/dto/models/release_settings_dto.dart';
 import '../config/dto/models/store_dto.dart';
 import '../config/dto/parser/checker_config_dto_parser.dart';
@@ -15,7 +17,6 @@ import '../config/entity/stores/fetchers/store_fetcher.dart';
 import '../config/entity/version.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
-import 'update_data.dart';
 
 class UpdateController extends UpdateContollerBase {
   final _parser = const CheckerConfigDTOParser();
@@ -32,7 +33,7 @@ class UpdateController extends UpdateContollerBase {
   final List<StoreDTO>? _stores;
 
   @override
-  Stream<UpdateData> get availableUpdateStream => throw UnimplementedError();
+  Stream<AppUpdate> get availableUpdateStream => throw UnimplementedError();
 
   UpdateController({
     UpdateConfigProvider? updateConfigProvider,
@@ -69,12 +70,12 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<UpdateData> findUpdate() {
+  Future<AppUpdate> findUpdate() {
     throw UnimplementedError();
   }
 
   @override
-  Future<UpdateData?> findAvailableUpdate() async {
+  Future<AppUpdate?> findAvailableUpdate() async {
     final latestRelease = await _findLatestRelease();
 
     if (latestRelease == null) return null;
@@ -86,21 +87,17 @@ class UpdateController extends UpdateContollerBase {
     final appName = packageInfo.appName;
     final appVersion = Version.parse(packageInfo.version);
 
-    final deprecatedBeforeVersion =
-        configData.releaseSettings.deprecatedBeforeVersion;
-    // ignore: prefer-boolean-prefixes
-    final appVersonIsDeprecated =
-        deprecatedBeforeVersion != null && appVersion < deprecatedBeforeVersion;
+    throw UnimplementedError();
 
-    final updateData = UpdateData(
-      appName: appName,
-      appVersion: appVersion,
-      appVersonIsDeprecated: appVersonIsDeprecated,
-      config: configData,
-      release: latestRelease,
-    );
+    // final updateData = AppUpdate(
+    //   appName: appName,
+    //   appLocale: const Locale('en'),
+    //   appVersion: appVersion,
+    //   config: configData,
+    //   availableRelease: ,
+    // );
 
-    return updateData;
+    // return updateData;
   }
 
   @override
