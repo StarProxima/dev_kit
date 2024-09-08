@@ -1,10 +1,12 @@
 // ignore_for_file: unused_field
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../builder/models/app_update.dart';
 import '../config/dto/models/release_settings_dto.dart';
 import '../config/dto/models/store_dto.dart';
 import '../config/dto/parser/checker_config_dto_parser.dart';
@@ -15,7 +17,6 @@ import '../config/entity/stores/fetchers/store_fetcher.dart';
 import '../config/entity/version.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
-import '../builder/models/app_update.dart';
 
 class UpdateController extends UpdateContollerBase {
   final _parser = const CheckerConfigDTOParser();
@@ -86,14 +87,17 @@ class UpdateController extends UpdateContollerBase {
     final appName = packageInfo.appName;
     final appVersion = Version.parse(packageInfo.version);
 
-    final updateData = AppUpdate(
-      appName: appName,
-      appVersion: appVersion,
-      config: configData,
-      availableRelease: latestRelease,
-    );
+    throw UnimplementedError();
 
-    return updateData;
+    // final updateData = AppUpdate(
+    //   appName: appName,
+    //   appLocale: const Locale('en'),
+    //   appVersion: appVersion,
+    //   config: configData,
+    //   availableRelease: ,
+    // );
+
+    // return updateData;
   }
 
   @override
