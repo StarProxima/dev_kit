@@ -20,30 +20,17 @@ class UpdateBuilder {
     required this.packageInfo,
   });
 
-  Release localizeRelease(ReleaseData releaseData) {
-    return Release.localizedFromReleaseData(
-      releaseData: releaseData,
-      locale: applocale,
-      appName: packageInfo.appName,
-      appVersion: Version.parse(packageInfo.version),
-    );
-  }
-
-  UpdateConfig localizeConfig(UpdateConfigData updateConfig) {
-    return UpdateConfig(
-      releaseSettings: updateConfig.releaseSettings,
-      stores: updateConfig.stores,
-      releases: updateConfig.releases.map(localizeRelease).toList(),
-      customData: updateConfig.customData,
-    );
-  }
-
-  AppUpdate findUpdate(UpdateConfigData configData) {
+  AppUpdate? findUpdate(UpdateConfigData configData) {
     final appName = packageInfo.appName;
     final appVersion = Version.parse(packageInfo.version);
 
-    final config = localizeConfig(configData);
-    final availableRelease = findAvailableRelease(config);
+    final config = _localizeConfig(configData);
+    final availableRelease = _findAvailableRelease(
+      config: config,
+      appVersion: appVersion,
+    );
+
+    if (availableRelease == null) return null;
 
     return AppUpdate(
       appName: appName,
@@ -54,7 +41,29 @@ class UpdateBuilder {
     );
   }
 
-  Release findAvailableRelease(UpdateConfig config) {
+  Release _localizeRelease(ReleaseData releaseData) {
+    return Release.localizedFromReleaseData(
+      releaseData: releaseData,
+      locale: applocale,
+      appName: packageInfo.appName,
+      appVersion: Version.parse(packageInfo.version),
+    );
+  }
+
+  UpdateConfig _localizeConfig(UpdateConfigData updateConfig) {
+    return UpdateConfig(
+      releaseSettings: updateConfig.releaseSettings,
+      stores: updateConfig.stores,
+      releases: updateConfig.releases.map(_localizeRelease).toList(),
+      customData: updateConfig.customData,
+    );
+  }
+
+  // ignore: avoid-unnecessary-nullable-return-type
+  Release? _findAvailableRelease({
+    required UpdateConfig config,
+    required Version appVersion,
+  }) {
     // ignore: avoid-unsafe-collection-methods
     return config.releases.first;
   }

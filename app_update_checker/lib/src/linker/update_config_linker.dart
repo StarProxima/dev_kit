@@ -13,7 +13,7 @@ import 'models/update_config_data.dart';
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
-  UpdateConfigData parseFromDTO(UpdateConfigModel checkerConfigDTO) {
+  UpdateConfigData parseConfigFromModel(UpdateConfigModel checkerConfigDTO) {
     final releaseSettings = ReleaseSettings.fromDTO(checkerConfigDTO.releaseSettings);
 
     final stores = _parseStore(checkerConfigDTO.stores);

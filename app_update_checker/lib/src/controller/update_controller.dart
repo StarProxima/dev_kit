@@ -7,17 +7,18 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../builder/models/app_update.dart';
 import '../builder/models/release.dart';
+import '../builder/models/update_config.dart';
 import '../config/models/release_settings_config.dart';
 import '../config/models/store_config.dart';
 import '../config/update_config_parser.dart';
 import '../linker/models/release_data.dart';
 import '../linker/models/update_config_data.dart';
 import '../linker/update_config_linker.dart';
-import '../models/version.dart';
 import '../stores/fetchers/store_fetcher.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 
+// TODO: Refactoring
 class UpdateController extends UpdateContollerBase {
   final _parser = const UpdateConfigParser();
 
@@ -34,6 +35,9 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Stream<AppUpdate> get availableUpdateStream => throw UnimplementedError();
+
+  @override
+  Stream<UpdateConfig> get updateConfigStream => throw UnimplementedError();
 
   UpdateController({
     UpdateConfigProvider? updateConfigProvider,
@@ -56,9 +60,7 @@ class UpdateController extends UpdateContollerBase {
 
     final config = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
 
-    final configData = _linker.parseFromDTO(config);
-
-    // TODO: Process with localizaton and interpolation
+    final configData = _linker.parseConfigFromModel(config);
 
     _configDataCompleter?.complete(configData);
 
@@ -80,12 +82,11 @@ class UpdateController extends UpdateContollerBase {
 
     if (latestRelease == null) return null;
 
-    // ignore: avoid-non-null-assertion
-    final configData = await _configDataCompleter!.future;
-    final packageInfo = await _asyncPackageInfo;
+    // final configData = await _configDataCompleter!.future;
+    // final packageInfo = await _asyncPackageInfo;
 
-    final appName = packageInfo.appName;
-    final appVersion = Version.parse(packageInfo.version);
+    // final appName = packageInfo.appName;
+    // final appVersion = Version.parse(packageInfo.version);
 
     throw UnimplementedError();
 
@@ -115,6 +116,12 @@ class UpdateController extends UpdateContollerBase {
   @override
   Future<void> skipRelease(Release release) {
     // TODO: implement skipRelease
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<UpdateConfig> getCurrentUpdateConfig() {
+    // TODO: implement getUpdateConfig
     throw UnimplementedError();
   }
 

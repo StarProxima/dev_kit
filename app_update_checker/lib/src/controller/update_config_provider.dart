@@ -19,12 +19,13 @@ class UpdateConfigProvider {
         _onFetch = null;
 
   Future<RawUpdateConfig> fetch() {
-    // ignore: avoid-non-null-assertion
-    if (_onFetch != null) return _onFetch!();
+    final onFetch = _onFetch;
+    if (onFetch != null) return onFetch();
 
-    // ignore: unnecessary_statements
-    _url;
+    // ignore: unused_local_variable
+    final url = _url;
 
+    // TODO: Implement it
     throw UnimplementedError();
   }
 }

@@ -5,12 +5,20 @@ import 'dart:async';
 import '../builder/models/app_update.dart';
 import '../builder/models/exceptions.dart';
 import '../builder/models/release.dart';
+import '../builder/models/update_config.dart';
 
 abstract class UpdateContollerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
-  /// Check releases from the config and stores.
+  Stream<UpdateConfig> get updateConfigStream;
+
+  /// Check new releases from the update config and stores.
   Future<void> fetch();
+
+  /// Get current update config
+  ///
+  /// Does not make a new request if the data already exists.
+  Future<UpdateConfig> getCurrentUpdateConfig();
 
   /// Finds an update
   ///
