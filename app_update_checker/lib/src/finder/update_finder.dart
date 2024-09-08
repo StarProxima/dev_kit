@@ -1,66 +1,21 @@
 // ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
 
-import 'dart:ui';
-
-import 'package:package_info_plus/package_info_plus.dart';
-
-import '../linker/models/release_data.dart';
-import '../linker/models/update_config_data.dart';
+import '../builder/models/release.dart';
+import '../builder/models/update_config.dart';
 import '../models/release_status.dart';
 import '../models/update_platform.dart';
 import '../models/version.dart';
-import 'models/app_update.dart';
-import 'models/release.dart';
-import 'models/update_config.dart';
 
-class UpdateBuilder {
-  final Locale applocale;
-  final PackageInfo packageInfo;
+class UpdateFinder {
+  final Version appVersion;
   final UpdatePlatform platform;
 
-  String get _appName => packageInfo.appName;
-  Version get _appVersion => Version.parse(packageInfo.version);
-
-  const UpdateBuilder({
-    required this.applocale,
-    required this.packageInfo,
+  const UpdateFinder({
+    required this.appVersion,
     required this.platform,
   });
 
-  AppUpdate? findUpdate(UpdateConfig config) {
-    final availableRelease = _findAvailableRelease(config);
-
-    if (availableRelease == null) return null;
-
-    return AppUpdate(
-      appName: _appName,
-      appVersion: _appVersion,
-      appLocale: applocale,
-      config: config,
-      availableRelease: availableRelease,
-    );
-  }
-
-  UpdateConfig localizeConfig(UpdateConfigData updateConfig) {
-    return UpdateConfig(
-      releaseSettings: updateConfig.releaseSettings,
-      stores: updateConfig.stores,
-      releases: updateConfig.releases.map(_localizeRelease).toList(),
-      customData: updateConfig.customData,
-    );
-  }
-
-  Release _localizeRelease(ReleaseData releaseData) {
-    return Release.localizedFromReleaseData(
-      releaseData: releaseData,
-      locale: applocale,
-      appName: _appName,
-      appVersion: _appVersion,
-    );
-  }
-
-  Release? _findAvailableRelease(UpdateConfig config) {
-    final appVersion = _appVersion;
+  Release? findAvailableRelease(UpdateConfig config) {
     final releases = config.releases;
 
     // Sorted in descending order

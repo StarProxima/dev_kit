@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import '../builder/models/app_update.dart';
-import '../builder/models/exceptions.dart';
+import 'exceptions.dart';
 import '../builder/models/release.dart';
 import '../builder/models/update_config.dart';
 

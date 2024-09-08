@@ -1,4 +1,4 @@
-import 'app_update.dart';
+import '../builder/models/app_update.dart';
 
 class UpdateNotFoundException implements Exception {
   const UpdateNotFoundException();
