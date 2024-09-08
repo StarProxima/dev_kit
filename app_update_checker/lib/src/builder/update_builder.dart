@@ -4,8 +4,8 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../linker/models/release_data.dart' as data;
 import '../models/localized_text.dart';
-import '../data/models/release_data.dart' as data;
 import '../models/version.dart';
 import 'models/release.dart';
 

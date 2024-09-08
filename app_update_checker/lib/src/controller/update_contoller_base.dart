@@ -4,7 +4,7 @@ import 'dart:async';
 
 import '../builder/models/app_update.dart';
 import '../builder/models/exceptions.dart';
-import '../data/models/release_data.dart';
+import '../linker/models/release_data.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update);
 

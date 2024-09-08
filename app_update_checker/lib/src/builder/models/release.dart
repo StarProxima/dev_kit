@@ -1,6 +1,6 @@
-import '../../stores/store.dart';
 import '../../models/release_status.dart';
 import '../../models/version.dart';
+import '../../stores/store.dart';
 
 class Release {
   final Version version;

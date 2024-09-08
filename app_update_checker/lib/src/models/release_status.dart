@@ -17,8 +17,7 @@ enum ReleaseStatus {
   // The release has critical bugs and requires an update.
   broken;
 
-  static ReleaseStatus? parse(String? str) =>
-      List<ReleaseStatus?>.of(values).firstWhere(
+  static ReleaseStatus? parse(String? str) => List<ReleaseStatus?>.of(values).firstWhere(
         (e) => e?.name == str,
         orElse: () => null,
       );

@@ -5,11 +5,11 @@ import 'dart:ui';
 import '../models/release_status.dart';
 import '../models/update_platform.dart';
 import '../models/version.dart';
-import 'models/update_config_exception.dart';
-import 'models/update_config.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/store_config.dart';
+import 'models/update_config.dart';
+import 'models/update_config_exception.dart';
 
 part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
