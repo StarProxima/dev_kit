@@ -1,48 +1,34 @@
+// ignore_for_file: prefer-named-parameters, prefer-correct-callback-field-name, use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 
 import '../builder/models/app_update.dart';
 import '../controller/update_controller.dart';
-import 'update_alert_type.dart';
+import 'update_alert_handler.dart';
 
-// ignore: prefer-named-parameters
-typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update, UpdateController controller);
-
-// Отдельные виджеты, принимающие AppUpdate и UpdateController?
-// enum UpdateAlertType {
-//   adaptiveDialog,
-//   // materialDialog,
-//   // cupertinoDialog,
-//   // bottomModalSheet,
-//   // screen,
-//   // snackbar,
-// }
+typedef OnUpdateAvailable = FutureOr<void> Function(
+  BuildContext context,
+  AppUpdate update,
+  UpdateController controller,
+);
 
 class UpdateAlert extends StatefulWidget {
   const UpdateAlert({
     super.key,
     this.enabled = true,
     this.controller,
-    UpdateAlertType this.type = const UpdateAlertType.adaptiveDialog(),
     this.shouldCheckUpdateAfterAppResume = true,
+    this.onUpdateAvailable = UpdateAlertHandler.adaptiveDialog,
     required this.child,
-  }) : onUpdateAvailable = null;
-
-  const UpdateAlert.custom({
-    super.key,
-    this.enabled = true,
-    this.controller,
-    this.shouldCheckUpdateAfterAppResume = true,
-    this.onUpdateAvailable,
-    required this.child,
-  }) : type = null;
+  });
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
   final UpdateController? controller;
   final OnUpdateAvailable? onUpdateAvailable;
-  final UpdateAlertType? type;
+
   final Widget child;
 
   @override
@@ -73,7 +59,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
 
     if (updateData == null) return;
 
-    widget.onUpdateAvailable?.call(updateData, _controller);
+    widget.onUpdateAvailable?.call(context, updateData, _controller);
   }
 
   @override
