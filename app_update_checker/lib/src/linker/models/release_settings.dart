@@ -25,16 +25,16 @@ class ReleaseSettings {
     required this.customData,
   });
 
-  factory ReleaseSettings.fromDTO(ReleaseSettingsConfig dto) {
+  factory ReleaseSettings.fromConfig(ReleaseSettingsConfig config) {
     return ReleaseSettings(
-      title: dto.title ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
-      description: dto.description ?? {const Locale('en'): 'New update'},
-      canIgnoreRelease: dto.canIgnoreRelease ?? true,
-      reminderPeriod: dto.reminderPeriod ?? const Duration(days: 7),
-      releaseDelay: dto.releaseDelay ?? Duration.zero,
-      deprecatedBeforeVersion: dto.deprecatedBeforeVersion,
-      requiredMinimumVersion: dto.requiredMinimumVersion,
-      customData: dto.customData,
+      title: config.title ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
+      description: config.description ?? {const Locale('en'): 'New update'},
+      canIgnoreRelease: config.canIgnoreRelease ?? true,
+      reminderPeriod: config.reminderPeriod ?? const Duration(days: 7),
+      releaseDelay: config.releaseDelay ?? Duration.zero,
+      deprecatedBeforeVersion: config.deprecatedBeforeVersion,
+      requiredMinimumVersion: config.requiredMinimumVersion,
+      customData: config.customData,
     );
   }
 }
