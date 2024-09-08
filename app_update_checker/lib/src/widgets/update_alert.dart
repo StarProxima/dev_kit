@@ -4,8 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../localizer/models/app_update.dart';
 import '../controller/update_controller.dart';
+import '../localizer/models/app_update.dart';
 import 'update_alert_handler.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(

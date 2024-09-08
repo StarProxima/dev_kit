@@ -5,21 +5,21 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../linker/models/release_data.dart';
+import '../linker/models/update_config_data.dart';
+import '../linker/update_config_linker.dart';
 import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../parser/models/release_settings_config.dart';
 import '../parser/models/store_config.dart';
 import '../parser/update_config_parser.dart';
-import '../linker/models/release_data.dart';
-import '../linker/models/update_config_data.dart';
-import '../linker/update_config_linker.dart';
 import '../shared/update_platform.dart';
 import '../stores/fetchers/store_fetcher.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 
-// TODO: Refactoring
+// TODO: Тут хуевасто всё написано, т.к. api менялся, лучше с нуля
 class UpdateController extends UpdateContollerBase {
   final _parser = const UpdateConfigParser();
 
