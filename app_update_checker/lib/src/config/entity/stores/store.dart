@@ -37,4 +37,22 @@ class Store {
     required this.platforms,
   })  : store = Stores.custom,
         _name = name;
+
+  // ignore: prefer_constructors_over_static_methods
+  static Store fromDTO({
+    required String name,
+    required Uri url,
+    required List<UpdatePlatform>? platforms,
+  }) {
+    switch (Stores.parse(name)) {
+      case Stores.googlePlay:
+        return Store.googlePlay(url: url);
+
+      case Stores.appStore:
+        return Store.appStore(url: url);
+
+      case Stores.custom:
+        return Store.custom(name: name, url: url, platforms: platforms ?? UpdatePlatform.values);
+    }
+  }
 }

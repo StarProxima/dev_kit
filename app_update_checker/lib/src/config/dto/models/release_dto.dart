@@ -34,4 +34,22 @@ class ReleaseDTO {
     required this.stores,
     required this.customData,
   });
+
+  ReleaseDTO inherit(ReleaseDTO parent) {
+    return ReleaseDTO(
+      version: version,
+      refVersion: refVersion,
+      buildNumber: buildNumber,
+      status: status ?? parent.status,
+      title: title ?? parent.title,
+      description: description ?? parent.description,
+      releaseNote: releaseNote ?? parent.releaseNote,
+      publishDateUtc: publishDateUtc ?? parent.publishDateUtc,
+      canIgnoreRelease: canIgnoreRelease ?? parent.canIgnoreRelease,
+      reminderPeriod: reminderPeriod ?? parent.reminderPeriod,
+      releaseDelay: releaseDelay ?? parent.releaseDelay,
+      stores: stores ?? parent.stores,
+      customData: customData.isNotEmpty ? customData : parent.customData,
+    );
+  }
 }
