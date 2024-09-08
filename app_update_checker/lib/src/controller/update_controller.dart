@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../builder/models/app_update.dart';
+import '../builder/models/release.dart';
 import '../config/models/release_settings_config.dart';
 import '../config/models/store_config.dart';
 import '../config/update_config_parser.dart';
@@ -100,19 +101,19 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<void> launchReleaseStore(ReleaseData release) {
+  Future<void> launchReleaseStore(Release release) {
     // TODO: implement launchStore
     throw UnimplementedError();
   }
 
   @override
-  Future<void> postponeRelease(ReleaseData release) {
+  Future<void> postponeRelease(Release release) {
     // TODO: implement postponeRelease
     throw UnimplementedError();
   }
 
   @override
-  Future<void> skipRelease(ReleaseData release) {
+  Future<void> skipRelease(Release release) {
     // TODO: implement skipRelease
     throw UnimplementedError();
   }

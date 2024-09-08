@@ -1,9 +1,9 @@
-import '../../models/localized_text.dart';
+import '../../models/text_translations.dart';
 import '../../models/version.dart';
 
 class ReleaseSettingsConfig {
-  final LocalizedText? title;
-  final LocalizedText? description;
+  final TextTranslations? title;
+  final TextTranslations? description;
   final bool? canIgnoreRelease;
   final Duration? reminderPeriod;
   final Duration? releaseDelay;

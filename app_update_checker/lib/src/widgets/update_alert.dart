@@ -1,7 +1,12 @@
-import 'package:flutter/widgets.dart';
+import 'dart:async';
 
-import '../controller/update_contoller_base.dart';
+import 'package:flutter/cupertino.dart';
+
+import '../builder/models/app_update.dart';
 import '../controller/update_controller.dart';
+
+// ignore: prefer-named-parameters
+typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update, UpdateController controller);
 
 class UpdateAlert extends StatefulWidget {
   const UpdateAlert({
@@ -46,7 +51,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
 
     if (updateData == null) return;
 
-    widget.onUpdateAvailable?.call(updateData);
+    widget.onUpdateAvailable?.call(updateData, widget.controller);
   }
 
   @override
@@ -57,6 +62,22 @@ class _UpdateAlertState extends State<UpdateAlert> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: avoid-recursive-widget-calls
+    return UpdateAlert(
+      controller: UpdateController(),
+      onUpdateAvailable: (update, controller) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            controller.launchReleaseStore(update.availableRelease);
+
+            return SizedBox();
+          },
+        );
+      },
+      child: const SizedBox(),
+    );
+
     return widget.child;
   }
 }

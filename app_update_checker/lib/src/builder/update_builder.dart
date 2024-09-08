@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../linker/models/release_data.dart' as data;
-import '../models/localized_text.dart';
+import '../models/text_translations.dart';
 import '../models/version.dart';
 import 'models/release.dart';
 
@@ -24,11 +24,11 @@ class UpdateBuilder {
         .replaceAll(r'$appVersion', Version.parse(packageInfo.version).toString())
         .replaceAll(r'$releaseVersion', releaseData.version.toString());
 
-    final title = interpolation(releaseData.title.byLocale(applocale));
+    final title = interpolation(releaseData.titleTranslations.byLocale(applocale));
 
-    final description = interpolation(releaseData.description.byLocale(applocale));
+    final description = interpolation(releaseData.descriptionTranslations.byLocale(applocale));
 
-    final releaseNoteMap = releaseData.releaseNote;
+    final releaseNoteMap = releaseData.releaseNoteTranslations;
     final releaseNote = releaseNoteMap == null ? null : interpolation(releaseNoteMap.byLocale(applocale));
 
     return Release(

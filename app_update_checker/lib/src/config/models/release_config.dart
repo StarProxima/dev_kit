@@ -1,7 +1,6 @@
-import '../../models/localized_text.dart';
 import '../../models/release_status.dart';
+import '../../models/text_translations.dart';
 import '../../models/version.dart';
-
 import 'store_config.dart';
 
 class ReleaseConfig {
@@ -9,9 +8,9 @@ class ReleaseConfig {
   final Version? refVersion;
   final int? buildNumber;
   final ReleaseStatus? status;
-  final LocalizedText? title;
-  final LocalizedText? description;
-  final LocalizedText? releaseNote;
+  final TextTranslations? titleTranslations;
+  final TextTranslations? descriptionTranslations;
+  final TextTranslations? releaseNoteTranslations;
   final DateTime? publishDateUtc;
   final bool? canIgnoreRelease;
   final Duration? reminderPeriod;
@@ -24,9 +23,9 @@ class ReleaseConfig {
     required this.refVersion,
     required this.buildNumber,
     required this.status,
-    required this.title,
-    required this.description,
-    required this.releaseNote,
+    required this.titleTranslations,
+    required this.descriptionTranslations,
+    required this.releaseNoteTranslations,
     required this.publishDateUtc,
     required this.canIgnoreRelease,
     required this.reminderPeriod,
@@ -41,9 +40,9 @@ class ReleaseConfig {
       refVersion: refVersion,
       buildNumber: buildNumber,
       status: status ?? parent.status,
-      title: title ?? parent.title,
-      description: description ?? parent.description,
-      releaseNote: releaseNote ?? parent.releaseNote,
+      titleTranslations: titleTranslations ?? parent.titleTranslations,
+      descriptionTranslations: descriptionTranslations ?? parent.descriptionTranslations,
+      releaseNoteTranslations: releaseNoteTranslations ?? parent.releaseNoteTranslations,
       publishDateUtc: publishDateUtc ?? parent.publishDateUtc,
       canIgnoreRelease: canIgnoreRelease ?? parent.canIgnoreRelease,
       reminderPeriod: reminderPeriod ?? parent.reminderPeriod,

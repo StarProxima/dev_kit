@@ -1,5 +1,5 @@
-import '../../models/localized_text.dart';
 import '../../models/release_status.dart';
+import '../../models/text_translations.dart';
 import '../../models/version.dart';
 import '../../stores/store.dart';
 
@@ -8,9 +8,9 @@ class ReleaseData {
   final Version? refVersion;
   final int? buildNumber;
   final ReleaseStatus status;
-  final LocalizedText title;
-  final LocalizedText description;
-  final LocalizedText? releaseNote;
+  final TextTranslations titleTranslations;
+  final TextTranslations descriptionTranslations;
+  final TextTranslations? releaseNoteTranslations;
   final DateTime? publishDateUtc;
   final bool canIgnoreRelease;
   final Duration reminderPeriod;
@@ -23,9 +23,9 @@ class ReleaseData {
     required this.refVersion,
     required this.buildNumber,
     required this.status,
-    required this.title,
-    required this.description,
-    required this.releaseNote,
+    required this.titleTranslations,
+    required this.descriptionTranslations,
+    required this.releaseNoteTranslations,
     required this.publishDateUtc,
     required this.canIgnoreRelease,
     required this.reminderPeriod,
