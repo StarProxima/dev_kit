@@ -38,8 +38,7 @@ class Store {
   })  : store = Stores.custom,
         _name = name;
 
-  // ignore: prefer_constructors_over_static_methods
-  static Store fromDTO({
+  factory Store.fromConfig({
     required String name,
     required Uri url,
     required List<UpdatePlatform>? platforms,

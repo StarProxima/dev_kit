@@ -47,7 +47,7 @@ class CheckerConfigLinker {
           "Can't parse store with parameters: $name, $url, $platforms",
         );
       }
-      stores.add(Store.fromDTO(
+      stores.add(Store.fromConfig(
         name: name,
         url: url,
         platforms: platforms,
@@ -122,7 +122,7 @@ class CheckerConfigLinker {
           final storeUrl = url ?? globalStore?.url;
           if (storeUrl == null) continue;
 
-          releaseStores.add(Store.fromDTO(
+          releaseStores.add(Store.fromConfig(
             name: name,
             url: storeUrl,
             platforms: platforms ?? globalStore?.platforms,
@@ -139,9 +139,9 @@ class CheckerConfigLinker {
         description: description ?? releaseSettings.description,
         releaseNote: releaseNote,
         publishDateUtc: publishDateUtc,
-        canIgnoreRelease: canIgnoreRelease ?? true,
-        reminderPeriod: reminderPeriod ?? const Duration(days: 7),
-        releaseDelay: releaseDelay ?? Duration.zero,
+        canIgnoreRelease: canIgnoreRelease ?? releaseSettings.canIgnoreRelease,
+        reminderPeriod: reminderPeriod ?? releaseSettings.reminderPeriod,
+        releaseDelay: releaseDelay ?? releaseSettings.releaseDelay,
         stores: releaseStores,
         customData: customData,
       ));
