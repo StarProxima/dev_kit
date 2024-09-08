@@ -14,6 +14,7 @@ import '../config/update_config_parser.dart';
 import '../linker/models/release_data.dart';
 import '../linker/models/update_config_data.dart';
 import '../linker/update_config_linker.dart';
+import '../models/update_platform.dart';
 import '../stores/fetchers/store_fetcher.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
@@ -28,6 +29,7 @@ class UpdateController extends UpdateContollerBase {
 
   Completer<UpdateConfigData>? _configDataCompleter;
 
+  final UpdatePlatform? _platform;
   final UpdateConfigProvider? _updateConfigProvider;
   final StoreFetcherCoordinator? _storeFetcherCoordinator;
   final ReleaseSettingsConfig? _releaseSettings;
@@ -44,10 +46,12 @@ class UpdateController extends UpdateContollerBase {
     StoreFetcherCoordinator? storeFetcherCoordinator,
     ReleaseSettingsConfig? releaseSettings,
     List<StoreConfig>? stores,
+    UpdatePlatform? platform,
   })  : _updateConfigProvider = updateConfigProvider,
         _storeFetcherCoordinator = storeFetcherCoordinator,
         _releaseSettings = releaseSettings,
-        _stores = stores;
+        _stores = stores,
+        _platform = platform ?? UpdatePlatform.current();
 
   @override
   Future<void> fetch() async {
