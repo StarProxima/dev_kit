@@ -1,7 +1,7 @@
-import 'localized_text.dart';
-import 'release_status.dart';
-import 'stores/store.dart';
-import 'version.dart';
+import '../../models/localized_text.dart';
+import '../../models/release_status.dart';
+import '../stores/store.dart';
+import '../../models/version.dart';
 
 class Release {
   final Version version;

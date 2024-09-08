@@ -1,6 +1,6 @@
-import '../../entity/localized_text.dart';
-import '../../entity/release_status.dart';
-import '../../entity/version.dart';
+import '../../models/localized_text.dart';
+import '../../models/release_status.dart';
+import '../../models/version.dart';
 
 import 'store_dto.dart';
 

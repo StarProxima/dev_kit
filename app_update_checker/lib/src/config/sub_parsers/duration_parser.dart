@@ -1,4 +1,4 @@
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _DurationParser {
   const _DurationParser();

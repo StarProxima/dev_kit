@@ -1,11 +1,10 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _ReleaseParser {
   _StoreParser get _storeParser => const _StoreParser();
-  _ReleaseSettingsParser get _releaseSettingsParser =>
-      const _ReleaseSettingsParser();
+  _ReleaseSettingsParser get _releaseSettingsParser => const _ReleaseSettingsParser();
   _TextParser get _textParser => const _TextParser();
   _VersionParser get _versionParser => const _VersionParser();
 
@@ -79,10 +78,8 @@ class _ReleaseParser {
       if (isDebug) throw const DtoParserException();
       stores = null;
     } else if (stores != null) {
-      stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug))
-          .toList()
-          .whereType<StoreDTO>();
+      stores =
+          stores.map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug)).toList().whereType<StoreDTO>();
       stores as List<Object>;
       stores as List<StoreDTO>;
     }

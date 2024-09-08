@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _StoreParser {
   const _StoreParser();

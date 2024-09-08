@@ -1,5 +1,5 @@
-import '../../entity/localized_text.dart';
-import '../../entity/version.dart';
+import '../../models/localized_text.dart';
+import '../../models/version.dart';
 
 class ReleaseSettingsDTO {
   final LocalizedText? title;

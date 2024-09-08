@@ -2,14 +2,14 @@
 
 import 'dart:ui';
 
-import '../../entity/release_status.dart';
-import '../../entity/update_platform.dart';
-import '../../entity/version.dart';
-import '../exceptions/dto_parser_exception.dart';
-import '../models/checker_config_dto.dart';
-import '../models/release_dto.dart';
-import '../models/release_settings_dto.dart';
-import '../models/store_dto.dart';
+import '../models/release_status.dart';
+import '../models/update_platform.dart';
+import '../models/version.dart';
+import 'models/dto_parser_exception.dart';
+import 'models/checker_config_dto.dart';
+import 'models/release_dto.dart';
+import 'models/release_settings_dto.dart';
+import 'models/store_dto.dart';
 
 part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
@@ -18,13 +18,12 @@ part 'sub_parsers/store_parser.dart';
 part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
 
-class CheckerConfigDTOParser {
+class UpdateConfigParser {
   _StoreParser get _storeParser => const _StoreParser();
-  _ReleaseSettingsParser get _releaseSettingsParser =>
-      const _ReleaseSettingsParser();
+  _ReleaseSettingsParser get _releaseSettingsParser => const _ReleaseSettingsParser();
   _ReleaseParser get _releaseParser => const _ReleaseParser();
 
-  const CheckerConfigDTOParser();
+  const UpdateConfigParser();
 
   CheckerConfigDTO parseConfig(
     Map<String, dynamic> map, {
@@ -49,10 +48,8 @@ class CheckerConfigDTOParser {
       if (isDebug) throw const DtoParserException();
       stores = null;
     } else {
-      stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug))
-          .toList()
-          .whereType<StoreDTO>();
+      stores =
+          stores.map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug)).toList().whereType<StoreDTO>();
     }
     stores as List<Object>;
     stores as List<StoreDTO>;
@@ -66,10 +63,7 @@ class CheckerConfigDTOParser {
       if (isDebug) throw const DtoParserException();
       releases = null;
     } else {
-      releases = releases
-          .map((e) => _releaseParser.parse(e, isDebug: isDebug))
-          .toList()
-          .whereType<ReleaseDTO>();
+      releases = releases.map((e) => _releaseParser.parse(e, isDebug: isDebug)).toList().whereType<ReleaseDTO>();
     }
 
     releases as List<Object>;

@@ -1,4 +1,4 @@
-import '../../entity/update_platform.dart';
+import '../../models/update_platform.dart';
 
 class StoreDTO {
   final String name;

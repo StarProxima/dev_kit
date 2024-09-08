@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../dto/models/release_dto.dart';
+import '../../../config/models/release_dto.dart';
 import '../store.dart';
 import 'app_store_fetcher.dart';
 import 'google_play_fetcher.dart';

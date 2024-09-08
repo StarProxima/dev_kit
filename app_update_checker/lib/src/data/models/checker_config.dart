@@ -1,6 +1,6 @@
 import 'release.dart';
 import 'release_settings.dart';
-import 'stores/store.dart';
+import '../stores/store.dart';
 
 class CheckerConfig {
   final ReleaseSettings releaseSettings;

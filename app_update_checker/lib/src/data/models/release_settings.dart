@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import '../dto/models/release_settings_dto.dart';
-import 'localized_text.dart';
-import 'version.dart';
+import '../../config/models/release_settings_dto.dart';
+import '../../models/localized_text.dart';
+import '../../models/version.dart';
 
 class ReleaseSettings {
   final LocalizedText title;

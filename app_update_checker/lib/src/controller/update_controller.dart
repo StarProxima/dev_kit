@@ -7,19 +7,19 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../builder/models/app_update.dart';
-import '../config/dto/models/release_settings_dto.dart';
-import '../config/dto/models/store_dto.dart';
-import '../config/dto/parser/checker_config_dto_parser.dart';
-import '../config/entity/checker_config.dart';
-import '../config/entity/checker_config_parser.dart';
-import '../config/entity/release.dart';
-import '../config/entity/stores/fetchers/store_fetcher.dart';
-import '../config/entity/version.dart';
+import '../config/models/release_settings_dto.dart';
+import '../config/models/store_dto.dart';
+import '../config/update_config_parser.dart';
+import '../data/models/checker_config.dart';
+import '../data/checker_config_parser.dart';
+import '../data/models/release.dart';
+import '../data/stores/fetchers/store_fetcher.dart';
+import '../models/version.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
-  final _parser = const CheckerConfigDTOParser();
+  final _parser = const UpdateConfigParser();
 
   final _linker = const CheckerConfigLinker();
 

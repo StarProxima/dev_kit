@@ -8,8 +8,7 @@ library version;
 
 /// Provides immutable storage and comparison of semantic version numbers.
 class Version implements Comparable<Version> {
-  static final RegExp _versionRegex =
-      RegExp(r"^([\d.]+)(-([0-9A-Za-z\-.]+))?(\+([0-9A-Za-z\-.]+))?$");
+  static final RegExp _versionRegex = RegExp(r"^([\d.]+)(-([0-9A-Za-z\-.]+))?(\+([0-9A-Za-z\-.]+))?$");
   static final RegExp _buildRegex = RegExp(r"^[0-9A-Za-z\-.]+$");
   static final RegExp _preReleaseRegex = RegExp(r"^[0-9A-Za-z\-]+$");
 
@@ -37,8 +36,7 @@ class Version implements Comparable<Version> {
   /// [build] is optional, but if specified must be a [String]. must contain only [0-9A-Za-z-.], and must not be null.
   /// Throws a [FormatException] if the [String] content does not follow the character constraints defined above.
   /// Throes an [ArgumentError] if any of the other conditions are violated.
-  Version(this.major, this.minor, this.patch,
-      {List<String> preRelease = const <String>[], this.build = ""})
+  Version(this.major, this.minor, this.patch, {List<String> preRelease = const <String>[], this.build = ""})
       : _preRelease = preRelease {
     for (int i = 0; i < _preRelease.length; i++) {
       if (_preRelease[i].toString().trim().isEmpty) {
@@ -47,8 +45,7 @@ class Version implements Comparable<Version> {
       // Just in case
       _preRelease[i] = _preRelease[i].toString();
       if (!_preReleaseRegex.hasMatch(_preRelease[i])) {
-        throw const FormatException(
-            "preRelease segments must only contain [0-9A-Za-z-]");
+        throw const FormatException("preRelease segments must only contain [0-9A-Za-z-]");
       }
     }
     if (build.isNotEmpty && !_buildRegex.hasMatch(build)) {
@@ -113,8 +110,7 @@ class Version implements Comparable<Version> {
   /// If this [Version] is not a pre-release version, an Exception will be thrown.
   Version incrementPreRelease() {
     if (!isPreRelease) {
-      throw Exception(
-          "Cannot increment pre-release on a non-pre-release [Version]");
+      throw Exception("Cannot increment pre-release on a non-pre-release [Version]");
     }
     var newPreRelease = preRelease;
 
@@ -186,8 +182,7 @@ class Version implements Comparable<Version> {
     }
     final String build = m.group(5) ?? "";
 
-    return Version(major, minor ?? 0, patch ?? 0,
-        build: build, preRelease: preReleaseList);
+    return Version(major, minor ?? 0, patch ?? 0, build: build, preRelease: preReleaseList);
   }
 
   static int _compare(Version? a, Version? b) {

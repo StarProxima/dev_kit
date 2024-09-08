@@ -4,9 +4,9 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../config/entity/localized_text.dart';
-import '../config/entity/release.dart' as data;
-import '../config/entity/version.dart';
+import '../models/localized_text.dart';
+import '../data/models/release.dart' as data;
+import '../models/version.dart';
 import 'models/release.dart';
 
 class UpdateBuilder {

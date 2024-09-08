@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import '../../config/entity/checker_config.dart';
-import '../../config/entity/version.dart';
+import '../../data/models/checker_config.dart';
+import '../../models/version.dart';
 
 import 'release.dart';
 

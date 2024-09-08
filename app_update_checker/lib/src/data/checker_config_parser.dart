@@ -1,14 +1,14 @@
 // ignore_for_file: avoid-recursive-calls
 
-import '../dto/models/checker_config_dto.dart';
-import '../dto/models/release_dto.dart';
-import '../dto/models/store_dto.dart';
-import 'checker_config.dart';
-import 'release.dart';
-import 'release_settings.dart';
-import 'release_status.dart';
+import '../config/models/checker_config_dto.dart';
+import '../config/models/release_dto.dart';
+import '../config/models/store_dto.dart';
+import 'models/checker_config.dart';
+import 'models/release.dart';
+import 'models/release_settings.dart';
+import '../models/release_status.dart';
 import 'stores/store.dart';
-import 'version.dart';
+import '../models/version.dart';
 
 class CheckerConfigLinker {
   const CheckerConfigLinker();
