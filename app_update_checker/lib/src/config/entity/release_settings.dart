@@ -1,11 +1,12 @@
 import 'dart:ui';
 
 import '../dto/models/release_settings_dto.dart';
+import 'localized_text.dart';
 import 'version.dart';
 
 class ReleaseSettings {
-  final Map<Locale, String> title;
-  final Map<Locale, String> description;
+  final LocalizedText title;
+  final LocalizedText description;
   final bool canIgnoreRelease;
   final Duration reminderPeriod;
   final Duration releaseDelay;
