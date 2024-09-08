@@ -8,8 +8,8 @@ import '../models/version.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/store_config.dart';
-import 'models/update_config.dart';
 import 'models/update_config_exception.dart';
+import 'models/update_config_model.dart';
 
 part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
@@ -25,7 +25,7 @@ class UpdateConfigParser {
 
   const UpdateConfigParser();
 
-  UpdateConfig parseConfig(
+  UpdateConfigModel parseConfig(
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
@@ -69,7 +69,7 @@ class UpdateConfigParser {
     releases as List<Object>;
     releases as List<ReleaseConfig>;
 
-    return UpdateConfig(
+    return UpdateConfigModel(
       releaseSettings: releaseSettings,
       stores: stores,
       releases: releases,

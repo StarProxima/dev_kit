@@ -2,7 +2,7 @@
 
 import '../config/models/release_config.dart';
 import '../config/models/store_config.dart';
-import '../config/models/update_config.dart';
+import '../config/models/update_config_model.dart';
 import '../models/release_status.dart';
 import '../models/version.dart';
 import '../stores/store.dart';
@@ -13,7 +13,7 @@ import 'models/update_config_data.dart';
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
-  UpdateConfigData parseFromDTO(UpdateConfig checkerConfigDTO) {
+  UpdateConfigData parseFromDTO(UpdateConfigModel checkerConfigDTO) {
     final releaseSettings = ReleaseSettings.fromDTO(checkerConfigDTO.releaseSettings);
 
     final stores = _parseStore(checkerConfigDTO.stores);
@@ -59,7 +59,7 @@ class UpdateConfigLinker {
 
   List<ReleaseData> _parseReleases({
     required List<Store> stores,
-    required UpdateConfig checkerConfigDTO,
+    required UpdateConfigModel checkerConfigDTO,
     required ReleaseSettings releaseSettings,
   }) {
     final releases = <ReleaseData>[];

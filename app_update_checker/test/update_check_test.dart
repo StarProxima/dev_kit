@@ -16,12 +16,12 @@ void main() async {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
 
-        Release.localizedFromReleaseData(
-          releaseData: releaseData,
-          locale: update.appLocale,
-          appName: update.appName,
-          appVersion: update.appVersion,
-        );
+        // Release.localizedFromReleaseData(
+        //   releaseData: releaseData,
+        //   locale: update.appLocale,
+        //   appName: update.appName,
+        //   appVersion: update.appVersion,
+        // );
 
         controller.skipRelease(releaseData);
 
