@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import '../dto/models/release_settings_dto.dart';
 import 'version.dart';
 
 class ReleaseSettings {
@@ -22,4 +23,17 @@ class ReleaseSettings {
     required this.requiredMinimumVersion,
     required this.customData,
   });
+
+  factory ReleaseSettings.fromDTO(ReleaseSettingsDTO dto) {
+    return ReleaseSettings(
+      title: dto.title ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
+      description: dto.description ?? {const Locale('en'): 'New update'},
+      canIgnoreRelease: dto.canIgnoreRelease ?? true,
+      reminderPeriod: dto.reminderPeriod ?? const Duration(days: 7),
+      releaseDelay: dto.releaseDelay ?? Duration.zero,
+      deprecatedBeforeVersion: dto.deprecatedBeforeVersion,
+      requiredMinimumVersion: dto.requiredMinimumVersion,
+      customData: dto.customData,
+    );
+  }
 }

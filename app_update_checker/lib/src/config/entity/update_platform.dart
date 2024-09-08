@@ -12,6 +12,8 @@ class UpdatePlatform {
   static const windows = UpdatePlatform('windows');
   static const web = UpdatePlatform('web');
 
+  static const values = [android, fuchsia, ios, linux, macos, windows, web];
+
   final String _platform;
 
   String get platform => _platform.toLowerCase();

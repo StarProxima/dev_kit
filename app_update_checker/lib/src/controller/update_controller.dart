@@ -20,7 +20,7 @@ import '../builder/models/app_update.dart';
 class UpdateController extends UpdateContollerBase {
   final _parser = const CheckerConfigDTOParser();
 
-  final _linker = const CheckerConfigParser();
+  final _linker = const CheckerConfigLinker();
 
   final _asyncPackageInfo = PackageInfo.fromPlatform();
 
