@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../builder/models/app_update.dart';
+import '../localizer/models/app_update.dart';
 import '../controller/update_controller.dart';
 import 'update_alert_handler.dart';
 

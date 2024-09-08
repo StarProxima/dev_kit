@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../../models/version.dart';
+import '../../shared/version.dart';
 
 import 'release.dart';
 import 'update_config.dart';

@@ -2,9 +2,9 @@
 
 import 'dart:ui';
 
-import '../models/release_status.dart';
-import '../models/update_platform.dart';
-import '../models/version.dart';
+import '../shared/release_status.dart';
+import '../shared/update_platform.dart';
+import '../shared/version.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/store_config.dart';

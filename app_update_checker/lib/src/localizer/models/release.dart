@@ -1,7 +1,7 @@
 import '../../linker/models/release_data.dart';
-import '../../models/release_status.dart';
-import '../../models/text_translations.dart';
-import '../../models/version.dart';
+import '../../shared/release_status.dart';
+import '../../shared/text_translations.dart';
+import '../../shared/version.dart';
 import '../../stores/store.dart';
 
 class Release extends ReleaseData {

@@ -1,4 +1,4 @@
-import '../../models/update_platform.dart';
+import '../../shared/update_platform.dart';
 
 class StoreConfig {
   final String name;

@@ -1,6 +1,6 @@
-import '../../models/release_status.dart';
-import '../../models/text_translations.dart';
-import '../../models/version.dart';
+import '../../shared/release_status.dart';
+import '../../shared/text_translations.dart';
+import '../../shared/version.dart';
 import 'store_config.dart';
 
 class ReleaseConfig {

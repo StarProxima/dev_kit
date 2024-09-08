@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../config/models/release_config.dart';
+import '../../parser/models/release_config.dart';
 import '../store.dart';
 import 'store_fetcher.dart';
 

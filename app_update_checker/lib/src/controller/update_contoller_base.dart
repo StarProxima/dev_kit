@@ -2,10 +2,10 @@
 
 import 'dart:async';
 
-import '../builder/models/app_update.dart';
+import '../localizer/models/app_update.dart';
 import 'exceptions.dart';
-import '../builder/models/release.dart';
-import '../builder/models/update_config.dart';
+import '../localizer/models/release.dart';
+import '../localizer/models/update_config.dart';
 
 abstract class UpdateContollerBase {
   Stream<AppUpdate?> get availableUpdateStream;

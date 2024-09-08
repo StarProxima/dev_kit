@@ -6,8 +6,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../linker/models/release_data.dart';
 import '../linker/models/update_config_data.dart';
-import '../models/text_translations.dart';
-import '../models/version.dart';
+import '../shared/text_translations.dart';
+import '../shared/version.dart';
 import 'models/release.dart';
 import 'models/update_config.dart';
 

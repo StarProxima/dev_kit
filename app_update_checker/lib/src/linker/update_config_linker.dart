@@ -1,10 +1,10 @@
 // ignore_for_file: avoid-recursive-calls
 
-import '../config/models/release_config.dart';
-import '../config/models/store_config.dart';
-import '../config/models/update_config_model.dart';
-import '../models/release_status.dart';
-import '../models/version.dart';
+import '../parser/models/release_config.dart';
+import '../parser/models/store_config.dart';
+import '../parser/models/update_config_model.dart';
+import '../shared/release_status.dart';
+import '../shared/version.dart';
 import '../stores/store.dart';
 import 'models/release_data.dart';
 import 'models/release_settings.dart';

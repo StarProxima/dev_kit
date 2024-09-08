@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:update_check/src/controller/update_controller.dart';
-import 'package:update_check/src/models/release_status.dart';
+import 'package:update_check/src/shared/release_status.dart';
 import 'package:update_check/src/widgets/update_alert.dart';
 import 'package:update_check/src/widgets/update_alert_handler.dart';
 
