@@ -20,29 +20,7 @@ class Store {
   final String? _name;
   String get name => _name ?? store.name;
 
-  const Store.googlePlay({
-    required this.url,
-    this.customData,
-  })  : store = Stores.googlePlay,
-        platforms = const [UpdatePlatform.android],
-        _name = null;
-
-  const Store.appStore({
-    required this.url,
-    this.customData,
-  })  : store = Stores.appStore,
-        platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
-        _name = null;
-
-  const Store.custom({
-    required String name,
-    required this.url,
-    required this.platforms,
-    this.customData,
-  })  : store = Stores.custom,
-        _name = name;
-
-  factory Store.fromConfig({
+  factory Store({
     required String name,
     required Uri url,
     required List<UpdatePlatform>? platforms,
@@ -65,4 +43,26 @@ class Store {
         );
     }
   }
+
+  const Store.googlePlay({
+    required this.url,
+    this.customData,
+  })  : store = Stores.googlePlay,
+        platforms = const [UpdatePlatform.android],
+        _name = null;
+
+  const Store.appStore({
+    required this.url,
+    this.customData,
+  })  : store = Stores.appStore,
+        platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
+        _name = null;
+
+  const Store.custom({
+    required String name,
+    required this.url,
+    required this.platforms,
+    this.customData,
+  })  : store = Stores.custom,
+        _name = name;
 }

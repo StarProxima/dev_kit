@@ -33,4 +33,39 @@ class ReleaseData {
     required this.stores,
     required this.customData,
   });
+
+  ReleaseData copyWith({
+    Version? version,
+    Version? refVersion,
+    int? buildNumber,
+    ReleaseStatus? status,
+    String? title,
+    TextTranslations? titleTranslations,
+    String? description,
+    TextTranslations? descriptionTranslations,
+    String? releaseNote,
+    TextTranslations? releaseNoteTranslations,
+    DateTime? publishDateUtc,
+    bool? canIgnoreRelease,
+    Duration? reminderPeriod,
+    Duration? releaseDelay,
+    List<Store>? stores,
+    Map<String, dynamic>? customData,
+  }) {
+    return ReleaseData(
+      version: version ?? this.version,
+      refVersion: refVersion ?? this.refVersion,
+      buildNumber: buildNumber ?? this.buildNumber,
+      status: status ?? this.status,
+      titleTranslations: titleTranslations ?? this.titleTranslations,
+      descriptionTranslations: descriptionTranslations ?? this.descriptionTranslations,
+      releaseNoteTranslations: releaseNoteTranslations ?? this.releaseNoteTranslations,
+      publishDateUtc: publishDateUtc ?? this.publishDateUtc,
+      canIgnoreRelease: canIgnoreRelease ?? this.canIgnoreRelease,
+      reminderPeriod: reminderPeriod ?? this.reminderPeriod,
+      releaseDelay: releaseDelay ?? this.releaseDelay,
+      stores: stores ?? this.stores,
+      customData: customData ?? this.customData,
+    );
+  }
 }

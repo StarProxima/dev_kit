@@ -23,6 +23,9 @@ linter:
     
     # ---
 
+    # False positive for some returns
+    join_return_with_assignment: false
+
     # False positive for custom enum-like classes (such as Flutter's "Colors")
     avoid_classes_with_only_static_members: false
 
@@ -190,7 +193,6 @@ linter:
     implicit_call_tearoffs: true
     implicit_reopen: true
     invalid_case_patterns: true
-    join_return_with_assignment: true
     leading_newlines_in_multiline_strings: true
     library_annotations: true
     library_names: true

@@ -1,8 +1,10 @@
 import 'dart:ui';
 
-import '../../data/localized_text.dart';
 import '../../linker/models/release_data.dart';
+import '../../models/release_status.dart';
+import '../../models/text_translations.dart';
 import '../../models/version.dart';
+import '../../stores/store.dart';
 
 class Release extends ReleaseData {
   final String title;
@@ -70,6 +72,45 @@ class Release extends ReleaseData {
       releaseDelay: releaseData.releaseDelay,
       stores: releaseData.stores,
       customData: releaseData.customData,
+    );
+  }
+
+  @override
+  Release copyWith({
+    Version? version,
+    Version? refVersion,
+    int? buildNumber,
+    ReleaseStatus? status,
+    String? title,
+    TextTranslations? titleTranslations,
+    String? description,
+    TextTranslations? descriptionTranslations,
+    String? releaseNote,
+    TextTranslations? releaseNoteTranslations,
+    DateTime? publishDateUtc,
+    bool? canIgnoreRelease,
+    Duration? reminderPeriod,
+    Duration? releaseDelay,
+    List<Store>? stores,
+    Map<String, dynamic>? customData,
+  }) {
+    return Release(
+      version: version ?? this.version,
+      refVersion: refVersion ?? this.refVersion,
+      buildNumber: buildNumber ?? this.buildNumber,
+      status: status ?? this.status,
+      title: title ?? this.title,
+      titleTranslations: titleTranslations ?? this.titleTranslations,
+      description: description ?? this.description,
+      descriptionTranslations: descriptionTranslations ?? this.descriptionTranslations,
+      releaseNote: releaseNote ?? this.releaseNote,
+      releaseNoteTranslations: releaseNoteTranslations ?? this.releaseNoteTranslations,
+      publishDateUtc: publishDateUtc ?? this.publishDateUtc,
+      canIgnoreRelease: canIgnoreRelease ?? this.canIgnoreRelease,
+      reminderPeriod: reminderPeriod ?? this.reminderPeriod,
+      releaseDelay: releaseDelay ?? this.releaseDelay,
+      stores: stores ?? this.stores,
+      customData: customData ?? this.customData,
     );
   }
 }
