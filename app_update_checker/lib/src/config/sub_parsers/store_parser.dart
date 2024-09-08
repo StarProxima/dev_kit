@@ -1,11 +1,11 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _StoreParser {
   const _StoreParser();
 
-  StoreDTO? parse(
+  StoreConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isStrict,
@@ -14,7 +14,7 @@ class _StoreParser {
     // short string syntax
     if (value is! Map<String, dynamic>) {
       if (isStrict && value is String) {
-        return StoreDTO(
+        return StoreConfig(
           name: value,
           url: null,
           platforms: null,
@@ -22,7 +22,7 @@ class _StoreParser {
         );
       }
 
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
 
       return null;
     }
@@ -35,12 +35,12 @@ class _StoreParser {
     var name = map.remove('name');
 
     if (name is! String?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       name = null;
     }
 
     if (name == null) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
 
       return null;
     }
@@ -49,7 +49,7 @@ class _StoreParser {
     var url = map.remove('url');
 
     if (url is! String?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       url = null;
     }
 
@@ -61,7 +61,7 @@ class _StoreParser {
     var platforms = map.remove('platforms');
 
     if (platforms is! List<String>?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       platforms = null;
     }
 
@@ -69,7 +69,7 @@ class _StoreParser {
     platforms as List<Object>?;
     platforms as List<UpdatePlatform>?;
 
-    return StoreDTO(
+    return StoreConfig(
       name: name,
       url: url,
       platforms: platforms,

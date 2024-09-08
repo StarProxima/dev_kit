@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-type-over-var
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _TextParser {
   const _TextParser();
@@ -16,7 +16,7 @@ class _TextParser {
         return {const Locale('en'): text};
       }
 
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       text = null;
     } else if (text != null) {
       text = Map<Locale, String>.fromEntries(

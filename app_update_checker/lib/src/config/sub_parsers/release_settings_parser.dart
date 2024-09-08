@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _ReleaseSettingsParser {
   _DurationParser get _durationParser => const _DurationParser();
@@ -9,7 +9,7 @@ class _ReleaseSettingsParser {
 
   const _ReleaseSettingsParser();
 
-  ReleaseSettingsDTO parse(
+  ReleaseSettingsConfig parse(
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
@@ -31,19 +31,17 @@ class _ReleaseSettingsParser {
     var canIgnoreRelease = map.remove('can_ignore_release');
 
     if (canIgnoreRelease is! bool?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       canIgnoreRelease = null;
     }
 
     // reminderPeriodInHours
     final reminderPeriodInHours = map.remove('reminder_period_hours');
-    final reminderPeriod =
-        _durationParser.parse(hours: reminderPeriodInHours, isDebug: isDebug);
+    final reminderPeriod = _durationParser.parse(hours: reminderPeriodInHours, isDebug: isDebug);
 
     // releaseDelayInHours
     final releaseDelayInHours = map.remove('release_delay_hours');
-    final releaseDelay =
-        _durationParser.parse(hours: releaseDelayInHours, isDebug: isDebug);
+    final releaseDelay = _durationParser.parse(hours: releaseDelayInHours, isDebug: isDebug);
 
     // deprecatedBeforeVersion
     var deprecatedBeforeVersion = map.remove('deprecated_before_version');
@@ -63,7 +61,7 @@ class _ReleaseSettingsParser {
     );
     requiredMinimumVersion as Version?;
 
-    return ReleaseSettingsDTO(
+    return ReleaseSettingsConfig(
       title: title,
       description: description,
       canIgnoreRelease: canIgnoreRelease,

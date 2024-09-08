@@ -1,5 +1,5 @@
-class DtoParserException implements Exception {
-  const DtoParserException();
+class UpdateConfigException implements Exception {
+  const UpdateConfigException();
 
   @override
   String toString() {

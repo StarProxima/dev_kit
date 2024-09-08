@@ -1,4 +1,4 @@
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _DurationParser {
   const _DurationParser();
@@ -9,10 +9,10 @@ class _DurationParser {
     required bool isDebug,
   }) {
     if (hours is! int?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       hours = null;
     } else if (hours != null && hours < 0) {
-      throw const DtoParserException();
+      throw const UpdateConfigException();
     }
 
     final duraton = hours == null ? null : Duration(hours: hours);

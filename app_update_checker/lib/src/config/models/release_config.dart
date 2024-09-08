@@ -1,10 +1,10 @@
-import '../../entity/localized_text.dart';
-import '../../entity/release_status.dart';
-import '../../entity/version.dart';
+import '../../models/localized_text.dart';
+import '../../models/release_status.dart';
+import '../../models/version.dart';
 
-import 'store_dto.dart';
+import 'store_config.dart';
 
-class ReleaseDTO {
+class ReleaseConfig {
   final Version version;
   final Version? refVersion;
   final int? buildNumber;
@@ -16,10 +16,10 @@ class ReleaseDTO {
   final bool? canIgnoreRelease;
   final Duration? reminderPeriod;
   final Duration? releaseDelay;
-  final List<StoreDTO>? stores;
+  final List<StoreConfig>? stores;
   final Map<String, dynamic> customData;
 
-  const ReleaseDTO({
+  const ReleaseConfig({
     required this.version,
     required this.refVersion,
     required this.buildNumber,
@@ -35,8 +35,8 @@ class ReleaseDTO {
     required this.customData,
   });
 
-  ReleaseDTO inherit(ReleaseDTO parent) {
-    return ReleaseDTO(
+  ReleaseConfig inherit(ReleaseConfig parent) {
+    return ReleaseConfig(
       version: version,
       refVersion: refVersion,
       buildNumber: buildNumber,

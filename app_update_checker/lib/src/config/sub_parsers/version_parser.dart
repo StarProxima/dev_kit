@@ -1,6 +1,6 @@
 // ignore_for_file: parameter_assignments
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _VersionParser {
   const _VersionParser();
@@ -12,11 +12,11 @@ class _VersionParser {
     required bool isDebug,
   }) {
     if (version is! String?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       version = null;
     }
     if (version == null) {
-      if (isStrict) throw const DtoParserException();
+      if (isStrict) throw const UpdateConfigException();
 
       return null;
     }

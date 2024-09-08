@@ -1,36 +1,35 @@
 // ignore_for_file: unused_field
 
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../builder/models/app_update.dart';
-import '../config/dto/models/release_settings_dto.dart';
-import '../config/dto/models/store_dto.dart';
-import '../config/dto/parser/checker_config_dto_parser.dart';
-import '../config/entity/checker_config.dart';
-import '../config/entity/checker_config_parser.dart';
-import '../config/entity/release.dart';
-import '../config/entity/stores/fetchers/store_fetcher.dart';
-import '../config/entity/version.dart';
+import '../config/models/release_settings_config.dart';
+import '../config/models/store_config.dart';
+import '../config/update_config_parser.dart';
+import '../linker/models/release_data.dart';
+import '../linker/models/update_config_data.dart';
+import '../linker/update_config_linker.dart';
+import '../models/version.dart';
+import '../stores/fetchers/store_fetcher.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
-  final _parser = const CheckerConfigDTOParser();
+  final _parser = const UpdateConfigParser();
 
-  final _linker = const CheckerConfigLinker();
+  final _linker = const UpdateConfigLinker();
 
   final _asyncPackageInfo = PackageInfo.fromPlatform();
 
-  Completer<CheckerConfig>? _configDataCompleter;
+  Completer<UpdateConfigData>? _configDataCompleter;
 
   final UpdateConfigProvider? _updateConfigProvider;
   final StoreFetcherCoordinator? _storeFetcherCoordinator;
-  final ReleaseSettingsDTO? _releaseSettings;
-  final List<StoreDTO>? _stores;
+  final ReleaseSettingsConfig? _releaseSettings;
+  final List<StoreConfig>? _stores;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => throw UnimplementedError();
@@ -38,8 +37,8 @@ class UpdateController extends UpdateContollerBase {
   UpdateController({
     UpdateConfigProvider? updateConfigProvider,
     StoreFetcherCoordinator? storeFetcherCoordinator,
-    ReleaseSettingsDTO? releaseSettings,
-    List<StoreDTO>? stores,
+    ReleaseSettingsConfig? releaseSettings,
+    List<StoreConfig>? stores,
   })  : _updateConfigProvider = updateConfigProvider,
         _storeFetcherCoordinator = storeFetcherCoordinator,
         _releaseSettings = releaseSettings,
@@ -101,24 +100,24 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<void> launchReleaseStore(Release release) {
+  Future<void> launchReleaseStore(ReleaseData release) {
     // TODO: implement launchStore
     throw UnimplementedError();
   }
 
   @override
-  Future<void> postponeRelease(Release release) {
+  Future<void> postponeRelease(ReleaseData release) {
     // TODO: implement postponeRelease
     throw UnimplementedError();
   }
 
   @override
-  Future<void> skipRelease(Release release) {
+  Future<void> skipRelease(ReleaseData release) {
     // TODO: implement skipRelease
     throw UnimplementedError();
   }
 
-  Future<Release?> _findLatestRelease() async {
+  Future<ReleaseData?> _findLatestRelease() async {
     // ignore: unused_local_variable, avoid-non-null-assertion
     final configData = await _configDataCompleter!.future;
     // ignore: unused_local_variable

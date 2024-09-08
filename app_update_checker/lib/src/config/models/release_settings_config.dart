@@ -1,7 +1,7 @@
-import '../../entity/localized_text.dart';
-import '../../entity/version.dart';
+import '../../models/localized_text.dart';
+import '../../models/version.dart';
 
-class ReleaseSettingsDTO {
+class ReleaseSettingsConfig {
   final LocalizedText? title;
   final LocalizedText? description;
   final bool? canIgnoreRelease;
@@ -11,7 +11,7 @@ class ReleaseSettingsDTO {
   final Version? requiredMinimumVersion;
   final Map<String, dynamic> customData;
 
-  const ReleaseSettingsDTO({
+  const ReleaseSettingsConfig({
     required this.title,
     required this.description,
     required this.canIgnoreRelease,

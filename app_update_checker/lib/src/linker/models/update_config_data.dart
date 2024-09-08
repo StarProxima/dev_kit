@@ -1,14 +1,14 @@
-import 'release.dart';
+import '../../stores/store.dart';
+import 'release_data.dart';
 import 'release_settings.dart';
-import 'stores/store.dart';
 
-class CheckerConfig {
+class UpdateConfigData {
   final ReleaseSettings releaseSettings;
   final List<Store> stores;
-  final List<Release> releases;
+  final List<ReleaseData> releases;
   final Map<String, dynamic> customData;
 
-  const CheckerConfig({
+  const UpdateConfigData({
     required this.releaseSettings,
     required this.stores,
     required this.releases,

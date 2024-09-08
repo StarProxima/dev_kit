@@ -1,4 +1,4 @@
-import '../update_platform.dart';
+import '../models/update_platform.dart';
 
 enum Stores {
   googlePlay,

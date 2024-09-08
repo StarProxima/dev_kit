@@ -1,6 +1,6 @@
-import '../../config/entity/release_status.dart';
-import '../../config/entity/stores/store.dart';
-import '../../config/entity/version.dart';
+import '../../models/release_status.dart';
+import '../../models/version.dart';
+import '../../stores/store.dart';
 
 class Release {
   final Version version;

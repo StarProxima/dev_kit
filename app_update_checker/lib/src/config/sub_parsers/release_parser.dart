@@ -1,17 +1,16 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-part of '../checker_config_dto_parser.dart';
+part of '../update_config_parser.dart';
 
 class _ReleaseParser {
   _StoreParser get _storeParser => const _StoreParser();
-  _ReleaseSettingsParser get _releaseSettingsParser =>
-      const _ReleaseSettingsParser();
+  _ReleaseSettingsParser get _releaseSettingsParser => const _ReleaseSettingsParser();
   _TextParser get _textParser => const _TextParser();
   _VersionParser get _versionParser => const _VersionParser();
 
   const _ReleaseParser();
 
-  ReleaseDTO? parse(
+  ReleaseConfig? parse(
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
@@ -41,7 +40,7 @@ class _ReleaseParser {
     var buildNumber = map.remove('build_number');
 
     if (buildNumber is! int?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       buildNumber = null;
     }
 
@@ -65,7 +64,7 @@ class _ReleaseParser {
     var publishDateUtc = map.remove('publish_date_utc');
 
     if (publishDateUtc is! String?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       publishDateUtc = null;
     }
 
@@ -76,18 +75,16 @@ class _ReleaseParser {
     var stores = map.remove('stores');
 
     if (stores is! List<Map<String, dynamic>>?) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       stores = null;
     } else if (stores != null) {
-      stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug))
-          .toList()
-          .whereType<StoreDTO>();
+      stores =
+          stores.map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug)).toList().whereType<StoreConfig>();
       stores as List<Object>;
-      stores as List<StoreDTO>;
+      stores as List<StoreConfig>;
     }
 
-    return ReleaseDTO(
+    return ReleaseConfig(
       version: version,
       refVersion: refVersion,
       buildNumber: buildNumber,

@@ -2,14 +2,14 @@
 
 import 'dart:ui';
 
-import '../../entity/release_status.dart';
-import '../../entity/update_platform.dart';
-import '../../entity/version.dart';
-import '../exceptions/dto_parser_exception.dart';
-import '../models/checker_config_dto.dart';
-import '../models/release_dto.dart';
-import '../models/release_settings_dto.dart';
-import '../models/store_dto.dart';
+import '../models/release_status.dart';
+import '../models/update_platform.dart';
+import '../models/version.dart';
+import 'models/release_config.dart';
+import 'models/release_settings_config.dart';
+import 'models/store_config.dart';
+import 'models/update_config.dart';
+import 'models/update_config_exception.dart';
 
 part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
@@ -18,15 +18,14 @@ part 'sub_parsers/store_parser.dart';
 part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
 
-class CheckerConfigDTOParser {
+class UpdateConfigParser {
   _StoreParser get _storeParser => const _StoreParser();
-  _ReleaseSettingsParser get _releaseSettingsParser =>
-      const _ReleaseSettingsParser();
+  _ReleaseSettingsParser get _releaseSettingsParser => const _ReleaseSettingsParser();
   _ReleaseParser get _releaseParser => const _ReleaseParser();
 
-  const CheckerConfigDTOParser();
+  const UpdateConfigParser();
 
-  CheckerConfigDTO parseConfig(
+  UpdateConfig parseConfig(
     Map<String, dynamic> map, {
     required bool isDebug,
   }) {
@@ -38,44 +37,39 @@ class CheckerConfigDTOParser {
       isDebug: isDebug,
     );
 
-    releaseSettings as ReleaseSettingsDTO;
+    releaseSettings as ReleaseSettingsConfig;
 
     // stores
     var stores = map.remove('stores');
 
-    if (stores == null) throw const DtoParserException();
+    if (stores == null) throw const UpdateConfigException();
 
     if (stores is! List<Map<String, dynamic>>) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       stores = null;
     } else {
-      stores = stores
-          .map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug))
-          .toList()
-          .whereType<StoreDTO>();
+      stores =
+          stores.map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug)).toList().whereType<StoreConfig>();
     }
     stores as List<Object>;
-    stores as List<StoreDTO>;
+    stores as List<StoreConfig>;
 
     // releases
     var releases = map.remove('releases');
 
-    if (releases == null) throw const DtoParserException();
+    if (releases == null) throw const UpdateConfigException();
 
     if (releases is! List<Map<String, dynamic>>) {
-      if (isDebug) throw const DtoParserException();
+      if (isDebug) throw const UpdateConfigException();
       releases = null;
     } else {
-      releases = releases
-          .map((e) => _releaseParser.parse(e, isDebug: isDebug))
-          .toList()
-          .whereType<ReleaseDTO>();
+      releases = releases.map((e) => _releaseParser.parse(e, isDebug: isDebug)).toList().whereType<ReleaseConfig>();
     }
 
     releases as List<Object>;
-    releases as List<ReleaseDTO>;
+    releases as List<ReleaseConfig>;
 
-    return CheckerConfigDTO(
+    return UpdateConfig(
       releaseSettings: releaseSettings,
       stores: stores,
       releases: releases,

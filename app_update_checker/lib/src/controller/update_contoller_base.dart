@@ -3,8 +3,8 @@
 import 'dart:async';
 
 import '../builder/models/app_update.dart';
-import '../config/entity/release.dart';
-import '../data/update_data.dart';
+import '../builder/models/exceptions.dart';
+import '../linker/models/release_data.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update);
 
@@ -25,11 +25,11 @@ abstract class UpdateContollerBase {
   Future<AppUpdate?> findAvailableUpdate();
 
   /// Skip a release, a release with this version will no longer be displayed.
-  Future<void> skipRelease(Release release);
+  Future<void> skipRelease(ReleaseData release);
 
   /// Postpone the release, it will display later after a set amount of time.
-  Future<void> postponeRelease(Release release);
+  Future<void> postponeRelease(ReleaseData release);
 
   /// Launches a link to the correct store to update the app.
-  Future<void> launchReleaseStore(Release release);
+  Future<void> launchReleaseStore(ReleaseData release);
 }

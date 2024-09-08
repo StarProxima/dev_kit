@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import '../dto/models/release_settings_dto.dart';
-import 'localized_text.dart';
-import 'version.dart';
+import '../../config/models/release_settings_config.dart';
+import '../../models/localized_text.dart';
+import '../../models/version.dart';
 
 class ReleaseSettings {
   final LocalizedText title;
@@ -25,7 +25,7 @@ class ReleaseSettings {
     required this.customData,
   });
 
-  factory ReleaseSettings.fromDTO(ReleaseSettingsDTO dto) {
+  factory ReleaseSettings.fromDTO(ReleaseSettingsConfig dto) {
     return ReleaseSettings(
       title: dto.title ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
       description: dto.description ?? {const Locale('en'): 'New update'},
