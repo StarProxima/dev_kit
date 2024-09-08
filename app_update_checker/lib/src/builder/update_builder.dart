@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../linker/models/release_data.dart' as data;
-import '../models/text_translations.dart';
 import '../models/version.dart';
 import 'models/release.dart';
 
@@ -18,33 +17,12 @@ class UpdateBuilder {
     required this.packageInfo,
   });
 
-  Release fromReleaseData(data.ReleaseData releaseData) {
-    String interpolation(String text) => text
-        .replaceAll(r'$appName', packageInfo.appName)
-        .replaceAll(r'$appVersion', Version.parse(packageInfo.version).toString())
-        .replaceAll(r'$releaseVersion', releaseData.version.toString());
-
-    final title = interpolation(releaseData.titleTranslations.byLocale(applocale));
-
-    final description = interpolation(releaseData.descriptionTranslations.byLocale(applocale));
-
-    final releaseNoteMap = releaseData.releaseNoteTranslations;
-    final releaseNote = releaseNoteMap == null ? null : interpolation(releaseNoteMap.byLocale(applocale));
-
-    return Release(
-      version: releaseData.version,
-      refVersion: releaseData.refVersion,
-      buildNumber: releaseData.buildNumber,
-      status: releaseData.status,
-      title: title,
-      description: description,
-      releaseNote: releaseNote,
-      publishDateUtc: releaseData.publishDateUtc,
-      canIgnoreRelease: releaseData.canIgnoreRelease,
-      reminderPeriod: releaseData.reminderPeriod,
-      releaseDelay: releaseData.releaseDelay,
-      stores: releaseData.stores,
-      customData: releaseData.customData,
+  Release localizeRelease(data.ReleaseData releaseData) {
+    return Release.localizedFromReleaseData(
+      releaseData: releaseData,
+      locale: applocale,
+      appName: packageInfo.appName,
+      appVersion: Version.parse(packageInfo.version),
     );
   }
 }

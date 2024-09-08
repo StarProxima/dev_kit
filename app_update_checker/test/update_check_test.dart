@@ -1,26 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:update_check/src/builder/models/release.dart';
 import 'package:update_check/src/controller/update_controller.dart';
+import 'package:update_check/src/widgets/update_alert.dart';
 
 void main() async {
   final controller = UpdateController();
 
   await controller.fetch();
 
-  // final widget = Scaffold(
-  //   body: UpdateAlert(
-  //     controller: controller,
-  //     onUpdateAvailable: (update) {
-  //       final release = update.release;
+  // ignore: unused_local_variable
+  final widget = Scaffold(
+    body: UpdateAlert(
+      controller: controller,
+      onUpdateAvailable: (update, controller) {
+        // ignore: avoid-unsafe-collection-methods
+        final releaseData = update.config.releases.first;
 
-  //       // Skip
-  //       controller.skipRelease(release);
+        Release.localizedFromReleaseData(
+          releaseData: releaseData,
+          locale: update.appLocale,
+          appName: update.appName,
+          appVersion: update.appVersion,
+        );
 
-  //       // Later
-  //       controller.postponeRelease(release);
+        controller.skipRelease(releaseData);
 
-  //       // Update
-  //       controller.launchReleaseStore(release);
-  //     },
-  //     child: const SizedBox(),
-  //   ),
-  // );
+        final release = update.availableRelease;
+
+        // Skip
+        controller.skipRelease(release);
+
+        // Later
+        controller.postponeRelease(release);
+
+        // Update
+        controller.launchReleaseStore(release);
+      },
+      child: const SizedBox(),
+    ),
+  );
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../builder/models/app_update.dart';
 import '../controller/update_controller.dart';
@@ -13,14 +13,14 @@ class UpdateAlert extends StatefulWidget {
     super.key,
     this.enabled = true,
     this.shouldCheckUpdateAfterAppResume = true,
-    required this.controller,
+    this.controller,
     this.onUpdateAvailable,
     required this.child,
   });
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
-  final UpdateController controller;
+  final UpdateController? controller;
   final OnUpdateAvailable? onUpdateAvailable;
 
   final Widget child;
@@ -32,6 +32,8 @@ class UpdateAlert extends StatefulWidget {
 class _UpdateAlertState extends State<UpdateAlert> {
   // ignore: avoid-late-keyword
   late final AppLifecycleListener _appLifecycleListener;
+
+  late final _controller = widget.controller ?? UpdateController();
 
   @override
   void initState() {
@@ -46,12 +48,12 @@ class _UpdateAlertState extends State<UpdateAlert> {
   }
 
   Future<void> _check() async {
-    await widget.controller.fetch();
-    final updateData = await widget.controller.findAvailableUpdate();
+    await _controller.fetch();
+    final updateData = await _controller.findAvailableUpdate();
 
     if (updateData == null) return;
 
-    widget.onUpdateAvailable?.call(updateData, widget.controller);
+    widget.onUpdateAvailable?.call(updateData, _controller);
   }
 
   @override
@@ -62,22 +64,6 @@ class _UpdateAlertState extends State<UpdateAlert> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: avoid-recursive-widget-calls
-    return UpdateAlert(
-      controller: UpdateController(),
-      onUpdateAvailable: (update, controller) {
-        showCupertinoDialog(
-          context: context,
-          builder: (context) {
-            controller.launchReleaseStore(update.availableRelease);
-
-            return SizedBox();
-          },
-        );
-      },
-      child: const SizedBox(),
-    );
-
     return widget.child;
   }
 }
