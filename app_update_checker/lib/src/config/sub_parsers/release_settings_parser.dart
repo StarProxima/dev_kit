@@ -62,8 +62,8 @@ class _ReleaseSettingsParser {
     requiredMinimumVersion as Version?;
 
     return ReleaseSettingsConfig(
-      title: title,
-      description: description,
+      titleTranslations: title,
+      descriptionTranslations: description,
       canIgnoreRelease: canIgnoreRelease,
       reminderPeriod: reminderPeriod,
       releaseDelay: releaseDelay,

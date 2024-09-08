@@ -100,9 +100,9 @@ class UpdateConfigLinker {
       final canIgnoreRelease = releaseConfig.canIgnoreRelease;
       final customData = releaseConfig.customData;
       final publishDateUtc = releaseConfig.publishDateUtc;
-      final title = releaseConfig.titleTranslations;
-      final description = releaseConfig.descriptionTranslations;
-      final releaseNote = releaseConfig.releaseNoteTranslations;
+      final titleTranslations = releaseConfig.titleTranslations;
+      final descriptionTranslations = releaseConfig.descriptionTranslations;
+      final releaseNoteTranslations = releaseConfig.releaseNoteTranslations;
       final releaseDelay = releaseConfig.releaseDelay;
       final reminderPeriod = releaseConfig.reminderPeriod;
 
@@ -137,9 +137,9 @@ class UpdateConfigLinker {
         refVersion: refVersion,
         buildNumber: buildNumber,
         status: status ?? ReleaseStatus.active,
-        titleTranslations: title ?? releaseSettings.title,
-        descriptionTranslations: description ?? releaseSettings.description,
-        releaseNoteTranslations: releaseNote,
+        titleTranslations: titleTranslations ?? releaseSettings.titleTranslations,
+        descriptionTranslations: descriptionTranslations ?? releaseSettings.descriptionTranslations,
+        releaseNoteTranslations: releaseNoteTranslations,
         publishDateUtc: publishDateUtc,
         canIgnoreRelease: canIgnoreRelease ?? releaseSettings.canIgnoreRelease,
         reminderPeriod: reminderPeriod ?? releaseSettings.reminderPeriod,

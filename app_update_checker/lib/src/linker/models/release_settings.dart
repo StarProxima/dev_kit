@@ -5,8 +5,8 @@ import '../../models/text_translations.dart';
 import '../../models/version.dart';
 
 class ReleaseSettings {
-  final TextTranslations title;
-  final TextTranslations description;
+  final TextTranslations titleTranslations;
+  final TextTranslations descriptionTranslations;
   final bool canIgnoreRelease;
   final Duration reminderPeriod;
   final Duration releaseDelay;
@@ -15,8 +15,8 @@ class ReleaseSettings {
   final Map<String, dynamic>? customData;
 
   const ReleaseSettings({
-    required this.title,
-    required this.description,
+    required this.titleTranslations,
+    required this.descriptionTranslations,
     required this.canIgnoreRelease,
     required this.reminderPeriod,
     required this.releaseDelay,
@@ -27,8 +27,8 @@ class ReleaseSettings {
 
   factory ReleaseSettings.fromConfig(ReleaseSettingsConfig config) {
     return ReleaseSettings(
-      title: config.title ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
-      description: config.description ?? {const Locale('en'): 'New update'},
+      titleTranslations: config.titleTranslations ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
+      descriptionTranslations: config.descriptionTranslations ?? {const Locale('en'): 'New update'},
       canIgnoreRelease: config.canIgnoreRelease ?? true,
       reminderPeriod: config.reminderPeriod ?? const Duration(days: 7),
       releaseDelay: config.releaseDelay ?? Duration.zero,
