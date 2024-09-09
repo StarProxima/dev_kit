@@ -6,6 +6,7 @@ import '../parser/models/update_config_model.dart';
 import '../shared/release_status.dart';
 import '../shared/version.dart';
 import '../stores/store.dart';
+import 'models/exceptions.dart';
 import 'models/release_data.dart';
 import 'models/release_settings.dart';
 import 'models/update_config_data.dart';
@@ -65,39 +66,16 @@ class UpdateConfigLinker {
   }) {
     final releases = <ReleaseData>[];
 
-    // Версия для релиза не уникальна.
-    // Может быть несколько релизов с одинаковой версией, но с разными платформами.
-    // В том числе по этому они идут списком, а не мапой.
-    // TODO: Подумать, как тогда реализовать ref с dfs
-    //
-    // Пример:
-    // - version: 0.0.1
-    //   title: Title 1
-    // - version: 0.0.1
-    //   ref_version: 0.0.1
-    //   title: Title 2
-    // - version: 0.0.1
-    //   ref_version: 0.0.1
-    //
-    // Вариант 1:
-    // Ищем релиз с его version == нашему refVersion, но у которого его version != его refVersion.
-    // Если не нашли - ошибка (циклическая зависимость)?
-    // При этом если вышли на версию, через которую уже проходили - ошибка (циклическая зависимость).
-    //
-    // Тут у третьего резиза должен быть Title 1, а не Title 2.
-    //
-    // Вариант 2:
-    // Берём самый ближайший релиз с этой версией. (Сортировка не сломает ничего?)
-    //
-    // Тогда у третьего резиза должен быть Title 2, а не Title 1.
-    //
     // TODO: Написать отдельные тесты на всю это хуету с ref
     final releaseByVersion = {
       for (final release in updateConfig.releases) release.version: release,
     };
-    final releaseStraightRef = <Version, ReleaseConfig>{};
+    final releaseStraightRef = <Version, ReleaseConfig?>{};
     ReleaseConfig mergedReleaseRefDFS(ReleaseConfig node) {
-      if (releaseStraightRef[node.version] != null) {
+      if (releaseStraightRef.containsKey(node.version)) {
+        // если мы пришли вновь в активированную вершину, значит у нас циклическая зависимость.
+        if (releaseStraightRef[node.version] == null) throw const CyclicDependenceException();
+
         return releaseStraightRef[node.version]!;
       }
 
@@ -108,6 +86,8 @@ class UpdateConfigLinker {
       }
 
       final refRelease = releaseByVersion[node.refVersion]!;
+      // Обозначаем, что мы зашли в вершину
+      releaseStraightRef[node.version] = null;
       final mergedRefRelease = mergedReleaseRefDFS(refRelease);
       final inheritedRelease = node.inherit(mergedRefRelease);
       releaseStraightRef[node.version] = inheritedRelease;
