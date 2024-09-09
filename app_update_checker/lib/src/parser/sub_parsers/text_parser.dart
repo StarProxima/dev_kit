@@ -2,8 +2,8 @@
 
 part of '../update_config_parser.dart';
 
-class _TextParser {
-  const _TextParser();
+class TextParser {
+  const TextParser();
 
   Map<Locale, String> parse(
     // ignore: avoid-dynamic

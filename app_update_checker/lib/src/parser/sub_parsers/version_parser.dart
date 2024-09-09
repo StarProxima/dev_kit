@@ -2,8 +2,8 @@
 
 part of '../update_config_parser.dart';
 
-class _VersionParser {
-  const _VersionParser();
+class VersionParser {
+  const VersionParser();
 
   Version? parse(
     // ignore: avoid-dynamic

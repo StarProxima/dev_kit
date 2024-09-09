@@ -2,13 +2,13 @@
 
 part of '../update_config_parser.dart';
 
-class _ReleaseParser {
-  _StoreParser get _storeParser => const _StoreParser();
-  _ReleaseSettingsParser get _releaseSettingsParser => const _ReleaseSettingsParser();
-  _TextParser get _textParser => const _TextParser();
-  _VersionParser get _versionParser => const _VersionParser();
+class ReleaseParser {
+  StoreParser get _storeParser => const StoreParser();
+  ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
+  TextParser get _textParser => const TextParser();
+  VersionParser get _versionParser => const VersionParser();
 
-  const _ReleaseParser();
+  const ReleaseParser();
 
   ReleaseConfig? parse(
     Map<String, dynamic> map, {

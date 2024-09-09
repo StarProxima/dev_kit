@@ -2,12 +2,12 @@
 
 part of '../update_config_parser.dart';
 
-class _ReleaseSettingsParser {
-  _DurationParser get _durationParser => const _DurationParser();
-  _TextParser get _textParser => const _TextParser();
-  _VersionParser get _versionParser => const _VersionParser();
+class ReleaseSettingsParser {
+  DurationParser get _durationParser => const DurationParser();
+  TextParser get _textParser => const TextParser();
+  VersionParser get _versionParser => const VersionParser();
 
-  const _ReleaseSettingsParser();
+  const ReleaseSettingsParser();
 
   ReleaseSettingsConfig parse(
     Map<String, dynamic> map, {

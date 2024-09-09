@@ -2,8 +2,8 @@
 
 part of '../update_config_parser.dart';
 
-class _StoreParser {
-  const _StoreParser();
+class StoreParser {
+  const StoreParser();
 
   StoreConfig? parse(
     // ignore: avoid-dynamic

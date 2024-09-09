@@ -19,9 +19,9 @@ part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
 
 class UpdateConfigParser {
-  _StoreParser get _storeParser => const _StoreParser();
-  _ReleaseSettingsParser get _releaseSettingsParser => const _ReleaseSettingsParser();
-  _ReleaseParser get _releaseParser => const _ReleaseParser();
+  StoreParser get _storeParser => const StoreParser();
+  ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
+  ReleaseParser get _releaseParser => const ReleaseParser();
 
   const UpdateConfigParser();
 
