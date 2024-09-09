@@ -49,6 +49,24 @@ void main() {
       expect(result.customData?['customField'], 'customValue');
     });
 
+    test('should throw exception if short store syntax for global store', () {
+      final configMap = {
+        'stores': [
+          'googlePlay',
+          {
+            'name': 'appStore',
+            'url': 'https://apps.apple.com',
+          },
+        ],
+        'releases': [],
+      };
+
+      expect(
+        () => updateConfigParser.parseConfig(configMap, isDebug: false),
+        throwsA(isA<UpdateConfigException>()),
+      );
+    });
+
     test('should throw exception if releases are missing', () {
       final configMap = {
         'release_settings': {
