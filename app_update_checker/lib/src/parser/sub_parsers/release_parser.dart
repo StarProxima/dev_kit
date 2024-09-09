@@ -78,8 +78,10 @@ class ReleaseParser {
       if (isDebug) throw const UpdateConfigException();
       stores = null;
     } else if (stores != null) {
-      stores =
-          stores.map((e) => _storeParser.parse(e, isStrict: false, isDebug: isDebug)).toList().whereType<StoreConfig>();
+      stores = stores
+          .map((e) => _storeParser.parse(e, isGlobalStore: false, isDebug: isDebug))
+          .toList()
+          .whereType<StoreConfig>();
       stores as List<Object>;
       stores as List<StoreConfig>;
     }

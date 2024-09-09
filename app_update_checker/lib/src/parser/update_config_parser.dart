@@ -49,8 +49,10 @@ class UpdateConfigParser {
       if (isDebug) throw const UpdateConfigException();
       stores = null;
     } else {
-      stores =
-          stores.map((e) => _storeParser.parse(e, isStrict: true, isDebug: isDebug)).toList().whereType<StoreConfig>();
+      stores = stores
+          .map((e) => _storeParser.parse(e, isGlobalStore: true, isDebug: isDebug))
+          .toList()
+          .whereType<StoreConfig>();
     }
     stores as List<Object>;
     stores as List<StoreConfig>;
