@@ -23,8 +23,8 @@ class VersionParser {
 
     try {
       return Version.parse(version);
-    } catch (e) {
-      if (isDebug) rethrow;
+    } catch (e, s) {
+      if (isDebug) Error.throwWithStackTrace(UpdateConfigException(), s);
 
       return null;
     }
