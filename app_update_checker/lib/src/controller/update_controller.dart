@@ -1,10 +1,12 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, use_late_for_private_fields_and_variables
 
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../fetcher/update_config_fetcher.dart';
+import '../finder/update_finder.dart';
 import '../linker/models/release_data.dart';
 import '../linker/models/update_config_data.dart';
 import '../linker/update_config_linker.dart';
@@ -15,24 +17,22 @@ import '../parser/models/release_settings_config.dart';
 import '../parser/models/store_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/update_platform.dart';
+import '../shared/version.dart';
 import '../stores/fetchers/store_fetcher.dart';
-import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 
 // TODO: Тут хуевасто всё написано, т.к. api менялся, лучше с нуля
 class UpdateController extends UpdateContollerBase {
-  final _parser = const UpdateConfigParser();
-
-  final _linker = const UpdateConfigLinker();
-
   final _asyncPackageInfo = PackageInfo.fromPlatform();
-
   Completer<UpdateConfigData>? _configDataCompleter;
 
-  final UpdatePlatform? _platform;
-  final UpdateConfigProvider? _updateConfigProvider;
-  final StoreFetcherCoordinator? _storeFetcherCoordinator;
+  final UpdateConfigFetcher? _updateConfigFetcher;
+  final _parser = const UpdateConfigParser();
   final ReleaseSettingsConfig? _releaseSettings;
+  final _linker = const UpdateConfigLinker();
+  UpdateFinder? _finder;
+  final StoreFetcherCoordinator? _storeFetcherCoordinator;
+  final UpdatePlatform _platform;
   final List<StoreConfig>? _stores;
 
   @override
@@ -42,12 +42,12 @@ class UpdateController extends UpdateContollerBase {
   Stream<UpdateConfig> get updateConfigStream => throw UnimplementedError();
 
   UpdateController({
-    UpdateConfigProvider? updateConfigProvider,
+    UpdateConfigFetcher? updateConfigFetcher,
     StoreFetcherCoordinator? storeFetcherCoordinator,
     ReleaseSettingsConfig? releaseSettings,
     List<StoreConfig>? stores,
     UpdatePlatform? platform,
-  })  : _updateConfigProvider = updateConfigProvider,
+  })  : _updateConfigFetcher = updateConfigFetcher,
         _storeFetcherCoordinator = storeFetcherCoordinator,
         _releaseSettings = releaseSettings,
         _stores = stores,
@@ -57,19 +57,28 @@ class UpdateController extends UpdateContollerBase {
   Future<void> fetch() async {
     _configDataCompleter = Completer();
 
-    final provider = _updateConfigProvider;
-    if (provider == null) return;
-
-    final rawConfig = await provider.fetch();
+    final fetcher = _updateConfigFetcher;
+    if (fetcher == null) return;
+    final rawConfig = await fetcher.fetch();
 
     // ignore: unused_local_variable
     final config = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
 
-    // final configData = _linker.parseConfigFromModel(config);
+    final configData = _linker.linkConfigs(
+      releaseSettingsConfig: _releaseSettings ?? config.releaseSettings,
+      releasesConfig: config.releases,
+      storesConfig: config.stores,
+      customData: config.customData,
+    );
+
+    //TODO где знаюзать storeFetcherCoordinator? Откуда брать Store?
 
     // _configDataCompleter?.complete(configData);
+    // TODO дальше...
+    final packageInfo = await _asyncPackageInfo;
+    _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
 
-    // final updateData = await findAvailableUpdate();
+    final updateData = await findAvailableUpdate();
 
     // if (updateData == null) return;
 
