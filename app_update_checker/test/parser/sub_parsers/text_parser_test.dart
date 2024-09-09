@@ -71,7 +71,7 @@ void main() {
     test('should handle empty Map and return empty map', () {
       final value = <String, String>{};
       final result = textParser.parse(value, isDebug: isDebug);
-      expect(result, isEmpty);
+      expect(result, isNull);
     });
 
     test('should handle mixed locales and values correctly', () {
