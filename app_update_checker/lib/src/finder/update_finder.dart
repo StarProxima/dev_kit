@@ -48,7 +48,8 @@ class UpdateFinder {
           continue releasesLoop;
 
         case ReleaseStatus.required || ReleaseStatus.recommended || ReleaseStatus.active:
-          if (latestRelease != null) latestRelease = release;
+          if (latestRelease == null) latestRelease = release;
+
 
           // Latest release status 1: handle releaseStatus
 
