@@ -2,17 +2,23 @@
 
 import 'dart:async';
 
-import '../builder/models/app_update.dart';
-import '../builder/models/exceptions.dart';
-import '../linker/models/release_data.dart';
-
-typedef OnUpdateAvailable = FutureOr<void> Function(AppUpdate update);
+import '../localizer/models/app_update.dart';
+import '../localizer/models/release.dart';
+import '../localizer/models/update_config.dart';
+import 'exceptions.dart';
 
 abstract class UpdateContollerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
-  /// Check releases from the config and stores.
+  Stream<UpdateConfig> get updateConfigStream;
+
+  /// Check new releases from the update config and stores.
   Future<void> fetch();
+
+  /// Get current update config
+  ///
+  /// Does not make a new request if the data already exists.
+  Future<UpdateConfig> getCurrentUpdateConfig();
 
   /// Finds an update
   ///
@@ -25,11 +31,11 @@ abstract class UpdateContollerBase {
   Future<AppUpdate?> findAvailableUpdate();
 
   /// Skip a release, a release with this version will no longer be displayed.
-  Future<void> skipRelease(ReleaseData release);
+  Future<void> skipRelease(Release release);
 
   /// Postpone the release, it will display later after a set amount of time.
-  Future<void> postponeRelease(ReleaseData release);
+  Future<void> postponeRelease(Release release);
 
   /// Launches a link to the correct store to update the app.
-  Future<void> launchReleaseStore(ReleaseData release);
+  Future<void> launchReleaseStore(Release release);
 }

@@ -1,7 +1,7 @@
 part of '../update_config_parser.dart';
 
-class _DurationParser {
-  const _DurationParser();
+class DurationParser {
+  const DurationParser();
 
   Duration? parse({
     // ignore: avoid-dynamic

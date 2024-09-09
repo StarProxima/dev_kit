@@ -1,21 +1,32 @@
-import 'package:flutter/widgets.dart';
+// ignore_for_file: prefer-named-parameters, prefer-correct-callback-field-name, use_build_context_synchronously
 
-import '../controller/update_contoller_base.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
 import '../controller/update_controller.dart';
+import '../localizer/models/app_update.dart';
+import 'update_alert_handler.dart';
+
+typedef OnUpdateAvailable = FutureOr<void> Function(
+  BuildContext context,
+  AppUpdate update,
+  UpdateController controller,
+);
 
 class UpdateAlert extends StatefulWidget {
   const UpdateAlert({
     super.key,
     this.enabled = true,
+    this.controller,
     this.shouldCheckUpdateAfterAppResume = true,
-    required this.controller,
-    this.onUpdateAvailable,
+    this.onUpdateAvailable = UpdateAlertHandler.adaptiveDialog,
     required this.child,
   });
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
-  final UpdateController controller;
+  final UpdateController? controller;
   final OnUpdateAvailable? onUpdateAvailable;
 
   final Widget child;
@@ -27,6 +38,8 @@ class UpdateAlert extends StatefulWidget {
 class _UpdateAlertState extends State<UpdateAlert> {
   // ignore: avoid-late-keyword
   late final AppLifecycleListener _appLifecycleListener;
+
+  late final _controller = widget.controller ?? UpdateController();
 
   @override
   void initState() {
@@ -41,12 +54,12 @@ class _UpdateAlertState extends State<UpdateAlert> {
   }
 
   Future<void> _check() async {
-    await widget.controller.fetch();
-    final updateData = await widget.controller.findAvailableUpdate();
+    await _controller.fetch();
+    final updateData = await _controller.findAvailableUpdate();
 
     if (updateData == null) return;
 
-    widget.onUpdateAvailable?.call(updateData);
+    widget.onUpdateAvailable?.call(context, updateData, _controller);
   }
 
   @override

@@ -1,15 +1,15 @@
 import 'dart:ui';
 
-import '../../linker/models/update_config_data.dart';
-import '../../models/version.dart';
+import '../../shared/version.dart';
 
 import 'release.dart';
+import 'update_config.dart';
 
 class AppUpdate {
   final String appName;
   final Version appVersion;
   final Locale appLocale;
-  final UpdateConfigData config;
+  final UpdateConfig config;
   final Release availableRelease;
 
   const AppUpdate({

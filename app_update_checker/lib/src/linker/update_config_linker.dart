@@ -1,11 +1,12 @@
 // ignore_for_file: avoid-recursive-calls
 
-import '../config/models/release_config.dart';
-import '../config/models/store_config.dart';
-import '../config/models/update_config.dart';
-import '../models/release_status.dart';
-import '../models/version.dart';
+import '../parser/models/release_config.dart';
+import '../parser/models/release_settings_config.dart';
+import '../parser/models/store_config.dart';
+import '../shared/release_status.dart';
+import '../shared/version.dart';
 import '../stores/store.dart';
+import 'models/exceptions.dart';
 import 'models/release_data.dart';
 import 'models/release_settings.dart';
 import 'models/update_config_data.dart';
@@ -13,18 +14,21 @@ import 'models/update_config_data.dart';
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
-  UpdateConfigData parseFromDTO(UpdateConfig checkerConfigDTO) {
-    final releaseSettings = ReleaseSettings.fromDTO(checkerConfigDTO.releaseSettings);
+  UpdateConfigData linkConfigs({
+    required ReleaseSettingsConfig releaseSettingsConfig,
+    required List<ReleaseConfig> releasesConfig,
+    required List<StoreConfig> storesConfig,
+    required Map<String, dynamic>? customData,
+  }) {
+    final releaseSettings = ReleaseSettings.fromConfig(releaseSettingsConfig);
 
-    final stores = _parseStore(checkerConfigDTO.stores);
+    final stores = _parseStore(storesConfig);
 
     final releases = _parseReleases(
       stores: stores,
-      checkerConfigDTO: checkerConfigDTO,
+      releasesConfig: releasesConfig,
       releaseSettings: releaseSettings,
     );
-
-    final customData = checkerConfigDTO.customData;
 
     return UpdateConfigData(
       releaseSettings: releaseSettings,
@@ -34,12 +38,12 @@ class UpdateConfigLinker {
     );
   }
 
-  List<Store> _parseStore(List<StoreConfig> storesDTO) {
+  List<Store> _parseStore(List<StoreConfig> storesConfig) {
     final stores = <Store>[];
-    for (final storeDTO in storesDTO) {
-      final name = storeDTO.name;
-      final url = storeDTO.url;
-      final platforms = storeDTO.platforms;
+    for (final storeConfig in storesConfig) {
+      final name = storeConfig.name;
+      final url = storeConfig.url;
+      final platforms = storeConfig.platforms;
 
       if (url == null) {
         throw FormatException(
@@ -47,10 +51,11 @@ class UpdateConfigLinker {
           "Can't parse store with parameters: $name, $url, $platforms",
         );
       }
-      stores.add(Store.fromConfig(
+      stores.add(Store(
         name: name,
         url: url,
         platforms: platforms,
+        customData: storeConfig.customData,
       ));
     }
 
@@ -59,17 +64,21 @@ class UpdateConfigLinker {
 
   List<ReleaseData> _parseReleases({
     required List<Store> stores,
-    required UpdateConfig checkerConfigDTO,
+    required List<ReleaseConfig> releasesConfig,
     required ReleaseSettings releaseSettings,
   }) {
     final releases = <ReleaseData>[];
 
+    // TODO: Написать отдельные тесты на всю это хуету с ref
     final releaseByVersion = {
-      for (final release in checkerConfigDTO.releases) release.version: release,
+      for (final release in releasesConfig) release.version: release,
     };
-    final releaseStraightRef = <Version, ReleaseConfig>{};
+    final releaseStraightRef = <Version, ReleaseConfig?>{};
     ReleaseConfig mergedReleaseRefDFS(ReleaseConfig node) {
-      if (releaseStraightRef[node.version] != null) {
+      if (releaseStraightRef.containsKey(node.version)) {
+        // если мы пришли вновь в активированную вершину, значит у нас циклическая зависимость.
+        if (releaseStraightRef[node.version] == null) throw const CyclicDependenceException();
+
         return releaseStraightRef[node.version]!;
       }
 
@@ -80,6 +89,8 @@ class UpdateConfigLinker {
       }
 
       final refRelease = releaseByVersion[node.refVersion]!;
+      // Обозначаем, что мы зашли в вершину
+      releaseStraightRef[node.version] = null;
       final mergedRefRelease = mergedReleaseRefDFS(refRelease);
       final inheritedRelease = node.inherit(mergedRefRelease);
       releaseStraightRef[node.version] = inheritedRelease;
@@ -87,33 +98,33 @@ class UpdateConfigLinker {
       return inheritedRelease;
     }
 
-    for (ReleaseConfig releaseDTO in checkerConfigDTO.releases) {
-      final refVersion = releaseDTO.refVersion;
+    for (ReleaseConfig releaseConfig in releasesConfig) {
+      final refVersion = releaseConfig.refVersion;
       if (refVersion != null) {
-        releaseDTO = mergedReleaseRefDFS(releaseDTO);
+        releaseConfig = mergedReleaseRefDFS(releaseConfig);
       }
 
-      final version = releaseDTO.version;
-      final buildNumber = releaseDTO.buildNumber;
-      final status = releaseDTO.status;
-      final canIgnoreRelease = releaseDTO.canIgnoreRelease;
-      final customData = releaseDTO.customData;
-      final publishDateUtc = releaseDTO.publishDateUtc;
-      final title = releaseDTO.title;
-      final description = releaseDTO.description;
-      final releaseNote = releaseDTO.releaseNote;
-      final releaseDelay = releaseDTO.releaseDelay;
-      final reminderPeriod = releaseDTO.reminderPeriod;
+      final version = releaseConfig.version;
+      final buildNumber = releaseConfig.buildNumber;
+      final status = releaseConfig.status;
+      final canIgnoreRelease = releaseConfig.canIgnoreRelease;
+      final customData = releaseConfig.customData;
+      final publishDateUtc = releaseConfig.publishDateUtc;
+      final titleTranslations = releaseConfig.titleTranslations;
+      final descriptionTranslations = releaseConfig.descriptionTranslations;
+      final releaseNoteTranslations = releaseConfig.releaseNoteTranslations;
+      final releaseDelay = releaseConfig.releaseDelay;
+      final reminderPeriod = releaseConfig.reminderPeriod;
 
       final releaseStores = <Store>[];
-      final storesDTO = releaseDTO.stores;
-      if (storesDTO == null) {
+      final storesConfig = releaseConfig.stores;
+      if (storesConfig == null) {
         releaseStores.addAll(stores);
       } else {
-        for (final releaseStoreDTO in storesDTO) {
-          final name = releaseStoreDTO.name;
-          final url = releaseStoreDTO.url;
-          final platforms = releaseStoreDTO.platforms;
+        for (final releaseStoreConfig in storesConfig) {
+          final name = releaseStoreConfig.name;
+          final url = releaseStoreConfig.url;
+          final platforms = releaseStoreConfig.platforms;
           final globalStore = List<Store?>.from(stores).firstWhere(
             (store) => store?.name == name,
             orElse: () => null,
@@ -122,10 +133,11 @@ class UpdateConfigLinker {
           final storeUrl = url ?? globalStore?.url;
           if (storeUrl == null) continue;
 
-          releaseStores.add(Store.fromConfig(
+          releaseStores.add(Store(
             name: name,
             url: storeUrl,
             platforms: platforms ?? globalStore?.platforms,
+            customData: releaseStoreConfig.customData ?? globalStore?.customData,
           ));
         }
       }
@@ -135,9 +147,9 @@ class UpdateConfigLinker {
         refVersion: refVersion,
         buildNumber: buildNumber,
         status: status ?? ReleaseStatus.active,
-        title: title ?? releaseSettings.title,
-        description: description ?? releaseSettings.description,
-        releaseNote: releaseNote,
+        titleTranslations: titleTranslations ?? releaseSettings.titleTranslations,
+        descriptionTranslations: descriptionTranslations ?? releaseSettings.descriptionTranslations,
+        releaseNoteTranslations: releaseNoteTranslations,
         publishDateUtc: publishDateUtc,
         canIgnoreRelease: canIgnoreRelease ?? releaseSettings.canIgnoreRelease,
         reminderPeriod: reminderPeriod ?? releaseSettings.reminderPeriod,

@@ -5,18 +5,21 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../builder/models/app_update.dart';
-import '../config/models/release_settings_config.dart';
-import '../config/models/store_config.dart';
-import '../config/update_config_parser.dart';
 import '../linker/models/release_data.dart';
 import '../linker/models/update_config_data.dart';
 import '../linker/update_config_linker.dart';
-import '../models/version.dart';
+import '../localizer/models/app_update.dart';
+import '../localizer/models/release.dart';
+import '../localizer/models/update_config.dart';
+import '../parser/models/release_settings_config.dart';
+import '../parser/models/store_config.dart';
+import '../parser/update_config_parser.dart';
+import '../shared/update_platform.dart';
 import '../stores/fetchers/store_fetcher.dart';
 import 'update_config_provider.dart';
 import 'update_contoller_base.dart';
 
+// TODO: Тут хуевасто всё написано, т.к. api менялся, лучше с нуля
 class UpdateController extends UpdateContollerBase {
   final _parser = const UpdateConfigParser();
 
@@ -26,6 +29,7 @@ class UpdateController extends UpdateContollerBase {
 
   Completer<UpdateConfigData>? _configDataCompleter;
 
+  final UpdatePlatform? _platform;
   final UpdateConfigProvider? _updateConfigProvider;
   final StoreFetcherCoordinator? _storeFetcherCoordinator;
   final ReleaseSettingsConfig? _releaseSettings;
@@ -34,15 +38,20 @@ class UpdateController extends UpdateContollerBase {
   @override
   Stream<AppUpdate> get availableUpdateStream => throw UnimplementedError();
 
+  @override
+  Stream<UpdateConfig> get updateConfigStream => throw UnimplementedError();
+
   UpdateController({
     UpdateConfigProvider? updateConfigProvider,
     StoreFetcherCoordinator? storeFetcherCoordinator,
     ReleaseSettingsConfig? releaseSettings,
     List<StoreConfig>? stores,
+    UpdatePlatform? platform,
   })  : _updateConfigProvider = updateConfigProvider,
         _storeFetcherCoordinator = storeFetcherCoordinator,
         _releaseSettings = releaseSettings,
-        _stores = stores;
+        _stores = stores,
+        _platform = platform ?? UpdatePlatform.current();
 
   @override
   Future<void> fetch() async {
@@ -53,13 +62,12 @@ class UpdateController extends UpdateContollerBase {
 
     final rawConfig = await provider.fetch();
 
+    // ignore: unused_local_variable
     final config = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
 
-    final configData = _linker.parseFromDTO(config);
+    // final configData = _linker.parseConfigFromModel(config);
 
-    // TODO: Process with localizaton and interpolation
-
-    _configDataCompleter?.complete(configData);
+    // _configDataCompleter?.complete(configData);
 
     // final updateData = await findAvailableUpdate();
 
@@ -79,12 +87,11 @@ class UpdateController extends UpdateContollerBase {
 
     if (latestRelease == null) return null;
 
-    // ignore: avoid-non-null-assertion
-    final configData = await _configDataCompleter!.future;
-    final packageInfo = await _asyncPackageInfo;
+    // final configData = await _configDataCompleter!.future;
+    // final packageInfo = await _asyncPackageInfo;
 
-    final appName = packageInfo.appName;
-    final appVersion = Version.parse(packageInfo.version);
+    // final appName = packageInfo.appName;
+    // final appVersion = Version.parse(packageInfo.version);
 
     throw UnimplementedError();
 
@@ -100,20 +107,26 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<void> launchReleaseStore(ReleaseData release) {
+  Future<void> launchReleaseStore(Release release) {
     // TODO: implement launchStore
     throw UnimplementedError();
   }
 
   @override
-  Future<void> postponeRelease(ReleaseData release) {
+  Future<void> postponeRelease(Release release) {
     // TODO: implement postponeRelease
     throw UnimplementedError();
   }
 
   @override
-  Future<void> skipRelease(ReleaseData release) {
+  Future<void> skipRelease(Release release) {
     // TODO: implement skipRelease
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<UpdateConfig> getCurrentUpdateConfig() {
+    // TODO: implement getUpdateConfig
     throw UnimplementedError();
   }
 

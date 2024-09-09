@@ -68,6 +68,7 @@ release_settings:
   description: |-
     A new version of $appName is available!
     Version $releaseVersion is now available. You have a $appVersion
+
   # Optional, allows users to ignore this specific release until a new one is available
   can_ignore_release: true
   # Interval at which the update notification will be repeatedly shown to the user
@@ -196,6 +197,26 @@ releases:
         
 ```
 
+### Roadmap
+✅ Support the release status (required, broken, etc.) 
+✅ Finding the latest release woth optimal statis
+✅ Custom stores and platform
+✅ Link releases to release settings and stores
+✅ Parser for UpdateConfig
+🏗️ Implement UpdateConfigProvider
+🏗️ Provide UpdateController
+🏗️ Support reminder period
+🏗️ Support delayed release
+🏗️ Getting release data directly from the stores
+🏗️ Release reference to another releases
+🏗️ Specifying texts for different languages
+🏗️ Provide UpdateAlert widget
+🏗️ Provide UpdateAlertHandler methods
+🔳 Provide UpdateAlertCard widget
+🔳 Support for markdown in texts
+🔳 Specifying texts for specific statuses
+🔳 Release progressively rolls
+🔳 Package for shorebird patch support 🚀
 
 
 # Contributors ✨

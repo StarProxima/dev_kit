@@ -2,12 +2,12 @@
 
 part of '../update_config_parser.dart';
 
-class _ReleaseSettingsParser {
-  _DurationParser get _durationParser => const _DurationParser();
-  _TextParser get _textParser => const _TextParser();
-  _VersionParser get _versionParser => const _VersionParser();
+class ReleaseSettingsParser {
+  DurationParser get _durationParser => const DurationParser();
+  TextParser get _textParser => const TextParser();
+  VersionParser get _versionParser => const VersionParser();
 
-  const _ReleaseSettingsParser();
+  const ReleaseSettingsParser();
 
   ReleaseSettingsConfig parse(
     Map<String, dynamic> map, {
@@ -47,7 +47,6 @@ class _ReleaseSettingsParser {
     var deprecatedBeforeVersion = map.remove('deprecated_before_version');
     deprecatedBeforeVersion = _versionParser.parse(
       deprecatedBeforeVersion,
-      isStrict: false,
       isDebug: isDebug,
     );
     deprecatedBeforeVersion as Version?;
@@ -56,14 +55,13 @@ class _ReleaseSettingsParser {
     var requiredMinimumVersion = map.remove('required_minimum_version');
     requiredMinimumVersion = _versionParser.parse(
       requiredMinimumVersion,
-      isStrict: false,
       isDebug: isDebug,
     );
     requiredMinimumVersion as Version?;
 
     return ReleaseSettingsConfig(
-      title: title,
-      description: description,
+      titleTranslations: title,
+      descriptionTranslations: description,
       canIgnoreRelease: canIgnoreRelease,
       reminderPeriod: reminderPeriod,
       releaseDelay: releaseDelay,
