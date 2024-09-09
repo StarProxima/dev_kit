@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
+// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment, dead_code
 
 part of '../update_config_parser.dart';
 
@@ -13,93 +13,120 @@ class ReleaseParser {
   ReleaseConfig? parse(
     Map<String, dynamic> map, {
     required bool isDebug,
+    // ignore: avoid-long-functions
   }) {
-    // version
-    var version = map.remove('version');
+    final isDebugOriginal = isDebug;
 
-    version = _versionParser.parse(
-      version,
-      isStrict: true,
-      isDebug: isDebug,
-    );
+    isDebug = true;
 
-    if (version == null) return null;
-    version as Version;
+    // Если в релизе что-то не спарсилось, то или возращаем ошибку, или null вместо всего релиза,
+    // чтобы не возвращать на половину сломанный релиз.
+    try {
+      // version
+      var version = map.remove('version');
 
-    // refVersion
-    var refVersion = map.remove('ref_version');
+      version = _versionParser.parse(
+        version,
+        isDebug: isDebug,
+      );
 
-    refVersion = _versionParser.parse(
-      version,
-      isStrict: true,
-      isDebug: isDebug,
-    );
-    refVersion as Version?;
+      if (version == null) {
+        if (isDebug) throw UpdateConfigException();
 
-    // buildNumber
-    var buildNumber = map.remove('build_number');
+        return null;
+      }
+      version as Version;
 
-    if (buildNumber is! int?) {
-      if (isDebug) throw const UpdateConfigException();
-      buildNumber = null;
+      // refVersion
+      var refVersion = map.remove('ref_version');
+
+      refVersion = _versionParser.parse(
+        refVersion,
+        isDebug: isDebug,
+      );
+      refVersion as Version?;
+
+      // buildNumber
+      var buildNumber = map.remove('build_number');
+
+      if (buildNumber is! int?) {
+        if (isDebug) throw const UpdateConfigException();
+        buildNumber = null;
+      }
+
+      // status
+      var status = map.remove('status');
+      if (status is! String?) {
+        if (isDebug) throw const UpdateConfigException();
+        status = null;
+      }
+
+      if (status != null) {
+        status = ReleaseStatus.parse(status);
+        status as ReleaseStatus?;
+        if (isDebug && status == null) throw const UpdateConfigException();
+      }
+
+      // releaseSettings
+      final releaseSettings = _releaseSettingsParser.parse(map, isDebug: isDebug);
+
+      // releaseNote
+      var releaseNote = map.remove('release_note');
+
+      releaseNote = _textParser.parse(releaseNote, isDebug: isDebug);
+      releaseNote as Map<Locale, Object>?;
+      releaseNote as Map<Locale, String>?;
+
+      // publishDateUtc
+      var publishDateUtc = map.remove('publish_date_utc');
+
+      if (publishDateUtc is! String?) {
+        if (isDebug) throw const UpdateConfigException();
+        publishDateUtc = null;
+      }
+
+      try {
+        publishDateUtc = publishDateUtc == null ? null : DateTime.parse(publishDateUtc);
+      } on FormatException catch (e, s) {
+        if (isDebug) Error.throwWithStackTrace(UpdateConfigException(), s);
+        publishDateUtc = null;
+      }
+
+      publishDateUtc as DateTime?;
+
+      // stores
+      var stores = map.remove('stores');
+
+      if (stores is! List<Map<String, dynamic>>?) {
+        if (isDebug) throw const UpdateConfigException();
+        stores = null;
+      } else if (stores != null) {
+        stores = stores
+            .map((e) => _storeParser.parse(e, isGlobalStore: false, isDebug: isDebug))
+            .whereType<StoreConfig>()
+            .toList();
+        stores as List<StoreConfig>;
+      }
+
+      return ReleaseConfig(
+        version: version,
+        refVersion: refVersion,
+        buildNumber: buildNumber,
+        status: status,
+        titleTranslations: releaseSettings.titleTranslations,
+        descriptionTranslations: releaseSettings.descriptionTranslations,
+        releaseNoteTranslations: releaseNote,
+        publishDateUtc: publishDateUtc,
+        canIgnoreRelease: releaseSettings.canIgnoreRelease,
+        reminderPeriod: releaseSettings.reminderPeriod,
+        releaseDelay: releaseSettings.releaseDelay,
+        stores: stores,
+        customData: map,
+      );
+    } on UpdateConfigException {
+      if (isDebugOriginal) rethrow;
+
+      return null;
     }
-
-    // status
-    var status = map.remove('status');
-
-    status = ReleaseStatus.parse(status);
-    status as ReleaseStatus?;
-
-    // releaseSettings
-    final releaseSettings = _releaseSettingsParser.parse(map, isDebug: isDebug);
-
-    // releaseNote
-    var releaseNote = map.remove('release_note');
-
-    releaseNote = _textParser.parse(releaseNote, isDebug: isDebug);
-    releaseNote as Map<Locale, Object>?;
-    releaseNote as Map<Locale, String>?;
-
-    // publishDateUtc
-    var publishDateUtc = map.remove('publish_date_utc');
-
-    if (publishDateUtc is! String?) {
-      if (isDebug) throw const UpdateConfigException();
-      publishDateUtc = null;
-    }
-
-    publishDateUtc = DateTime.tryParse(publishDateUtc ?? '');
-    publishDateUtc as DateTime?;
-
-    // stores
-    var stores = map.remove('stores');
-
-    if (stores is! List<Map<String, dynamic>>?) {
-      if (isDebug) throw const UpdateConfigException();
-      stores = null;
-    } else if (stores != null) {
-      stores = stores
-          .map((e) => _storeParser.parse(e, isGlobalStore: false, isDebug: isDebug))
-          .toList()
-          .whereType<StoreConfig>();
-      stores as List<Object>;
-      stores as List<StoreConfig>;
-    }
-
-    return ReleaseConfig(
-      version: version,
-      refVersion: refVersion,
-      buildNumber: buildNumber,
-      status: status,
-      titleTranslations: releaseSettings.titleTranslations,
-      descriptionTranslations: releaseSettings.descriptionTranslations,
-      releaseNoteTranslations: releaseNote,
-      publishDateUtc: publishDateUtc,
-      canIgnoreRelease: releaseSettings.canIgnoreRelease,
-      reminderPeriod: releaseSettings.reminderPeriod,
-      releaseDelay: releaseSettings.releaseDelay,
-      stores: stores,
-      customData: map,
-    );
   }
 }

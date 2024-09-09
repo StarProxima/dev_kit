@@ -47,7 +47,6 @@ class ReleaseSettingsParser {
     var deprecatedBeforeVersion = map.remove('deprecated_before_version');
     deprecatedBeforeVersion = _versionParser.parse(
       deprecatedBeforeVersion,
-      isStrict: false,
       isDebug: isDebug,
     );
     deprecatedBeforeVersion as Version?;
@@ -56,7 +55,6 @@ class ReleaseSettingsParser {
     var requiredMinimumVersion = map.remove('required_minimum_version');
     requiredMinimumVersion = _versionParser.parse(
       requiredMinimumVersion,
-      isStrict: false,
       isDebug: isDebug,
     );
     requiredMinimumVersion as Version?;
