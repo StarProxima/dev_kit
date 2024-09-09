@@ -33,43 +33,38 @@ class UpdateConfigParser {
     // releaseSettings
     var releaseSettings = map.remove('release_settings');
 
-    releaseSettings = _releaseSettingsParser.parse(
-      releaseSettings,
-      isDebug: isDebug,
-    );
+    if (releaseSettings is! Map<String, dynamic>?) {
+      throw const UpdateConfigException();
+    }
 
-    releaseSettings as ReleaseSettingsConfig;
+    if (releaseSettings != null) {
+      releaseSettings = _releaseSettingsParser.parse(
+        releaseSettings,
+        isDebug: isDebug,
+      );
+    }
+
+    releaseSettings as ReleaseSettingsConfig?;
 
     // stores
     var stores = map.remove('stores');
 
-    if (stores == null) throw const UpdateConfigException();
-
-    if (stores is! List<Map<String, dynamic>>) {
-      if (isDebug) throw const UpdateConfigException();
-      stores = null;
-    } else {
+    if (stores is! List<Map<String, dynamic>>?) {
+      throw const UpdateConfigException();
+    } else if (stores != null) {
       stores = stores
           .map((e) => _storeParser.parse(e, isGlobalStore: true, isDebug: isDebug))
-          .toList()
-          .whereType<StoreConfig>();
+          .whereType<StoreConfig>()
+          .toList();
     }
-    stores as List<Object>;
-    stores as List<StoreConfig>;
+    stores as List<StoreConfig>?;
 
     // releases
     var releases = map.remove('releases');
 
-    if (releases == null) throw const UpdateConfigException();
+    if (releases is! List<Map<String, dynamic>>) throw const UpdateConfigException();
 
-    if (releases is! List<Map<String, dynamic>>) {
-      if (isDebug) throw const UpdateConfigException();
-      releases = null;
-    } else {
-      releases = releases.map((e) => _releaseParser.parse(e, isDebug: isDebug)).toList().whereType<ReleaseConfig>();
-    }
-
-    releases as List<Object>;
+    releases = releases.map((e) => _releaseParser.parse(e, isDebug: isDebug)).whereType<ReleaseConfig>().toList();
     releases as List<ReleaseConfig>;
 
     return UpdateConfigModel(

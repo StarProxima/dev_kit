@@ -1,8 +1,8 @@
 // ignore_for_file: avoid-recursive-calls
 
 import '../parser/models/release_config.dart';
+import '../parser/models/release_settings_config.dart';
 import '../parser/models/store_config.dart';
-import '../parser/models/update_config_model.dart';
 import '../shared/release_status.dart';
 import '../shared/version.dart';
 import '../stores/store.dart';
@@ -14,18 +14,21 @@ import 'models/update_config_data.dart';
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
-  UpdateConfigData parseConfigFromModel(UpdateConfigModel updateConfig) {
-    final releaseSettings = ReleaseSettings.fromConfig(updateConfig.releaseSettings);
+  UpdateConfigData linkConfigs({
+    required ReleaseSettingsConfig releaseSettingsConfig,
+    required List<ReleaseConfig> releasesConfig,
+    required List<StoreConfig> storesConfig,
+    required Map<String, dynamic>? customData,
+  }) {
+    final releaseSettings = ReleaseSettings.fromConfig(releaseSettingsConfig);
 
-    final stores = _parseStore(updateConfig.stores);
+    final stores = _parseStore(storesConfig);
 
     final releases = _parseReleases(
       stores: stores,
-      updateConfig: updateConfig,
+      releasesConfig: releasesConfig,
       releaseSettings: releaseSettings,
     );
-
-    final customData = updateConfig.customData;
 
     return UpdateConfigData(
       releaseSettings: releaseSettings,
@@ -61,14 +64,14 @@ class UpdateConfigLinker {
 
   List<ReleaseData> _parseReleases({
     required List<Store> stores,
-    required UpdateConfigModel updateConfig,
+    required List<ReleaseConfig> releasesConfig,
     required ReleaseSettings releaseSettings,
   }) {
     final releases = <ReleaseData>[];
 
     // TODO: Написать отдельные тесты на всю это хуету с ref
     final releaseByVersion = {
-      for (final release in updateConfig.releases) release.version: release,
+      for (final release in releasesConfig) release.version: release,
     };
     final releaseStraightRef = <Version, ReleaseConfig?>{};
     ReleaseConfig mergedReleaseRefDFS(ReleaseConfig node) {
@@ -95,7 +98,7 @@ class UpdateConfigLinker {
       return inheritedRelease;
     }
 
-    for (ReleaseConfig releaseConfig in updateConfig.releases) {
+    for (ReleaseConfig releaseConfig in releasesConfig) {
       final refVersion = releaseConfig.refVersion;
       if (refVersion != null) {
         releaseConfig = mergedReleaseRefDFS(releaseConfig);

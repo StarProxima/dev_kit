@@ -62,11 +62,12 @@ class UpdateController extends UpdateContollerBase {
 
     final rawConfig = await provider.fetch();
 
+    // ignore: unused_local_variable
     final config = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
 
-    final configData = _linker.parseConfigFromModel(config);
+    // final configData = _linker.parseConfigFromModel(config);
 
-    _configDataCompleter?.complete(configData);
+    // _configDataCompleter?.complete(configData);
 
     // final updateData = await findAvailableUpdate();
 
