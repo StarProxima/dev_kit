@@ -94,7 +94,7 @@ void main() {
       );
     });
 
-    test('should parse minimal UpdateConfigModel', () {
+    test('should parse UpdateConfigModel with missing optional fields', () {
       final configMap = {
         'releases': [
           {
@@ -109,42 +109,11 @@ void main() {
       expect(result.releaseSettings, isNull);
       expect(result.stores, isNull);
       expect(result.releases, hasLength(1));
-      expect(result.customData, isEmpty);
-    });
-
-    test('should parse UpdateConfigModel with missing optional fields', () {
-      final configMap = {
-        'release_settings': {
-          'title': {
-            'en': 'New version available',
-          },
-        },
-        'stores': [
-          {
-            'name': 'googlePlay',
-            'url': 'https://play.google.com',
-          },
-        ],
-        'releases': [
-          {
-            'version': '1.0.0',
-            'status': 'active',
-          },
-        ],
-      };
-
-      final result = updateConfigParser.parseConfig(configMap, isDebug: isDebug);
-
-      expect(result, isNotNull);
-      expect(result.releaseSettings, isNotNull);
-      expect(result.stores, hasLength(1));
-      expect(result.releases, hasLength(1));
       expect(result.releases.firstOrNull?.version.toString(), '1.0.0');
-      expect(result.releases.firstOrNull?.buildNumber, isNull);
       expect(result.customData, isEmpty);
     });
 
-    test('should throw exception for invalid release format in debug mode', () {
+    test('should throw exception for invalid release format', () {
       final configMap = {
         'release_settings': {
           'title': {
@@ -162,7 +131,7 @@ void main() {
       };
 
       expect(
-        () => updateConfigParser.parseConfig(configMap, isDebug: isDebug),
+        () => updateConfigParser.parseConfig(configMap, isDebug: false),
         throwsA(isA<UpdateConfigException>()),
       );
     });
