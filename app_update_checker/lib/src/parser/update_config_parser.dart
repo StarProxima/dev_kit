@@ -3,6 +3,7 @@
 import 'dart:ui';
 
 import '../shared/release_status.dart';
+import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
 import '../shared/version.dart';
 import 'models/release_config.dart';

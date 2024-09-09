@@ -5,7 +5,8 @@ part of '../update_config_parser.dart';
 class TextParser {
   const TextParser();
 
-  Map<Locale, String> parse(
+  // ignore: avoid-unnecessary-nullable-return-type
+  Map<Locale, String>? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
@@ -13,7 +14,7 @@ class TextParser {
     var text = value;
     if (text is! Map<String, dynamic>?) {
       if (text is String) {
-        return {const Locale('en'): text};
+        return {appUpdateDefaultLocale: text};
       }
 
       if (isDebug) throw const UpdateConfigException();
