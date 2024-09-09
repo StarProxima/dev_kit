@@ -31,7 +31,7 @@ class ReleaseParser {
       );
 
       if (version == null) {
-        if (isDebug) throw UpdateConfigException();
+        if (isDebug) throw const UpdateConfigException();
 
         return null;
       }
@@ -88,7 +88,7 @@ class ReleaseParser {
       try {
         publishDateUtc = publishDateUtc == null ? null : DateTime.parse(publishDateUtc);
       } on FormatException catch (e, s) {
-        if (isDebug) Error.throwWithStackTrace(UpdateConfigException(), s);
+        if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
         publishDateUtc = null;
       }
 
@@ -97,16 +97,15 @@ class ReleaseParser {
       // stores
       var stores = map.remove('stores');
 
-      if (stores is! List<Map<String, dynamic>>?) {
-        if (isDebug) throw const UpdateConfigException();
-        stores = null;
+      if (stores is! List<Object>?) {
+        throw const UpdateConfigException();
       } else if (stores != null) {
         stores = stores
             .map((e) => _storeParser.parse(e, isGlobalStore: false, isDebug: isDebug))
             .whereType<StoreConfig>()
             .toList();
-        stores as List<StoreConfig>;
       }
+      stores as List<StoreConfig>?;
 
       return ReleaseConfig(
         version: version,

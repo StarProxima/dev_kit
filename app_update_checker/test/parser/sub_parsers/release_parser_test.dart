@@ -44,7 +44,7 @@ void main() {
       expect(result?.buildNumber, 21);
       expect(result?.status, ReleaseStatus.required);
       expect(
-        result?.releaseNoteTranslations?.byLocale(Locale('ababa')),
+        result?.releaseNoteTranslations?.byLocale(const Locale('ababa')),
         'New features and bug fixes',
       );
       expect(result?.publishDateUtc?.toString(), '2024-08-24 15:35:00.000');
@@ -53,6 +53,27 @@ void main() {
       expect(result?.stores?[0].name, 'googlePlay');
       expect(result?.stores?[1].name, 'appStore');
       expect(result?.customData?['customField'], 'customValue');
+    });
+
+    test('should parse short store syntax', () {
+      final value = {
+        'version': '0.3.7',
+        'stores': [
+          'googlePlay',
+          {
+            'name': 'appStore',
+            'url': 'https://example.com',
+          },
+        ],
+      };
+
+      final result = releaseParser.parse(value, isDebug: isDebug);
+
+      expect(result, isNotNull);
+      expect(result?.version.toString(), '0.3.7');
+      expect(result?.stores, hasLength(2));
+      expect(result?.stores?.firstOrNull?.name, 'googlePlay');
+      expect(result?.stores?[1].name, 'appStore');
     });
 
     test('should return null if version is missing', () {
