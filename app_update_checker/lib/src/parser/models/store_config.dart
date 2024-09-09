@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
 import '../../shared/update_platform.dart';
 
+@immutable
 class StoreConfig {
   final String name;
   final Uri? url;

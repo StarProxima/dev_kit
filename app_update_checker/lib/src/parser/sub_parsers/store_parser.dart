@@ -8,17 +8,17 @@ class StoreParser {
   StoreConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
-    required bool isStrict,
+    required bool isGlobalStore,
     required bool isDebug,
   }) {
     // short string syntax
     if (value is! Map<String, dynamic>) {
-      if (isStrict && value is String) {
+      if (!isGlobalStore && value is String) {
         return StoreConfig(
           name: value,
           url: null,
           platforms: null,
-          customData: {},
+          customData: null,
         );
       }
 
@@ -53,9 +53,11 @@ class StoreParser {
       url = null;
     }
 
-    if (isStrict && url == null) return null;
-
     url = url == null ? null : Uri.tryParse(url);
+    url as Uri?;
+
+    if (isGlobalStore && url == null) return null;
+    if (isDebug && url == null) throw const UpdateConfigException();
 
     // platforms
     var platforms = map.remove('platforms');
@@ -65,8 +67,7 @@ class StoreParser {
       platforms = null;
     }
 
-    platforms = platforms?.map(UpdatePlatform.new);
-    platforms as List<Object>?;
+    platforms = platforms?.map(UpdatePlatform.new).toList();
     platforms as List<UpdatePlatform>?;
 
     return StoreConfig(
