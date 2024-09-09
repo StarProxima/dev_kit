@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-long-functions, prefer-test-matchers, avoid-unsafe-collection-methods, map-keys-ordering
+// ignore_for_file: avoid-long-functions, prefer-test-matchers, avoid-unsafe-collection-methods
 
 import 'dart:ui';
 

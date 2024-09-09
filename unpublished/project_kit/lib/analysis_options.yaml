@@ -380,6 +380,7 @@ dart_code_metrics:
     - prefer-addition-subtraction-assignments: false
     - avoid-slow-collection-methods: false
     - prefer-number-format: false
+    - map-keys-ordering: false
   
 
     # Мб при вводе локализации
