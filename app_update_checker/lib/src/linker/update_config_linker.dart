@@ -73,6 +73,7 @@ class UpdateConfigLinker {
     final releaseByVersion = {
       for (final release in releasesConfig) release.version: release,
     };
+
     final releaseStraightRef = <Version, ReleaseConfig?>{};
     ReleaseConfig mergedReleaseRefDFS(ReleaseConfig node) {
       if (releaseStraightRef.containsKey(node.version)) {
