@@ -1,10 +1,11 @@
 // ignore_for_file: avoid-recursive-calls
 
+import 'package:version/version.dart';
+
 import '../parser/models/release_config.dart';
 import '../parser/models/release_settings_config.dart';
 import '../parser/models/store_config.dart';
 import '../shared/release_status.dart';
-import '../shared/version.dart';
 import '../stores/store.dart';
 import 'models/exceptions.dart';
 import 'models/release_data.dart';

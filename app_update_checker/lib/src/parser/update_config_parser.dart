@@ -2,10 +2,11 @@
 
 import 'dart:ui';
 
+import 'package:version/version.dart';
+
 import '../shared/release_status.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
-import '../shared/version.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/store_config.dart';

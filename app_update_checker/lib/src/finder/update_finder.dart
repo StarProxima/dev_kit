@@ -1,10 +1,11 @@
 // ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
 
+import 'package:version/version.dart';
+
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../shared/release_status.dart';
 import '../shared/update_platform.dart';
-import '../shared/version.dart';
 
 class UpdateFinder {
   final Version appVersion;

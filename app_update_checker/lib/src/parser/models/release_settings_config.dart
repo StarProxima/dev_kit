@@ -1,5 +1,6 @@
+import 'package:version/version.dart';
+
 import '../../shared/text_translations.dart';
-import '../../shared/version.dart';
 
 class ReleaseSettingsConfig {
   final TextTranslations? titleTranslations;
