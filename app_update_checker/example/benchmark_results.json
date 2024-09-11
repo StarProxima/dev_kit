@@ -1,0 +1,32 @@
+[
+    {
+        "date": "2024-09-11T14:10:44.693837",
+        "releaseCount": 100,
+        "iterations": 10,
+        "averageTimeTakenMicros": 2242
+    },
+    {
+        "date": "2024-09-11T14:10:44.693837",
+        "releaseCount": 500,
+        "iterations": 10,
+        "averageTimeTakenMicros": 13238
+    },
+    {
+        "date": "2024-09-11T14:10:44.693837",
+        "releaseCount": 1000,
+        "iterations": 10,
+        "averageTimeTakenMicros": 26141
+    },
+    {
+        "date": "2024-09-11T14:10:44.693837",
+        "releaseCount": 2000,
+        "iterations": 10,
+        "averageTimeTakenMicros": 51289
+    },
+    {
+        "date": "2024-09-11T14:10:44.693837",
+        "releaseCount": 5000,
+        "iterations": 10,
+        "averageTimeTakenMicros": 124807
+    }
+]

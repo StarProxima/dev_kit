@@ -31,4 +31,3 @@ dev_dependencies:
   project_kit:
     path: ../unpublished/project_kit
 
-  benchmark_harness: ^2.2.2

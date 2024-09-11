@@ -54,14 +54,14 @@ Future<void> saveBenchmarkResults(
 }
 
 // Бенчмарк-класс с прогревом и итерациями
-class ParsingBenchmark extends BenchmarkBase {
+class UpdateConfigParserBenchmark extends BenchmarkBase {
   final int releaseCount;
   final List<Map<String, dynamic>> releases;
   final int iterations;
 
   int? timeTakenMicros;
 
-  ParsingBenchmark(
+  UpdateConfigParserBenchmark(
     super.name,
     this.releaseCount,
     this.releases,
@@ -101,7 +101,7 @@ class ParsingBenchmark extends BenchmarkBase {
   void warmup() {
     print('Warming up with $releaseCount releases...');
     // Выполним прогрев 5 раз, результат не сохраняем
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 3; i++) {
       run();
     }
     print('Warmup complete.');
@@ -126,13 +126,13 @@ class ParsingBenchmark extends BenchmarkBase {
 
 void main() async {
   const releaseCounts = [100, 500, 1000, 2000, 5000];
-  const iterations = 10; // Количество итераций для каждого набора
+  const iterations = 4; // Количество итераций для каждого набора
   final now = DateTime.now();
 
   for (final releaseCount in releaseCounts) {
     final releases = generateReleases(releaseCount);
 
-    final benchmark = ParsingBenchmark(
+    final benchmark = UpdateConfigParserBenchmark(
       'Parsing $releaseCount releases',
       releaseCount,
       releases,

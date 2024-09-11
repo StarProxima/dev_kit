@@ -10,6 +10,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  update_check:
+    path: ../
+
+  benchmark_harness: ^2.2.2
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
