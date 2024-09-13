@@ -1,0 +1,1305 @@
+# Description of the api structure
+# https://pub.dev/packages/update_check
+
+# Default settings for releases
+release_settings:
+  # Optional
+  title:
+    # Any text (title, description, releaseNote)
+    # supports optional localization, interpolation and markdown.
+    # Also supports short syntax without localization.
+    en: |-
+      ## New version for ($appName)[https://example.com]
+      ### Version $releaseVersion is available!
+    es: La versión $releaseVersion está disponible!
+    ru: Доступна новая версия!
+  # Optional
+  description: |-
+    A new version of $appName is available!
+    Version $releaseVersion is now available. You have a $appVersion
+
+  # Optional, allows users to ignore this specific release until a new one is available
+  can_ignore_release: true
+  # Interval at which the update notification will be repeatedly shown to the user
+  reminder_period_hours: 48
+  # Delay that must pass after the release before it begins to be shown to all users
+  release_delay_hours: 48
+  # Versions prior to this one will receive an obsolescence notice,
+  # but may defer the update.
+  deprecated_before_version: 0.3.7
+  # Versions prior to this one must be updated to the latest version,
+  # with no option to defer the update.
+  required_minimum_version: 0.1.0 
+
+# Optional, will be set based on the platform and app ID
+stores:
+  - name: googlePlay 
+    url: https://example.com
+  - name: appStore
+    url: https://example.com
+  - name: appGallery 
+    url: https://example.com
+  - name: ruStore 
+    url: https://example.com
+    # Custom store
+  - name: gitHub
+    url: https://example.com
+    platforms:
+      - android
+      - windows
+      - macos
+      - linux
+
+releases:
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+    
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+
+  - version: 0.3.7 # Required
+    # Optional, uses to refine the version
+    build_number: 21
+    # Optional, active by default
+    # May be one of:
+    # active - The release is available.
+    # inactive - The release is hidden from users.
+    # required - The release is required be installed by all users with older versions.
+    # deprecated - The release is outdated and is strictly recommended to be updated.
+    # broken - The release has critical bugs and requires an update.
+    status: active
+    # You can also override the title and description here.
+    # Optional, may not to be displayed.
+    release_note: |-
+      # Big update!
+      [click](https://example.com) - full changelog.
+      ### Short notes
+      - Added bugs
+      - Fixed features
+    # Optional, used to delay the release using releaseDelayHours. Time is optional.
+    publish_date_utc: '2024-08-24 15:35:00'
+    # Optional, will be override
+    can_ignore_release: true
+    # Optional, will be override
+    reminder_period_hours: 48
+    # Optional, will be override
+    release_delay_hours: 48
+    # Optional, all by default. Support custom stores
+    stores:
+        # Supports short syntax
+      - googlePlay
+      - appStore
+      - ruStore
+        # Also supports full syntax if you need to override parametrs
+      - name: github
+        url: https://example.com
+        platforms: 
+          - android
+          - ios
+          - aurora
+    
+  - version: 0.3.8
+    # Reference to another release by version,
+    # uses all of its parameters by default.
+    ref_version: 0.3.7
+    release_note: Minor improvements
+    # You can add any custom parameters anywhere in the config, 
+    # you can access them from the app using Map.
+    is_super_ultra_mega_release: true
+

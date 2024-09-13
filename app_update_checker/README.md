@@ -174,7 +174,7 @@ releases:
   - version: 1.3.7
     patches:
       - patch_number: 1 # Required
-        # Optional, similar to release type
+        # Optional, similar to release status
         status: active
         # Optional, you can set the title, description and patchNote.
         title: New patch for $appVersion
@@ -195,6 +195,24 @@ releases:
       - android
       - ios 
         
+```
+
+```yaml
+
+patches:
+  - path_number: 1 # Required
+    version: 1.3.7 # Required
+    # Optional, similar to release status
+    status: active
+    # Optional, you can set the title, description and patchNote.
+    title: New patch for $appVersion
+    patch_note: Critical fix
+    
+    flavor: dev
+
+
+
+
 ```
 
 ### Roadmap

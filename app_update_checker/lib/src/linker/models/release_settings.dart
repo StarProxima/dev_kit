@@ -1,8 +1,9 @@
 import 'dart:ui';
 
+import 'package:version/version.dart';
+
 import '../../parser/models/release_settings_config.dart';
 import '../../shared/text_translations.dart';
-import '../../shared/version.dart';
 
 class ReleaseSettings {
   final TextTranslations titleTranslations;
