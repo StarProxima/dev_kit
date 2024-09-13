@@ -8,17 +8,33 @@ release_settings:
   description: |-
     A new version of $appName is available!
     Version $releaseVersion is now available. You have a $appVersion
-  can_ignore_release: true
+  can_skip_release: true
   reminder_period_hours: 48
+  progressively_release_showing_hours: 100
   release_delay_hours: 48
-  recommended_minimum_version: 0.3.7
-  required_minimum_version: 0.1.0
+
   # TODO: Обсудить
-  deprecated_versions:
-    - 3.6.0
-    - 1.2.4
-  broken_versions:
-    - 3.1.0
+  # recommended_minimum_version: 0.3.7
+  # required_minimum_version: 0.1.0
+  # deprecated_versions:
+  #   - 3.6.0
+  #   - 1.2.4
+  # broken_versions:
+  #   - 3.1.0
+
+  # Or
+  broken_versions: ['<=4.2.0', 0.3.4]
+  deprecated_versions: ['>=4.2.0 <=5.1.0', '>5.6.0 <5.6.7']
+  # not_supported_versions: ['<=4.2.0', 0.3.4]
+  # not_recommended_versions: ['>=4.2.0 <=5.1.0', '>5.6.0 <5.6.7']
+
+  
+
+patch_settings:
+  title:
+  description:
+
+
 
 sources:
   - name: googlePlay
@@ -30,10 +46,9 @@ sources:
   - name: ruStore
     url: https://example.com
     title: Title
-    required_minimum_version: 0.3.3
+    broken_versions: ['<=4.2.0']
   - name: gitHub
     url: https://example.com
-    required_minimum_version: 0.3.3
     platforms:
       - android
       - windows
@@ -41,7 +56,7 @@ sources:
       - linux
   - name: gitHub
     url: https://example.com
-    required_minimum_version: 0.5.0
+    deprecated_versions: ['>5.6.0 <5.6.7']
     platforms: [android]
   - name: apk
     platforms: [android]
@@ -78,16 +93,35 @@ releases:
      - name: googlePlay
        date_utc: 2014-10-17 23:00:00
 
-  - version: 0.0.2
+  - version: 0.0.2+30
+    patch:
+      patch_numbers: [1, 2]
+      is_required: true
+      path_note: Bug fixes
+
+  - version: 0.2.0
     release_note: Improvements
     sources:
-     - name: googlePlay
-       release_note: Critical fix
-       date_utc: 2014-10-17 23:00:00
-     - name: github
-       url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-       date_utc: 2014-10-20 12:00:00
-       platforms: [windows]
-     - name: github
-       url: https://github.com/hiddify/hiddify-next/releases/
-       platforms: [macos, linux]
+      - appStore
+      - name: googlePlay
+        version: 0.2.1+80
+        release_note: Critical fix
+        date_utc: 2014-10-17 23:00:00
+      - name: github
+        url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+        date_utc: 2014-10-20 12:00:00
+        platforms: [windows]
+      - name: github
+        url: https://github.com/hiddify/hiddify-next/releases/
+        platforms: [macos, linux]
+
+patches:
+  - patch_numbers: [1, 2]
+    flavors: [prod]
+    version: 0.0.2+80
+    is_required: true
+    path_note: Bug fixes
+    versions:
+      version: 0.0.2+80
+      platforms: [android]
+    
