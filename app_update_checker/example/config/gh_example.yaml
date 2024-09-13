@@ -1,0 +1,43 @@
+
+# Old api
+releases:
+  - version: 0.0.2
+    release_note: Improvements
+    date: 2014-10-17 23:00:00
+    status: required
+    sources:
+     - name: googlePlay
+       url: https://play.google.com/store/apps/details?id=app.hiddify.com
+  - version: 0.0.2
+    release_note: Improvements
+    date: 2014-10-20 12:00:00
+    status: recommended
+    sources:
+      - name: github
+        url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+        platforms: windows
+  - version: 0.0.2
+    release_note: Improvements
+    sources:
+      - name: github
+        url: https://github.com/hiddify/hiddify-next/releases/
+        platforms: [macos, linux]
+
+# New api
+releases2:
+  - version: 0.0.2
+    release_note: Improvements
+    sources:
+     - name: googlePlay
+       url: https://play.google.com/store/apps/details?id=app.hiddify.com
+       date: 2014-10-17 23:00:00
+       status: required
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+       date: 2014-10-20 12:00:00
+       status: recommended
+       platforms: windows
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/
+       platforms: [macos, linux]
+    

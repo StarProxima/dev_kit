@@ -1,0 +1,93 @@
+release_settings:
+  title:
+    en: |-
+      ## New version for ($appName)[https://example.com]
+      ### Version $releaseVersion is available!
+    es: La versión $releaseVersion está disponible!
+    ru: Доступна новая версия!
+  description: |-
+    A new version of $appName is available!
+    Version $releaseVersion is now available. You have a $appVersion
+  can_ignore_release: true
+  reminder_period_hours: 48
+  release_delay_hours: 48
+  recommended_minimum_version: 0.3.7
+  required_minimum_version: 0.1.0
+  # TODO: Обсудить
+  deprecated_versions:
+    - 3.6.0
+    - 1.2.4
+  broken_versions:
+    - 3.1.0
+
+sources:
+  - name: googlePlay
+    url: https://example.com
+  - name: appStore
+    url: https://example.com
+  - name: appGallery
+    url: https://example.com
+  - name: ruStore
+    url: https://example.com
+    title: Title
+    required_minimum_version: 0.3.3
+  - name: gitHub
+    url: https://example.com
+    required_minimum_version: 0.3.3
+    platforms:
+      - android
+      - windows
+      - macos
+      - linux
+  - name: gitHub
+    url: https://example.com
+    required_minimum_version: 0.5.0
+    platforms: [android]
+  - name: apk
+    platforms: [android]
+    url: https://example.com
+
+    
+releases:
+  - version: 0.3.7
+    release_note: |-
+      # Big update!
+      [click](https://example.com) - full changelog.
+      ### Short notes
+      - Added bugs
+      - Fixed features
+    date_utc: "2024-08-24 15:35:00"
+    can_ignore_release: true
+    reminder_period_hours: 48
+    release_delay_hours: 48
+    sources:
+      - googlePlay
+      - appStore
+      - ruStore
+      - name: github
+        url: https://example.com
+        platforms: [android, ios, aurora]
+
+  - version: 0.3.8+10-beta
+    release_note: Minor improvements
+    is_super_ultra_mega_release: true
+
+  - version: 0.0.3+80
+    release_note: Improvements
+    sources:
+     - name: googlePlay
+       date_utc: 2014-10-17 23:00:00
+
+  - version: 0.0.2
+    release_note: Improvements
+    sources:
+     - name: googlePlay
+       release_note: Critical fix
+       date_utc: 2014-10-17 23:00:00
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+       date_utc: 2014-10-20 12:00:00
+       platforms: [windows]
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/
+       platforms: [macos, linux]
