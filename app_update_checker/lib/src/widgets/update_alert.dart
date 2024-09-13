@@ -1,4 +1,4 @@
-// ignore_for_file: prefer-named-parameters, prefer-correct-callback-field-name, use_build_context_synchronously
+// ignore_for_file: prefer-named-parameters
 
 import 'dart:async';
 
@@ -59,7 +59,10 @@ class _UpdateAlertState extends State<UpdateAlert> {
 
     if (updateData == null) return;
 
-    widget.onUpdateAvailable?.call(context, updateData, _controller);
+    if (context.mounted) {
+      // ignore: use_build_context_synchronously
+      widget.onUpdateAvailable?.call(context, updateData, _controller);
+    }
   }
 
   @override
