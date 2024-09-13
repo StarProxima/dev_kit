@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:version/version.dart';
 
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
@@ -17,7 +18,7 @@ import '../parser/models/release_settings_config.dart';
 import '../parser/models/store_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/update_platform.dart';
-import '../shared/version.dart';
+
 import '../stores/fetchers/store_fetcher.dart';
 import 'update_contoller_base.dart';
 
