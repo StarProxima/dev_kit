@@ -1,4 +1,4 @@
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../../linker/models/release_data.dart';
 import '../../shared/release_status.dart';

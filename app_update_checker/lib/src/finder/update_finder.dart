@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
 
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';

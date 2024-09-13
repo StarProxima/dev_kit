@@ -1,8 +1,8 @@
 // ignore_for_file: prefer-test-matchers, avoid-long-functions
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:update_check/src/shared/version_x.dart';
-import 'package:version/version.dart';
 
 void main() {
   group('Version.parse', () {
@@ -12,7 +12,7 @@ void main() {
       expect(version.minor, 0);
       expect(version.patch, 0);
       expect(version.isPreRelease, isFalse);
-      expect(version.build, '');
+      expect(version.build, isEmpty);
     });
 
     test('should parse version string with pre-release', () {
@@ -31,7 +31,7 @@ void main() {
       expect(version.patch, 0);
       expect(version.isPreRelease, isTrue);
       expect(version.preRelease, ['beta']);
-      expect(version.build, 'build123');
+      expect(version.build.firstOrNull, 'build123');
     });
 
     test('should parse version string with multiple pre-release segments', () {
@@ -40,7 +40,7 @@ void main() {
       expect(version.minor, 0);
       expect(version.patch, 0);
       expect(version.isPreRelease, isTrue);
-      expect(version.preRelease, ['beta', '1']);
+      expect(version.preRelease, ['beta', 1]);
     });
 
     test('should parse version string with build info only', () {
@@ -49,14 +49,11 @@ void main() {
       expect(version.minor, 0);
       expect(version.patch, 0);
       expect(version.isPreRelease, isFalse);
-      expect(version.build, '123');
+      expect(version.build.firstOrNull, 123);
     });
 
-    test('should handle version with missing minor and patch (default to 0)', () {
-      final version = Version.parse('2');
-      expect(version.major, 2);
-      expect(version.minor, 0);
-      expect(version.patch, 0);
+    test('should throw FormatException version with missing minor or patch', () {
+      expect(() => Version.parse('2.0'), throwsFormatException);
     });
 
     test('should throw FormatException for invalid version string', () {
