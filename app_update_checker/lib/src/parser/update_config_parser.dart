@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:version/version.dart';
 
+import '../shared/raw_update_config.dart';
 import '../shared/release_status.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
@@ -28,7 +29,7 @@ class UpdateConfigParser {
   const UpdateConfigParser();
 
   UpdateConfigModel parseConfig(
-    Map<String, dynamic> map, {
+    RawUpdateConfig map, {
     required bool isDebug,
   }) {
     // releaseSettings

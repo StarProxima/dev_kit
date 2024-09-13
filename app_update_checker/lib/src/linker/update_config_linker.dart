@@ -16,14 +16,14 @@ class UpdateConfigLinker {
   const UpdateConfigLinker();
 
   UpdateConfigData linkConfigs({
-    required ReleaseSettingsConfig releaseSettingsConfig,
+    required ReleaseSettingsConfig? releaseSettingsConfig,
     required List<ReleaseConfig> releasesConfig,
-    required List<StoreConfig> storesConfig,
+    required List<StoreConfig>? storesConfig,
     required Map<String, dynamic>? customData,
   }) {
     final releaseSettings = ReleaseSettings.fromConfig(releaseSettingsConfig);
 
-    final stores = _parseStore(storesConfig);
+    final stores = _parseStore(storesConfig ?? []);
 
     final releases = _parseReleases(
       stores: stores,
