@@ -7,6 +7,8 @@ class ReleaseSettingsParser {
   DurationParser get _durationParser => const DurationParser();
   TextTranslationsParser get _textParser => const TextTranslationsParser();
 
+  BoolParser get _boolParser => const BoolParser();
+
   const ReleaseSettingsParser();
 
   UpdateStatusWrapper<ReleaseSettingsConfig?>? parse(
@@ -30,12 +32,11 @@ class ReleaseSettingsParser {
 
     // canSkipRelease
     final canSkipReleaseValue = value.remove('can_skip_release');
-    final canSkipRelease = updateStatusWrapperParser.parse(canSkipReleaseValue, (value) {
-      if (value is bool?) return value;
-      if (isDebug) throw const UpdateConfigException();
+    final canSkipRelease = _boolParser.parseWithStatuses(canSkipReleaseValue, isDebug: isDebug);
 
-      return null;
-    });
+    // canPostponeRelease
+    final canPostponeReleaseValue = value.remove('can_postpone_release');
+    final canPostponeRelease = _boolParser.parseWithStatuses(canPostponeReleaseValue, isDebug: isDebug);
 
     // reminderPeriodHours
     final reminderPeriodHours = value.remove('reminder_period_hours');
@@ -54,6 +55,7 @@ class ReleaseSettingsParser {
       titleTranslations: title.required,
       descriptionTranslations: description.required,
       canSkipRelease: canSkipRelease.required,
+      canPostponeRelease: canPostponeRelease.required,
       reminderPeriod: reminderPeriod.required,
       releaseDelay: releaseDelay.required,
       progressiveRolloutDuration: progressiveRolloutDuration.required,
@@ -64,6 +66,7 @@ class ReleaseSettingsParser {
       titleTranslations: title.recommended,
       descriptionTranslations: description.recommended,
       canSkipRelease: canSkipRelease.recommended,
+      canPostponeRelease: canPostponeRelease.recommended,
       reminderPeriod: reminderPeriod.recommended,
       releaseDelay: releaseDelay.recommended,
       progressiveRolloutDuration: progressiveRolloutDuration.recommended,
@@ -74,6 +77,7 @@ class ReleaseSettingsParser {
       titleTranslations: title.available,
       descriptionTranslations: description.available,
       canSkipRelease: canSkipRelease.available,
+      canPostponeRelease: canPostponeRelease.available,
       reminderPeriod: reminderPeriod.available,
       releaseDelay: releaseDelay.available,
       progressiveRolloutDuration: progressiveRolloutDuration.available,

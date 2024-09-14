@@ -8,12 +8,13 @@ class ReleaseParser {
   TextTranslationsParser get _textParser => const TextTranslationsParser();
   VersionParser get _versionParser => const VersionParser();
 
+  DateTimeParser get _dateTimeParser => const DateTimeParser();
+
   const ReleaseParser();
 
   ReleaseConfig? parse(
     Map<String, dynamic> map, {
-    required bool isDebug,
-    // ignore: avoid-long-functions
+    required bool isDebug, // ignore: avoid-long-functions
   }) {
     final isDebugOriginal = isDebug;
 
@@ -37,62 +38,16 @@ class ReleaseParser {
       }
       version as Version;
 
-      // refVersion
-      var refVersion = map.remove('ref_version');
-
-      refVersion = _versionParser.parse(
-        refVersion,
-        isDebug: isDebug,
-      );
-      refVersion as Version?;
-
-      // buildNumber
-      var buildNumber = map.remove('build_number');
-
-      if (buildNumber is! int?) {
-        if (isDebug) throw const UpdateConfigException();
-        buildNumber = null;
-      }
-
-      // status
-      var status = map.remove('status');
-      if (status is! String?) {
-        if (isDebug) throw const UpdateConfigException();
-        status = null;
-      }
-
-      if (status != null) {
-        status = ReleaseStatus.parse(status);
-        status as ReleaseStatus?;
-        if (isDebug && status == null) throw const UpdateConfigException();
-      }
-
       // releaseSettings
       final releaseSettings = _releaseSettingsParser.parse(map, isDebug: isDebug);
 
       // releaseNote
-      var releaseNote = map.remove('release_note');
+      final releaseNoteValue = map.remove('release_note');
+      final releaseNote = _textParser.parseWithStatuses(releaseNoteValue, isDebug: isDebug);
 
-      releaseNote = _textParser.parse(releaseNote, isDebug: isDebug);
-      releaseNote as Map<Locale, Object>?;
-      releaseNote as Map<Locale, String>?;
-
-      // publishDateUtc
-      var publishDateUtc = map.remove('publish_date_utc');
-
-      if (publishDateUtc is! String?) {
-        if (isDebug) throw const UpdateConfigException();
-        publishDateUtc = null;
-      }
-
-      try {
-        publishDateUtc = publishDateUtc == null ? null : DateTime.parse(publishDateUtc);
-      } on FormatException catch (e, s) {
-        if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
-        publishDateUtc = null;
-      }
-
-      publishDateUtc as DateTime?;
+      // dateUtc
+      final dateUtcValue = map.remove('date_utc');
+      final dateUtc = _dateTimeParser.parse(dateUtcValue, isDebug: isDebug);
 
       // stores
       var stores = map.remove('stores');
@@ -109,16 +64,9 @@ class ReleaseParser {
 
       return ReleaseConfig(
         version: version,
-        refVersion: refVersion,
-        buildNumber: buildNumber,
-        status: status,
-        titleTranslations: releaseSettings.titleTranslations,
-        descriptionTranslations: releaseSettings.descriptionTranslations,
+        dateUtc: dateUtc,
         releaseNoteTranslations: releaseNote,
-        dateUtc: publishDateUtc,
-        canIgnoreRelease: releaseSettings.canSkipRelease,
-        reminderPeriod: releaseSettings.reminderPeriod,
-        releaseDelay: releaseSettings.releaseDelay,
+        releaseSettings: releaseSettings,
         sources: stores,
         customData: map,
       );

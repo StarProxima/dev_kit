@@ -1,5 +1,6 @@
 // ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:pub_semver/pub_semver.dart';
@@ -22,6 +23,8 @@ part 'sub_parsers/store_parser.dart';
 part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
 part 'sub_parsers/update_status_wrapper_parser.dart';
+part 'sub_parsers/bool_parser.dart';
+part 'sub_parsers/date_time_parser.dart';
 
 class UpdateConfigParser {
   StoreParser get _storeParser => const StoreParser();
@@ -35,14 +38,12 @@ class UpdateConfigParser {
     required bool isDebug,
   }) {
     // releaseSettings
-    var releaseSettings = map.remove('release_settings');
+    final releaseSettingsValue = map.remove('release_settings');
 
-    releaseSettings = _releaseSettingsParser.parse(
-      releaseSettings,
+    final releaseSettings = _releaseSettingsParser.parse(
+      releaseSettingsValue,
       isDebug: isDebug,
     );
-
-    releaseSettings as ReleaseSettingsConfig?;
 
     // stores
     var stores = map.remove('stores');

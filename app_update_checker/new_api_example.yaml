@@ -14,6 +14,17 @@ release_settings:
   progressive_rollout_hours: 96
   delay_hours: 20
 
+  can_skip_release:
+    required: false
+    recommended: false
+    available: true
+  
+  can_postpone_release:
+    required: false
+    recommended: true
+    available: true
+
+
 
 not_supported_versions: ['<=4.2.0', 0.3.4]
 deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
@@ -54,7 +65,7 @@ releases:
       - Added bugs
       - Fixed features
     date_utc: "2024-08-24 15:35:00"
-    can_ignore_release: true
+    can_skip_release: true
     reminder_period_hours: 48
     release_delay_hours: 48
     sources:
@@ -98,20 +109,20 @@ releases:
     title: Title
     description: Description
     date: 2014-10-17 23:00:00
-    can_ignore_release: true
+    can_skip_release: true
     postavki:
       - source:
           name: googlePlay
           url:
           platforms: []
         date: 2014-10-17 23:00:00
-        can_ignore_release: true
+        can_skip_release: true
     sources: 
      - name: googlePlay
        url:
        platforms: []
        date: 2014-10-17 23:00:00
-       can_ignore_release: true
+       can_skip_release: true
      - name: appStore
        release_note: note ios
        date: 2014-10-18 23:00:00
@@ -121,7 +132,7 @@ releases:
     title: Title
     description: Description
     date: 2014-10-17 23:00:00
-    can_ignore_release: true
+    can_skip_release: true
     source: 
       name: googlePlay
       url:
