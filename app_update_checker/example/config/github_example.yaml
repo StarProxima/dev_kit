@@ -2,9 +2,15 @@
 releases:
   - version: 0.0.1
     release_note: Improvements
+    title: Title
     stores:
+     - name: appStore
+       version: 0.0.1+13
+       release_note: Improvements 2
      - name: googlePlay
+       version: 0.0.2
        url: https://play.google.com/store/apps/details?id=app.hiddify.com
+       title: Title2
        platforms: 
         - android
      - name: github
