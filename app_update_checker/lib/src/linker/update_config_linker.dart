@@ -1,10 +1,11 @@
 // ignore_for_file: avoid-recursive-calls
 
+import 'package:pub_semver/pub_semver.dart';
+
 import '../parser/models/release_config.dart';
 import '../parser/models/release_settings_config.dart';
 import '../parser/models/store_config.dart';
 import '../shared/release_status.dart';
-import '../shared/version.dart';
 import '../stores/store.dart';
 import 'models/exceptions.dart';
 import 'models/release_data.dart';
@@ -15,14 +16,14 @@ class UpdateConfigLinker {
   const UpdateConfigLinker();
 
   UpdateConfigData linkConfigs({
-    required ReleaseSettingsConfig releaseSettingsConfig,
+    required ReleaseSettingsConfig? releaseSettingsConfig,
     required List<ReleaseConfig> releasesConfig,
-    required List<StoreConfig> storesConfig,
+    required List<StoreConfig>? storesConfig,
     required Map<String, dynamic>? customData,
   }) {
     final releaseSettings = ReleaseSettings.fromConfig(releaseSettingsConfig);
 
-    final stores = _parseStore(storesConfig);
+    final stores = _parseStore(storesConfig ?? []);
 
     final releases = _parseReleases(
       stores: stores,
@@ -73,6 +74,7 @@ class UpdateConfigLinker {
     final releaseByVersion = {
       for (final release in releasesConfig) release.version: release,
     };
+
     final releaseStraightRef = <Version, ReleaseConfig?>{};
     ReleaseConfig mergedReleaseRefDFS(ReleaseConfig node) {
       if (releaseStraightRef.containsKey(node.version)) {

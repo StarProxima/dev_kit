@@ -1,6 +1,7 @@
+import 'package:pub_semver/pub_semver.dart';
+
 import '../../shared/release_status.dart';
 import '../../shared/text_translations.dart';
-import '../../shared/version.dart';
 import '../../stores/store.dart';
 
 class ReleaseData {

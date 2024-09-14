@@ -1,8 +1,9 @@
 import 'dart:ui';
 
+import 'package:pub_semver/pub_semver.dart';
+
 import '../../parser/models/release_settings_config.dart';
 import '../../shared/text_translations.dart';
-import '../../shared/version.dart';
 
 class ReleaseSettings {
   final TextTranslations titleTranslations;
@@ -25,16 +26,16 @@ class ReleaseSettings {
     required this.customData,
   });
 
-  factory ReleaseSettings.fromConfig(ReleaseSettingsConfig config) {
+  factory ReleaseSettings.fromConfig(ReleaseSettingsConfig? config) {
     return ReleaseSettings(
-      titleTranslations: config.titleTranslations ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
-      descriptionTranslations: config.descriptionTranslations ?? {const Locale('en'): 'New update'},
-      canIgnoreRelease: config.canIgnoreRelease ?? true,
-      reminderPeriod: config.reminderPeriod ?? const Duration(days: 7),
-      releaseDelay: config.releaseDelay ?? Duration.zero,
-      deprecatedBeforeVersion: config.deprecatedBeforeVersion,
-      requiredMinimumVersion: config.requiredMinimumVersion,
-      customData: config.customData,
+      titleTranslations: config?.titleTranslations ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
+      descriptionTranslations: config?.descriptionTranslations ?? {const Locale('en'): 'New update'},
+      canIgnoreRelease: config?.canIgnoreRelease ?? true,
+      reminderPeriod: config?.reminderPeriod ?? const Duration(days: 7),
+      releaseDelay: config?.releaseDelay ?? Duration.zero,
+      deprecatedBeforeVersion: config?.deprecatedBeforeVersion,
+      requiredMinimumVersion: config?.requiredMinimumVersion,
+      customData: config?.customData,
     );
   }
 }

@@ -1,10 +1,11 @@
 // ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
 
+import 'package:pub_semver/pub_semver.dart';
+
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../shared/release_status.dart';
 import '../shared/update_platform.dart';
-import '../shared/version.dart';
 
 class UpdateFinder {
   final Version appVersion;
@@ -28,7 +29,6 @@ class UpdateFinder {
     releasesLoop:
     for (final release in releases) {
       if (release.version < appVersion) break;
-
 
       // If there is no store with the current platform - skip release.
       if (!release.stores.any((store) => store.platforms.contains(platform))) continue;

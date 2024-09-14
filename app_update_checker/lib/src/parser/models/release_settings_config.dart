@@ -1,5 +1,6 @@
+import 'package:pub_semver/pub_semver.dart';
+
 import '../../shared/text_translations.dart';
-import '../../shared/version.dart';
 
 class ReleaseSettingsConfig {
   final TextTranslations? titleTranslations;

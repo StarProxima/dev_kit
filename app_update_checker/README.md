@@ -75,21 +75,20 @@ release_settings:
   reminder_period_hours: 48
   # Delay that must pass after the release before it begins to be shown to all users
   release_delay_hours: 48
-  # Versions prior to this one will receive an obsolescence notice,
-  # but may defer the update.
-  deprecated_before_version: 0.3.7
-  # Versions prior to this one must be updated to the latest version,
-  # with no option to defer the update.
-  required_minimum_version: 0.1.0 
+
+not_supported_versions: ['<=4.2.0', 0.3.4]
+deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
 
 # Optional, will be set based on the platform and app ID
-stores:
+sources:
   - name: googlePlay 
     url: https://example.com
   - name: appStore
     url: https://example.com
   - name: appGallery 
     url: https://example.com
+    # You can also override any params for this source (title, release_delay_hours, deprecated_versions etc.)
+    title: Title
   - name: ruStore 
     url: https://example.com
     # Custom store
@@ -103,17 +102,7 @@ stores:
 
 releases:
   - version: 0.3.7 # Required
-    # Optional, uses to refine the version
-    build_number: 21
-    # Optional, active by default
-    # May be one of:
-    # active - The release is available.
-    # inactive - The release is hidden from users.
-    # required - The release is required be installed by all users with older versions.
-    # deprecated - The release is outdated and is strictly recommended to be updated.
-    # broken - The release has critical bugs and requires an update.
-    status: active
-    # You can also override the title and description here.
+    # You can also override all release_settings params here (title, release_delay_hours etc.)
     # Optional, may not to be displayed.
     release_note: |-
       # Big update!
@@ -121,32 +110,24 @@ releases:
       ### Short notes
       - Added bugs
       - Fixed features
-    # Optional, used to delay the release using releaseDelayHours. Time is optional.
-    publish_date_utc: '2024-08-24 15:35:00'
-    # Optional, will be override
-    can_ignore_release: true
-    # Optional, will be override
-    reminder_period_hours: 48
-    # Optional, will be override
-    release_delay_hours: 48
-    # Optional, all by default. Support custom stores
-    stores:
+    # Optional. Time is also optional.
+    date_utc: '2024-08-24 15:35:00'
+    # Required. Support custom stores
+    sources:
         # Supports short syntax
       - googlePlay
       - appStore
       - ruStore
         # Also supports full syntax if you need to override parametrs
       - name: github
+        # Override source params
         url: https://example.com
-        platforms: 
-          - android
-          - ios
-          - aurora
+        platforms: [android, windows]
+        # And override any release params
+        release_note: Notes
+        title: Title
     
   - version: 0.3.8
-    # Reference to another release by version,
-    # uses all of its parameters by default.
-    ref_version: 0.3.7
     release_note: Minor improvements
     # You can add any custom parameters anywhere in the config, 
     # you can access them from the app using Map.
@@ -157,45 +138,9 @@ releases:
 
 # Shorebird
 
-If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with release notes with the ability to restart the application.
+If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with the ability to restart the application.
 
-If you don't need a patch note and a custom title and description, you can omit specific patches from the release. Information about new patches is also provided by shorebird.
-
-```yaml
-
-# Default settings for patches
-path_settings:
-  # Optional, similar to release title
-  title: The new patch is available!
-  # Optional, similar to release description
-  description: It is needed to fix errors in the app.
-
-releases:
-  - version: 1.3.7
-    patches:
-      - patch_number: 1 # Required
-        # Optional, similar to release type
-        status: active
-        # Optional, you can set the title, description and patchNote.
-        title: New patch for $appVersion
-        patch_note: Critical fix
-        # Optional, uses to refine the version
-        build_number: 21
-
-        # Related patch for another platform with different patch number
-      - patch_number: 2
-        # Optional, reference to another patch by patchNumber,  
-        # uses all of its parameters by default
-        ref_patch_number: 1
-        # Optional, used to reference a patch of a different version
-        ref_version: 1.3.7
-        # Optional, uses to refine the version
-        build_number: 23
-    platforms:
-      - android
-      - ios 
-        
-```
+Information about new patches is provided by shorebird.
 
 ### Roadmap
 ✅ Support the release status (required, broken, etc.) 

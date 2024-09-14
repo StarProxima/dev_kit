@@ -3,10 +3,10 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:update_check/src/parser/models/update_config_exception.dart';
 import 'package:update_check/src/parser/update_config_parser.dart';
 import 'package:update_check/src/shared/text_translations.dart';
-import 'package:update_check/src/shared/version.dart';
 
 void main() {
   group('ReleaseSettingsParser', () {
@@ -38,8 +38,8 @@ void main() {
         r'Version $releaseVersion is available now!',
       );
       expect(result.canIgnoreRelease, true);
-      expect(result.reminderPeriod, Duration(hours: 48));
-      expect(result.releaseDelay, Duration(hours: 24));
+      expect(result.reminderPeriod, const Duration(hours: 48));
+      expect(result.releaseDelay, const Duration(hours: 24));
       expect(result.deprecatedBeforeVersion, Version.parse('0.3.7'));
       expect(result.requiredMinimumVersion, Version.parse('0.1.0'));
       expect(result.customData, {'custom_field': 'custom_value'});

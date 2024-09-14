@@ -4,3 +4,6 @@ include: package:project_kit/analysis_options.yaml
 dart_code_metrics:
   rules:
     prefer-correct-json-casts: false
+analyzer:
+  errors:
+    avoid_slow_async_io: ignore
