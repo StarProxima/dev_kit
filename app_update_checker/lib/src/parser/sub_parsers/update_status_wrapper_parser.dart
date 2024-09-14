@@ -5,11 +5,10 @@ class UpdateStatusWrapperParser {
 
   // ignore: avoid-dynamic, prefer-named-parameters
   UpdateStatusWrapper<T?> parse<T>(dynamic value, T Function(dynamic value) parse) {
-    if (value is Map<String, dynamic> &&
-        value.keys.any((e) => const ['required', 'recommended', 'available'].contains(e))) {
-      final requiredValue = value['required'];
-      final recommendedValue = value['recommended'];
-      final availableValue = value['available'];
+    if (value is Map<String, dynamic> && value.keys.any((e) => UpdateStatus.values.map((e) => e.name).contains(e))) {
+      final requiredValue = value[UpdateStatus.required.name];
+      final recommendedValue = value[UpdateStatus.recommended.name];
+      final availableValue = value[UpdateStatus.available.name];
 
       final required = requiredValue == null ? null : parse(requiredValue);
       final recommended = recommendedValue == null ? null : parse(recommendedValue);
@@ -23,10 +22,14 @@ class UpdateStatusWrapperParser {
       );
     }
 
+    final parsedValue = parse(value);
+
+    // Extends to `recommended` and `available`, but not `required`
     return UpdateStatusWrapper<T?>(
       required: null,
-      recommended: null,
-      available: parse(value),
+      recommended: parsedValue,
+      // ignore: no-equal-arguments
+      available: parsedValue,
     );
   }
 }

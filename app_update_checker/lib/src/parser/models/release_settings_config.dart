@@ -1,5 +1,4 @@
 import '../../shared/text_translations.dart';
-import '../../shared/update_status_wrapper.dart';
 
 class ReleaseSettingsConfig {
   final TextTranslations? titleTranslations;
