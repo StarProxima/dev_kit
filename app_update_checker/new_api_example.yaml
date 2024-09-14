@@ -27,7 +27,7 @@ release_settings:
 
 
 
-not_supported_versions: ['<=4.2.0', 0.3.4]
+unsupported_versions: ['<=4.2.0', 0.3.4]
 deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
 
 sources:
@@ -40,7 +40,7 @@ sources:
   - name: ruStore
     url: https://example.com
     title: Title
-    not_supported_versions: ['<=4.2.0']
+    unsupported_versions: ['<=4.2.0']
   - name: gitHub
     url: https://example.com
     platforms:

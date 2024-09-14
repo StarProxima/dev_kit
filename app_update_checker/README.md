@@ -79,7 +79,7 @@ release_settings:
   # Duration over which the release visibility will gradually increase from 0% to 100% of users.
   progressive_rollout_hours: 48
 
-not_supported_versions: ['<=4.2.0', 0.3.4]
+unsupported_versions: ['<=4.2.0', 0.3.4]
 deprecated_versions: ['<=5.1.0 >=4.2.0', '>5.6.0 <5.6.7']
 
 # Optional, will be set based on the platform and app ID
