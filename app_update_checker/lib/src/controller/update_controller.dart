@@ -34,7 +34,7 @@ class UpdateController extends UpdateContollerBase {
   UpdateFinder? _finder;
   final StoreFetcherCoordinator? _storeFetcherCoordinator;
   final UpdatePlatform _platform;
-  final List<StoreConfig>? _stores;
+  final List<SourceConfig>? _stores;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => throw UnimplementedError();
@@ -46,7 +46,7 @@ class UpdateController extends UpdateContollerBase {
     UpdateConfigFetcher? updateConfigFetcher,
     StoreFetcherCoordinator? storeFetcherCoordinator,
     ReleaseSettingsConfig? releaseSettings,
-    List<StoreConfig>? stores,
+    List<SourceConfig>? stores,
     UpdatePlatform? platform,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _storeFetcherCoordinator = storeFetcherCoordinator,

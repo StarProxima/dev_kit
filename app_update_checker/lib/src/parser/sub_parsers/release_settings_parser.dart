@@ -62,7 +62,7 @@ class ReleaseSettingsParser {
     return ReleaseSettingsConfig(
       titleTranslations: title,
       descriptionTranslations: description,
-      canIgnoreRelease: canIgnoreRelease,
+      canSkipRelease: canIgnoreRelease,
       reminderPeriod: reminderPeriod,
       releaseDelay: releaseDelay,
       deprecatedBeforeVersion: deprecatedBeforeVersion,

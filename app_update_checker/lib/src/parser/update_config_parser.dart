@@ -56,10 +56,10 @@ class UpdateConfigParser {
     } else if (stores != null) {
       stores = stores
           .map((e) => _storeParser.parse(e, isGlobalStore: true, isDebug: isDebug))
-          .whereType<StoreConfig>()
+          .whereType<SourceConfig>()
           .toList();
     }
-    stores as List<StoreConfig>?;
+    stores as List<SourceConfig>?;
 
     // releases
     var releases = map.remove('releases');

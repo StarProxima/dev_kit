@@ -5,7 +5,7 @@ part of '../update_config_parser.dart';
 class StoreParser {
   const StoreParser();
 
-  StoreConfig? parse(
+  SourceConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isGlobalStore,
@@ -14,7 +14,7 @@ class StoreParser {
     // short string syntax
     if (value is! Map<String, dynamic>) {
       if (!isGlobalStore && value is String) {
-        return StoreConfig(
+        return SourceConfig(
           name: value,
           url: null,
           platforms: null,
@@ -70,7 +70,7 @@ class StoreParser {
     platforms = platforms?.map(UpdatePlatform.new).toList();
     platforms as List<UpdatePlatform>?;
 
-    return StoreConfig(
+    return SourceConfig(
       name: name,
       url: url,
       platforms: platforms,

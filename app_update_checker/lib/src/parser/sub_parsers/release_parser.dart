@@ -102,10 +102,10 @@ class ReleaseParser {
       } else if (stores != null) {
         stores = stores
             .map((e) => _storeParser.parse(e, isGlobalStore: false, isDebug: isDebug))
-            .whereType<StoreConfig>()
+            .whereType<SourceConfig>()
             .toList();
       }
-      stores as List<StoreConfig>?;
+      stores as List<SourceConfig>?;
 
       return ReleaseConfig(
         version: version,
@@ -115,11 +115,11 @@ class ReleaseParser {
         titleTranslations: releaseSettings.titleTranslations,
         descriptionTranslations: releaseSettings.descriptionTranslations,
         releaseNoteTranslations: releaseNote,
-        publishDateUtc: publishDateUtc,
-        canIgnoreRelease: releaseSettings.canIgnoreRelease,
+        dateUtc: publishDateUtc,
+        canIgnoreRelease: releaseSettings.canSkipRelease,
         reminderPeriod: releaseSettings.reminderPeriod,
         releaseDelay: releaseSettings.releaseDelay,
-        stores: stores,
+        sources: stores,
         customData: map,
       );
     } on UpdateConfigException {

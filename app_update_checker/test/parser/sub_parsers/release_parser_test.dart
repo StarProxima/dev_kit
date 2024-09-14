@@ -47,11 +47,11 @@ void main() {
         result?.releaseNoteTranslations?.byLocale(const Locale('ababa')),
         'New features and bug fixes',
       );
-      expect(result?.publishDateUtc?.toString(), '2024-08-24 15:35:00.000');
-      expect(result?.stores, hasLength(2));
+      expect(result?.dateUtc?.toString(), '2024-08-24 15:35:00.000');
+      expect(result?.sources, hasLength(2));
       // ignore: prefer-first
-      expect(result?.stores?[0].name, 'googlePlay');
-      expect(result?.stores?[1].name, 'appStore');
+      expect(result?.sources?[0].name, 'googlePlay');
+      expect(result?.sources?[1].name, 'appStore');
       expect(result?.customData?['customField'], 'customValue');
     });
 
@@ -71,9 +71,9 @@ void main() {
 
       expect(result, isNotNull);
       expect(result?.version.toString(), '0.3.7');
-      expect(result?.stores, hasLength(2));
-      expect(result?.stores?.firstOrNull?.name, 'googlePlay');
-      expect(result?.stores?[1].name, 'appStore');
+      expect(result?.sources, hasLength(2));
+      expect(result?.sources?.firstOrNull?.name, 'googlePlay');
+      expect(result?.sources?[1].name, 'appStore');
     });
 
     test('should return null if version is missing', () {
@@ -136,8 +136,8 @@ void main() {
       expect(result?.buildNumber, isNull);
       expect(result?.status, isNull);
       expect(result?.releaseNoteTranslations, isNull);
-      expect(result?.publishDateUtc, isNull);
-      expect(result?.stores, isNull);
+      expect(result?.dateUtc, isNull);
+      expect(result?.sources, isNull);
       expect(result?.customData, hasLength(0));
     });
 
