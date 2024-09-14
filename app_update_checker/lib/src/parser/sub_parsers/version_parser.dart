@@ -19,7 +19,7 @@ class VersionParser {
     try {
       return Version.parse(version);
     } catch (e, s) {
-      if (isDebug) Error.throwWithStackTrace(UpdateConfigException(), s);
+      if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
 
       return null;
     }

@@ -8,6 +8,7 @@ import '../shared/raw_update_config.dart';
 import '../shared/release_status.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
+import '../shared/update_status_wrapper.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/store_config.dart';
@@ -20,6 +21,7 @@ part 'sub_parsers/release_settings_parser.dart';
 part 'sub_parsers/store_parser.dart';
 part 'sub_parsers/text_parser.dart';
 part 'sub_parsers/version_parser.dart';
+part 'sub_parsers/update_status_wrapper_parser.dart';
 
 class UpdateConfigParser {
   StoreParser get _storeParser => const StoreParser();
@@ -35,16 +37,10 @@ class UpdateConfigParser {
     // releaseSettings
     var releaseSettings = map.remove('release_settings');
 
-    if (releaseSettings is! Map<String, dynamic>?) {
-      throw const UpdateConfigException();
-    }
-
-    if (releaseSettings != null) {
-      releaseSettings = _releaseSettingsParser.parse(
-        releaseSettings,
-        isDebug: isDebug,
-      );
-    }
+    releaseSettings = _releaseSettingsParser.parse(
+      releaseSettings,
+      isDebug: isDebug,
+    );
 
     releaseSettings as ReleaseSettingsConfig?;
 

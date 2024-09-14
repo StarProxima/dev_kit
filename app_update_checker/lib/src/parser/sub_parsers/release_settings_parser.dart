@@ -3,71 +3,87 @@
 part of '../update_config_parser.dart';
 
 class ReleaseSettingsParser {
+  UpdateStatusWrapperParser get updateStatusWrapperParser => const UpdateStatusWrapperParser();
   DurationParser get _durationParser => const DurationParser();
-  TextParser get _textParser => const TextParser();
-  VersionParser get _versionParser => const VersionParser();
+  TextTranslationsParser get _textParser => const TextTranslationsParser();
 
   const ReleaseSettingsParser();
 
-  ReleaseSettingsConfig parse(
-    Map<String, dynamic> map, {
+  UpdateStatusWrapper<ReleaseSettingsConfig?>? parse(
+    // ignore: avoid-dynamic
+    dynamic value, {
     required bool isDebug,
   }) {
-    // title
-    var title = map.remove('title');
-
-    title = _textParser.parse(title, isDebug: isDebug);
-    title as Map<Locale, Object>?;
-    title as Map<Locale, String>?;
-
-    // description
-    var description = map.remove('description');
-
-    description = _textParser.parse(description, isDebug: isDebug);
-    description as Map<Locale, Object>?;
-    description as Map<Locale, String>?;
-
-    // canIgnoreRelease
-    var canIgnoreRelease = map.remove('can_ignore_release');
-
-    if (canIgnoreRelease is! bool?) {
-      if (isDebug) throw const UpdateConfigException();
-      canIgnoreRelease = null;
+    if (value is! Map<String, dynamic>?) {
+      throw const UpdateConfigException();
     }
 
-    // reminderPeriodInHours
-    final reminderPeriodInHours = map.remove('reminder_period_hours');
-    final reminderPeriod = _durationParser.parse(hours: reminderPeriodInHours, isDebug: isDebug);
+    if (value == null) return null;
 
-    // releaseDelayInHours
-    final releaseDelayInHours = map.remove('release_delay_hours');
-    final releaseDelay = _durationParser.parse(hours: releaseDelayInHours, isDebug: isDebug);
+    // title
+    final titleValue = value.remove('title');
+    final title = _textParser.parseWithStatuses(titleValue, isDebug: isDebug);
 
-    // deprecatedBeforeVersion
-    var deprecatedBeforeVersion = map.remove('deprecated_before_version');
-    deprecatedBeforeVersion = _versionParser.parse(
-      deprecatedBeforeVersion,
-      isDebug: isDebug,
+    // description
+    final descriptionValue = value.remove('description');
+    final description = _textParser.parseWithStatuses(descriptionValue, isDebug: isDebug);
+
+    // canSkipRelease
+    final canSkipReleaseValue = value.remove('can_skip_release');
+    final canSkipRelease = updateStatusWrapperParser.parse(canSkipReleaseValue, (value) {
+      if (value is bool?) return value;
+      if (isDebug) throw const UpdateConfigException();
+
+      return null;
+    });
+
+    // reminderPeriodHours
+    final reminderPeriodHours = value.remove('reminder_period_hours');
+    final reminderPeriod = _durationParser.parseWithStatuses(hours: reminderPeriodHours, isDebug: isDebug);
+
+    // releaseDelayHours
+    final releaseDelayHours = value.remove('release_delay_hours');
+    final releaseDelay = _durationParser.parseWithStatuses(hours: releaseDelayHours, isDebug: isDebug);
+
+    // progressiveRolloutHours
+    final progressiveRolloutHours = value.remove('progressive_rollout_hours');
+    final progressiveRolloutDuration =
+        _durationParser.parseWithStatuses(hours: progressiveRolloutHours, isDebug: isDebug);
+
+    final requiredReleaseSettings = ReleaseSettingsConfig(
+      titleTranslations: title.required,
+      descriptionTranslations: description.required,
+      canSkipRelease: canSkipRelease.required,
+      reminderPeriod: reminderPeriod.required,
+      releaseDelay: releaseDelay.required,
+      progressiveRolloutDuration: progressiveRolloutDuration.required,
+      customData: value,
     );
-    deprecatedBeforeVersion as Version?;
 
-    // requiredMinimumVersion
-    var requiredMinimumVersion = map.remove('required_minimum_version');
-    requiredMinimumVersion = _versionParser.parse(
-      requiredMinimumVersion,
-      isDebug: isDebug,
+    final recommendedReleaseSettings = ReleaseSettingsConfig(
+      titleTranslations: title.recommended,
+      descriptionTranslations: description.recommended,
+      canSkipRelease: canSkipRelease.recommended,
+      reminderPeriod: reminderPeriod.recommended,
+      releaseDelay: releaseDelay.recommended,
+      progressiveRolloutDuration: progressiveRolloutDuration.recommended,
+      customData: value,
     );
-    requiredMinimumVersion as Version?;
 
-    return ReleaseSettingsConfig(
-      titleTranslations: title,
-      descriptionTranslations: description,
-      canSkipRelease: canIgnoreRelease,
-      reminderPeriod: reminderPeriod,
-      releaseDelay: releaseDelay,
-      deprecatedBeforeVersion: deprecatedBeforeVersion,
-      requiredMinimumVersion: requiredMinimumVersion,
-      customData: map,
+    final availableReleaseSettings = ReleaseSettingsConfig(
+      titleTranslations: title.available,
+      descriptionTranslations: description.available,
+      canSkipRelease: canSkipRelease.available,
+      reminderPeriod: reminderPeriod.available,
+      releaseDelay: releaseDelay.available,
+      progressiveRolloutDuration: progressiveRolloutDuration.available,
+      customData: value,
+    );
+
+    return UpdateStatusWrapper(
+      required: requiredReleaseSettings,
+      recommended: recommendedReleaseSettings,
+      available: availableReleaseSettings,
     );
   }
 }

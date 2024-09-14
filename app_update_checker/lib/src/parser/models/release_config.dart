@@ -10,7 +10,7 @@ class ReleaseConfig {
   final DateTime? dateUtc;
   final UpdateStatusWrapper<TextTranslations?>? releaseNoteTranslations;
   final UpdateStatusWrapper<ReleaseSettingsConfig?>? releaseSettings;
-  final List<SourceConfig>? sources;
+  final List<ReleaseSourceConfig>? sources;
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({

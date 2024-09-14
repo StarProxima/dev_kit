@@ -5,7 +5,7 @@ part of '../update_config_parser.dart';
 class ReleaseParser {
   StoreParser get _storeParser => const StoreParser();
   ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
-  TextParser get _textParser => const TextParser();
+  TextTranslationsParser get _textParser => const TextTranslationsParser();
   VersionParser get _versionParser => const VersionParser();
 
   const ReleaseParser();

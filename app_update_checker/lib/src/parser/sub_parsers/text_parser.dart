@@ -2,10 +2,24 @@
 
 part of '../update_config_parser.dart';
 
-class TextParser {
-  const TextParser();
+class TextTranslationsParser {
+  UpdateStatusWrapperParser get updateStatusWrapperParser => const UpdateStatusWrapperParser();
 
-  Map<Locale, String>? parse(
+  const TextTranslationsParser();
+
+  UpdateStatusWrapper<TextTranslations?> parseWithStatuses(
+    // ignore: avoid-dynamic
+    dynamic value, {
+    required bool isDebug,
+  }) {
+    // ignore: avoid-inferrable-type-arguments
+    return updateStatusWrapperParser.parse<TextTranslations?>(
+      value,
+      (value) => parse(value, isDebug: isDebug),
+    );
+  }
+
+  TextTranslations? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,

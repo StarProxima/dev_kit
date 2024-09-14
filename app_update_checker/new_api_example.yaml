@@ -11,7 +11,7 @@ release_settings:
     Version $releaseVersion is now available. You have a $appVersion
 
   reminder_period_hours: 96
-  progressively_showing_hours: 96
+  progressive_rollout_hours: 96
   delay_hours: 20
 
 

@@ -5,6 +5,8 @@ class UpdateStatusWrapper<T> {
   final T recommended;
   final T available;
 
+  bool get isOnlyAvailable => available != null && required == null && recommended == null;
+
   const UpdateStatusWrapper({
     required this.required,
     required this.recommended,
