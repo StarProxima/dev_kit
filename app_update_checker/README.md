@@ -47,9 +47,6 @@ We want to support both methods, but for now we're focusing on the second method
 
 ## Update Config
 
-
-
-
 Here is the full config api structure under consideration:
 ```yaml
 # Description of the api structure
@@ -79,9 +76,8 @@ release_settings:
   # Delay that must pass after the release before it begins to be shown to all users
   release_delay_hours: 48
 
-versions_settings:
-  not_supported_versions: ['<=4.2.0', 0.3.4]
-  deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
+not_supported_versions: ['<=4.2.0', 0.3.4]
+deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
 
 # Optional, will be set based on the platform and app ID
 sources:
