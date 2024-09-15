@@ -36,4 +36,37 @@ class ReleaseSettings {
       customData: config?.customData,
     );
   }
+
+  const ReleaseSettings.requiredUpdate({
+    required this.titleTranslations,
+    required this.descriptionTranslations,
+    this.canSkipRelease = false,
+    this.canPostponeRelease = false,
+    this.reminderPeriod = Duration.zero,
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
+  const ReleaseSettings.recommendedUpdate({
+    required this.titleTranslations,
+    required this.descriptionTranslations,
+    this.canSkipRelease = false,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 24),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
+  const ReleaseSettings.availableUpdate({
+    required this.titleTranslations,
+    required this.descriptionTranslations,
+    this.canSkipRelease = true,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 96),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
 }
