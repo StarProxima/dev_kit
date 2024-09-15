@@ -15,15 +15,54 @@ release_settings:
   progressive_rollout_hours: 96
   delay_hours: 20
 
-  can_skip_release:
-    required: false
-    recommended: false
-    available: true
-  
-  can_postpone_release:
-    required: false
-    recommended: true
-    available: true
+  # # Skip
+  # can_skip_release:
+  #   required: false
+  #   recommended: false
+  #   available: true
+
+  # # Later
+  # can_postpone_release:
+  #   required: false
+  #   recommended: true
+  #   available: true
+
+  # Skip
+  can_skip_release: true
+
+  # Later
+  can_postpone_release: true
+
+
+settings_1:
+  title: title
+  description: description
+  can_skip_release: true
+
+settings_2:
+  required:
+    title: title
+    description: description
+    can_skip_release: true
+  available:
+    title: title
+    description: description
+    can_skip_release: true
+
+settings_3:
+  dialog: 
+    required:
+      title: title
+      description: description
+      can_skip_release: true
+    available:
+      title: title
+      description: description
+      can_skip_release: true
+  card: 
+    title: title
+    description: description
+    can_skip_release: true
 
 
 
@@ -50,8 +89,9 @@ sources:
       - linux
   - name: gitHub
     url: https://example.com
-    deprecated_versions: ['>5.6.0 <5.6.7']
     platforms: [android]
+    settings: 
+      deprecated_versions: ['>5.6.0 <5.6.7']
   - name: apk
     platforms: [android]
     url: https://example.com
@@ -91,26 +131,33 @@ releases:
 
   - version: 1.2.0
     release_note: Improvements
+    settings:
+      can_skip_release: true
     sources:
       - appStore
       - name: googlePlay
-        version: 1.3.1+80
-        release_note: Critical fix
-        date_utc: 2014-10-17 23:00:00
+        release:
+          version: 1.3.1+80
+          release_note: Critical fix
+          date_utc: 2014-10-17 23:00:00
+          settings:
+            can_skip_release: true
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-        date_utc: 2014-10-20 12:00:00
         platforms: [windows]
+        release:
+          date_utc: 2014-10-20 12:00:00
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
         platforms: [macos, linux]
 
   - version: 0.2.4
     release_note: Note
-    title: Title
-    description: Description
     date: 2014-10-17 23:00:00
-    can_skip_release: true
+    settings:
+      title: Title
+      description: Description
+      can_skip_release: true
     postavki:
       - source:
           name: googlePlay
@@ -122,8 +169,10 @@ releases:
      - name: googlePlay
        url:
        platforms: []
-       date: 2014-10-17 23:00:00
-       can_skip_release: true
+       release:
+        date: 2014-10-17 23:00:00
+        settings:
+          can_skip_release: true
      - name: appStore
        release_note: note ios
        date: 2014-10-18 23:00:00
