@@ -19,8 +19,6 @@ dependencies:
   html: ^0.15.4
   shared_preferences: ^2.3.2
   url_launcher: ^6.1.14
-  http: ^1.1.0
-  slang: ^3.31.2
   store_checker: ^1.6.0
 
 dev_dependencies:
