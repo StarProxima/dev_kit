@@ -1,6 +1,11 @@
 // ignore_for_file: prefer-type-over-var
 
-part of '../update_config_parser.dart';
+import 'dart:ui';
+
+import '../../shared/text_translations.dart';
+import '../../shared/update_status_wrapper.dart';
+import '../models/update_config_exception.dart';
+import '../update_config_parser.dart';
 
 class TextTranslationsParser {
   UpdateStatusWrapperParser get updateStatusWrapperParser => const UpdateStatusWrapperParser();
@@ -11,11 +16,13 @@ class TextTranslationsParser {
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
+    required WrapperMode mode,
   }) {
     // ignore: avoid-inferrable-type-arguments
     return updateStatusWrapperParser.parse<TextTranslations?>(
       value,
-      (value) => parse(value, isDebug: isDebug),
+      parse: (value) => parse(value, isDebug: isDebug),
+      mode: mode,
     );
   }
 

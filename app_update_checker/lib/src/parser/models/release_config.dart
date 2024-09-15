@@ -6,7 +6,7 @@ import 'release_settings_config.dart';
 import 'store_config.dart';
 
 class ReleaseConfig {
-  final Version version;
+  final Version? version;
   final DateTime? dateUtc;
   final UpdateStatusWrapper<TextTranslations?>? releaseNoteTranslations;
   final UpdateStatusWrapper<ReleaseSettingsConfig?>? releaseSettings;

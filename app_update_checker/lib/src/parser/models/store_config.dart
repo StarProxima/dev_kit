@@ -30,13 +30,13 @@ class GlobalSourceConfig extends SourceConfig {
 }
 
 class ReleaseSourceConfig extends SourceConfig {
-  final ReleaseConfig? releaseConfig;
+  final ReleaseConfig? release;
 
   const ReleaseSourceConfig({
     required super.name,
     required super.url,
     required super.platforms,
-    required this.releaseConfig,
+    required this.release,
     required super.customData,
   });
 }

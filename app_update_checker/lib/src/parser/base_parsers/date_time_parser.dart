@@ -1,4 +1,6 @@
-part of '../update_config_parser.dart';
+import '../../shared/update_status_wrapper.dart';
+import '../models/update_config_exception.dart';
+import '../update_config_parser.dart';
 
 class DateTimeParser {
   UpdateStatusWrapperParser get updateStatusWrapperParser => const UpdateStatusWrapperParser();
@@ -9,11 +11,13 @@ class DateTimeParser {
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
+    required WrapperMode mode,
   }) {
     // ignore: avoid-inferrable-type-arguments
     return updateStatusWrapperParser.parse<DateTime?>(
       value,
-      (value) => parse(value, isDebug: isDebug),
+      parse: (value) => parse(value, isDebug: isDebug),
+      mode: mode,
     );
   }
 

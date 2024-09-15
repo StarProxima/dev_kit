@@ -15,6 +15,7 @@ class ReleaseSettingsParser {
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
+    // ignore: avoid-long-functions
   }) {
     if (value is! Map<String, dynamic>?) {
       throw const UpdateConfigException();
@@ -24,32 +25,59 @@ class ReleaseSettingsParser {
 
     // title
     final titleValue = value.remove('title');
-    final title = _textParser.parseWithStatuses(titleValue, isDebug: isDebug);
+    final title = _textParser.parseWithStatuses(
+      titleValue,
+      isDebug: isDebug,
+      mode: WrapperMode.all,
+    );
 
     // description
     final descriptionValue = value.remove('description');
-    final description = _textParser.parseWithStatuses(descriptionValue, isDebug: isDebug);
+    final description = _textParser.parseWithStatuses(
+      descriptionValue,
+      isDebug: isDebug,
+      mode: WrapperMode.all,
+    );
 
     // canSkipRelease
     final canSkipReleaseValue = value.remove('can_skip_release');
-    final canSkipRelease = _boolParser.parseWithStatuses(canSkipReleaseValue, isDebug: isDebug);
+    final canSkipRelease = _boolParser.parseWithStatuses(
+      canSkipReleaseValue,
+      isDebug: isDebug,
+      mode: WrapperMode.noRequired,
+    );
 
     // canPostponeRelease
     final canPostponeReleaseValue = value.remove('can_postpone_release');
-    final canPostponeRelease = _boolParser.parseWithStatuses(canPostponeReleaseValue, isDebug: isDebug);
+    final canPostponeRelease = _boolParser.parseWithStatuses(
+      canPostponeReleaseValue,
+      isDebug: isDebug,
+      mode: WrapperMode.noRequired,
+    );
 
     // reminderPeriodHours
     final reminderPeriodHours = value.remove('reminder_period_hours');
-    final reminderPeriod = _durationParser.parseWithStatuses(hours: reminderPeriodHours, isDebug: isDebug);
+    final reminderPeriod = _durationParser.parseWithStatuses(
+      hours: reminderPeriodHours,
+      isDebug: isDebug,
+      mode: WrapperMode.noRequired,
+    );
 
     // releaseDelayHours
     final releaseDelayHours = value.remove('release_delay_hours');
-    final releaseDelay = _durationParser.parseWithStatuses(hours: releaseDelayHours, isDebug: isDebug);
+    final releaseDelay = _durationParser.parseWithStatuses(
+      hours: releaseDelayHours,
+      isDebug: isDebug,
+      mode: WrapperMode.noRequired,
+    );
 
     // progressiveRolloutHours
     final progressiveRolloutHours = value.remove('progressive_rollout_hours');
-    final progressiveRolloutDuration =
-        _durationParser.parseWithStatuses(hours: progressiveRolloutHours, isDebug: isDebug);
+    final progressiveRolloutDuration = _durationParser.parseWithStatuses(
+      hours: progressiveRolloutHours,
+      isDebug: isDebug,
+      mode: WrapperMode.noRequired,
+    );
 
     final requiredReleaseSettings = ReleaseSettingsConfig(
       titleTranslations: title.required,
@@ -85,9 +113,9 @@ class ReleaseSettingsParser {
     );
 
     return UpdateStatusWrapper(
-      required: requiredReleaseSettings,
-      recommended: recommendedReleaseSettings,
-      available: availableReleaseSettings,
+      required: requiredReleaseSettings.isEmpty ? null : requiredReleaseSettings,
+      recommended: recommendedReleaseSettings.isEmpty ? null : recommendedReleaseSettings,
+      available: availableReleaseSettings.isEmpty ? null : availableReleaseSettings,
     );
   }
 }

@@ -1,36 +1,33 @@
 // ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
-import 'dart:ffi';
-import 'dart:ui';
-
-import 'package:pub_semver/pub_semver.dart';
-
 import '../shared/raw_update_config.dart';
-import '../shared/release_status.dart';
-import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_status.dart';
 import '../shared/update_status_wrapper.dart';
+import 'base_parsers/bool_parser.dart';
+import 'base_parsers/date_time_parser.dart';
+import 'base_parsers/duration_parser.dart';
+import 'base_parsers/text_parser.dart';
+import 'base_parsers/version_parser.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/store_config.dart';
 import 'models/update_config_exception.dart';
 import 'models/update_config_model.dart';
+import 'sub_parsers/version_settings_parser.dart';
 
-part 'sub_parsers/duration_parser.dart';
 part 'sub_parsers/release_parser.dart';
 part 'sub_parsers/release_settings_parser.dart';
-part 'sub_parsers/store_parser.dart';
-part 'sub_parsers/text_parser.dart';
-part 'sub_parsers/version_parser.dart';
 part 'sub_parsers/update_status_wrapper_parser.dart';
-part 'sub_parsers/bool_parser.dart';
-part 'sub_parsers/date_time_parser.dart';
+part 'sub_parsers/global_source_parser.dart';
+part 'sub_parsers/release_source_parser.dart';
 
 class UpdateConfigParser {
-  StoreParser get _storeParser => const StoreParser();
+  GlobalSourceParser get _sourceParser => const GlobalSourceParser();
   ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
   ReleaseParser get _releaseParser => const ReleaseParser();
+
+  VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
 
   const UpdateConfigParser();
 
@@ -46,30 +43,37 @@ class UpdateConfigParser {
       isDebug: isDebug,
     );
 
-    // stores
-    var stores = map.remove('stores');
+    // versionSettings
+    final versionSettingsValue = map.remove('version_settings');
+    final versionSettings = _versionSettingsParser.parse(
+      versionSettingsValue,
+      isDebug: isDebug,
+    );
 
-    if (stores is! List<Map<String, dynamic>>?) {
-      throw const UpdateConfigException();
-    } else if (stores != null) {
-      stores = stores
-          .map((e) => _storeParser.parse(e, isGlobalStore: true, isDebug: isDebug))
-          .whereType<SourceConfig>()
-          .toList();
-    }
-    stores as List<SourceConfig>?;
+    // sources
+    final sourcesValue = map.remove('sources');
+
+    if (sourcesValue is! List<Object>?) throw const UpdateConfigException();
+
+    final sources = sourcesValue
+        ?.map(
+          (e) => _sourceParser.parse(e, isDebug: true),
+        )
+        .whereType<GlobalSourceConfig>()
+        .toList();
 
     // releases
-    var releases = map.remove('releases');
+    final releasesValue = map.remove('releases');
 
-    if (releases is! List<Map<String, dynamic>>) throw const UpdateConfigException();
+    if (releasesValue is! List<Map<String, dynamic>>) throw const UpdateConfigException();
 
-    releases = releases.map((e) => _releaseParser.parse(e, isDebug: isDebug)).whereType<ReleaseConfig>().toList();
-    releases as List<ReleaseConfig>;
+    final releases =
+        releasesValue.map((e) => _releaseParser.parse(e, isDebug: isDebug)).whereType<ReleaseConfig>().toList();
 
     return UpdateConfigModel(
       releaseSettings: releaseSettings,
-      stores: stores,
+      versionSettings: versionSettings,
+      sources: sources,
       releases: releases,
       customData: map,
     );

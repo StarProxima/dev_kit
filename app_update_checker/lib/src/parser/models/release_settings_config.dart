@@ -10,6 +10,15 @@ class ReleaseSettingsConfig {
   final Duration? progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
+  bool get isEmpty =>
+      titleTranslations == null &&
+      descriptionTranslations == null &&
+      canSkipRelease == null &&
+      canPostponeRelease == null &&
+      reminderPeriod == null &&
+      releaseDelay == null &&
+      progressiveRolloutDuration == null;
+
   const ReleaseSettingsConfig({
     required this.titleTranslations,
     required this.descriptionTranslations,

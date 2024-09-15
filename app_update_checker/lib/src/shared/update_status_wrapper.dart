@@ -13,6 +13,12 @@ class UpdateStatusWrapper<T> {
     required this.available,
   });
 
+  const UpdateStatusWrapper.all(
+    T all,
+  )   : required = all,
+        recommended = all,
+        available = all;
+
   T byStatus(UpdateStatus status) => switch (status) {
         UpdateStatus.required => required,
         UpdateStatus.recommended => recommended,

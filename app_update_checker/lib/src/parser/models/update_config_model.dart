@@ -6,15 +6,15 @@ import 'versions_settings_config.dart';
 
 class UpdateConfigModel {
   final UpdateStatusWrapper<ReleaseSettingsConfig?>? releaseSettings;
-  final VersionsSettingsConfig? versionSettings;
-  final List<GlobalSourceConfig>? stores;
+  final VersionSettingsConfig? versionSettings;
+  final List<GlobalSourceConfig>? sources;
   final List<ReleaseConfig> releases;
   final Map<String, dynamic>? customData;
 
   const UpdateConfigModel({
     required this.releaseSettings,
     required this.versionSettings,
-    required this.stores,
+    required this.sources,
     required this.releases,
     required this.customData,
   });
