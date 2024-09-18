@@ -4,101 +4,48 @@ import 'update_alert_type.dart';
 import 'update_status.dart';
 
 class UpdateSettingsConfig {
-  final Map<String, Map<String, ReleaseSettingsConfig?>> value;
+  final Map<String, Map<String, ReleaseSettingsConfig?>> _value;
 
-  const UpdateSettingsConfig(this.value);
+  const UpdateSettingsConfig(this._value);
 
-  factory UpdateSettingsConfig.parse(
-    Map<String, dynamic> map, {
-    required ReleaseSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
-  }) {
-    final value = <String, Map<String, ReleaseSettingsConfig>>{};
-
-    final typeNames = [...UpdateAlertType.values.map((e) => e.name), 'base'];
-    final isByType = map.keys.every(typeNames.contains);
-
-    if (!isByType) {
-      final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
-
-      // Empty UpdateSettings
-      if (settingsByStatus.isEmpty) return UpdateSettingsConfig(value);
-
-      return UpdateSettingsConfig({'base': settingsByStatus});
-    }
-
-    for (final type in typeNames) {
-      final value = map[type];
-      if (value is! Map<String, dynamic>) continue;
-
-      final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
-      if (settingsByStatus.isEmpty) continue;
-
-      value[type] = settingsByStatus;
-    }
-
-    return UpdateSettingsConfig(value);
-  }
-
-  ReleaseSettingsConfig? by({
+  ReleaseSettingsConfig? getBy({
     required UpdateAlertType type,
     required UpdateStatus status,
   }) =>
-      byRaw(type: type.name, status: status.name);
+      getByRaw(type: type.name, status: status.name);
 
-  ReleaseSettingsConfig? byRaw({
+  ReleaseSettingsConfig? getByRaw({
     required String type,
     required String status,
   }) {
-    final byType = value[type] ?? value['base'];
+    final byType = _value[type] ?? _value['base'];
     final byStatus = byType?[status] ?? byType?['base'];
 
     return byStatus;
   }
-
-  static Map<String, ReleaseSettingsConfig> _parseByStatus(
-    Map<String, dynamic> map, {
-    required ReleaseSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
-  }) {
-    final settingsByStatus = <String, ReleaseSettingsConfig>{};
-
-    final statusNames = [...UpdateStatus.values.map((e) => e.name), 'base'];
-
-    final isByStatus = map.keys.any(statusNames.contains);
-
-    if (!isByStatus) {
-      final settings = parseSettings(map);
-      if (settings == null) return {};
-
-      return {'base': settings};
-    }
-
-    for (final status in statusNames) {
-      final value = map[status];
-      final settings = parseSettings(value);
-      if (settings == null) continue;
-      settingsByStatus[status] = settings;
-    }
-
-    return settingsByStatus;
-  }
 }
 
-class UpdateSettings {
-  final Map<String, Map<String, ReleaseSettingsData?>> value;
+class UpdateSettings with GetByMixin<ReleaseSettingsData> {
+  @override
+  final Map<String, Map<String, ReleaseSettingsData?>> _value;
 
-  const UpdateSettings(this.value);
+  const UpdateSettings(this._value);
+}
 
-  ReleaseSettingsData by({
+mixin GetByMixin<T> {
+  abstract final Map<String, Map<String, T?>> _value;
+
+  T getBy({
     required UpdateAlertType type,
     required UpdateStatus status,
   }) =>
-      byRaw(type: type.name, status: status.name);
+      getByRaw(type: type.name, status: status.name);
 
-  ReleaseSettingsData byRaw({
+  T getByRaw({
     required String type,
     required String status,
   }) {
-    final byType = value[type] ?? value['base'];
+    final byType = _value[type] ?? _value['base'];
     if (byType == null) throw Exception();
 
     final byStatus = byType[status] ?? byType['base'];

@@ -26,6 +26,7 @@ class AppUpdate {
   });
 
   void test() {
-    availableRelease.settings.by(type: type, status: status)
+  
+    availableRelease.settings.getBy(type: type, status: status)
   }
 }
