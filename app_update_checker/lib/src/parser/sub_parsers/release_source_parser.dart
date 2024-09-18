@@ -1,23 +1,24 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
-
 part of '../update_config_parser.dart';
 
-class StoreParser {
-  const StoreParser();
+class ReleaseSourceParser {
+  ReleaseParser get _releaseParser => const ReleaseParser();
 
-  StoreConfig? parse(
+  const ReleaseSourceParser();
+
+  ReleaseSourceConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
-    required bool isGlobalStore,
     required bool isDebug,
   }) {
     // short string syntax
     if (value is! Map<String, dynamic>) {
-      if (!isGlobalStore && value is String) {
-        return StoreConfig(
+      if (value is String) {
+        return ReleaseSourceConfig(
           name: value,
           url: null,
           platforms: null,
+          release: null,
           customData: null,
         );
       }
@@ -32,48 +33,48 @@ class StoreParser {
     final map = value;
 
     // name
-    var name = map.remove('name');
+    final name = map.remove('name');
 
-    if (name is! String?) {
-      if (isDebug) throw const UpdateConfigException();
-      name = null;
-    }
-
-    if (name == null) {
+    if (name is! String) {
       if (isDebug) throw const UpdateConfigException();
 
       return null;
     }
 
     // url
-    var url = map.remove('url');
+    var urlValue = map.remove('url');
 
-    if (url is! String?) {
+    if (urlValue is! String?) {
       if (isDebug) throw const UpdateConfigException();
-      url = null;
+      urlValue = null;
     }
 
-    url = url == null ? null : Uri.tryParse(url);
-    url as Uri?;
+    Uri? url;
 
-    if (isGlobalStore && url == null) return null;
-    if (isDebug && url == null) throw const UpdateConfigException();
+    try {
+      url = urlValue == null ? null : Uri.parse(urlValue);
+    } catch (e, s) {
+      if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
+    }
 
     // platforms
-    var platforms = map.remove('platforms');
+    var platformsValue = map.remove('platforms');
 
-    if (platforms is! List<String>?) {
+    if (platformsValue is! List<String>?) {
       if (isDebug) throw const UpdateConfigException();
-      platforms = null;
+      platformsValue = null;
     }
 
-    platforms = platforms?.map(UpdatePlatform.new).toList();
-    platforms as List<UpdatePlatform>?;
+    final platforms = platformsValue?.map(UpdatePlatform.new).toList();
 
-    return StoreConfig(
+    // release
+    final release = _releaseParser.parse(map, isDebug: isDebug);
+
+    return ReleaseSourceConfig(
       name: name,
       url: url,
       platforms: platforms,
+      release: release,
       customData: map,
     );
   }

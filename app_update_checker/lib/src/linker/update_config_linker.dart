@@ -18,7 +18,7 @@ class UpdateConfigLinker {
   UpdateConfigData linkConfigs({
     required ReleaseSettingsConfig? releaseSettingsConfig,
     required List<ReleaseConfig> releasesConfig,
-    required List<StoreConfig>? storesConfig,
+    required List<SourceConfig>? storesConfig,
     required Map<String, dynamic>? customData,
   }) {
     final releaseSettings = ReleaseSettings.fromConfig(releaseSettingsConfig);
@@ -39,7 +39,7 @@ class UpdateConfigLinker {
     );
   }
 
-  List<Store> _parseStore(List<StoreConfig> storesConfig) {
+  List<Store> _parseStore(List<SourceConfig> storesConfig) {
     final stores = <Store>[];
     for (final storeConfig in storesConfig) {
       final name = storeConfig.name;
@@ -111,7 +111,7 @@ class UpdateConfigLinker {
       final status = releaseConfig.status;
       final canIgnoreRelease = releaseConfig.canIgnoreRelease;
       final customData = releaseConfig.customData;
-      final publishDateUtc = releaseConfig.publishDateUtc;
+      final publishDateUtc = releaseConfig.dateUtc;
       final titleTranslations = releaseConfig.titleTranslations;
       final descriptionTranslations = releaseConfig.descriptionTranslations;
       final releaseNoteTranslations = releaseConfig.releaseNoteTranslations;
@@ -119,7 +119,7 @@ class UpdateConfigLinker {
       final reminderPeriod = releaseConfig.reminderPeriod;
 
       final releaseStores = <Store>[];
-      final storesConfig = releaseConfig.stores;
+      final storesConfig = releaseConfig.sources;
       if (storesConfig == null) {
         releaseStores.addAll(stores);
       } else {

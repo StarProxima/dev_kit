@@ -1,54 +1,33 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../shared/release_status.dart';
 import '../../shared/text_translations.dart';
+import '../../shared/update_status_wrapper.dart';
 import 'store_config.dart';
 
 class ReleaseConfig {
-  final Version version;
-  final Version? refVersion;
-  final int? buildNumber;
-  final ReleaseStatus? status;
-  final TextTranslations? titleTranslations;
-  final TextTranslations? descriptionTranslations;
+  final Version? version;
+  final DateTime? dateUtc;
   final TextTranslations? releaseNoteTranslations;
-  final DateTime? publishDateUtc;
-  final bool? canIgnoreRelease;
-  final Duration? reminderPeriod;
-  final Duration? releaseDelay;
-  final List<StoreConfig>? stores;
+  final UpdateSettingsConfig? releaseSettings;
+  final List<ReleaseSourceConfig>? sources;
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({
     required this.version,
-    required this.refVersion,
-    required this.buildNumber,
-    required this.status,
-    required this.titleTranslations,
-    required this.descriptionTranslations,
+    required this.dateUtc,
     required this.releaseNoteTranslations,
-    required this.publishDateUtc,
-    required this.canIgnoreRelease,
-    required this.reminderPeriod,
-    required this.releaseDelay,
-    required this.stores,
+    required this.releaseSettings,
+    required this.sources,
     required this.customData,
   });
 
   ReleaseConfig inherit(ReleaseConfig parent) {
     return ReleaseConfig(
       version: version,
-      refVersion: refVersion,
-      buildNumber: buildNumber,
-      status: status ?? parent.status,
-      titleTranslations: titleTranslations ?? parent.titleTranslations,
-      descriptionTranslations: descriptionTranslations ?? parent.descriptionTranslations,
+      dateUtc: dateUtc ?? parent.dateUtc,
       releaseNoteTranslations: releaseNoteTranslations ?? parent.releaseNoteTranslations,
-      publishDateUtc: publishDateUtc ?? parent.publishDateUtc,
-      canIgnoreRelease: canIgnoreRelease ?? parent.canIgnoreRelease,
-      reminderPeriod: reminderPeriod ?? parent.reminderPeriod,
-      releaseDelay: releaseDelay ?? parent.releaseDelay,
-      stores: stores ?? parent.stores,
+      releaseSettings: releaseSettings ?? parent.releaseSettings,
+      sources: sources ?? parent.sources,
       customData: customData ?? parent.customData,
     );
   }

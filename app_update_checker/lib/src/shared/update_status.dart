@@ -1,3 +1,6 @@
+// ignore_for_file: prefer-boolean-prefixes
+
+/// The status of the update.
 enum UpdateStatus {
   /// The current version is not supported.
   /// The update must be required to be installed before using the application.
@@ -16,4 +19,10 @@ enum UpdateStatus {
   bool get isRecommended => this == recommended;
 
   bool get isAvailable => this == available;
+
+  bool get appVersionIsUnsupported => isRequired;
+
+  bool get appVersionIsDeprecated => isRecommended;
+
+  bool get appVersionIsOutdated => isAvailable;
 }

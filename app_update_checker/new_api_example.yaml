@@ -1,4 +1,4 @@
-release_settings:
+settings:
   title: 
     en: |-
       ## New version for ($appName)[https://example.com]
@@ -10,12 +10,82 @@ release_settings:
     A new version of $appName is available!
     Version $releaseVersion is now available. You have a $appVersion
 
+  # Extends to `recommended` and `available`, but not `required` ⬇️
   reminder_period_hours: 96
-  progressively_showing_hours: 96
+  progressive_rollout_hours: 96
   delay_hours: 20
 
+  # # Skip
+  # can_skip_release:
+  #   required: false
+  #   recommended: false
+  #   available: true
 
-not_supported_versions: ['<=4.2.0', 0.3.4]
+  # # Later
+  # can_postpone_release:
+  #   required: false
+  #   recommended: true
+  #   available: true
+
+  # Skip
+  can_skip_release: true
+
+  # Later
+  can_postpone_release: true
+
+
+settings_1:
+  dialog:
+    base:
+      title: title
+      description: description
+      can_skip_release: true
+    required:
+      title: title
+      description: description
+      can_skip_release: true
+    available:
+      title: title
+      description: description
+      can_skip_release: true
+
+
+
+
+settings_2:
+  base:
+    title: title
+    description: description
+    can_skip_release: true    
+  required:
+    title: title
+    description: description
+    can_skip_release: true
+  available:
+    title: title
+    description: description
+    can_skip_release: true
+
+settings_3:
+  base:
+    can_skip_release: true
+  dialog: 
+    required:
+      title: title
+      description: description
+      can_skip_release: true
+    available:
+      title: title
+      description: description
+      can_skip_release: true
+  card: 
+    title: title
+    description: description
+    can_skip_release: true
+
+
+
+unsupported_versions: ['<=4.2.0', 0.3.4]
 deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
 
 sources:
@@ -27,8 +97,10 @@ sources:
     url: https://example.com
   - name: ruStore
     url: https://example.com
-    title: Title
-    not_supported_versions: ['<=4.2.0']
+    settings:
+      title: Title
+    unsupported_versions: ['<=4.2.0']
+
   - name: gitHub
     url: https://example.com
     platforms:
@@ -38,8 +110,9 @@ sources:
       - linux
   - name: gitHub
     url: https://example.com
-    deprecated_versions: ['>5.6.0 <5.6.7']
     platforms: [android]
+    deprecated_versions: ['>5.6.0 <5.6.7']
+    
   - name: apk
     platforms: [android]
     url: https://example.com
@@ -54,7 +127,7 @@ releases:
       - Added bugs
       - Fixed features
     date_utc: "2024-08-24 15:35:00"
-    can_ignore_release: true
+    can_skip_release: true
     reminder_period_hours: 48
     release_delay_hours: 48
     sources:
@@ -79,39 +152,42 @@ releases:
 
   - version: 1.2.0
     release_note: Improvements
+    settings:
+      can_skip_release: true
     sources:
       - appStore
       - name: googlePlay
-        version: 1.3.1+80
-        release_note: Critical fix
-        date_utc: 2014-10-17 23:00:00
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-        date_utc: 2014-10-20 12:00:00
         platforms: [windows]
+        release:
+          date_utc: 2014-10-20 12:00:00
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
         platforms: [macos, linux]
 
   - version: 0.2.4
     release_note: Note
-    title: Title
-    description: Description
     date: 2014-10-17 23:00:00
-    can_ignore_release: true
+    settings:
+      title: Title
+      description: Description
+      can_skip_release: true
     postavki:
       - source:
           name: googlePlay
           url:
           platforms: []
         date: 2014-10-17 23:00:00
-        can_ignore_release: true
+        can_skip_release: true
     sources: 
      - name: googlePlay
        url:
        platforms: []
-       date: 2014-10-17 23:00:00
-       can_ignore_release: true
+       release:
+        date: 2014-10-17 23:00:00
+        settings:
+          can_skip_release: true
      - name: appStore
        release_note: note ios
        date: 2014-10-18 23:00:00
@@ -121,7 +197,7 @@ releases:
     title: Title
     description: Description
     date: 2014-10-17 23:00:00
-    can_ignore_release: true
+    can_skip_release: true
     source: 
       name: googlePlay
       url:

@@ -1,12 +1,19 @@
 
 releases:
   - version: 1.1.0
-    status: active
     release_note: Improvements release
     date: 2014-10-17 23:00:00
     sources:
       - googlePlay
       - appStore
+
+  - version: 1.1.0
+    release_note: Improvements release
+    date: 2014-10-17 23:00:00
+    sources:
+      - googlePlay
+      - appStore
+
 
   # - version: 1.0.0
   #   release_note: Improvements release

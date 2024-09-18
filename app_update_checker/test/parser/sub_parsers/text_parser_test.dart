@@ -7,7 +7,7 @@ import 'package:update_check/src/shared/text_translations.dart';
 
 void main() {
   group('TextParser', () {
-    const textParser = TextParser();
+    const textParser = TextTranslationsParser();
     const isDebug = true;
 
     const enText = 'English text';
