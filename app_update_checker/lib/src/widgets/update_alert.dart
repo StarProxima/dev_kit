@@ -39,7 +39,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
   // ignore: avoid-late-keyword
   late final AppLifecycleListener _appLifecycleListener;
 
-  late final _controller = widget.controller ?? UpdateController();
+  late final _controller = widget.controller ?? UpdateController(locale: Localizations.localeOf(context));
 
   @override
   void initState() {
