@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_settings_config.dart';
 import '../../shared/text_translations.dart';

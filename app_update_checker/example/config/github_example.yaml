@@ -1,0 +1,41 @@
+
+releases:
+  - version: 0.0.1
+    release_note: Improvements
+    title: Title
+    stores:
+     - name: appStore
+       version: 0.0.1+13
+       release_note: Improvements 2
+     - name: googlePlay
+       version: 0.0.2
+       url: https://play.google.com/store/apps/details?id=app.hiddify.com
+       title: Title2
+       platforms: 
+        - android
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/download/v0.13.6/hiddify-windows-x64-setup.zip
+       platforms: 
+        - windows
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/download/v0.13.6/hiddify-macos-universal.zip
+       platforms: 
+        - macos
+     - name: github
+       url: https://github.com/hiddify/hiddify-next/releases/download/v0.13.6/hiddify-linux-x64.zip
+       platforms: 
+        - linux
+
+  - version: 0.0.1-ios
+    release_note: Improvements
+    stores:
+     - name: appStore
+       url: https://itunes.apple.com/app/hiddify/id1587784802
+
+
+
+
+  
+
+
+

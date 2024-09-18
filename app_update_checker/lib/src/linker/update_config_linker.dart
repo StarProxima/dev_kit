@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-recursive-calls
 
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../parser/models/release_config.dart';
 import '../parser/models/release_settings_config.dart';

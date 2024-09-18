@@ -2,7 +2,7 @@
 
 import 'dart:ui';
 
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../shared/raw_update_config.dart';
 import '../shared/release_status.dart';

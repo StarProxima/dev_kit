@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import 'release.dart';
 import 'update_config.dart';

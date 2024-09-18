@@ -3,7 +3,7 @@
 import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:version/version.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';
 import '../linker/models/update_config_data.dart';
