@@ -4,7 +4,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../parser/models/release_config.dart';
 import '../parser/models/release_settings_config.dart';
-import '../parser/models/store_config.dart';
+import '../parser/models/source_config.dart';
 import '../shared/release_status.dart';
 import '../stores/store.dart';
 import 'models/exceptions.dart';

@@ -4,7 +4,7 @@ part of '../update_config_parser.dart';
 
 class ReleaseParser {
   ReleaseSourceParser get _releaseSourceParser => const ReleaseSourceParser();
-  ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
+  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
   TextTranslationsParser get _textParser => const TextTranslationsParser();
   VersionParser get _versionParser => const VersionParser();
   DateTimeParser get _dateTimeParser => const DateTimeParser();
@@ -29,20 +29,19 @@ class ReleaseParser {
         isDebug: isDebug,
       );
 
-      // releaseSettings
-      final releaseSettings = _releaseSettingsParser.parse(map, isDebug: isDebug);
-
       // releaseNote
       final releaseNoteValue = map.remove('release_note');
-      final releaseNote = _textParser.parseWithStatuses(
+      final releaseNote = _textParser.parse(
         releaseNoteValue,
         isDebug: isDebug,
-        mode: WrapperMode.all,
       );
 
       // dateUtc
       final dateUtcValue = map.remove('date_utc');
       final dateUtc = _dateTimeParser.parse(dateUtcValue, isDebug: isDebug);
+
+      // releaseSettings
+      final updateSettings = _updateSettingsParser.parse(map, isDebug: isDebug);
 
       // sources
       final sourcesValue = map.remove('sources');
@@ -60,7 +59,7 @@ class ReleaseParser {
         version: version,
         dateUtc: dateUtc,
         releaseNoteTranslations: releaseNote,
-        releaseSettings: releaseSettings,
+        settings: updateSettings,
         sources: sources,
         customData: map,
       );

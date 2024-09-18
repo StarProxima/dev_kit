@@ -86,7 +86,7 @@ class UpdateController extends UpdateContollerBase {
     }
 
     final configData = _linker.linkConfigs(
-      releaseSettingsConfig: _releaseSettings ?? config.releaseSettings,
+      releaseSettingsConfig: _releaseSettings ?? config.settings,
       releasesConfig: config.releases,
       storesConfig: config.sources,
       customData: config.customData,

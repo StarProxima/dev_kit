@@ -1,6 +1,7 @@
 // ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
 import '../shared/raw_update_config.dart';
+import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_status.dart';
 import '../shared/update_status_wrapper.dart';
@@ -11,23 +12,24 @@ import 'base_parsers/text_parser.dart';
 import 'base_parsers/version_parser.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
-import 'models/store_config.dart';
+import 'models/settings_translations.dart';
+import 'models/source_config.dart';
 import 'models/update_config_exception.dart';
 import 'models/update_config_model.dart';
 import 'sub_parsers/version_settings_parser.dart';
 
 part 'sub_parsers/release_parser.dart';
 part 'sub_parsers/release_settings_parser.dart';
-part 'sub_parsers/update_status_wrapper_parser.dart';
 part 'sub_parsers/global_source_parser.dart';
 part 'sub_parsers/release_source_parser.dart';
+part 'sub_parsers/settings_translations_parser.dart';
+part 'sub_parsers/update_settings_parser.dart';
 
 class UpdateConfigParser {
-  GlobalSourceParser get _sourceParser => const GlobalSourceParser();
-  ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
-  ReleaseParser get _releaseParser => const ReleaseParser();
-
+  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
   VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
+  GlobalSourceParser get _sourceParser => const GlobalSourceParser();
+  ReleaseParser get _releaseParser => const ReleaseParser();
 
   const UpdateConfigParser();
 
@@ -36,10 +38,9 @@ class UpdateConfigParser {
     required bool isDebug,
   }) {
     // releaseSettings
-    final releaseSettingsValue = map.remove('release_settings');
-
-    final releaseSettings = _releaseSettingsParser.parse(
-      releaseSettingsValue,
+    final updateSettingsValue = map.remove('settings');
+    final updateSettings = _updateSettingsParser.parse(
+      updateSettingsValue,
       isDebug: isDebug,
     );
 
@@ -52,7 +53,6 @@ class UpdateConfigParser {
 
     // sources
     final sourcesValue = map.remove('sources');
-
     if (sourcesValue is! List<Object>?) throw const UpdateConfigException();
 
     final sources = sourcesValue
@@ -64,14 +64,15 @@ class UpdateConfigParser {
 
     // releases
     final releasesValue = map.remove('releases');
-
-    if (releasesValue is! List<Map<String, dynamic>>) throw const UpdateConfigException();
+    if (releasesValue is! List<Map<String, dynamic>>) {
+      throw const UpdateConfigException();
+    }
 
     final releases =
         releasesValue.map((e) => _releaseParser.parse(e, isDebug: isDebug)).whereType<ReleaseConfig>().toList();
 
     return UpdateConfigModel(
-      releaseSettings: releaseSettings,
+      settings: updateSettings,
       versionSettings: versionSettings,
       sources: sources,
       releases: releases,
