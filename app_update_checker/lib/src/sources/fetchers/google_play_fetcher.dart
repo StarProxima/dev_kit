@@ -3,15 +3,15 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../parser/models/release_config.dart';
-import '../store.dart';
-import 'store_fetcher.dart';
+import '../source.dart';
+import 'source_fetcher.dart';
 
-class AppStoreFetcher extends StoreFetcher {
-  const AppStoreFetcher();
+class GooglePlayFetcher extends SourceReleaseFetcher {
+  const GooglePlayFetcher();
 
   @override
   Future<ReleaseConfig> fetch({
-    required Store store,
+    required Source source,
     required Locale locale,
     required PackageInfo packageInfo,
   }) {

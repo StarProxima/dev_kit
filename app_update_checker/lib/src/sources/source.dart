@@ -1,68 +1,74 @@
 import '../shared/update_platform.dart';
+import '../shared/update_status_wrapper.dart';
 
-enum Stores {
+enum Sources {
   googlePlay,
   appStore,
   custom;
 
-  factory Stores.parse(String name) => values.firstWhere(
+  factory Sources.parse(String name) => values.firstWhere(
         (e) => e.name == name,
         orElse: () => custom,
       );
 }
 
-class Store {
-  final Stores store;
+class Source {
+  final Sources store;
   final Uri url;
   final List<UpdatePlatform> platforms;
+  final UpdateSettings? settings;
   final Map<String, dynamic>? customData;
 
   final String? _name;
   String get name => _name ?? store.name;
 
-  factory Store({
+  factory Source({
     required String name,
     required Uri url,
     required List<UpdatePlatform>? platforms,
+    required UpdateSettings? settings,
     required Map<String, dynamic>? customData,
   }) {
-    switch (Stores.parse(name)) {
-      case Stores.googlePlay:
-        return Store.googlePlay(url: url, customData: customData);
+    switch (Sources.parse(name)) {
+      case Sources.googlePlay:
+        return Source.googlePlay(url: url, settings: settings, customData: customData);
 
-      case Stores.appStore:
-        return Store.appStore(url: url, customData: customData);
+      case Sources.appStore:
+        return Source.appStore(url: url, settings: settings, customData: customData);
 
-      case Stores.custom:
-        return Store.custom(
+      case Sources.custom:
+        return Source.custom(
           name: name,
           url: url,
-          // TODO: Чекнуть, точно норм, что по дефолту на все платформы (в том числе web)?
-          platforms: platforms ?? UpdatePlatform.values,
+          platforms: platforms ?? (throw Exception('Custom source should contains platforms')),
+          settings: settings,
           customData: customData,
         );
     }
   }
 
-  const Store.googlePlay({
+  const Source.googlePlay({
     required this.url,
+    this.settings,
     this.customData,
-  })  : store = Stores.googlePlay,
+  })  : store = Sources.googlePlay,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
-  const Store.appStore({
+  const Source.appStore({
     required this.url,
+    this.settings,
     this.customData,
-  })  : store = Stores.appStore,
+  })  : store = Sources.appStore,
         platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
         _name = null;
 
-  const Store.custom({
+  const Source.custom({
     required String name,
     required this.url,
     required this.platforms,
+    this.settings,
     this.customData,
-  })  : store = Stores.custom,
+  })  : store = Sources.custom,
         _name = name;
 }

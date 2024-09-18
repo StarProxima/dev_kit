@@ -1,33 +1,7 @@
-import '../linker/models/release_settings.dart';
+import '../linker/models/release_settings_data.dart';
 import '../parser/models/release_settings_config.dart';
 import 'update_alert_type.dart';
 import 'update_status.dart';
-
-class UpdateStatusWrapper<T> {
-  final T required;
-  final T recommended;
-  final T available;
-
-  bool get isOnlyAvailable => available != null && required == null && recommended == null;
-
-  const UpdateStatusWrapper({
-    required this.required,
-    required this.recommended,
-    required this.available,
-  });
-
-  const UpdateStatusWrapper.all(
-    T all,
-  )   : required = all,
-        recommended = all,
-        available = all;
-
-  T byStatus(UpdateStatus status) => switch (status) {
-        UpdateStatus.required => required,
-        UpdateStatus.recommended => recommended,
-        UpdateStatus.available => available,
-      };
-}
 
 class UpdateSettingsConfig {
   final Map<String, Map<String, ReleaseSettingsConfig?>> value;
@@ -110,17 +84,17 @@ class UpdateSettingsConfig {
 }
 
 class UpdateSettings {
-  final Map<String, Map<String, ReleaseSettings?>> value;
+  final Map<String, Map<String, ReleaseSettingsData?>> value;
 
   const UpdateSettings(this.value);
 
-  ReleaseSettings by({
+  ReleaseSettingsData by({
     required UpdateAlertType type,
     required UpdateStatus status,
   }) =>
       byRaw(type: type.name, status: status.name);
 
-  ReleaseSettings byRaw({
+  ReleaseSettingsData byRaw({
     required String type,
     required String status,
   }) {

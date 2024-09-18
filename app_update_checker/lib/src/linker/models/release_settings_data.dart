@@ -1,11 +1,8 @@
-import 'dart:ui';
-
 import '../../parser/models/release_settings_config.dart';
-import '../../shared/text_translations.dart';
+import '../../parser/models/settings_translations.dart';
 
-class ReleaseSettings {
-  final TextTranslations titleTranslations;
-  final TextTranslations descriptionTranslations;
+class ReleaseSettingsData {
+  final UpdateTranslations translations;
   final bool canSkipRelease;
   final bool canPostponeRelease;
   final Duration reminderPeriod;
@@ -13,9 +10,8 @@ class ReleaseSettings {
   final Duration progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
-  const ReleaseSettings({
-    required this.titleTranslations,
-    required this.descriptionTranslations,
+  const ReleaseSettingsData({
+    required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,
@@ -24,10 +20,18 @@ class ReleaseSettings {
     required this.customData,
   });
 
-  factory ReleaseSettings.fromConfig(ReleaseSettingsConfig? config) {
-    return ReleaseSettings(
-      titleTranslations: config?.titleTranslations ?? {const Locale('en'): 'New update'}, // TODO подумать над дефолтным
-      descriptionTranslations: config?.descriptionTranslations ?? {const Locale('en'): 'New update'},
+  factory ReleaseSettingsData.fromConfig(ReleaseSettingsConfig? config) {
+    return ReleaseSettingsData(
+      translations: config?.translations ??
+          // TODO: Доставить всё из отдельных файлоков сразу в UpdateSettings
+          const UpdateTranslations(
+            title: {},
+            description: {},
+            releaseNoteTitle: {},
+            skipButtonText: {},
+            laterButtonText: {},
+            updateButtonText: {},
+          ),
       canSkipRelease: config?.canSkipRelease ?? true,
       canPostponeRelease: config?.canPostponeRelease ?? true,
       reminderPeriod: config?.reminderPeriod ?? const Duration(days: 7),
@@ -37,9 +41,8 @@ class ReleaseSettings {
     );
   }
 
-  const ReleaseSettings.requiredUpdate({
-    required this.titleTranslations,
-    required this.descriptionTranslations,
+  const ReleaseSettingsData.requiredUpdate({
+    required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = false,
     this.reminderPeriod = Duration.zero,
@@ -48,9 +51,8 @@ class ReleaseSettings {
     this.customData,
   });
 
-  const ReleaseSettings.recommendedUpdate({
-    required this.titleTranslations,
-    required this.descriptionTranslations,
+  const ReleaseSettingsData.recommendedUpdate({
+    required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = true,
     this.reminderPeriod = const Duration(hours: 24),
@@ -59,12 +61,11 @@ class ReleaseSettings {
     this.customData,
   });
 
-  const ReleaseSettings.availableUpdate({
-    required this.titleTranslations,
-    required this.descriptionTranslations,
+  const ReleaseSettingsData.availableUpdate({
+    required this.translations,
     this.canSkipRelease = true,
     this.canPostponeRelease = true,
-    this.reminderPeriod = const Duration(hours: 96),
+    this.reminderPeriod = const Duration(hours: 72),
     this.releaseDelay = Duration.zero,
     this.progressiveRolloutDuration = Duration.zero,
     this.customData,

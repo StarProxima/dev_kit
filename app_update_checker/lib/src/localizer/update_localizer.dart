@@ -26,7 +26,7 @@ class UpdateLocalizer {
   UpdateConfig localizeConfig(UpdateConfigData updateConfig) {
     return UpdateConfig(
       releaseSettings: updateConfig.releaseSettings,
-      stores: updateConfig.stores,
+      sources: updateConfig.stores,
       releases: updateConfig.releases.map(localizeRelease).toList(),
       customData: updateConfig.customData,
     );
@@ -63,11 +63,11 @@ class UpdateLocalizer {
       descriptionTranslations: releaseData.descriptionTranslations,
       releaseNote: releaseNote,
       releaseNoteTranslations: releaseNoteTranslations,
-      publishDateUtc: releaseData.publishDateUtc,
+      publishDateUtc: releaseData.dateUtc,
       canIgnoreRelease: releaseData.canIgnoreRelease,
       reminderPeriod: releaseData.reminderPeriod,
       releaseDelay: releaseData.releaseDelay,
-      stores: releaseData.stores,
+      stores: releaseData.sources,
       customData: releaseData.customData,
     );
   }

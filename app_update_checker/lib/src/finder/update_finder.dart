@@ -31,7 +31,7 @@ class UpdateFinder {
       if (release.version < appVersion) break;
 
       // If there is no store with the current platform - skip release.
-      if (!release.stores.any((store) => store.platforms.contains(platform))) continue;
+      if (!release.sources.any((store) => store.platforms.contains(platform))) continue;
 
       if (release.version == appVersion) {
         currentRelease = release;

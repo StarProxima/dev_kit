@@ -1,71 +1,40 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../shared/release_status.dart';
 import '../../shared/text_translations.dart';
-import '../../stores/store.dart';
+import '../../shared/update_status_wrapper.dart';
+import '../../sources/source.dart';
 
 class ReleaseData {
   final Version version;
-  final Version? refVersion;
-  final int? buildNumber;
-  final ReleaseStatus status;
-  final TextTranslations titleTranslations;
-  final TextTranslations descriptionTranslations;
   final TextTranslations? releaseNoteTranslations;
-  final DateTime? publishDateUtc;
-  final bool canIgnoreRelease;
-  final Duration reminderPeriod;
-  final Duration releaseDelay;
-  final List<Store> stores;
+  final DateTime? dateUtc;
+  final UpdateSettings settings;
+  final List<Source> sources;
   final Map<String, dynamic>? customData;
 
   const ReleaseData({
     required this.version,
-    required this.refVersion,
-    required this.buildNumber,
-    required this.status,
-    required this.titleTranslations,
-    required this.descriptionTranslations,
     required this.releaseNoteTranslations,
-    required this.publishDateUtc,
-    required this.canIgnoreRelease,
-    required this.reminderPeriod,
-    required this.releaseDelay,
-    required this.stores,
+    required this.dateUtc,
+    required this.settings,
+    required this.sources,
     required this.customData,
   });
 
   ReleaseData copyWith({
     Version? version,
-    Version? refVersion,
-    int? buildNumber,
-    ReleaseStatus? status,
-    String? title,
-    TextTranslations? titleTranslations,
-    String? description,
-    TextTranslations? descriptionTranslations,
-    String? releaseNote,
     TextTranslations? releaseNoteTranslations,
-    DateTime? publishDateUtc,
-    bool? canIgnoreRelease,
-    Duration? reminderPeriod,
-    Duration? releaseDelay,
-    List<Store>? stores,
+    DateTime? dateUtc,
+    UpdateSettings? settings,
+    List<Source>? sources,
     Map<String, dynamic>? customData,
   }) {
     return ReleaseData(
       version: version ?? this.version,
-      refVersion: refVersion ?? this.refVersion,
-      buildNumber: buildNumber ?? this.buildNumber,
-      status: status ?? this.status,
-      titleTranslations: titleTranslations ?? this.titleTranslations,
-      descriptionTranslations: descriptionTranslations ?? this.descriptionTranslations,
       releaseNoteTranslations: releaseNoteTranslations ?? this.releaseNoteTranslations,
-      publishDateUtc: publishDateUtc ?? this.publishDateUtc,
-      canIgnoreRelease: canIgnoreRelease ?? this.canIgnoreRelease,
-      reminderPeriod: reminderPeriod ?? this.reminderPeriod,
-      releaseDelay: releaseDelay ?? this.releaseDelay,
-      stores: stores ?? this.stores,
+      dateUtc: dateUtc ?? this.dateUtc,
+      settings: settings ?? this.settings,
+      sources: sources ?? this.sources,
       customData: customData ?? this.customData,
     );
   }

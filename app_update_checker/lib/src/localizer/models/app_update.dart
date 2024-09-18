@@ -10,7 +10,11 @@ class AppUpdate {
   final Version appVersion;
   final Locale appLocale;
   final UpdateConfig config;
+
+  // Available release from priority source
   final Release availableRelease;
+  // Available releases from all available sources
+  final List<Release> availableReleasesFromAllSources;
 
   const AppUpdate({
     required this.appName,
@@ -18,5 +22,10 @@ class AppUpdate {
     required this.appLocale,
     required this.config,
     required this.availableRelease,
+    required this.availableReleasesFromAllSources,
   });
+
+  void test() {
+    availableRelease.settings.by(type: type, status: status)
+  }
 }

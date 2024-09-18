@@ -6,10 +6,10 @@ import '../parser/models/release_config.dart';
 import '../parser/models/release_settings_config.dart';
 import '../parser/models/source_config.dart';
 import '../shared/release_status.dart';
-import '../stores/store.dart';
+import '../sources/source.dart';
 import 'models/exceptions.dart';
 import 'models/release_data.dart';
-import 'models/release_settings.dart';
+import 'models/release_settings_data.dart';
 import 'models/update_config_data.dart';
 
 class UpdateConfigLinker {
@@ -21,7 +21,7 @@ class UpdateConfigLinker {
     required List<SourceConfig>? storesConfig,
     required Map<String, dynamic>? customData,
   }) {
-    final releaseSettings = ReleaseSettings.fromConfig(releaseSettingsConfig);
+    final releaseSettings = ReleaseSettingsData.fromConfig(releaseSettingsConfig);
 
     final stores = _parseStore(storesConfig ?? []);
 
@@ -39,8 +39,8 @@ class UpdateConfigLinker {
     );
   }
 
-  List<Store> _parseStore(List<SourceConfig> storesConfig) {
-    final stores = <Store>[];
+  List<Source> _parseStore(List<SourceConfig> storesConfig) {
+    final stores = <Source>[];
     for (final storeConfig in storesConfig) {
       final name = storeConfig.name;
       final url = storeConfig.url;
@@ -52,7 +52,7 @@ class UpdateConfigLinker {
           "Can't parse store with parameters: $name, $url, $platforms",
         );
       }
-      stores.add(Store(
+      stores.add(Source(
         name: name,
         url: url,
         platforms: platforms,
@@ -64,9 +64,9 @@ class UpdateConfigLinker {
   }
 
   List<ReleaseData> _parseReleases({
-    required List<Store> stores,
+    required List<Source> stores,
     required List<ReleaseConfig> releasesConfig,
-    required ReleaseSettings releaseSettings,
+    required ReleaseSettingsData releaseSettings,
   }) {
     final releases = <ReleaseData>[];
 
@@ -118,7 +118,7 @@ class UpdateConfigLinker {
       final releaseDelay = releaseConfig.releaseDelay;
       final reminderPeriod = releaseConfig.reminderPeriod;
 
-      final releaseStores = <Store>[];
+      final releaseStores = <Source>[];
       final storesConfig = releaseConfig.sources;
       if (storesConfig == null) {
         releaseStores.addAll(stores);
@@ -127,7 +127,7 @@ class UpdateConfigLinker {
           final name = releaseStoreConfig.name;
           final url = releaseStoreConfig.url;
           final platforms = releaseStoreConfig.platforms;
-          final globalStore = List<Store?>.from(stores).firstWhere(
+          final globalStore = List<Source?>.from(stores).firstWhere(
             (store) => store?.name == name,
             orElse: () => null,
           );
@@ -135,7 +135,7 @@ class UpdateConfigLinker {
           final storeUrl = url ?? globalStore?.url;
           if (storeUrl == null) continue;
 
-          releaseStores.add(Store(
+          releaseStores.add(Source(
             name: name,
             url: storeUrl,
             platforms: platforms ?? globalStore?.platforms,
@@ -152,11 +152,11 @@ class UpdateConfigLinker {
         titleTranslations: titleTranslations ?? releaseSettings.titleTranslations,
         descriptionTranslations: descriptionTranslations ?? releaseSettings.descriptionTranslations,
         releaseNoteTranslations: releaseNoteTranslations,
-        publishDateUtc: publishDateUtc,
+        dateUtc: publishDateUtc,
         canIgnoreRelease: canIgnoreRelease ?? releaseSettings.canIgnoreRelease,
         reminderPeriod: reminderPeriod ?? releaseSettings.reminderPeriod,
         releaseDelay: releaseDelay ?? releaseSettings.releaseDelay,
-        stores: releaseStores,
+        sources: releaseStores,
         customData: customData,
       ));
     }

@@ -19,8 +19,8 @@ import '../parser/models/release_settings_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/update_platform.dart';
 
-import '../stores/fetchers/store_fetcher.dart';
-import '../stores/store.dart';
+import '../sources/fetchers/source_fetcher.dart';
+import '../sources/source.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
@@ -34,8 +34,8 @@ class UpdateController extends UpdateContollerBase {
   UpdateLocalizer? _localizer;
   UpdateFinder? _finder;
 
-  final StoreFetcherCoordinator? _storeFetcherCoordinator;
-  final List<Store>? _globalSources;
+  final SourceReleaseFetcherCoordinator? _storeFetcherCoordinator;
+  final List<Source>? _globalSources;
   final UpdatePlatform _platform;
   final Locale _locale;
 
@@ -50,9 +50,9 @@ class UpdateController extends UpdateContollerBase {
 
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
-    StoreFetcherCoordinator? storeFetcherCoordinator,
+    SourceReleaseFetcherCoordinator? storeFetcherCoordinator,
     ReleaseSettingsConfig? releaseSettings,
-    List<Store>? globalSources,
+    List<Source>? globalSources,
     UpdatePlatform? platform,
     required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
@@ -80,7 +80,7 @@ class UpdateController extends UpdateContollerBase {
       for (final store in sources) {
         // TODO поменяй
         final fetcher = await _storeFetcherCoordinator!.fetcherByStore(store);
-        final releaseConfig = await fetcher.fetch(store: store, locale: _locale, packageInfo: packageInfo);
+        final releaseConfig = await fetcher.fetch(source: store, locale: _locale, packageInfo: packageInfo);
         releaseConfigsFromStores.add(releaseConfig);
       }
     }
