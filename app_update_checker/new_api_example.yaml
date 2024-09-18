@@ -35,11 +35,33 @@ release_settings:
 
 
 settings_1:
-  title: title
-  description: description
-  can_skip_release: true
+  dialog:
+    base:
+      title: title
+      description: description
+      can_skip_release: true
+    required:
+      title: title
+      description: description
+      can_skip_release: true
+    available:
+      title: title
+      description: description
+      can_skip_release: true
+
+settings:
+  base:
+    base:
+      title: title
+      description: description
+      can_skip_release: true
+
 
 settings_2:
+  base:
+    title: title
+    description: description
+    can_skip_release: true    
   required:
     title: title
     description: description
@@ -63,6 +85,7 @@ settings_3:
     title: title
     description: description
     can_skip_release: true
+
 
 
 
