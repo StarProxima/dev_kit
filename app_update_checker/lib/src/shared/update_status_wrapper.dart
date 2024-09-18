@@ -1,5 +1,4 @@
-import 'package:flutter/foundation.dart';
-
+import '../linker/models/release_settings.dart';
 import '../parser/models/release_settings_config.dart';
 import 'update_alert_type.dart';
 import 'update_status.dart';
@@ -30,12 +29,12 @@ class UpdateStatusWrapper<T> {
       };
 }
 
-class UpdateSettings {
+class UpdateSettingsConfig {
   final Map<String, Map<String, ReleaseSettingsConfig?>> value;
 
-  const UpdateSettings(this.value);
+  const UpdateSettingsConfig(this.value);
 
-  factory UpdateSettings.parse(
+  factory UpdateSettingsConfig.parse(
     Map<String, dynamic> map, {
     required ReleaseSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
   }) {
@@ -48,9 +47,9 @@ class UpdateSettings {
       final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
 
       // Empty UpdateSettings
-      if (settingsByStatus.isEmpty) return UpdateSettings(value);
+      if (settingsByStatus.isEmpty) return UpdateSettingsConfig(value);
 
-      return UpdateSettings({'base': settingsByStatus});
+      return UpdateSettingsConfig({'base': settingsByStatus});
     }
 
     for (final type in typeNames) {
@@ -63,7 +62,7 @@ class UpdateSettings {
       value[type] = settingsByStatus;
     }
 
-    return UpdateSettings(value);
+    return UpdateSettingsConfig(value);
   }
 
   ReleaseSettingsConfig? by({
@@ -107,5 +106,30 @@ class UpdateSettings {
     }
 
     return settingsByStatus;
+  }
+}
+
+class UpdateSettings {
+  final Map<String, Map<String, ReleaseSettings?>> value;
+
+  const UpdateSettings(this.value);
+
+  ReleaseSettings by({
+    required UpdateAlertType type,
+    required UpdateStatus status,
+  }) =>
+      byRaw(type: type.name, status: status.name);
+
+  ReleaseSettings byRaw({
+    required String type,
+    required String status,
+  }) {
+    final byType = value[type] ?? value['base'];
+    if (byType == null) throw Exception();
+
+    final byStatus = byType[status] ?? byType['base'];
+    if (byStatus == null) throw Exception();
+
+    return byStatus;
   }
 }

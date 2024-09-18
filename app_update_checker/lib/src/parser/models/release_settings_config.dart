@@ -1,8 +1,7 @@
-import '../../shared/text_translations.dart';
+import 'settings_translations.dart';
 
 class ReleaseSettingsConfig {
-  final TextTranslations? titleTranslations;
-  final TextTranslations? descriptionTranslations;
+  final SettingsTranslations? translations;
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
   final Duration? reminderPeriod;
@@ -11,8 +10,7 @@ class ReleaseSettingsConfig {
   final Map<String, dynamic>? customData;
 
   bool get isEmpty =>
-      titleTranslations == null &&
-      descriptionTranslations == null &&
+      translations == null &&
       canSkipRelease == null &&
       canPostponeRelease == null &&
       reminderPeriod == null &&
@@ -20,8 +18,7 @@ class ReleaseSettingsConfig {
       progressiveRolloutDuration == null;
 
   const ReleaseSettingsConfig({
-    required this.titleTranslations,
-    required this.descriptionTranslations,
+    required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,

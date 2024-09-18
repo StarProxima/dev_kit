@@ -10,6 +10,5 @@ enum UpdateAlertType {
   bottomModalSheet,
   snackbar,
   card,
-  custom,
   ;
 }

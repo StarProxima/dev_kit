@@ -1,4 +1,4 @@
-release_settings:
+settings:
   title: 
     en: |-
       ## New version for ($appName)[https://example.com]
@@ -49,12 +49,7 @@ settings_1:
       description: description
       can_skip_release: true
 
-settings:
-  base:
-    base:
-      title: title
-      description: description
-      can_skip_release: true
+
 
 
 settings_2:
@@ -72,6 +67,8 @@ settings_2:
     can_skip_release: true
 
 settings_3:
+  base:
+    can_skip_release: true
   dialog: 
     required:
       title: title
@@ -88,7 +85,6 @@ settings_3:
 
 
 
-
 unsupported_versions: ['<=4.2.0', 0.3.4]
 deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
 
@@ -101,8 +97,10 @@ sources:
     url: https://example.com
   - name: ruStore
     url: https://example.com
-    title: Title
+    settings:
+      title: Title
     unsupported_versions: ['<=4.2.0']
+
   - name: gitHub
     url: https://example.com
     platforms:
@@ -113,8 +111,8 @@ sources:
   - name: gitHub
     url: https://example.com
     platforms: [android]
-    settings: 
-      deprecated_versions: ['>5.6.0 <5.6.7']
+    deprecated_versions: ['>5.6.0 <5.6.7']
+    
   - name: apk
     platforms: [android]
     url: https://example.com
@@ -159,12 +157,6 @@ releases:
     sources:
       - appStore
       - name: googlePlay
-        release:
-          version: 1.3.1+80
-          release_note: Critical fix
-          date_utc: 2014-10-17 23:00:00
-          settings:
-            can_skip_release: true
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
         platforms: [windows]
