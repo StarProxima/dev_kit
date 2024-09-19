@@ -46,8 +46,6 @@ bool userAuthorized(UserAuthorizedRef ref) {
 @Riverpod(keepAlive: true)
 class SecurityTokenStorage extends _$SecurityTokenStorage
     implements IRef, TokenStorage<AuthToken> {
-  @Deprecated('Use _encryptedStorage instead')
-  static const _storage = FlutterSecureStorage();
   static const _encryptedStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
@@ -61,7 +59,6 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
   Future<AuthToken?> build() async {
     try {
       final token = await read();
-
       return token;
     } catch (_) {
       return null;
@@ -73,27 +70,16 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
     await _encryptedStorage.delete(key: _refreshKey);
     await _encryptedStorage.delete(key: _accessKey);
     await _encryptedStorage.delete(key: _userId);
-    await _storage.delete(key: _refreshKey);
-    await _storage.delete(key: _accessKey);
-    await _storage.delete(key: _userId);
     setData(null);
   }
 
   @override
   Future<AuthToken?> read() async {
-    String? refreshToken = await _encryptedStorage.read(key: _refreshKey);
-    String? accessToken = await _encryptedStorage.read(key: _accessKey);
+    final refreshToken = await _encryptedStorage.read(key: _refreshKey);
+    final accessToken = await _encryptedStorage.read(key: _accessKey);
     final userId = await _encryptedStorage.read(key: _userId);
 
-    if (refreshToken == null || accessToken == null) {
-      refreshToken = await _storage.read(key: _refreshKey);
-      accessToken = await _storage.read(key: _accessKey);
-      if (refreshToken == null || accessToken == null) {
-        return null;
-      }
-      await _encryptedStorage.write(key: _refreshKey, value: refreshToken);
-      await _encryptedStorage.write(key: _accessKey, value: accessToken);
-    }
+    if (accessToken == null || refreshToken == null) return null;
 
     return AuthToken(
       accessToken: accessToken,
