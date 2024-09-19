@@ -2,9 +2,9 @@
 
 /// The status of the update.
 enum UpdateAlertType {
-  primartDialog,
+  primaryDialog,
   adaptiveDialog,
-  matrialDialog,
+  materialDialog,
   cupertinoDialog,
   screen,
   bottomModalSheet,
