@@ -2,12 +2,12 @@ import '../../parser/models/release_settings_config.dart';
 import '../../parser/models/settings_translations.dart';
 
 class ReleaseSettingsData {
-  final UpdateTranslations translations;
-  final bool canSkipRelease;
-  final bool canPostponeRelease;
-  final Duration reminderPeriod;
-  final Duration releaseDelay;
-  final Duration progressiveRolloutDuration;
+  final UpdateTranslations? translations;
+  final bool? canSkipRelease;
+  final bool? canPostponeRelease;
+  final Duration? reminderPeriod;
+  final Duration? releaseDelay;
+  final Duration? progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
   const ReleaseSettingsData({
@@ -22,21 +22,21 @@ class ReleaseSettingsData {
 
   factory ReleaseSettingsData.fromConfig(ReleaseSettingsConfig? config) {
     return ReleaseSettingsData(
-      translations: config?.translations ??
-          // TODO: Доставить всё из отдельных файлоков сразу в UpdateSettings
-          const UpdateTranslations(
-            title: {},
-            description: {},
-            releaseNoteTitle: {},
-            skipButtonText: {},
-            laterButtonText: {},
-            updateButtonText: {},
-          ),
-      canSkipRelease: config?.canSkipRelease ?? true,
-      canPostponeRelease: config?.canPostponeRelease ?? true,
-      reminderPeriod: config?.reminderPeriod ?? const Duration(days: 7),
-      releaseDelay: config?.releaseDelay ?? Duration.zero,
-      progressiveRolloutDuration: config?.progressiveRolloutDuration ?? Duration.zero,
+      translations: config?.translations,
+      // TODO: Доставить всё из отдельных файлоков сразу в UpdateSettings
+      // const UpdateTranslations(
+      //   title: {},
+      //   description: {},
+      //   releaseNoteTitle: {},
+      //   skipButtonText: {},
+      //   laterButtonText: {},
+      //   updateButtonText: {},
+      // ),
+      canSkipRelease: config?.canSkipRelease,
+      canPostponeRelease: config?.canPostponeRelease,
+      reminderPeriod: config?.reminderPeriod,
+      releaseDelay: config?.releaseDelay,
+      progressiveRolloutDuration: config?.progressiveRolloutDuration,
       customData: config?.customData,
     );
   }
@@ -70,4 +70,16 @@ class ReleaseSettingsData {
     this.progressiveRolloutDuration = Duration.zero,
     this.customData,
   });
+
+  ReleaseSettingsData inherit(ReleaseSettingsData child) {
+    return ReleaseSettingsData(
+      translations: child.translations ?? translations,
+      canSkipRelease: child.canSkipRelease ?? canSkipRelease,
+      canPostponeRelease: child.canPostponeRelease ?? canPostponeRelease,
+      reminderPeriod: child.reminderPeriod ?? reminderPeriod,
+      releaseDelay: child.releaseDelay ?? releaseDelay,
+      progressiveRolloutDuration: child.progressiveRolloutDuration ?? progressiveRolloutDuration,
+      customData: child.customData ?? customData,
+    );
+  }
 }

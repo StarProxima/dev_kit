@@ -1,5 +1,4 @@
 import '../shared/update_platform.dart';
-import '../shared/update_status_wrapper.dart';
 
 enum Sources {
   googlePlay,
@@ -16,7 +15,6 @@ class Source {
   final Sources store;
   final Uri url;
   final List<UpdatePlatform> platforms;
-  final UpdateSettings? settings;
   final Map<String, dynamic>? customData;
 
   final String? _name;
@@ -26,22 +24,20 @@ class Source {
     required String name,
     required Uri url,
     required List<UpdatePlatform>? platforms,
-    required UpdateSettings? settings,
     required Map<String, dynamic>? customData,
   }) {
     switch (Sources.parse(name)) {
       case Sources.googlePlay:
-        return Source.googlePlay(url: url, settings: settings, customData: customData);
+        return Source.googlePlay(url: url, customData: customData);
 
       case Sources.appStore:
-        return Source.appStore(url: url, settings: settings, customData: customData);
+        return Source.appStore(url: url, customData: customData);
 
       case Sources.custom:
         return Source.custom(
           name: name,
           url: url,
           platforms: platforms ?? (throw Exception('Custom source should contains platforms')),
-          settings: settings,
           customData: customData,
         );
     }
@@ -49,7 +45,6 @@ class Source {
 
   const Source.googlePlay({
     required this.url,
-    this.settings,
     this.customData,
   })  : store = Sources.googlePlay,
         platforms = const [UpdatePlatform.android],
@@ -57,7 +52,6 @@ class Source {
 
   const Source.appStore({
     required this.url,
-    this.settings,
     this.customData,
   })  : store = Sources.appStore,
         platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
@@ -67,7 +61,6 @@ class Source {
     required String name,
     required this.url,
     required this.platforms,
-    this.settings,
     this.customData,
   })  : store = Sources.custom,
         _name = name;

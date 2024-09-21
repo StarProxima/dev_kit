@@ -28,6 +28,8 @@ class ReleaseParser {
         versionValue,
         isDebug: isDebug,
       );
+      // TODO как это - релиз и без версии
+      if (version == null) throw const UpdateConfigException();
 
       // releaseNote
       final releaseNoteValue = map.remove('release_note');

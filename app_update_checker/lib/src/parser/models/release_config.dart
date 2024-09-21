@@ -5,7 +5,7 @@ import '../../shared/update_status_wrapper.dart';
 import 'source_config.dart';
 
 class ReleaseConfig {
-  final Version? version;
+  final Version version;
   final DateTime? dateUtc;
   final TextTranslations? releaseNoteTranslations;
   final UpdateSettingsConfig? settings;
@@ -20,15 +20,4 @@ class ReleaseConfig {
     required this.sources,
     required this.customData,
   });
-
-  ReleaseConfig inherit(ReleaseConfig parent) {
-    return ReleaseConfig(
-      version: version,
-      dateUtc: dateUtc ?? parent.dateUtc,
-      releaseNoteTranslations: releaseNoteTranslations ?? parent.releaseNoteTranslations,
-      settings: settings ?? parent.settings,
-      sources: sources ?? parent.sources,
-      customData: customData ?? parent.customData,
-    );
-  }
 }
