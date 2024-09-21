@@ -37,7 +37,7 @@ void main() {
         result.descriptionTranslations!.byLocale(const Locale('en')),
         r'Version $releaseVersion is available now!',
       );
-      expect(result.canIgnoreRelease, true);
+      expect(result.canSkipRelease, true);
       expect(result.reminderPeriod, const Duration(hours: 48));
       expect(result.releaseDelay, const Duration(hours: 24));
       expect(result.deprecatedBeforeVersion, Version.parse('0.3.7'));
@@ -59,7 +59,7 @@ void main() {
       expect(result.titleTranslations, isNotNull);
       expect(result.titleTranslations!.byLocale(const Locale('en')), 'Update available!');
       expect(result.descriptionTranslations, isNull);
-      expect(result.canIgnoreRelease, isNull);
+      expect(result.canSkipRelease, isNull);
       expect(result.reminderPeriod, isNull);
       expect(result.releaseDelay, isNull);
       expect(result.deprecatedBeforeVersion, isNull);

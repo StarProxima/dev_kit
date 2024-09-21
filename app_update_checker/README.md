@@ -52,9 +52,8 @@ Here is the full config api structure under consideration:
 # Description of the api structure
 # https://pub.dev/packages/update_check
 
-# Default settings for releases
+# Optianal, default settings for releases
 release_settings:
-  # Optional
   title:
     # Any text (title, description, releaseNote)
     # supports optional localization, interpolation and markdown.
@@ -64,20 +63,24 @@ release_settings:
       ### Version $releaseVersion is available!
     es: La versión $releaseVersion está disponible!
     ru: Доступна новая версия!
-  # Optional
+
   description: |-
     A new version of $appName is available!
     Version $releaseVersion is now available. You have a $appVersion
 
-  # Optional, allows users to ignore this specific release until a new one is available
-  can_ignore_release: true
+  # Allows users to skip this specific release until a new one is available
+  can_skip_release: true
+  # Allows users to postpone this specific release to a reminder_period_hours
+  can_postpone_release: true
   # Interval at which the update notification will be repeatedly shown to the user
   reminder_period_hours: 48
   # Delay that must pass after the release before it begins to be shown to all users
   release_delay_hours: 48
+  # Duration over which the release visibility will gradually increase from 0% to 100% of users.
+  progressive_rollout_hours: 48
 
-not_supported_versions: ['<=4.2.0', 0.3.4]
-deprecated_versions: ['<=5.1.0 >=4.2.0 ', '>5.6.0 <5.6.7']
+unsupported_versions: ['<=4.2.0', 0.3.4]
+deprecated_versions: ['<=5.1.0 >=4.2.0', '>5.6.0 <5.6.7']
 
 # Optional, will be set based on the platform and app ID
 sources:

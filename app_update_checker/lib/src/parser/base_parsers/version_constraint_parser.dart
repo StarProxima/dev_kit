@@ -1,11 +1,13 @@
 // ignore_for_file: parameter_assignments
 
-part of '../update_config_parser.dart';
+import 'package:pub_semver/pub_semver.dart';
 
-class VersionParser {
-  const VersionParser();
+import '../models/update_config_exception.dart';
 
-  Version? parse(
+class VersionConstraintParser {
+  const VersionConstraintParser();
+
+  VersionConstraint? parse(
     // ignore: avoid-dynamic
     dynamic version, {
     required bool isDebug,
@@ -17,9 +19,9 @@ class VersionParser {
     if (version == null) return null;
 
     try {
-      return Version.parse(version);
+      return VersionConstraint.parse(version);
     } catch (e, s) {
-      if (isDebug) Error.throwWithStackTrace(UpdateConfigException(), s);
+      if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
 
       return null;
     }
