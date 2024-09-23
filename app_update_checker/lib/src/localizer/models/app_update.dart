@@ -24,9 +24,4 @@ class AppUpdate {
     required this.availableRelease,
     required this.availableReleasesFromAllSources,
   });
-
-  void test() {
-  
-    availableRelease.settings.getBy(type: type, status: status)
-  }
 }

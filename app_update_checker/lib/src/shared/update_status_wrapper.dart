@@ -73,6 +73,10 @@ class UpdateSettings with GetByMixin<ReleaseSettings> {
   final Map<String, Map<String, ReleaseSettings>> _value;
 
   const UpdateSettings(this._value);
+
+  factory UpdateSettings.empty() => UpdateSettings({
+        'base': {'base': ReleaseSettings.fromData()},
+      });
 }
 
 mixin GetByMixin<T> {
