@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../shared/update_platform.dart';
 
 enum Sources {
@@ -11,6 +13,7 @@ enum Sources {
       );
 }
 
+@immutable
 class Source {
   final Sources store;
   final Uri url;
@@ -19,6 +22,9 @@ class Source {
 
   final String? _name;
   String get name => _name ?? store.name;
+
+  @override
+  int get hashCode => url.hashCode;
 
   factory Source({
     required String name,
@@ -64,4 +70,7 @@ class Source {
     this.customData,
   })  : store = Sources.custom,
         _name = name;
+
+  @override
+  bool operator ==(Object other) => other is Source && url == other.url;
 }
