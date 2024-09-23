@@ -6,19 +6,19 @@ import '../shared/update_status_wrapper.dart';
 import '../sources/source.dart';
 import 'models/release_data.dart';
 
-// TODO так как UpdateConfigData уже НЕ содержит общие settings, значит UpdateConfigConfig.settings должны уже заюзаться для наследования. Так что пусть этим занимается линтер, ведь по названию вполне подходит
+// TODO Новая логика линкера, надо ревью
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
   List<ReleaseData> linkConfigs({
-    required UpdateSettingsConfig? releaseSettingsConfig,
+    required UpdateSettingsConfig? globalSettingsConfig,
     required List<ReleaseConfig> releasesConfig,
-    required List<GlobalSourceConfig>? sourcesConfig,
+    required List<GlobalSourceConfig>? globalSourcesConfig,
   }) {
     UpdateSettingsData? inheritedSettings =
-        releaseSettingsConfig == null ? null : UpdateSettingsData.fromConfig(releaseSettingsConfig);
+        globalSettingsConfig == null ? null : UpdateSettingsData.fromConfig(globalSettingsConfig);
 
-    final globalSources = sourcesConfig ?? [];
+    final globalSources = <GlobalSourceConfig?>[...?globalSourcesConfig];
     final releases = <ReleaseData>[];
 
     for (final releaseConfig in releasesConfig) {
@@ -36,8 +36,9 @@ class UpdateConfigLinker {
         final url = releaseSourceConfig.url;
         final platforms = releaseSourceConfig.platforms;
         final sourceReleaseConfig = releaseSourceConfig.release;
+        final customData = releaseSourceConfig.customData;
 
-        final globalSource = <GlobalSourceConfig?>[...globalSources].firstWhere(
+        final globalSource = globalSources.firstWhere(
           (source) => source?.name == name,
           orElse: () => null,
         );
@@ -54,7 +55,7 @@ class UpdateConfigLinker {
           name: name,
           url: sourceUrl,
           platforms: platforms ?? globalSource?.platforms,
-          customData: releaseSourceConfig.customData ?? globalSource?.customData,
+          customData: customData ?? globalSource?.customData,
         );
 
         // применяем релиз конкретного магазина, если есть
@@ -62,7 +63,7 @@ class UpdateConfigLinker {
         final dateUtc = sourceReleaseConfig?.dateUtc ?? releaseConfig.dateUtc;
         final releaseNoteTranslations =
             sourceReleaseConfig?.releaseNoteTranslations ?? releaseConfig.releaseNoteTranslations;
-        final customData = sourceReleaseConfig?.customData ?? releaseConfig.customData;
+        final releaseCustomData = sourceReleaseConfig?.customData ?? releaseConfig.customData;
 
         // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг), настройки которого смержены со всеми и находятся в settings
         releases.add(ReleaseData(
@@ -71,7 +72,7 @@ class UpdateConfigLinker {
           releaseNoteTranslations: releaseNoteTranslations,
           dateUtc: dateUtc,
           settings: inheritedSettings,
-          customData: customData,
+          customData: releaseCustomData,
         ));
       }
     }
