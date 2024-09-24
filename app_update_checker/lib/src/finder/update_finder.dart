@@ -16,9 +16,7 @@ class UpdateFinder {
     required this.platform,
   });
 
-  Release? findAvailableRelease(List<Release> availableReleasesFromAllSources) {}
-
-  Map<Source, Release?> findAvailableReleasesBySources(List<Release> releases) {
+  Map<Source, Release?> findAvailableReleasesBySource(List<Release> releases) {
     // в Source определено сравнение по Url
     final availableReleasesFromAllSources = <Source, Release?>{};
 

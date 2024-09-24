@@ -37,5 +37,5 @@ abstract class UpdateContollerBase {
   Future<void> postponeRelease(Release release);
 
   /// Launches a link to the correct store to update the app.
-  Future<void> launchReleaseStore(Release release);
+  Future<void> launchReleaseSource(Release release);
 }

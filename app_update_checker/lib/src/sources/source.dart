@@ -24,7 +24,7 @@ class Source {
   String get name => _name ?? store.name;
 
   @override
-  int get hashCode => url.hashCode;
+  int get hashCode => name.hashCode;
 
   factory Source({
     required String name,
@@ -72,5 +72,5 @@ class Source {
         _name = name;
 
   @override
-  bool operator ==(Object other) => other is Source && url == other.url;
+  bool operator ==(Object other) => other is Source && name == other.name;
 }

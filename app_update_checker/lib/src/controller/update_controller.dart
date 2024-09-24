@@ -14,13 +14,13 @@ import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../localizer/update_localizer.dart';
-import '../parser/models/release_config.dart';
-import '../parser/models/release_settings_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/update_platform.dart';
 
+import '../shared/update_status_wrapper.dart';
 import '../sources/fetchers/source_fetcher.dart';
 import '../sources/source.dart';
+import '../version_controller/update_version_controller.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
@@ -29,13 +29,14 @@ class UpdateController extends UpdateContollerBase {
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
-  final ReleaseSettingsConfig? _releaseSettings;
+  final UpdateSettingsConfig? _releaseSettings;
   final _linker = const UpdateConfigLinker();
+  UpdateVersionController? _versionController;
   UpdateLocalizer? _localizer;
   UpdateFinder? _finder;
 
-  final SourceReleaseFetcherCoordinator? _storeFetcherCoordinator;
-  final List<Source>? _globalSources;
+  final SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
+  final List<Source>? _globaSources;
   final UpdatePlatform _platform;
   final Locale _locale;
 
@@ -50,15 +51,15 @@ class UpdateController extends UpdateContollerBase {
 
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
-    SourceReleaseFetcherCoordinator? storeFetcherCoordinator,
-    ReleaseSettingsConfig? releaseSettings,
+    SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
+    UpdateSettingsConfig? releaseSettings,
     List<Source>? globalSources,
     UpdatePlatform? platform,
     required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
-        _storeFetcherCoordinator = storeFetcherCoordinator,
+        _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
-        _globalSources = globalSources,
+        _globaSources = globalSources,
         _locale = locale,
         _platform = platform ?? UpdatePlatform.current();
 
@@ -71,35 +72,62 @@ class UpdateController extends UpdateContollerBase {
     if (fetcher == null) return;
     final rawConfig = await fetcher.fetch();
 
-    // ignore: unused_local_variable
-    final config = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
+    final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
 
-    final releaseConfigsFromStores = <ReleaseConfig>[];
-    final sources = _globalSources ?? config.stores ?? [];
-    if (_storeFetcherCoordinator != null) {
-      for (final store in sources) {
-        // TODO поменяй
-        final fetcher = await _storeFetcherCoordinator!.fetcherByStore(store);
-        final releaseConfig = await fetcher.fetch(source: store, locale: _locale, packageInfo: packageInfo);
-        releaseConfigsFromStores.add(releaseConfig);
-      }
-    }
-
-    final configData = _linker.linkConfigs(
-      releaseSettingsConfig: _releaseSettings ?? config.settings,
-      releasesConfig: config.releases,
-      storesConfig: config.sources,
-      customData: config.customData,
+    final releasesData = _linker.linkConfigs(
+      globalSettingsConfig: _releaseSettings ?? configModel.settings,
+      releasesConfig: configModel.releases,
+      globalSourcesConfig: configModel.sources,
     );
 
-    _localizer ??= UpdateLocalizer(appLocale: _locale, packageInfo: packageInfo);
-    final updateConfig = _localizer!.localizeConfig(configData);
+    // final releaseConfigsFromSources = <ReleaseConfig>[];
+    // final sources = _globalSources ?? config.sources ?? [];
+    // if (_sourceFetcherCoordinator != null) {
+    //   for (final source in sources) {
+    //     // TODO фичу фетчера сурсов сделай. Она добавляет к списку ещё
+    //     final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+    //     final releaseConfig = await fetcher.fetch(source: source, locale: _locale, packageInfo: packageInfo);
+    //     releaseConfigsFromSources.add(releaseConfig);
+    //   }
+    // }
 
-    _configDataCompleter?.complete(updateConfig);
-    final updateData = await findAvailableUpdate();
+    _versionController ??= UpdateVersionController(configModel.versionSettings);
+    final releasesDataWithStatus = _versionController!.setStatuses(releasesData);
+
+    _localizer ??= UpdateLocalizer(appLocale: _locale, packageInfo: packageInfo);
+    final releases = _localizer!.localizeReleasesData(releasesDataWithStatus);
+
+    _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
+    // TODO здесь нужно возращать сурсы только для конкретного источника
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases);
+
+    final sources = availableReleasesBySources.keys.toList();
+    final availableReleasesFromAllSources = availableReleasesBySources.values.whereType<Release>().toList();
+    final updateConfig = UpdateConfig(
+      sources: sources,
+      releases: releases,
+      customData: configModel.customData,
+    );
+
+    // TODO вот тут мы должны определять источник
+    final availableRelease = _finder!.findAvailableRelease(availableReleasesFromAllSources);
+
+    // final updateData = await findAvailableUpdate();
+    // TODO _configDataCompleter?.complete(releases);
 
     _updateConfigStream.add(updateConfig);
-    if (updateData != null) _availableUpdateStream.add(updateData);
+    if (availableRelease != null) {
+      final appUpdate = AppUpdate(
+        appName: packageInfo.appName,
+        appVersion: Version.parse(packageInfo.version),
+        appLocale: _locale,
+        config: updateConfig,
+        currentRelease: availableRelease, // TODO нынешний релиз
+        availableRelease: availableRelease,
+        availableReleasesFromAllSources: availableReleasesFromAllSources,
+      );
+      _availableUpdateStream.add(appUpdate);
+    }
   }
 
   @override
@@ -109,30 +137,31 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate?> findAvailableUpdate() async {
-    if (_configDataCompleter == null) return null;
-    final updateConfig = await _configDataCompleter!.future;
-    final packageInfo = await _asyncPackageInfo;
+    throw UnimplementedError();
+    // if (_configDataCompleter == null) return null;
+    // final updateConfig = await _configDataCompleter!.future;
+    // final packageInfo = await _asyncPackageInfo;
 
-    _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
-    final latestRelease = _finder!.findAvailableRelease(updateConfig);
-    if (latestRelease == null) return null;
+    // _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
+    // final latestRelease = _finder!.findAvailableReleasesFromAllSources(updateConfig);
+    // if (latestRelease == null) return null;
 
-    final appName = packageInfo.appName;
-    final appVersion = Version.parse(packageInfo.version);
-    final updateData = AppUpdate(
-      appName: appName,
-      appVersion: appVersion,
-      appLocale: _locale,
-      config: updateConfig,
-      availableRelease: latestRelease,
-    );
+    // final appName = packageInfo.appName;
+    // final appVersion = Version.parse(packageInfo.version);
+    // final updateData = AppUpdate(
+    //   appName: appName,
+    //   appVersion: appVersion,
+    //   appLocale: _locale,
+    //   config: updateConfig,
+    //   availableRelease: latestRelease,
+    // );
 
-    return updateData;
+    // return updateData;
   }
 
   @override
-  Future<void> launchReleaseStore(Release release) {
-    // TODO: implement launchStore
+  Future<void> launchReleaseSource(Release release) {
+    // TODO: implement launchSource
     throw UnimplementedError();
   }
 
