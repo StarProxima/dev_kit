@@ -10,7 +10,7 @@ class AppUpdate {
   final Version appVersion;
   final Locale appLocale;
   final UpdateConfig config;
-  final Release currentRelease;
+  final Release? currentRelease;
   // Available release from priority source
   final Release? availableRelease;
   // Available releases from all available sources

@@ -87,7 +87,6 @@ class UpdateController extends UpdateContollerBase {
     // final sources = _globalSources ?? config.sources ?? [];
     // if (_sourceFetcherCoordinator != null) {
     //   for (final source in sources) {
-    //     // TODO фичу фетчера сурсов сделай. Она добавляет к списку ещё
     //     final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
     //     final releaseConfig = await fetcher.fetch(source: source, locale: _locale, packageInfo: packageInfo);
     //     releaseConfigsFromSources.add(releaseConfig);
@@ -100,9 +99,10 @@ class UpdateController extends UpdateContollerBase {
     _localizer ??= UpdateLocalizer(appLocale: _locale, packageInfo: packageInfo);
     final releases = _localizer!.localizeReleasesData(releasesDataWithStatus);
 
+    // TODO фичу фетчера сурсов сделай здесь. Она добавляет к списку ещё
+
     _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
-    // TODO здесь нужно возращать сурсы только для конкретного источника
-    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
 
     final sources = availableReleasesBySources.keys.toList();
     final availableReleasesFromAllSources = availableReleasesBySources.values.whereType<Release>().toList();
@@ -111,28 +111,26 @@ class UpdateController extends UpdateContollerBase {
       releases: releases,
       customData: configModel.customData,
     );
-
-    final availableReleaseForCurrentSource = await _finder!.findAvailableRelease(
+    final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       prioritySourceName: _prioritySourceName,
     );
+    final currentRelease = await _finder!.findCurrentRelease(releases: releases);
 
-    // final updateData = await findAvailableUpdate();
+    final appUpdate = AppUpdate(
+      appName: packageInfo.appName,
+      appVersion: Version.parse(packageInfo.version),
+      appLocale: _locale,
+      config: updateConfig,
+      currentRelease: currentRelease,
+      availableRelease: availableRelease,
+      availableReleasesFromAllSources: availableReleasesFromAllSources,
+    );
+
     // TODO _configDataCompleter?.complete(releases);
 
     _updateConfigStream.add(updateConfig);
-    if (availableReleaseForCurrentSource != null) {
-      final appUpdate = AppUpdate(
-        appName: packageInfo.appName,
-        appVersion: Version.parse(packageInfo.version),
-        appLocale: _locale,
-        config: updateConfig,
-        currentRelease: availableReleaseForCurrentSource, // TODO нынешний релиз
-        availableRelease: availableReleaseForCurrentSource,
-        availableReleasesFromAllSources: availableReleasesFromAllSources,
-      );
-      _availableUpdateStream.add(appUpdate);
-    }
+    _availableUpdateStream.add(appUpdate);
   }
 
   @override

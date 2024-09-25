@@ -93,7 +93,7 @@ class Source {
         _name = name;
 
   @override
-  bool operator ==(Object other) => other is Source && name == other.name;
+  bool operator ==(Object other) => identical(this, other) || other is Source && name == other.name;
 }
 
 extension SourceFromStoreChecker on List<Source> {}

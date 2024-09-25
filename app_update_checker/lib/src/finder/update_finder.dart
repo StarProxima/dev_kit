@@ -19,12 +19,16 @@ class UpdateFinder {
     required this.platform,
   });
 
-  Map<Source, Release?> findAvailableReleasesBySource(List<Release> releases) {
+  Map<Source, Release?> findAvailableReleasesBySource({required List<Release> releases}) {
     // в Source определено сравнение по Url
     final availableReleasesFromAllSources = <Source, Release?>{};
 
     for (final release in releases) {
       final releaseSource = release.targetSource;
+
+      if (!releaseSource.platforms.contains(platform)) {
+        continue;
+      }
 
       if (release.status != UpdateStatus.available) {
         // если релиз не актуальный, но стор ни разу не встречался, то записываем стор
@@ -82,5 +86,18 @@ class UpdateFinder {
 
     // либо мы ни в чём не уверены и потому точно возращаем null
     return null;
+  }
+
+  Future<Release?> findCurrentRelease({required List<Release> releases}) async {
+    final releasesWithAppVersion = releases.where((release) => release.version == appVersion);
+
+    if (releasesWithAppVersion.isEmpty) return null;
+    if (releasesWithAppVersion.length == 1) return releasesWithAppVersion.first;
+
+    // если не получается понять, откуда релиз, ищем словно бы доступный
+    // здесь возможно так легко преобразовать список к мапе, ибо не получится встретить два релиза из одного сурса одинаковой версии
+    final releasesWithAppVersionBySource =
+        releasesWithAppVersion.map((release) => MapEntry(release.targetSource, release));
+    return findAvailableRelease(availableReleasesBySources: Map.fromEntries(releasesWithAppVersionBySource));
   }
 }
