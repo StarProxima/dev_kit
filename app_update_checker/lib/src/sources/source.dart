@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:store_checker/store_checker.dart' as checker;
 
 import '../shared/update_platform.dart';
 
@@ -11,6 +12,26 @@ enum Sources {
         (e) => e.name == name,
         orElse: () => custom,
       );
+
+  static Future<String?> checkAppSource() async {
+    final installationSource = await checker.StoreChecker.getSource;
+    final sourceCheckerName = switch (installationSource) {
+      checker.Source.IS_INSTALLED_FROM_PLAY_STORE => Sources.googlePlay.toString(),
+      checker.Source.IS_INSTALLED_FROM_PLAY_PACKAGE_INSTALLER => 'googlePlayPackageInstaller',
+      checker.Source.IS_INSTALLED_FROM_AMAZON_APP_STORE => 'amazonAppStore',
+      checker.Source.IS_INSTALLED_FROM_HUAWEI_APP_GALLERY => 'huaweiAppGallery',
+      checker.Source.IS_INSTALLED_FROM_SAMSUNG_GALAXY_STORE => 'samsungGalaxyStore',
+      checker.Source.IS_INSTALLED_FROM_SAMSUNG_SMART_SWITCH_MOBILE => 'samsungSmartSwitchMobile',
+      checker.Source.IS_INSTALLED_FROM_XIAOMI_GET_APPS => 'xiaomiGetApps',
+      checker.Source.IS_INSTALLED_FROM_OPPO_APP_MARKET => 'oppoAppMarket',
+      checker.Source.IS_INSTALLED_FROM_VIVO_APP_STORE => 'vivoAppStore',
+      checker.Source.IS_INSTALLED_FROM_RU_STORE => 'ruStore',
+      checker.Source.IS_INSTALLED_FROM_APP_STORE => Sources.appStore.toString(),
+      checker.Source.IS_INSTALLED_FROM_TEST_FLIGHT => 'testFlight',
+      _ => null //  UNKNOWN, IS_INSTALLED_FROM_LOCAL_SOURCE, IS_INSTALLED_FROM_OTHER_SOURCE
+    };
+    return sourceCheckerName;
+  }
 }
 
 @immutable
@@ -74,3 +95,5 @@ class Source {
   @override
   bool operator ==(Object other) => other is Source && name == other.name;
 }
+
+extension SourceFromStoreChecker on List<Source> {}

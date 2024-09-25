@@ -38,6 +38,7 @@ class UpdateController extends UpdateContollerBase {
   final SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   final List<Source>? _globaSources;
   final UpdatePlatform _platform;
+  final String? _prioritySourceName;
   final Locale _locale;
 
   final _availableUpdateStream = StreamController<AppUpdate>();
@@ -55,11 +56,13 @@ class UpdateController extends UpdateContollerBase {
     UpdateSettingsConfig? releaseSettings,
     List<Source>? globalSources,
     UpdatePlatform? platform,
+    String? prioritySourceName,
     required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
         _globaSources = globalSources,
+        _prioritySourceName = prioritySourceName,
         _locale = locale,
         _platform = platform ?? UpdatePlatform.current();
 
@@ -109,21 +112,23 @@ class UpdateController extends UpdateContollerBase {
       customData: configModel.customData,
     );
 
-    // TODO вот тут мы должны определять источник
-    final availableRelease = _finder!.findAvailableRelease(availableReleasesFromAllSources);
+    final availableReleaseForCurrentSource = await _finder!.findAvailableRelease(
+      availableReleasesBySources: availableReleasesBySources,
+      prioritySourceName: _prioritySourceName,
+    );
 
     // final updateData = await findAvailableUpdate();
     // TODO _configDataCompleter?.complete(releases);
 
     _updateConfigStream.add(updateConfig);
-    if (availableRelease != null) {
+    if (availableReleaseForCurrentSource != null) {
       final appUpdate = AppUpdate(
         appName: packageInfo.appName,
         appVersion: Version.parse(packageInfo.version),
         appLocale: _locale,
         config: updateConfig,
-        currentRelease: availableRelease, // TODO нынешний релиз
-        availableRelease: availableRelease,
+        currentRelease: availableReleaseForCurrentSource, // TODO нынешний релиз
+        availableRelease: availableReleaseForCurrentSource,
         availableReleasesFromAllSources: availableReleasesFromAllSources,
       );
       _availableUpdateStream.add(appUpdate);
