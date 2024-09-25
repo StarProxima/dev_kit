@@ -25,7 +25,6 @@ import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
   final _asyncPackageInfo = PackageInfo.fromPlatform();
-  Completer<UpdateConfig>? _configDataCompleter;
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
@@ -33,10 +32,10 @@ class UpdateController extends UpdateContollerBase {
   final _linker = const UpdateConfigLinker();
   UpdateVersionController? _versionController;
   UpdateLocalizer? _localizer;
+  SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
-  final SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
-  final List<Source>? _globaSources;
+  final List<Source>? _globalSources;
   final UpdatePlatform _platform;
   final String? _prioritySourceName;
   final Locale _locale;
@@ -61,14 +60,13 @@ class UpdateController extends UpdateContollerBase {
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
-        _globaSources = globalSources,
+        _globalSources = globalSources,
         _prioritySourceName = prioritySourceName,
         _locale = locale,
         _platform = platform ?? UpdatePlatform.current();
 
   @override
   Future<void> fetch() async {
-    _configDataCompleter = Completer();
     final packageInfo = await _asyncPackageInfo;
 
     final fetcher = _updateConfigFetcher;
@@ -83,39 +81,35 @@ class UpdateController extends UpdateContollerBase {
       globalSourcesConfig: configModel.sources,
     );
 
-    // final releaseConfigsFromSources = <ReleaseConfig>[];
-    // final sources = _globalSources ?? config.sources ?? [];
-    // if (_sourceFetcherCoordinator != null) {
-    //   for (final source in sources) {
-    //     final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
-    //     final releaseConfig = await fetcher.fetch(source: source, locale: _locale, packageInfo: packageInfo);
-    //     releaseConfigsFromSources.add(releaseConfig);
-    //   }
-    // }
-
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final releasesDataWithStatus = _versionController!.setStatuses(releasesData);
 
     _localizer ??= UpdateLocalizer(appLocale: _locale, packageInfo: packageInfo);
     final releases = _localizer!.localizeReleasesData(releasesDataWithStatus);
 
-    // TODO фичу фетчера сурсов сделай здесь. Она добавляет к списку ещё
+    _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
+    final globalSources = _globalSources ?? [];
+    for (final source in globalSources) {
+      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+      final releaseConfig = await fetcher.fetch(source: source, locale: _locale, packageInfo: packageInfo);
+      releases.add(releaseConfig);
+    }
 
     _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
 
-    final sources = availableReleasesBySources.keys.toList();
     final availableReleasesFromAllSources = availableReleasesBySources.values.whereType<Release>().toList();
-    final updateConfig = UpdateConfig(
-      sources: sources,
-      releases: releases,
-      customData: configModel.customData,
-    );
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       prioritySourceName: _prioritySourceName,
     );
     final currentRelease = await _finder!.findCurrentRelease(releases: releases);
+
+    final updateConfig = UpdateConfig(
+      sources: availableReleasesBySources.keys.toList(),
+      releases: releases,
+      customData: configModel.customData,
+    );
 
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
@@ -126,8 +120,6 @@ class UpdateController extends UpdateContollerBase {
       availableRelease: availableRelease,
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );
-
-    // TODO _configDataCompleter?.complete(releases);
 
     _updateConfigStream.add(updateConfig);
     _availableUpdateStream.add(appUpdate);
@@ -141,25 +133,6 @@ class UpdateController extends UpdateContollerBase {
   @override
   Future<AppUpdate?> findAvailableUpdate() async {
     throw UnimplementedError();
-    // if (_configDataCompleter == null) return null;
-    // final updateConfig = await _configDataCompleter!.future;
-    // final packageInfo = await _asyncPackageInfo;
-
-    // _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
-    // final latestRelease = _finder!.findAvailableReleasesFromAllSources(updateConfig);
-    // if (latestRelease == null) return null;
-
-    // final appName = packageInfo.appName;
-    // final appVersion = Version.parse(packageInfo.version);
-    // final updateData = AppUpdate(
-    //   appName: appName,
-    //   appVersion: appVersion,
-    //   appLocale: _locale,
-    //   config: updateConfig,
-    //   availableRelease: latestRelease,
-    // );
-
-    // return updateData;
   }
 
   @override

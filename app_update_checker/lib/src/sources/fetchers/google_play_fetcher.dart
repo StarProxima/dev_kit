@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../parser/models/release_config.dart';
+import '../../localizer/models/release.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
 
@@ -10,7 +10,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
   const GooglePlayFetcher();
 
   @override
-  Future<ReleaseConfig> fetch({
+  Future<Release> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../parser/models/release_config.dart';
+import '../../localizer/models/release.dart';
 import '../source.dart';
 import 'app_store_fetcher.dart';
 import 'google_play_fetcher.dart';
@@ -21,7 +21,7 @@ base class SourceReleaseFetcherCoordinator {
 abstract class SourceReleaseFetcher {
   const SourceReleaseFetcher();
 
-  Future<ReleaseConfig> fetch({
+  Future<Release> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,
