@@ -28,8 +28,10 @@ enum Sources {
       checker.Source.IS_INSTALLED_FROM_RU_STORE => 'ruStore',
       checker.Source.IS_INSTALLED_FROM_APP_STORE => Sources.appStore.toString(),
       checker.Source.IS_INSTALLED_FROM_TEST_FLIGHT => 'testFlight',
-      _ => null //  UNKNOWN, IS_INSTALLED_FROM_LOCAL_SOURCE, IS_INSTALLED_FROM_OTHER_SOURCE
+      // ignore: avoid-wildcard-cases-with-enums
+      _ => null, //  UNKNOWN, IS_INSTALLED_FROM_LOCAL_SOURCE, IS_INSTALLED_FROM_OTHER_SOURCE
     };
+
     return sourceCheckerName;
   }
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, use_late_for_private_fields_and_variables, avoid-non-null-assertion
+// ignore_for_file: unused_field, use_late_for_private_fields_and_variables, avoid-non-null-assertion, prefer-unwrapping-future-or, prefer-moving-to-variable
 
 import 'dart:async';
 import 'dart:ui';
@@ -40,8 +40,8 @@ class UpdateController extends UpdateContollerBase {
   final String? _prioritySourceName;
   final Locale _locale;
 
-  final _availableUpdateStream = StreamController<AppUpdate>();
-  final _updateConfigStream = StreamController<UpdateConfig>();
+  final _availableUpdateStream = StreamController<AppUpdate>.broadcast();
+  final _updateConfigStream = StreamController<UpdateConfig>.broadcast();
 
   @override
   Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
@@ -131,8 +131,27 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<AppUpdate?> findAvailableUpdate() async {
-    throw UnimplementedError();
+  Future<AppUpdate?> getAvailableAppUpdate() async {
+    if (await _availableUpdateStream.stream.isEmpty) {
+      await fetch();
+      if (!await _availableUpdateStream.stream.isEmpty) {
+        return _availableUpdateStream.stream.first;
+      }
+    } else {
+      return _availableUpdateStream.stream.first;
+    }
+  }
+
+  @override
+  Future<UpdateConfig?> getAvailableUpdateConfig() async {
+    if (await _updateConfigStream.stream.isEmpty) {
+      await fetch();
+      if (!await _updateConfigStream.stream.isEmpty) {
+        return _updateConfigStream.stream.first;
+      }
+    } else {
+      return _updateConfigStream.stream.first;
+    }
   }
 
   @override
@@ -154,8 +173,8 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<UpdateConfig> getCurrentUpdateConfig() {
-    // TODO: implement getUpdateConfig
-    throw UnimplementedError();
+  Future<void> dispose() async {
+    await _updateConfigStream.close();
+    await _availableUpdateStream.close();
   }
 }

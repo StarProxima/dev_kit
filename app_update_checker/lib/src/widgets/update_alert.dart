@@ -1,4 +1,4 @@
-// ignore_for_file: prefer-named-parameters
+// ignore_for_file: prefer-named-parameters, avoid-late-keyword
 
 import 'dart:async';
 
@@ -36,14 +36,13 @@ class UpdateAlert extends StatefulWidget {
 }
 
 class _UpdateAlertState extends State<UpdateAlert> {
-  // ignore: avoid-late-keyword
   late final AppLifecycleListener _appLifecycleListener;
-
-  late final _controller = widget.controller ?? UpdateController(locale: Localizations.localeOf(context));
+  late final UpdateController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = widget.controller ?? UpdateController(locale: Localizations.localeOf(context));
 
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () {
@@ -54,25 +53,24 @@ class _UpdateAlertState extends State<UpdateAlert> {
   }
 
   Future<void> _check() async {
-    await _controller.fetch();
-    final updateData = await _controller.findAvailableUpdate();
+    if (!widget.enabled) return;
 
-    if (updateData == null) return;
+    final appUpdate = await _controller.getAvailableAppUpdate();
+    if (appUpdate == null) return;
 
     if (context.mounted) {
       // ignore: use_build_context_synchronously
-      widget.onUpdateAvailable?.call(context, updateData, _controller);
+      widget.onUpdateAvailable?.call(context, appUpdate, _controller);
     }
   }
 
   @override
   void dispose() {
+    _controller.dispose();
     _appLifecycleListener.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 }

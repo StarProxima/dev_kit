@@ -20,6 +20,7 @@ dependencies:
   shared_preferences: ^2.3.2
   url_launcher: ^6.1.14
   store_checker: ^1.6.0
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:
