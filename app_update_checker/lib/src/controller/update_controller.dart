@@ -22,6 +22,7 @@ import '../shared/update_status_wrapper.dart';
 import '../sources/fetchers/source_fetcher.dart';
 import '../sources/source.dart';
 import '../version_controller/update_version_controller.dart';
+import 'exceptions.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
@@ -69,12 +70,12 @@ class UpdateController extends UpdateContollerBase {
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<void> fetch() async {
+  Future<AppUpdate> findUpdate() async {
     await LocalDataService.init();
     final packageInfo = await _asyncPackageInfo;
 
     final fetcher = _updateConfigFetcher;
-    if (fetcher == null) return;
+    if (fetcher == null) throw const UpdateNotFoundException();
     final rawConfig = await fetcher.fetch();
 
     final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
@@ -108,10 +109,6 @@ class UpdateController extends UpdateContollerBase {
       prioritySourceName: _prioritySourceName,
     );
 
-    if (availableRelease != null && LocalDataService.isNeedToSkipRelease(availableRelease.version.toString())) {
-      return;
-    }
-
     final currentRelease = await _finder!.findCurrentRelease(releases: releases);
 
     final updateConfig = UpdateConfig(
@@ -130,15 +127,29 @@ class UpdateController extends UpdateContollerBase {
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );
 
+    if (availableRelease != null) {
+      if (LocalDataService.isSkipedRelease(availableRelease.version.toString())) {
+        throw UpdateSkippedException(update: appUpdate);
+      }
+      if (LocalDataService.isPostponedRelease(availableRelease.version.toString())) {
+        throw UpdatePostponedException(update: appUpdate);
+      }
+    }
+
     _lastUpdateConfig = updateConfig;
     _updateConfigStream.add(updateConfig);
     _lastAppUpdate = appUpdate;
     _availableUpdateStream.add(appUpdate);
+
+    return appUpdate;
   }
 
   @override
-  Future<AppUpdate> findUpdate() {
-    throw UnimplementedError();
+  Future<void> fetch() async {
+    try {
+      await findUpdate();
+      // ignore: empty_catches
+    } on UpdateException {}
   }
 
   @override

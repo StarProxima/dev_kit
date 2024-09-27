@@ -40,12 +40,14 @@ class LocalDataService {
     _instance._prefs!.setStringList(_kPostponedReleaseVersions, postponedReleases ?? []);
   }
 
-  static bool isNeedToSkipRelease(String releaseVersion) {
+  static bool isSkipedRelease(String releaseVersion) {
     final skippedReleases = _instance._prefs!.getStringList(_kSkippedReleaseVersions) ?? [];
-    if (skippedReleases.contains(releaseVersion)) {
-      return true;
-    }
+    _clearService(releaseVersion);
 
+    return skippedReleases.contains(releaseVersion);
+  }
+
+  static bool isPostponedRelease(String releaseVersion) {
     final now = DateTime.now();
     final postponedReleases = _instance._prefs!.getStringList(_kPostponedReleaseVersions) ?? [];
     for (final release in postponedReleases) {
