@@ -6,7 +6,6 @@ import '../shared/update_status_wrapper.dart';
 import '../sources/source.dart';
 import 'models/release_data.dart';
 
-// TODO Новая логика линкера, надо ревью
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 

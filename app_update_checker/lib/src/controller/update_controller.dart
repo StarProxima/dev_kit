@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
@@ -154,36 +155,30 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate?> getAvailableAppUpdate() async {
-    if (_lastAppUpdate == null) {
-      await fetch();
-
-      return _lastAppUpdate;
-    }
+    if (_lastAppUpdate == null) await fetch();
 
     return _lastAppUpdate;
   }
 
   @override
   Future<UpdateConfig?> getAvailableUpdateConfig() async {
-    if (_lastUpdateConfig == null) {
-      await fetch();
-
-      return _lastUpdateConfig;
-    }
+    if (_lastUpdateConfig == null) await fetch();
 
     return _lastUpdateConfig;
   }
 
   @override
-  Future<void> launchReleaseSource(Release release) {
+  Future<void> launchReleaseSource(Release release) async {
     LocalDataService.saveLastSource(release.targetSource.name);
-    // TODO: implement launchSource
-    throw UnimplementedError();
+
+    final url = release.targetSource.url;
+    await launchUrl(url);
+    // TODO всё?
   }
 
   @override
   Future<void> postponeRelease({required Release release, required Duration postponeDuration}) async {
-    // передаём postponeDuration так как в этой функции не получится определить тип релиза и карточки
+    // передаём postponeDuration так как в этой функции не получится определить статус релиза и карточки
     LocalDataService.addPostponedRelease(
       releaseVersion: release.version.toString(),
       postponeDuration: postponeDuration,

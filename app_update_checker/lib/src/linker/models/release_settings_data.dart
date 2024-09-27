@@ -23,15 +23,6 @@ class ReleaseSettingsData {
   factory ReleaseSettingsData.fromConfig(ReleaseSettingsConfig? config) {
     return ReleaseSettingsData(
       translations: config?.translations,
-      // TODO: Доставить всё из отдельных файлоков сразу в UpdateSettings
-      // const UpdateTranslations(
-      //   title: {},
-      //   description: {},
-      //   releaseNoteTitle: {},
-      //   skipButtonText: {},
-      //   laterButtonText: {},
-      //   updateButtonText: {},
-      // ),
       canSkipRelease: config?.canSkipRelease,
       canPostponeRelease: config?.canPostponeRelease,
       reminderPeriod: config?.reminderPeriod,

@@ -45,7 +45,6 @@ class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
     );
   }
 
-  // TODO Я почти умер пока писал эту функцию. Спасибо за внимание
   UpdateSettingsData inherit(UpdateSettingsData child) {
     final inheritedValue = {...child.value};
 
