@@ -2,14 +2,12 @@
 
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../local_data_service/local_data_service.dart';
 import '../localizer/models/release.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_status.dart';
 import '../sources/source.dart';
-
-const _kLastUsedSourceName = 'updateChecker_lastUsedSourceName';
 
 class UpdateFinder {
   final Version appVersion;
@@ -67,8 +65,7 @@ class UpdateFinder {
     }
 
     // либо получаем последний сохранённый стор
-    final pref = await SharedPreferences.getInstance(); // TODO пока здесь, но чувствую, что переедет
-    final lastSource = pref.get(_kLastUsedSourceName);
+    final lastSource = LocalDataService.getLastSource();
     if (lastSource is String) {
       final lastUsedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == lastSource);
       if (lastUsedSource != null) {

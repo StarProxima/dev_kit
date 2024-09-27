@@ -10,6 +10,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_config_linker.dart';
+import '../local_data_service/local_data_service.dart';
 import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
@@ -42,6 +43,8 @@ class UpdateController extends UpdateContollerBase {
 
   final _availableUpdateStream = StreamController<AppUpdate>.broadcast();
   final _updateConfigStream = StreamController<UpdateConfig>.broadcast();
+  AppUpdate? _lastAppUpdate;
+  UpdateConfig? _lastUpdateConfig;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
@@ -67,6 +70,7 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<void> fetch() async {
+    await LocalDataService.init();
     final packageInfo = await _asyncPackageInfo;
 
     final fetcher = _updateConfigFetcher;
@@ -103,6 +107,11 @@ class UpdateController extends UpdateContollerBase {
       availableReleasesBySources: availableReleasesBySources,
       prioritySourceName: _prioritySourceName,
     );
+
+    if (availableRelease != null && LocalDataService.isNeedToSkipRelease(availableRelease.version.toString())) {
+      return;
+    }
+
     final currentRelease = await _finder!.findCurrentRelease(releases: releases);
 
     final updateConfig = UpdateConfig(
@@ -121,7 +130,9 @@ class UpdateController extends UpdateContollerBase {
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );
 
+    _lastUpdateConfig = updateConfig;
     _updateConfigStream.add(updateConfig);
+    _lastAppUpdate = appUpdate;
     _availableUpdateStream.add(appUpdate);
   }
 
@@ -132,44 +143,45 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate?> getAvailableAppUpdate() async {
-    if (await _availableUpdateStream.stream.isEmpty) {
+    if (_lastAppUpdate == null) {
       await fetch();
-      if (!await _availableUpdateStream.stream.isEmpty) {
-        return _availableUpdateStream.stream.first;
-      }
-    } else {
-      return _availableUpdateStream.stream.first;
+
+      return _lastAppUpdate;
     }
+
+    return _lastAppUpdate;
   }
 
   @override
   Future<UpdateConfig?> getAvailableUpdateConfig() async {
-    if (await _updateConfigStream.stream.isEmpty) {
+    if (_lastUpdateConfig == null) {
       await fetch();
-      if (!await _updateConfigStream.stream.isEmpty) {
-        return _updateConfigStream.stream.first;
-      }
-    } else {
-      return _updateConfigStream.stream.first;
+
+      return _lastUpdateConfig;
     }
+
+    return _lastUpdateConfig;
   }
 
   @override
   Future<void> launchReleaseSource(Release release) {
+    LocalDataService.saveLastSource(release.targetSource.name);
     // TODO: implement launchSource
     throw UnimplementedError();
   }
 
   @override
-  Future<void> postponeRelease(Release release) {
-    // TODO: implement postponeRelease
-    throw UnimplementedError();
+  Future<void> postponeRelease({required Release release, required Duration postponeDuration}) async {
+    // передаём postponeDuration так как в этой функции не получится определить тип релиза и карточки
+    LocalDataService.addPostponedRelease(
+      releaseVersion: release.version.toString(),
+      postponeDuration: postponeDuration,
+    );
   }
 
   @override
-  Future<void> skipRelease(Release release) {
-    // TODO: implement skipRelease
-    throw UnimplementedError();
+  Future<void> skipRelease(Release release) async {
+    LocalDataService.addSkippedRelease(release.version.toString());
   }
 
   @override

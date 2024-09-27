@@ -34,7 +34,7 @@ abstract class UpdateContollerBase {
   Future<void> skipRelease(Release release);
 
   /// Postpone the release, it will display later after a set amount of time.
-  Future<void> postponeRelease(Release release);
+  Future<void> postponeRelease({required Release release, required Duration postponeDuration});
 
   /// Launches a link to the correct store to update the app.
   Future<void> launchReleaseSource(Release release);
