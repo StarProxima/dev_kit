@@ -17,6 +17,7 @@ enum Sources {
     final installationSource = await checker.StoreChecker.getSource;
     final sourceCheckerName = switch (installationSource) {
       checker.Source.IS_INSTALLED_FROM_PLAY_STORE => Sources.googlePlay.toString(),
+      // TODO сделать всё через enum
       checker.Source.IS_INSTALLED_FROM_PLAY_PACKAGE_INSTALLER => 'googlePlayPackageInstaller',
       checker.Source.IS_INSTALLED_FROM_AMAZON_APP_STORE => 'amazonAppStore',
       checker.Source.IS_INSTALLED_FROM_HUAWEI_APP_GALLERY => 'huaweiAppGallery',

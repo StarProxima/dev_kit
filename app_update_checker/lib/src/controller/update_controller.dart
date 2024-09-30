@@ -43,8 +43,8 @@ class UpdateController extends UpdateContollerBase {
   final String? _prioritySourceName;
   final Locale _locale;
 
-  final _availableUpdateStream = StreamController<AppUpdate>.broadcast();
-  final _updateConfigStream = StreamController<UpdateConfig>.broadcast();
+  final _availableUpdateStream = StreamController<AppUpdate>();
+  final _updateConfigStream = StreamController<UpdateConfig>();
   AppUpdate? _lastAppUpdate;
   UpdateConfig? _lastUpdateConfig;
 
@@ -105,6 +105,7 @@ class UpdateController extends UpdateContollerBase {
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
 
     final availableReleasesFromAllSources = availableReleasesBySources.values.whereType<Release>().toList();
+
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       prioritySourceName: _prioritySourceName,
@@ -123,7 +124,8 @@ class UpdateController extends UpdateContollerBase {
       appVersion: Version.parse(packageInfo.version),
       appLocale: _locale,
       config: updateConfig,
-      currentRelease: currentRelease,
+      
+      currentRelease: ,// TODO  в вершн контроллере чекай апп вершн
       availableRelease: availableRelease,
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );
@@ -145,6 +147,7 @@ class UpdateController extends UpdateContollerBase {
     return appUpdate;
   }
 
+  // TODO переписать
   @override
   Future<void> fetch() async {
     try {
@@ -196,3 +199,16 @@ class UpdateController extends UpdateContollerBase {
     await _availableUpdateStream.close();
   }
 }
+
+
+/* TODO
+-Серёга на LocalDataService
+-Фетчеры не готовы
+-Тудушки по коду
+-Релиз ноты
+-Сделать все сурсы через энамы
+-Все хэндлеры
+-Тесты пофиксить
+
+
+*/

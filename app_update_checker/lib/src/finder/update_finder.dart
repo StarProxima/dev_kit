@@ -1,9 +1,9 @@
-// ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
+// ignore_for_file: avoid-unnecessary-reassignment, prefer-correct-identifier-length
 
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../local_data_service/local_data_service.dart';
+import '../controller/exceptions.dart';
 import '../localizer/models/release.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_status.dart';
@@ -29,8 +29,9 @@ class UpdateFinder {
         continue;
       }
 
+      // TODO трабла здесь в том, что можно потерять Сурс, если мы стёрли всю историю. Надо добавить глобальные сурсы сюда
       if (release.status != UpdateStatus.available) {
-        // если релиз не актуальный, но стор ни разу не встречался, то записываем стор
+        // если релиз не актуальный, но сурс ни разу не встречался, то записываем сурс
         if (!availableReleasesFromAllSources.containsKey(releaseSource)) {
           availableReleasesFromAllSources[releaseSource] = null;
         }
@@ -50,6 +51,14 @@ class UpdateFinder {
     return availableReleasesFromAllSources;
   }
 
+  /// Если [Sources.checkAppSource] определил, откуда пришло обновление и в [availableReleasesBySources] для этого
+  /// источника есть доступный релиз, то пользователь увидет обновление.
+  /// Если [Sources.checkAppSource] определил, откуда пришло обновление и в [availableReleasesBySources] для этого
+  /// источника не доступного релиза, то функция завершится ошибкой [UpdateNotFoundException] и обновление не будет показано.
+  /// Если [Sources.checkAppSource] не определил, откуда пришло обновление, метод вернёт null, то пользователь увидет
+  /// экран со списком всех источников с доступными обновлениями.
+  /// Если требуется для кастомных сторов поддержать возможность обновления с одного и того же источника, то
+  /// можно воспользоваться [prioritySourceName].
   Future<Release?> findAvailableRelease({
     required Map<Source, Release?> availableReleasesBySources,
     String? prioritySourceName,
@@ -64,20 +73,13 @@ class UpdateFinder {
       }
     }
 
-    // либо получаем последний сохранённый стор
-    final lastSource = LocalDataService.getLastSource();
-    if (lastSource is String) {
-      final lastUsedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == lastSource);
-      if (lastUsedSource != null) {
-        return availableReleasesBySources[lastUsedSource];
-      }
-    }
-
     // либо определяем сами откуда установлено приложение
     final sourceCheckerName = await Sources.checkAppSource();
     if (sourceCheckerName != null) {
       final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == sourceCheckerName);
       if (checkedSource != null) {
+        if (availableReleasesBySources[checkedSource] == null) throw const UpdateNotFoundException();
+
         return availableReleasesBySources[checkedSource];
       }
     }

@@ -13,7 +13,7 @@ abstract class UpdateContollerBase {
   Stream<UpdateConfig> get updateConfigStream;
 
   /// Check new releases from the update config and stores.
-  Future<void> fetch();
+  Future<void> fetch(); // TODO сделай фетч фетчем - с сохранением инфы с инета
 
   /// Get current update config
   ///

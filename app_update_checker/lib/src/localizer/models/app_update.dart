@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:pub_semver/pub_semver.dart';
 
+import '../../shared/update_status.dart';
 import 'release.dart';
 import 'update_config.dart';
 
@@ -10,7 +11,7 @@ class AppUpdate {
   final Version appVersion;
   final Locale appLocale;
   final UpdateConfig config;
-  final Release? currentRelease;
+  final UpdateStatus? currentRelease;
   // Available release from priority source
   final Release? availableRelease;
   // Available releases from all available sources
