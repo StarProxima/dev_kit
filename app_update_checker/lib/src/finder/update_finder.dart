@@ -18,9 +18,11 @@ class UpdateFinder {
     required this.platform,
   });
 
-  Map<Source, Release?> findAvailableReleasesBySource({required List<Release> releases}) {
+  Map<Source, Release> findAvailableReleasesBySource({
+    required List<Release> releases,
+  }) {
     // в Source определено сравнение по Url
-    final availableReleasesFromAllSources = <Source, Release?>{};
+    final availableReleasesFromAllSources = <Source, Release>{};
 
     for (final release in releases) {
       final releaseSource = release.targetSource;
@@ -29,12 +31,7 @@ class UpdateFinder {
         continue;
       }
 
-      // TODO трабла здесь в том, что можно потерять Сурс, если мы стёрли всю историю. Надо добавить глобальные сурсы сюда
       if (release.status != UpdateStatus.available) {
-        // если релиз не актуальный, но сурс ни разу не встречался, то записываем сурс
-        if (!availableReleasesFromAllSources.containsKey(releaseSource)) {
-          availableReleasesFromAllSources[releaseSource] = null;
-        }
         continue;
       }
 
@@ -60,7 +57,8 @@ class UpdateFinder {
   /// Если требуется для кастомных сторов поддержать возможность обновления с одного и того же источника, то
   /// можно воспользоваться [prioritySourceName].
   Future<Release?> findAvailableRelease({
-    required Map<Source, Release?> availableReleasesBySources,
+    required Map<Source, Release> availableReleasesBySources,
+    required List<Source> sources,
     String? prioritySourceName,
   }) async {
     final sourcesWithReleases = availableReleasesBySources.keys.toList();
@@ -78,7 +76,10 @@ class UpdateFinder {
     if (sourceCheckerName != null) {
       final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == sourceCheckerName);
       if (checkedSource != null) {
-        if (availableReleasesBySources[checkedSource] == null) throw const UpdateNotFoundException();
+        // если сурс существует в конфиге, но для него нет обновления
+        if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {
+          throw const UpdateNotFoundException();
+        }
 
         return availableReleasesBySources[checkedSource];
       }
@@ -88,17 +89,17 @@ class UpdateFinder {
     return null;
   }
 
-  Future<Release?> findCurrentRelease({required List<Release> releases}) async {
-    final releasesWithAppVersion = releases.where((release) => release.version == appVersion);
+  // Future<Release?> findCurrentRelease({required List<Release> releases}) async {
+  //   final releasesWithAppVersion = releases.where((release) => release.version == appVersion);
 
-    if (releasesWithAppVersion.isEmpty) return null;
-    if (releasesWithAppVersion.length == 1) return releasesWithAppVersion.firstOrNull;
+  //   if (releasesWithAppVersion.isEmpty) return null;
+  //   if (releasesWithAppVersion.length == 1) return releasesWithAppVersion.firstOrNull;
 
-    // если не получается понять, откуда релиз, ищем словно бы доступный
-    // здесь возможно так легко преобразовать список к мапе, ибо не получится встретить два релиза из одного сурса одинаковой версии
-    final releasesWithAppVersionBySource =
-        releasesWithAppVersion.map((release) => MapEntry(release.targetSource, release));
+  //   // если не получается понять, откуда релиз, ищем словно бы доступный
+  //   // здесь возможно так легко преобразовать список к мапе, ибо не получится встретить два релиза из одного сурса одинаковой версии
+  //   final releasesWithAppVersionBySource =
+  //       releasesWithAppVersion.map((release) => MapEntry(release.targetSource, release));
 
-    return findAvailableRelease(availableReleasesBySources: Map.fromEntries(releasesWithAppVersionBySource));
-  }
+  //   return findAvailableRelease(availableReleasesBySources: Map.fromEntries(releasesWithAppVersionBySource));
+  // }
 }

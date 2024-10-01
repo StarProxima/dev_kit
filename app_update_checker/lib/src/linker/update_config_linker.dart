@@ -79,25 +79,40 @@ class UpdateConfigLinker {
     return releases;
   }
 
-  // List<Source> _parseSources(List<GlobalSourceConfig> sourcesConfig) {
-  //   final sources = <Source>[];
-  //   for (final sourceConfig in sourcesConfig) {
-  //     final name = sourceConfig.name;
-  //     final url = sourceConfig.url;
-  //     final platforms = sourceConfig.platforms;
-  //     final settings = UpdateSettingsData.fromConfig(sourceConfig.settings);
+  List<Source> parseSources({
+    required List<GlobalSourceConfig> sourcesConfig,
+  }) {
+    // // в случае, если мы находим несколько сурсов с одинаковыми именами, то берём только сурс с самой последней версии
+    // final versionBySource = <Source, Version>{};
+    // for (final release in releasesData) {
+    //   final source = release.targetSource;
+    //   final releaseVersion = release.version;
+    //   if (versionBySource.containsKey(source)) {
+    //     final addedSourceVersion = versionBySource[source]!;
+    //     if (addedSourceVersion < releaseVersion) {
+    //       versionBySource[source] = releaseVersion;
+    //     }
+    //   } else {
+    //     versionBySource[source] = releaseVersion;
+    //   }
+    // }
 
-  //     sources.add(Source(
-  //       name: name,
-  //       url: url,
-  //       platforms: platforms,
-  //       settings: settings,
-  //       customData: sourceConfig.customData,
-  //     ));
-  //   }
+    final sources = <Source>[];
+    for (final sourceConfig in sourcesConfig) {
+      final name = sourceConfig.name;
+      final url = sourceConfig.url;
+      final platforms = sourceConfig.platforms;
 
-  //   return sources;
-  // }
+      sources.add(Source(
+        name: name,
+        url: url,
+        platforms: platforms,
+        customData: sourceConfig.customData,
+      ));
+    }
+
+    return sources;
+  }
 
   // List<ReleaseData> _parseReleases({
   //   required List<GlobalSourceConfig> sources,

@@ -61,6 +61,7 @@ class UpdateController extends UpdateContollerBase {
     List<Source>? globalSources,
     UpdatePlatform? platform,
     String? prioritySourceName,
+    // TODO убрать бы локаль по хорошему
     required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
@@ -74,6 +75,7 @@ class UpdateController extends UpdateContollerBase {
   Future<AppUpdate> findUpdate() async {
     await LocalDataService.init();
     final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
 
     final fetcher = _updateConfigFetcher;
     if (fetcher == null) throw const UpdateNotFoundException();
@@ -86,6 +88,8 @@ class UpdateController extends UpdateContollerBase {
       releasesConfig: configModel.releases,
       globalSourcesConfig: configModel.sources,
     );
+
+    final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
 
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final releasesDataWithStatus = _versionController!.setStatuses(releasesData);
@@ -100,32 +104,33 @@ class UpdateController extends UpdateContollerBase {
       final releaseConfig = await fetcher.fetch(source: source, locale: _locale, packageInfo: packageInfo);
       releases.add(releaseConfig);
     }
-
-    _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
-    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
-
-    final availableReleasesFromAllSources = availableReleasesBySources.values.whereType<Release>().toList();
-
-    final availableRelease = await _finder!.findAvailableRelease(
-      availableReleasesBySources: availableReleasesBySources,
-      prioritySourceName: _prioritySourceName,
-    );
-
-    final currentRelease = await _finder!.findCurrentRelease(releases: releases);
+    sources.addAll(globalSources);
 
     final updateConfig = UpdateConfig(
-      sources: availableReleasesBySources.keys.toList(),
+      sources: sources,
       releases: releases,
       customData: configModel.customData,
     );
+
+    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
+
+    final availableReleasesFromAllSources = availableReleasesBySources.values.toList();
+
+    final availableRelease = await _finder!.findAvailableRelease(
+      availableReleasesBySources: availableReleasesBySources,
+      sources: sources,
+      prioritySourceName: _prioritySourceName,
+    );
+
+    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
 
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
       appVersion: Version.parse(packageInfo.version),
       appLocale: _locale,
       config: updateConfig,
-      
-      currentRelease: ,// TODO  в вершн контроллере чекай апп вершн
+      currentReleaseStatus: currentReleaseStatus,
       availableRelease: availableRelease,
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );

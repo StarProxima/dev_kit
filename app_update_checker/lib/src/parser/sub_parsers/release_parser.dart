@@ -28,7 +28,7 @@ class ReleaseParser {
         versionValue,
         isDebug: isDebug,
       );
-      // TODO как это - релиз и без версии
+      // TODO Добавил эту проверку, ибо как это - релиз и без версии. Если ок, сотри туду
       if (version == null) throw const UpdateConfigException();
 
       // releaseNote
