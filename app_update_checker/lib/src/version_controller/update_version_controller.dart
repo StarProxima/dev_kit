@@ -1,5 +1,7 @@
 // ignore_for_file: prefer-returning-conditional-expressions
 
+import 'package:pub_semver/pub_semver.dart';
+
 import '../linker/models/release_data.dart';
 import '../parser/models/versions_settings_config.dart';
 import '../shared/update_status.dart';
@@ -10,22 +12,21 @@ class UpdateVersionController {
   const UpdateVersionController(this.versionSettings);
 
   List<ReleaseDataWithStatus> setStatuses(List<ReleaseData> releases) {
-    if (versionSettings == null) {
-      return releases.map((e) => (e, UpdateStatus.available)).toList();
-    }
+    return releases.map((release) => (release, setStatusByVersion(release.version))).toList();
+  }
 
+  UpdateStatus setStatusByVersion(Version appVersion) {
+    if (versionSettings == null) return UpdateStatus.available;
     final unsupportedVersions = versionSettings?.unsupportedVersions ?? [];
     final deprecatedVersions = versionSettings?.deprecatedVersions ?? [];
 
-    return releases.map((release) {
-      if (unsupportedVersions.any((constrant) => constrant.allows(release.version))) {
-        return (release, UpdateStatus.required);
-      }
-      if (deprecatedVersions.any((constrant) => constrant.allows(release.version))) {
-        return (release, UpdateStatus.recommended);
-      }
+    if (unsupportedVersions.any((constrant) => constrant.allows(appVersion))) {
+      return UpdateStatus.required;
+    }
+    if (deprecatedVersions.any((constrant) => constrant.allows(appVersion))) {
+      return UpdateStatus.recommended;
+    }
 
-      return (release, UpdateStatus.available);
-    }).toList();
+    return UpdateStatus.available;
   }
 }

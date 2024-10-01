@@ -11,7 +11,7 @@ class AppUpdate {
   final Version appVersion;
   final Locale appLocale;
   final UpdateConfig config;
-  final UpdateStatus? currentRelease;
+  final UpdateStatus? currentReleaseStatus;
   // Available release from priority source
   final Release? availableRelease;
   // Available releases from all available sources
@@ -22,7 +22,7 @@ class AppUpdate {
     required this.appVersion,
     required this.appLocale,
     required this.config,
-    required this.currentRelease,
+    required this.currentReleaseStatus,
     required this.availableRelease,
     required this.availableReleasesFromAllSources,
   });
