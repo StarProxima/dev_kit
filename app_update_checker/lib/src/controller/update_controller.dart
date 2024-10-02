@@ -6,22 +6,23 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_config_linker.dart';
-import '../local_data_service/local_data_service.dart';
 import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../localizer/update_localizer.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/update_platform.dart';
-
 import '../shared/update_status_wrapper.dart';
 import '../sources/fetchers/source_fetcher.dart';
 import '../sources/source.dart';
+import '../storage/update_storage.dart';
+import '../storage/update_storage_manager.dart';
 import '../version_controller/update_version_controller.dart';
 import 'exceptions.dart';
 import 'update_contoller_base.dart';
@@ -33,10 +34,14 @@ class UpdateController extends UpdateContollerBase {
   final _parser = const UpdateConfigParser();
   final UpdateSettingsConfig? _releaseSettings;
   final _linker = const UpdateConfigLinker();
+
   UpdateVersionController? _versionController;
   UpdateLocalizer? _localizer;
   SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
+
+  UpdateStorage? _updateStorage;
+  UpdateStorageManager? _updateStorageManager;
 
   final List<Source>? _globalSources;
   final UpdatePlatform _platform;
@@ -58,6 +63,7 @@ class UpdateController extends UpdateContollerBase {
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
     UpdateSettingsConfig? releaseSettings,
+    UpdateStorage? storage,
     List<Source>? globalSources,
     UpdatePlatform? platform,
     String? prioritySourceName,
@@ -66,6 +72,7 @@ class UpdateController extends UpdateContollerBase {
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
+        _updateStorage = storage,
         _globalSources = globalSources,
         _prioritySourceName = prioritySourceName,
         _locale = locale,
@@ -73,7 +80,6 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate> findUpdate() async {
-    await LocalDataService.init();
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
 
@@ -135,11 +141,14 @@ class UpdateController extends UpdateContollerBase {
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );
 
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+
     if (availableRelease != null) {
-      if (LocalDataService.isSkipedRelease(availableRelease.version.toString())) {
+      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
         throw UpdateSkippedException(update: appUpdate);
       }
-      if (LocalDataService.isPostponedRelease(availableRelease.version.toString())) {
+      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
         throw UpdatePostponedException(update: appUpdate);
       }
     }
@@ -177,7 +186,8 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<void> launchReleaseSource(Release release) async {
-    LocalDataService.saveLastSource(release.targetSource.name);
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    await _updateStorage?.saveLastSource(release.targetSource.name);
 
     final url = release.targetSource.url;
     await launchUrl(url);
@@ -186,16 +196,22 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<void> postponeRelease({required Release release, required Duration postponeDuration}) async {
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+
     // передаём postponeDuration так как в этой функции не получится определить статус релиза и карточки
-    LocalDataService.addPostponedRelease(
-      releaseVersion: release.version.toString(),
+    // TODO: Почему? Статус можно определить можно из Release, а UpdateAlertType передавать в метод из ui
+    await _updateStorage?.addPostponedRelease(
+      releaseVersion: release.version,
       postponeDuration: postponeDuration,
     );
   }
 
   @override
   Future<void> skipRelease(Release release) async {
-    LocalDataService.addSkippedRelease(release.version.toString());
+    // TODO: Подумать вообще над инициализацией полей в контроллере, мб это делать всё в одном месте
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+
+    await _updateStorage?.addSkippedRelease(release.version);
   }
 
   @override
