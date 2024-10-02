@@ -3,7 +3,7 @@ description: App updates with the possibility of deprecation, required updates, 
 version: 0.0.2
 homepage: https://github.com/StarProxima/dev_kit/tree/develop/app_update
 screenshots:
- - description: 'Thumbnail'
+ - description: 'App Update Package Thumbnail'
    path: assets/package_thumbnail.png
 
 environment:
