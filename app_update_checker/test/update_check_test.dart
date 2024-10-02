@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:update_check/src/controller/update_controller.dart';
-import 'package:update_check/src/shared/release_status.dart';
+import 'package:update_check/src/shared/update_status.dart';
 import 'package:update_check/src/widgets/update_alert.dart';
 import 'package:update_check/src/widgets/update_alert_handler.dart';
 
 void main() async {
-  final controller = UpdateController();
+  final controller = UpdateController(locale: Locale('en'));
 
   await controller.fetch();
 
@@ -31,13 +31,13 @@ void main() async {
         final release = update.availableRelease;
 
         // Skip
-        controller.skipRelease(release);
+        controller.skipRelease(release!);
 
         // Later
-        controller.postponeRelease(release);
+        // controller.postponeRelease(release,);
 
         // Update
-        controller.launchReleaseStore(release);
+        controller.launchReleaseSource(release);
       },
       child: const SizedBox(),
     ),
@@ -55,15 +55,15 @@ void main() async {
 
   UpdateAlert(
     onUpdateAvailable: (context, update, controller) {
-      switch (update.availableRelease.status) {
-        case ReleaseStatus.required:
+      switch (update.availableRelease!.status) {
+        case UpdateStatus.required:
           UpdateAlertHandler.screen(context, update, controller);
 
-        case ReleaseStatus.recommended:
+        case UpdateStatus.recommended:
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
-        case ReleaseStatus.active:
-          if (DateTime.now().difference(update.availableRelease.dateUtc!) > const Duration(days: 7)) {
+        case UpdateStatus.available:
+          if (DateTime.now().difference(update.availableRelease!.dateUtc!) > const Duration(days: 7)) {
             // Show custom dialog
             return;
           }

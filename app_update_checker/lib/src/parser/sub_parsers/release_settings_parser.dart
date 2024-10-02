@@ -20,8 +20,6 @@ class ReleaseSettingsParser {
 
     if (value == null) return null;
 
-    // title
-
     // canSkipRelease
     final canSkipReleaseValue = value.remove('can_skip_release');
     final canSkipRelease = _boolParser.parse(
@@ -57,7 +55,7 @@ class ReleaseSettingsParser {
       isDebug: isDebug,
     );
 
-    // progressiveRolloutHours
+    // translations
     final translations = _settingsTranslationsParser.parse(
       value,
       isDebug: isDebug,
