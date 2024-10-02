@@ -4,9 +4,9 @@
 
 These include error handling, validation, asynchronous data management, and delayed list animation.
 
-# Update Check
+## App Update
 
-![Package Thumbnail](https://github.com/user-attachments/assets/c6407043-0941-4ed3-aae4-a4323702eb29)
+![package_thumbnail](https://github.com/user-attachments/assets/e64a441f-6650-4a23-9204-3c61a7a8f2a7)
 
 ## Api Wrap
 
