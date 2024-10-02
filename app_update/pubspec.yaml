@@ -1,0 +1,33 @@
+name: app_update
+description: App updates with the possibility of deprecation, required updates, various app stores and custom UI
+version: 0.0.2
+homepage: https://github.com/StarProxima/dev_kit/tree/develop/app_update
+screenshots:
+ - description: 'App Update Package Thumbnail'
+   path: assets/package_thumbnail.png
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+    
+  yaml: ^3.1.2
+  package_info_plus: '>=4.2.0 <9.0.0'
+  pub_semver: ^2.1.4
+  html: ^0.15.4
+  shared_preferences: ^2.3.2
+  url_launcher: ^6.1.14
+  store_checker: ^1.6.0
+  collection: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+    
+  flutter_lints: ^3.0.0
+
+  project_kit:
+    path: ../unpublished/project_kit
+
