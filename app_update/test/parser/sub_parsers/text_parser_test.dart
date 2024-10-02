@@ -1,9 +1,9 @@
 import 'dart:ui';
 
+import 'package:app_update/src/parser/base_parsers/text_translations_parser.dart';
+import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/shared/text_translations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:update_check/src/parser/base_parsers/text_translations_parser.dart';
-import 'package:update_check/src/parser/models/update_config_exception.dart';
-import 'package:update_check/src/shared/text_translations.dart';
 
 void main() {
   group('TextParser', () {

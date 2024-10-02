@@ -3,8 +3,8 @@
 ![Package Thumbnail](https://github.com/user-attachments/assets/c6407043-0941-4ed3-aae4-a4323702eb29)
 
 <p align="center">
-<a href="https://pub.dev/packages/app_update_checker"><img alt="Pub Version" src="https://img.shields.io/pub/v/app_update_checker"></a>
-<a href="https://pub.dev/packages/app_update_checker"><img alt="Pub Points" src="https://img.shields.io/pub/points/app_update_checker"></a>
+<a href="https://pub.dev/packages/app_update"><img alt="Pub Version" src="https://img.shields.io/pub/v/app_update"></a>
+<a href="https://pub.dev/packages/app_update"><img alt="Pub Points" src="https://img.shields.io/pub/points/app_update"></a>
 <a href="https://github.com/StarProxima/dev_kit"><img src="https://img.shields.io/github/stars/StarProxima/dev_kit?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github"></a>
 </p>
 
@@ -50,7 +50,7 @@ We want to support both methods, but for now we're focusing on the second method
 Here is the full config api structure under consideration:
 ```yaml
 # Description of the api structure
-# https://pub.dev/packages/update_check
+# https://pub.dev/packages/app_update
 
 # Optianal, default settings for releases
 release_settings:

@@ -1,7 +1,7 @@
 ## 0.0.2
 
-* Update README
+* Add initial sources
 
 ## 0.0.1
 
-* Update config api design
+* Add stub for package

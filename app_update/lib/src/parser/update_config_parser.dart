@@ -8,7 +8,7 @@ import '../shared/update_status_wrapper.dart';
 import 'base_parsers/bool_parser.dart';
 import 'base_parsers/date_time_parser.dart';
 import 'base_parsers/duration_parser.dart';
-import 'base_parsers/text_parser.dart';
+import 'base_parsers/text_translations_parser.dart';
 import 'base_parsers/version_parser.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';

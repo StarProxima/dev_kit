@@ -1,13 +1,13 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
 import 'package:flutter/material.dart';
-import 'package:update_check/src/controller/update_controller.dart';
-import 'package:update_check/src/shared/update_status.dart';
-import 'package:update_check/src/widgets/update_alert.dart';
-import 'package:update_check/src/widgets/update_alert_handler.dart';
+import 'package:app_update/src/controller/update_controller.dart';
+import 'package:app_update/src/shared/update_status.dart';
+import 'package:app_update/src/widgets/update_alert.dart';
+import 'package:app_update/src/widgets/update_alert_handler.dart';
 
 void main() async {
-  final controller = UpdateController(locale: Locale('en'));
+  final controller = UpdateController(locale: const Locale('en'));
 
   await controller.fetch();
 

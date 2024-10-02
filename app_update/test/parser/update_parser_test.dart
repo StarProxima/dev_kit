@@ -1,8 +1,8 @@
 // ignore_for_file: avoid-long-functions, prefer-test-matchers, prefer-moving-to-variable, avoid-misused-test-matchers
 
+import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:update_check/src/parser/models/update_config_exception.dart';
-import 'package:update_check/src/parser/update_config_parser.dart';
 
 void main() {
   group('UpdateConfigParser', () {

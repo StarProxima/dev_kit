@@ -1,8 +1,8 @@
 // ignore_for_file: prefer-test-matchers, avoid-long-functions
 
+import 'package:app_update/src/shared/version_x.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:update_check/src/shared/version_x.dart';
 
 void main() {
   group('Version.parse', () {

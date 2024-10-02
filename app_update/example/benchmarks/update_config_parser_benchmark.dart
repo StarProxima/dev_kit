@@ -5,7 +5,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
-import 'package:update_check/src/parser/update_config_parser.dart';
+import 'package:app_update/src/parser/update_config_parser.dart';
 
 // Генерация случайных релизов, некоторые будут корректными, некоторые нет
 List<Map<String, dynamic>> generateReleases(
