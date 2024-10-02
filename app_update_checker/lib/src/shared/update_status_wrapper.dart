@@ -34,6 +34,8 @@ class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
   final Map<String, Map<String, ReleaseSettingsData>> _value;
 
   // TODO зачем вообще _value сделан приватный?
+  // Так этот класс это буквально обёртка над мапой, чтобы с ней безопасно работать,
+  // к ней доступ никому не должен быть нужен
   Map<String, Map<String, ReleaseSettingsData>> get value => _value;
 
   const UpdateSettingsData(this._value);
