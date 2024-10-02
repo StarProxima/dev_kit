@@ -195,7 +195,10 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<void> postponeRelease({required Release release, required Duration postponeDuration}) async {
+  Future<void> postponeRelease({
+    required Release release,
+    required Duration postponeDuration,
+  }) async {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
 
     // передаём postponeDuration так как в этой функции не получится определить статус релиза и карточки
@@ -220,7 +223,6 @@ class UpdateController extends UpdateContollerBase {
     await _availableUpdateStream.close();
   }
 }
-
 
 /* TODO
 -Серёга на LocalDataService
