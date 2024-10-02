@@ -1,6 +1,6 @@
-# Update Check
+# App Update
 
-![Package Thumbnail](https://github.com/user-attachments/assets/c6407043-0941-4ed3-aae4-a4323702eb29)
+![package_thumbnail](https://github.com/user-attachments/assets/e64a441f-6650-4a23-9204-3c61a7a8f2a7)
 
 <p align="center">
 <a href="https://pub.dev/packages/app_update"><img alt="Pub Version" src="https://img.shields.io/pub/v/app_update"></a>
