@@ -43,7 +43,7 @@ void main() {
       final result = updateConfigParser.parseConfig(configMap, isDebug: isDebug);
 
       expect(result, isNotNull);
-      expect(result.releaseSettings, isNotNull);
+      expect(result.settings, isNotNull);
       expect(result.sources, hasLength(2));
       expect(result.releases, hasLength(2));
       expect(result.customData?['customField'], 'customValue');
@@ -124,7 +124,7 @@ void main() {
 
       final result = updateConfigParser.parseConfig(configMap, isDebug: isDebug);
 
-      expect(result.releaseSettings, isNull);
+      expect(result.settings, isNull);
       expect(result.sources, isNull);
       expect(result.releases, hasLength(1));
       expect(result.releases.firstOrNull?.version.toString(), '1.0.0');

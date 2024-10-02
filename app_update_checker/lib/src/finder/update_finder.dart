@@ -1,11 +1,13 @@
-// ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
+// ignore_for_file: avoid-unnecessary-reassignment, prefer-correct-identifier-length
 
+import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../controller/exceptions.dart';
 import '../localizer/models/release.dart';
-import '../localizer/models/update_config.dart';
-import '../shared/release_status.dart';
 import '../shared/update_platform.dart';
+import '../shared/update_status.dart';
+import '../sources/source.dart';
 
 class UpdateFinder {
   final Version appVersion;
@@ -16,95 +18,88 @@ class UpdateFinder {
     required this.platform,
   });
 
-  Release? findAvailableRelease(UpdateConfig config) {
-    final releases = config.releases;
+  Map<Source, Release> findAvailableReleasesBySource({
+    required List<Release> releases,
+  }) {
+    // в Source определено сравнение по Url
+    final availableReleasesFromAllSources = <Source, Release>{};
 
-    // Sorted in descending order
-    releases.sort((a, b) => -a.version.compareTo(b.version));
-
-    Release? currentRelease;
-    Release? latestRelease;
-    ReleaseStatus latestReleaseStatus = ReleaseStatus.active;
-
-    releasesLoop:
     for (final release in releases) {
-      if (release.version < appVersion) break;
+      final releaseSource = release.targetSource;
 
-      // If there is no store with the current platform - skip release.
-      if (!release.stores.any((store) => store.platforms.contains(platform))) continue;
-
-      if (release.version == appVersion) {
-        currentRelease = release;
+      if (!releaseSource.platforms.contains(platform)) {
         continue;
       }
 
-      final releaseStatus = release.status;
-      switch (releaseStatus) {
-        case ReleaseStatus.broken || ReleaseStatus.deprecated:
-          // If the latest release is broken or deprecated, there will be no update
-          if (latestRelease == null) break releasesLoop;
-          continue releasesLoop;
+      if (release.status != UpdateStatus.available) {
+        continue;
+      }
 
-        case ReleaseStatus.inactive:
-          continue releasesLoop;
-
-        case ReleaseStatus.required || ReleaseStatus.recommended || ReleaseStatus.active:
-          latestRelease ??= release;
-
-          // Latest release status 1: handle releaseStatus
-
-          // If there is at least one release newer than the current release,
-          // which is required or recommended,
-          // then the latest release is also required or recommended, respectively.
-          switch (releaseStatus) {
-            case ReleaseStatus.required:
-              latestReleaseStatus = ReleaseStatus.required;
-
-            case ReleaseStatus.recommended when !latestReleaseStatus.isRequired:
-              latestReleaseStatus = ReleaseStatus.recommended;
-
-            default:
-          }
+      final availableRelease = availableReleasesFromAllSources[releaseSource];
+      if (availableRelease == null) {
+        availableReleasesFromAllSources[releaseSource] = release;
+      } else {
+        if (availableRelease.version < release.version) {
+          availableReleasesFromAllSources[releaseSource] = release;
+        }
       }
     }
 
-    // Didn't find a matching release
-    if (latestRelease == null) return null;
-
-    // Latest release status 2: handle currentReleaseStatus
-
-    final currentReleaseStatus = currentRelease?.status;
-
-    // If the current release is broken or deprecated,
-    // the latest release will be required or recommended, respectively.
-    switch (currentReleaseStatus) {
-      case ReleaseStatus.broken:
-        latestReleaseStatus = ReleaseStatus.required;
-
-      case ReleaseStatus.deprecated when !latestReleaseStatus.isRequired:
-        latestReleaseStatus = ReleaseStatus.recommended;
-
-      default:
-    }
-
-    // Latest release status 3: handle requiredMinimumVersion and deprecatedBeforeVersion
-
-    final requiredMinimumVersion = config.releaseSettings.requiredMinimumVersion;
-    if (requiredMinimumVersion != null && requiredMinimumVersion > appVersion) {
-      latestReleaseStatus = ReleaseStatus.required;
-    }
-
-    final deprecatedBeforeVersion = config.releaseSettings.deprecatedBeforeVersion;
-    if (deprecatedBeforeVersion != null && deprecatedBeforeVersion > appVersion && !latestReleaseStatus.isRequired) {
-      latestReleaseStatus = ReleaseStatus.recommended;
-    }
-
-    // Return
-
-    latestRelease = latestRelease.copyWith(
-      status: latestReleaseStatus,
-    );
-
-    return latestRelease;
+    return availableReleasesFromAllSources;
   }
+
+  /// Если [Sources.checkAppSource] определил, откуда пришло обновление и в [availableReleasesBySources] для этого
+  /// источника есть доступный релиз, то пользователь увидет обновление.
+  /// Если [Sources.checkAppSource] определил, откуда пришло обновление и в [availableReleasesBySources] для этого
+  /// источника не доступного релиза, то функция завершится ошибкой [UpdateNotFoundException] и обновление не будет показано.
+  /// Если [Sources.checkAppSource] не определил, откуда пришло обновление, метод вернёт null, то пользователь увидет
+  /// экран со списком всех источников с доступными обновлениями.
+  /// Если требуется для кастомных сторов поддержать возможность обновления с одного и того же источника, то
+  /// можно воспользоваться [prioritySourceName].
+  Future<Release?> findAvailableRelease({
+    required Map<Source, Release> availableReleasesBySources,
+    required List<Source> sources,
+    String? prioritySourceName,
+  }) async {
+    final sourcesWithReleases = availableReleasesBySources.keys.toList();
+
+    // используем приоритетный стор
+    if (prioritySourceName != null) {
+      final prioritySource = sourcesWithReleases.firstWhereOrNull((source) => source.name == prioritySourceName);
+      if (prioritySource != null) {
+        return availableReleasesBySources[prioritySource];
+      }
+    }
+
+    // либо определяем сами откуда установлено приложение
+    final sourceCheckerName = await Sources.checkAppSource();
+    if (sourceCheckerName != null) {
+      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == sourceCheckerName);
+      if (checkedSource != null) {
+        // если сурс существует в конфиге, но для него нет обновления
+        if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {
+          throw const UpdateNotFoundException();
+        }
+
+        return availableReleasesBySources[checkedSource];
+      }
+    }
+
+    // либо мы ни в чём не уверены и потому точно возращаем null
+    return null;
+  }
+
+  // Future<Release?> findCurrentRelease({required List<Release> releases}) async {
+  //   final releasesWithAppVersion = releases.where((release) => release.version == appVersion);
+
+  //   if (releasesWithAppVersion.isEmpty) return null;
+  //   if (releasesWithAppVersion.length == 1) return releasesWithAppVersion.firstOrNull;
+
+  //   // если не получается понять, откуда релиз, ищем словно бы доступный
+  //   // здесь возможно так легко преобразовать список к мапе, ибо не получится встретить два релиза из одного сурса одинаковой версии
+  //   final releasesWithAppVersionBySource =
+  //       releasesWithAppVersion.map((release) => MapEntry(release.targetSource, release));
+
+  //   return findAvailableRelease(availableReleasesBySources: Map.fromEntries(releasesWithAppVersionBySource));
+  // }
 }

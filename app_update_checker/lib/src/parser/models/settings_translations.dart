@@ -1,6 +1,6 @@
 import '../../shared/text_translations.dart';
 
-class SettingsTranslations {
+class UpdateTranslations {
   final TextTranslations? title;
   final TextTranslations? description;
   final TextTranslations? releaseNoteTitle;
@@ -8,7 +8,7 @@ class SettingsTranslations {
   final TextTranslations? laterButtonText;
   final TextTranslations? updateButtonText;
 
-  const SettingsTranslations({
+  const UpdateTranslations({
     required this.title,
     required this.description,
     required this.releaseNoteTitle,

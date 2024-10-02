@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, use_late_for_private_fields_and_variables, avoid-non-null-assertion
+// ignore_for_file: unused_field, use_late_for_private_fields_and_variables, avoid-non-null-assertion, prefer-unwrapping-future-or, prefer-moving-to-variable
 
 import 'dart:async';
 import 'dart:ui';
@@ -6,6 +6,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
@@ -14,33 +16,42 @@ import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../localizer/update_localizer.dart';
-import '../parser/models/release_config.dart';
-import '../parser/models/release_settings_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/update_platform.dart';
-
-import '../stores/fetchers/store_fetcher.dart';
-import '../stores/store.dart';
+import '../shared/update_status_wrapper.dart';
+import '../sources/fetchers/source_fetcher.dart';
+import '../sources/source.dart';
+import '../storage/update_storage.dart';
+import '../storage/update_storage_manager.dart';
+import '../version_controller/update_version_controller.dart';
+import 'exceptions.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateContollerBase {
   final _asyncPackageInfo = PackageInfo.fromPlatform();
-  Completer<UpdateConfig>? _configDataCompleter;
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
-  final ReleaseSettingsConfig? _releaseSettings;
+  final UpdateSettingsConfig? _releaseSettings;
   final _linker = const UpdateConfigLinker();
+
+  UpdateVersionController? _versionController;
   UpdateLocalizer? _localizer;
+  SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
-  final StoreFetcherCoordinator? _storeFetcherCoordinator;
-  final List<Store>? _globalSources;
+  UpdateStorage? _updateStorage;
+  UpdateStorageManager? _updateStorageManager;
+
+  final List<Source>? _globalSources;
   final UpdatePlatform _platform;
+  final String? _prioritySourceName;
   final Locale _locale;
 
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
+  AppUpdate? _lastAppUpdate;
+  UpdateConfig? _lastUpdateConfig;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
@@ -50,107 +61,175 @@ class UpdateController extends UpdateContollerBase {
 
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
-    StoreFetcherCoordinator? storeFetcherCoordinator,
-    ReleaseSettingsConfig? releaseSettings,
-    List<Store>? globalSources,
+    SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
+    UpdateSettingsConfig? releaseSettings,
+    UpdateStorage? storage,
+    List<Source>? globalSources,
     UpdatePlatform? platform,
+    String? prioritySourceName,
+    // TODO убрать бы локаль по хорошему
     required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
-        _storeFetcherCoordinator = storeFetcherCoordinator,
+        _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
+        _updateStorage = storage,
         _globalSources = globalSources,
+        _prioritySourceName = prioritySourceName,
         _locale = locale,
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<void> fetch() async {
-    _configDataCompleter = Completer();
+  Future<AppUpdate> findUpdate() async {
     final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
 
     final fetcher = _updateConfigFetcher;
-    if (fetcher == null) return;
+    if (fetcher == null) throw const UpdateNotFoundException();
     final rawConfig = await fetcher.fetch();
 
-    // ignore: unused_local_variable
-    final config = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
+    final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
 
-    final releaseConfigsFromStores = <ReleaseConfig>[];
-    final sources = _globalSources ?? config.stores ?? [];
-    if (_storeFetcherCoordinator != null) {
-      for (final store in sources) {
-        // TODO поменяй
-        final fetcher = await _storeFetcherCoordinator!.fetcherByStore(store);
-        final releaseConfig = await fetcher.fetch(store: store, locale: _locale, packageInfo: packageInfo);
-        releaseConfigsFromStores.add(releaseConfig);
+    final releasesData = _linker.linkConfigs(
+      globalSettingsConfig: _releaseSettings ?? configModel.settings,
+      releasesConfig: configModel.releases,
+      globalSourcesConfig: configModel.sources,
+    );
+
+    final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
+
+    _versionController ??= UpdateVersionController(configModel.versionSettings);
+    final releasesDataWithStatus = _versionController!.setStatuses(releasesData);
+
+    _localizer ??= UpdateLocalizer(appLocale: _locale, packageInfo: packageInfo);
+    final releases = _localizer!.localizeReleasesData(releasesDataWithStatus);
+
+    _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
+    final globalSources = _globalSources ?? [];
+    for (final source in globalSources) {
+      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+      final releaseConfig = await fetcher.fetch(source: source, locale: _locale, packageInfo: packageInfo);
+      releases.add(releaseConfig);
+    }
+    sources.addAll(globalSources);
+
+    final updateConfig = UpdateConfig(
+      sources: sources,
+      releases: releases,
+      customData: configModel.customData,
+    );
+
+    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
+
+    final availableReleasesFromAllSources = availableReleasesBySources.values.toList();
+
+    final availableRelease = await _finder!.findAvailableRelease(
+      availableReleasesBySources: availableReleasesBySources,
+      sources: sources,
+      prioritySourceName: _prioritySourceName,
+    );
+
+    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
+
+    final appUpdate = AppUpdate(
+      appName: packageInfo.appName,
+      appVersion: Version.parse(packageInfo.version),
+      appLocale: _locale,
+      config: updateConfig,
+      currentReleaseStatus: currentReleaseStatus,
+      availableRelease: availableRelease,
+      availableReleasesFromAllSources: availableReleasesFromAllSources,
+    );
+
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+
+    if (availableRelease != null) {
+      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+        throw UpdateSkippedException(update: appUpdate);
+      }
+      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+        throw UpdatePostponedException(update: appUpdate);
       }
     }
 
-    final configData = _linker.linkConfigs(
-      releaseSettingsConfig: _releaseSettings ?? config.releaseSettings,
-      releasesConfig: config.releases,
-      storesConfig: config.sources,
-      customData: config.customData,
-    );
-
-    _localizer ??= UpdateLocalizer(appLocale: _locale, packageInfo: packageInfo);
-    final updateConfig = _localizer!.localizeConfig(configData);
-
-    _configDataCompleter?.complete(updateConfig);
-    final updateData = await findAvailableUpdate();
-
+    _lastUpdateConfig = updateConfig;
     _updateConfigStream.add(updateConfig);
-    if (updateData != null) _availableUpdateStream.add(updateData);
+    _lastAppUpdate = appUpdate;
+    _availableUpdateStream.add(appUpdate);
+
+    return appUpdate;
+  }
+
+  // TODO переписать
+  @override
+  Future<void> fetch() async {
+    try {
+      await findUpdate();
+      // ignore: empty_catches
+    } on UpdateException {}
   }
 
   @override
-  Future<AppUpdate> findUpdate() {
-    throw UnimplementedError();
+  Future<AppUpdate?> getAvailableAppUpdate() async {
+    if (_lastAppUpdate == null) await fetch();
+
+    return _lastAppUpdate;
   }
 
   @override
-  Future<AppUpdate?> findAvailableUpdate() async {
-    if (_configDataCompleter == null) return null;
-    final updateConfig = await _configDataCompleter!.future;
-    final packageInfo = await _asyncPackageInfo;
+  Future<UpdateConfig?> getAvailableUpdateConfig() async {
+    if (_lastUpdateConfig == null) await fetch();
 
-    _finder ??= UpdateFinder(appVersion: Version.parse(packageInfo.version), platform: _platform);
-    final latestRelease = _finder!.findAvailableRelease(updateConfig);
-    if (latestRelease == null) return null;
+    return _lastUpdateConfig;
+  }
 
-    final appName = packageInfo.appName;
-    final appVersion = Version.parse(packageInfo.version);
-    final updateData = AppUpdate(
-      appName: appName,
-      appVersion: appVersion,
-      appLocale: _locale,
-      config: updateConfig,
-      availableRelease: latestRelease,
+  @override
+  Future<void> launchReleaseSource(Release release) async {
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    await _updateStorage?.saveLastSource(release.targetSource.name);
+
+    final url = release.targetSource.url;
+    await launchUrl(url);
+    // TODO всё?
+  }
+
+  @override
+  Future<void> postponeRelease({required Release release, required Duration postponeDuration}) async {
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+
+    // передаём postponeDuration так как в этой функции не получится определить статус релиза и карточки
+    // TODO: Почему? Статус можно определить можно из Release, а UpdateAlertType передавать в метод из ui
+    await _updateStorage?.addPostponedRelease(
+      releaseVersion: release.version,
+      postponeDuration: postponeDuration,
     );
-
-    return updateData;
   }
 
   @override
-  Future<void> launchReleaseStore(Release release) {
-    // TODO: implement launchStore
-    throw UnimplementedError();
+  Future<void> skipRelease(Release release) async {
+    // TODO: Подумать вообще над инициализацией полей в контроллере, мб это делать всё в одном месте
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+
+    await _updateStorage?.addSkippedRelease(release.version);
   }
 
   @override
-  Future<void> postponeRelease(Release release) {
-    // TODO: implement postponeRelease
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> skipRelease(Release release) {
-    // TODO: implement skipRelease
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<UpdateConfig> getCurrentUpdateConfig() {
-    // TODO: implement getUpdateConfig
-    throw UnimplementedError();
+  Future<void> dispose() async {
+    await _updateConfigStream.close();
+    await _availableUpdateStream.close();
   }
 }
+
+
+/* TODO
+-Серёга на LocalDataService
+-Фетчеры не готовы
+-Тудушки по коду
+-Релиз ноты
+-Сделать все сурсы через энамы
+-Все хэндлеры
+-Тесты пофиксить
+
+
+*/

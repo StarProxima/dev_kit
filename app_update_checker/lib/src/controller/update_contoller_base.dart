@@ -13,12 +13,12 @@ abstract class UpdateContollerBase {
   Stream<UpdateConfig> get updateConfigStream;
 
   /// Check new releases from the update config and stores.
-  Future<void> fetch();
+  Future<void> fetch(); // TODO сделай фетч фетчем - с сохранением инфы с инета
 
   /// Get current update config
   ///
   /// Does not make a new request if the data already exists.
-  Future<UpdateConfig> getCurrentUpdateConfig();
+  Future<UpdateConfig?> getAvailableUpdateConfig();
 
   /// Finds an update
   ///
@@ -28,14 +28,17 @@ abstract class UpdateContollerBase {
   /// Finds an update
   ///
   /// If update not available return null.
-  Future<AppUpdate?> findAvailableUpdate();
+  Future<AppUpdate?> getAvailableAppUpdate();
 
   /// Skip a release, a release with this version will no longer be displayed.
   Future<void> skipRelease(Release release);
 
   /// Postpone the release, it will display later after a set amount of time.
-  Future<void> postponeRelease(Release release);
+  Future<void> postponeRelease({required Release release, required Duration postponeDuration});
 
   /// Launches a link to the correct store to update the app.
-  Future<void> launchReleaseStore(Release release);
+  Future<void> launchReleaseSource(Release release);
+
+  /// Dispose controller.
+  Future<void> dispose();
 }

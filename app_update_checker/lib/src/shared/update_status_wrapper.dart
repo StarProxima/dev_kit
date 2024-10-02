@@ -1,130 +1,99 @@
-import '../linker/models/release_settings.dart';
+// ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
+import '../linker/models/release_settings_data.dart';
+import '../localizer/models/release_settings.dart';
 import '../parser/models/release_settings_config.dart';
 import 'update_alert_type.dart';
 import 'update_status.dart';
 
-class UpdateStatusWrapper<T> {
-  final T required;
-  final T recommended;
-  final T available;
-
-  bool get isOnlyAvailable => available != null && required == null && recommended == null;
-
-  const UpdateStatusWrapper({
-    required this.required,
-    required this.recommended,
-    required this.available,
-  });
-
-  const UpdateStatusWrapper.all(
-    T all,
-  )   : required = all,
-        recommended = all,
-        available = all;
-
-  T byStatus(UpdateStatus status) => switch (status) {
-        UpdateStatus.required => required,
-        UpdateStatus.recommended => recommended,
-        UpdateStatus.available => available,
-      };
-}
-
+// TODO тут миксин не надо бы применить?
 class UpdateSettingsConfig {
-  final Map<String, Map<String, ReleaseSettingsConfig?>> value;
+  final Map<String, Map<String, ReleaseSettingsConfig>> _value;
 
-  const UpdateSettingsConfig(this.value);
+  const UpdateSettingsConfig(this._value);
 
-  factory UpdateSettingsConfig.parse(
-    Map<String, dynamic> map, {
-    required ReleaseSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
-  }) {
-    final value = <String, Map<String, ReleaseSettingsConfig>>{};
-
-    final typeNames = [...UpdateAlertType.values.map((e) => e.name), 'base'];
-    final isByType = map.keys.every(typeNames.contains);
-
-    if (!isByType) {
-      final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
-
-      // Empty UpdateSettings
-      if (settingsByStatus.isEmpty) return UpdateSettingsConfig(value);
-
-      return UpdateSettingsConfig({'base': settingsByStatus});
-    }
-
-    for (final type in typeNames) {
-      final value = map[type];
-      if (value is! Map<String, dynamic>) continue;
-
-      final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
-      if (settingsByStatus.isEmpty) continue;
-
-      value[type] = settingsByStatus;
-    }
-
-    return UpdateSettingsConfig(value);
-  }
-
-  ReleaseSettingsConfig? by({
+  ReleaseSettingsConfig? getBy({
     required UpdateAlertType type,
     required UpdateStatus status,
   }) =>
-      byRaw(type: type.name, status: status.name);
+      getByRaw(type: type.name, status: status.name);
 
-  ReleaseSettingsConfig? byRaw({
+  ReleaseSettingsConfig? getByRaw({
     required String type,
     required String status,
   }) {
-    final byType = value[type] ?? value['base'];
+    final byType = _value[type] ?? _value['base'];
     final byStatus = byType?[status] ?? byType?['base'];
 
     return byStatus;
   }
+}
 
-  static Map<String, ReleaseSettingsConfig> _parseByStatus(
-    Map<String, dynamic> map, {
-    required ReleaseSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
-  }) {
-    final settingsByStatus = <String, ReleaseSettingsConfig>{};
+// TODO разнести бы их по файлам отдельным
+class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
+  @override
+  final Map<String, Map<String, ReleaseSettingsData>> _value;
 
-    final statusNames = [...UpdateStatus.values.map((e) => e.name), 'base'];
+  // TODO зачем вообще _value сделан приватный?
+  // Так этот класс это буквально обёртка над мапой, чтобы с ней безопасно работать,
+  // к ней доступ никому не должен быть нужен
+  Map<String, Map<String, ReleaseSettingsData>> get value => _value;
 
-    final isByStatus = map.keys.any(statusNames.contains);
+  const UpdateSettingsData(this._value);
 
-    if (!isByStatus) {
-      final settings = parseSettings(map);
-      if (settings == null) return {};
+  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig config) {
+    return UpdateSettingsData(
+      config._value.map((key, value) =>
+          MapEntry(key, value.map((key, value) => MapEntry(key, ReleaseSettingsData.fromConfig(value))))),
+    );
+  }
 
-      return {'base': settings};
+  UpdateSettingsData inherit(UpdateSettingsData child) {
+    final inheritedValue = {...child.value};
+
+    for (final type in value.entries) {
+      if (inheritedValue.containsKey(type.key)) {
+        for (final status in type.value.entries) {
+          if (inheritedValue[type.key]!.containsKey(status.key)) {
+            final childSettings = inheritedValue[type.key]![status.key]!;
+            inheritedValue[type.key]?[status.key] = status.value.inherit(childSettings);
+          } else {
+            inheritedValue[type.key]?[status.key] = status.value;
+          }
+        }
+      } else {
+        inheritedValue[type.key] = type.value;
+      }
     }
 
-    for (final status in statusNames) {
-      final value = map[status];
-      final settings = parseSettings(value);
-      if (settings == null) continue;
-      settingsByStatus[status] = settings;
-    }
-
-    return settingsByStatus;
+    return UpdateSettingsData(inheritedValue);
   }
 }
 
-class UpdateSettings {
-  final Map<String, Map<String, ReleaseSettings?>> value;
+class UpdateSettings with GetByMixin<ReleaseSettings> {
+  @override
+  final Map<String, Map<String, ReleaseSettings>> _value;
 
-  const UpdateSettings(this.value);
+  const UpdateSettings(this._value);
 
-  ReleaseSettings by({
+  factory UpdateSettings.empty() => UpdateSettings({
+        'base': {'base': ReleaseSettings.fromData()},
+      });
+}
+
+mixin GetByMixin<T> {
+  abstract final Map<String, Map<String, T>> _value;
+
+  T getBy({
     required UpdateAlertType type,
     required UpdateStatus status,
   }) =>
-      byRaw(type: type.name, status: status.name);
+      getByRaw(type: type.name, status: status.name);
 
-  ReleaseSettings byRaw({
+  T getByRaw({
     required String type,
     required String status,
   }) {
-    final byType = value[type] ?? value['base'];
+    final byType = _value[type] ?? _value['base'];
     if (byType == null) throw Exception();
 
     final byStatus = byType[status] ?? byType['base'];

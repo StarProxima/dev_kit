@@ -34,7 +34,6 @@ class ReleaseSourceParser {
 
     // name
     final name = map.remove('name');
-
     if (name is! String) {
       if (isDebug) throw const UpdateConfigException();
 
@@ -43,7 +42,6 @@ class ReleaseSourceParser {
 
     // url
     var urlValue = map.remove('url');
-
     if (urlValue is! String?) {
       if (isDebug) throw const UpdateConfigException();
       urlValue = null;
@@ -59,16 +57,15 @@ class ReleaseSourceParser {
 
     // platforms
     var platformsValue = map.remove('platforms');
-
     if (platformsValue is! List<String>?) {
       if (isDebug) throw const UpdateConfigException();
       platformsValue = null;
     }
-
     final platforms = platformsValue?.map(UpdatePlatform.new).toList();
 
     // release
-    final release = _releaseParser.parse(map, isDebug: isDebug);
+    final releaseValue = map.remove('release');
+    final release = _releaseParser.parse(releaseValue, isDebug: isDebug);
 
     return ReleaseSourceConfig(
       name: name,

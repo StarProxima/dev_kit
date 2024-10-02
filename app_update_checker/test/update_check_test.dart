@@ -63,7 +63,7 @@ void main() async {
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
         case ReleaseStatus.active:
-          if (DateTime.now().difference(update.availableRelease.publishDateUtc!) > const Duration(days: 7)) {
+          if (DateTime.now().difference(update.availableRelease.dateUtc!) > const Duration(days: 7)) {
             // Show custom dialog
             return;
           }

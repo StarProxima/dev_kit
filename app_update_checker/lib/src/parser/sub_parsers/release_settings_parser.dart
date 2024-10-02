@@ -3,19 +3,16 @@
 part of '../update_config_parser.dart';
 
 class ReleaseSettingsParser {
-  UpdateStatusWrapperParser get updateStatusWrapperParser => const UpdateStatusWrapperParser();
+  SettingsTranslationsParser get _settingsTranslationsParser => const SettingsTranslationsParser();
   DurationParser get _durationParser => const DurationParser();
-  TextTranslationsParser get _textParser => const TextTranslationsParser();
-
   BoolParser get _boolParser => const BoolParser();
 
   const ReleaseSettingsParser();
 
-  UpdateStatusWrapper<ReleaseSettingsConfig?>? parse(
+  ReleaseSettingsConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
-    // ignore: avoid-long-functions
   }) {
     if (value is! Map<String, dynamic>?) {
       throw const UpdateConfigException();
@@ -24,98 +21,56 @@ class ReleaseSettingsParser {
     if (value == null) return null;
 
     // title
-    final titleValue = value.remove('title');
-    final title = _textParser.parseWithStatuses(
-      titleValue,
-      isDebug: isDebug,
-      mode: WrapperMode.all,
-    );
-
-    // description
-    final descriptionValue = value.remove('description');
-    final description = _textParser.parseWithStatuses(
-      descriptionValue,
-      isDebug: isDebug,
-      mode: WrapperMode.all,
-    );
 
     // canSkipRelease
     final canSkipReleaseValue = value.remove('can_skip_release');
-    final canSkipRelease = _boolParser.parseWithStatuses(
+    final canSkipRelease = _boolParser.parse(
       canSkipReleaseValue,
       isDebug: isDebug,
-      mode: WrapperMode.noRequired,
     );
 
     // canPostponeRelease
     final canPostponeReleaseValue = value.remove('can_postpone_release');
-    final canPostponeRelease = _boolParser.parseWithStatuses(
+    final canPostponeRelease = _boolParser.parse(
       canPostponeReleaseValue,
       isDebug: isDebug,
-      mode: WrapperMode.noRequired,
     );
 
     // reminderPeriodHours
     final reminderPeriodHours = value.remove('reminder_period_hours');
-    final reminderPeriod = _durationParser.parseWithStatuses(
+    final reminderPeriod = _durationParser.parse(
       hours: reminderPeriodHours,
       isDebug: isDebug,
-      mode: WrapperMode.noRequired,
     );
 
     // releaseDelayHours
     final releaseDelayHours = value.remove('release_delay_hours');
-    final releaseDelay = _durationParser.parseWithStatuses(
+    final releaseDelay = _durationParser.parse(
       hours: releaseDelayHours,
       isDebug: isDebug,
-      mode: WrapperMode.noRequired,
     );
 
     // progressiveRolloutHours
     final progressiveRolloutHours = value.remove('progressive_rollout_hours');
-    final progressiveRolloutDuration = _durationParser.parseWithStatuses(
+    final progressiveRolloutDuration = _durationParser.parse(
       hours: progressiveRolloutHours,
       isDebug: isDebug,
-      mode: WrapperMode.noRequired,
     );
 
-    final requiredReleaseSettings = ReleaseSettingsConfig(
-      titleTranslations: title.required,
-      descriptionTranslations: description.required,
-      canSkipRelease: canSkipRelease.required,
-      canPostponeRelease: canPostponeRelease.required,
-      reminderPeriod: reminderPeriod.required,
-      releaseDelay: releaseDelay.required,
-      progressiveRolloutDuration: progressiveRolloutDuration.required,
+    // progressiveRolloutHours
+    final translations = _settingsTranslationsParser.parse(
+      value,
+      isDebug: isDebug,
+    );
+
+    return ReleaseSettingsConfig(
+      translations: translations,
+      canSkipRelease: canSkipRelease,
+      canPostponeRelease: canPostponeRelease,
+      reminderPeriod: reminderPeriod,
+      releaseDelay: releaseDelay,
+      progressiveRolloutDuration: progressiveRolloutDuration,
       customData: value,
-    );
-
-    final recommendedReleaseSettings = ReleaseSettingsConfig(
-      titleTranslations: title.recommended,
-      descriptionTranslations: description.recommended,
-      canSkipRelease: canSkipRelease.recommended,
-      canPostponeRelease: canPostponeRelease.recommended,
-      reminderPeriod: reminderPeriod.recommended,
-      releaseDelay: releaseDelay.recommended,
-      progressiveRolloutDuration: progressiveRolloutDuration.recommended,
-      customData: value,
-    );
-
-    final availableReleaseSettings = ReleaseSettingsConfig(
-      titleTranslations: title.available,
-      descriptionTranslations: description.available,
-      canSkipRelease: canSkipRelease.available,
-      canPostponeRelease: canPostponeRelease.available,
-      reminderPeriod: reminderPeriod.available,
-      releaseDelay: releaseDelay.available,
-      progressiveRolloutDuration: progressiveRolloutDuration.available,
-      customData: value,
-    );
-
-    return UpdateStatusWrapper(
-      required: requiredReleaseSettings.isEmpty ? null : requiredReleaseSettings,
-      recommended: recommendedReleaseSettings.isEmpty ? null : recommendedReleaseSettings,
-      available: availableReleaseSettings.isEmpty ? null : availableReleaseSettings,
     );
   }
 }
