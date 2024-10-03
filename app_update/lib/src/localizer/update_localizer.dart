@@ -43,12 +43,14 @@ class UpdateLocalizer {
         );
 
     final settingsData = releaseData.settings;
+    // TODO: Задавать дефолтный UpdateSettings для разных типов и статусов,
+    // а не обрабатывать отдельным кейсом
+    // (В отдельном файлике просто создать дефолтный которой можно использовать)
     if (settingsData == null) {
       return Release(
         version: releaseData.version,
         targetSource: releaseData.targetSource,
         status: status,
-        releaseNote: interpolation(releaseData.releaseNoteTranslations?.byLocale(appLocale)),
         dateUtc: releaseData.dateUtc,
         settings: UpdateSettings.empty(),
         customData: releaseData.customData,
@@ -67,6 +69,7 @@ class UpdateLocalizer {
             final skipButtonText = interpolation(translations?.skipButtonText?.byLocale(appLocale));
             final updateButtonText = interpolation(translations?.updateButtonText?.byLocale(appLocale));
             final releaseNoteTitle = interpolation(translations?.releaseNoteTitle?.byLocale(appLocale));
+            final releaseNote = interpolation(translations?.releaseNote?.byLocale(appLocale));
 
             return MapEntry(
               key,
@@ -76,6 +79,7 @@ class UpdateLocalizer {
                   title: title,
                   description: description,
                   releaseNoteTitle: releaseNoteTitle,
+                  releaseNote: releaseNote,
                   skipButtonText: skipButtonText,
                   laterButtonText: laterButtonText,
                   updateButtonText: updateButtonText,
@@ -91,7 +95,6 @@ class UpdateLocalizer {
       version: releaseData.version,
       targetSource: releaseData.targetSource,
       status: status,
-      releaseNote: interpolation(releaseData.releaseNoteTranslations?.byLocale(appLocale)),
       dateUtc: releaseData.dateUtc,
       settings: UpdateSettings(localizedSettings),
       customData: releaseData.customData,

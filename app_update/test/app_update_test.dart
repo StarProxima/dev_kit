@@ -1,5 +1,6 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
+import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:flutter/material.dart';
 import 'package:app_update/src/controller/update_controller.dart';
 import 'package:app_update/src/shared/update_status.dart';
@@ -18,7 +19,10 @@ void main() async {
       onUpdateAvailable: (context, update, controller) {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
-
+        update.availableRelease!.settings.getBy(
+          type: UpdateAlertType.adaptiveDialog,
+          status: UpdateStatus.available,
+        );
         // Release.localizedFromReleaseData(
         //   releaseData: releaseData,
         //   locale: update.appLocale,
