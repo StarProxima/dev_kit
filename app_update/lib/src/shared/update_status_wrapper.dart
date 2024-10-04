@@ -33,17 +33,26 @@ class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
   @override
   final Map<String, Map<String, ReleaseSettingsData>> _value;
 
-  // TODO зачем вообще _value сделан приватный?
-  // Так этот класс это буквально обёртка над мапой, чтобы с ней безопасно работать,
-  // к ней доступ никому не должен быть нужен
   Map<String, Map<String, ReleaseSettingsData>> get value => _value;
 
   const UpdateSettingsData(this._value);
 
-  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig config) {
+  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig? config) {
     return UpdateSettingsData(
-      config._value.map((key, value) =>
-          MapEntry(key, value.map((key, value) => MapEntry(key, ReleaseSettingsData.fromConfig(value))))),
+      config?._value.map(
+            (key, value) => MapEntry(
+              key,
+              value.map(
+                (key, value) => MapEntry(
+                  key,
+                  ReleaseSettingsData.fromConfig(value),
+                ),
+              ),
+            ),
+          ) ??
+          {
+            'base': {'base': ReleaseSettingsData.fromConfig(null)},
+          },
     );
   }
 

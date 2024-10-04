@@ -228,15 +228,3 @@ class UpdateController extends UpdateContollerBase {
     await _availableUpdateStream.close();
   }
 }
-
-/* TODO
--Серёга на LocalDataService ✅
--Фетчеры не готовы
--Тудушки по коду
--Релиз ноты ✅
--Сделать все сурсы через энамы
--Все хэндлеры
--Тесты пофиксить
-
-
-*/

@@ -1,5 +1,3 @@
-// ignore_for_file: avoid-unnecessary-reassignment, avoid-nested-switches, prefer-correct-identifier-length
-
 import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
@@ -40,21 +38,7 @@ class UpdateLocalizer {
           releaseData.version.toString(),
         );
 
-    final settingsData = releaseData.settings;
-    // TODO: Задавать дефолтный UpdateSettings для разных типов и статусов,
-    // а не обрабатывать отдельным кейсом
-    // (В отдельном файлике просто создать дефолтный которой можно использовать)
-    if (settingsData == null) {
-      return Release(
-        version: releaseData.version,
-        targetSource: releaseData.targetSource,
-        dateUtc: releaseData.dateUtc,
-        settings: UpdateSettings.empty(),
-        customData: releaseData.customData,
-      );
-    }
-
-    final localizedSettings = settingsData.value.map(
+    final localizedSettings = releaseData.settings.value.map(
       (key, value) => MapEntry(
         key,
         value.map(
