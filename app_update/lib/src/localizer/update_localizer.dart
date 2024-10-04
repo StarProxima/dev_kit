@@ -5,9 +5,9 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../linker/models/release_data.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_status_wrapper.dart';
-import '../version_controller/models/release_data_with_status.dart';
 import 'models/release.dart';
 import 'models/release_settings.dart';
 import 'models/update_texts.dart';
@@ -24,13 +24,11 @@ class UpdateLocalizer {
     required this.packageInfo,
   });
 
-  List<Release> localizeReleasesData(List<ReleaseDataWithStatus> releases) {
+  List<Release> localizeReleasesData(List<ReleaseData> releases) {
     return releases.map(localizeRelease).toList();
   }
 
-  Release localizeRelease(ReleaseDataWithStatus releaseDataWithStatus) {
-    final (releaseData, status) = releaseDataWithStatus;
-
+  Release localizeRelease(ReleaseData releaseData) {
     String? interpolation(String? text) => text
         ?.replaceAll(r'$appName', appName)
         .replaceAll(
@@ -50,7 +48,6 @@ class UpdateLocalizer {
       return Release(
         version: releaseData.version,
         targetSource: releaseData.targetSource,
-        status: status,
         dateUtc: releaseData.dateUtc,
         settings: UpdateSettings.empty(),
         customData: releaseData.customData,
@@ -94,7 +91,6 @@ class UpdateLocalizer {
     return Release(
       version: releaseData.version,
       targetSource: releaseData.targetSource,
-      status: status,
       dateUtc: releaseData.dateUtc,
       settings: UpdateSettings(localizedSettings),
       customData: releaseData.customData,

@@ -5,14 +5,13 @@ import 'package:pub_semver/pub_semver.dart';
 import '../linker/models/release_data.dart';
 import '../parser/models/versions_settings_config.dart';
 import '../shared/update_status.dart';
-import 'models/release_data_with_status.dart';
 
 class UpdateVersionController {
   final VersionSettingsConfig? versionSettings;
   const UpdateVersionController(this.versionSettings);
 
-  List<ReleaseDataWithStatus> setStatuses(List<ReleaseData> releases) {
-    return releases.map((release) => (release, setStatusByVersion(release.version))).toList();
+  List<ReleaseData> filterAvailableReleaseData(List<ReleaseData> releases) {
+    return releases.where((release) => setStatusByVersion(release.version) == UpdateStatus.available).toList();
   }
 
   UpdateStatus setStatusByVersion(Version appVersion) {

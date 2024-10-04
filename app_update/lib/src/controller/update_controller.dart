@@ -68,15 +68,12 @@ class UpdateController extends UpdateContollerBase {
     List<Source>? globalSources,
     UpdatePlatform? platform,
     String? prioritySourceName,
-    // TODO убрать бы локаль по хорошему
-    // required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
         _prioritySourceName = prioritySourceName,
-        // _locale = locale,
         _platform = platform ?? UpdatePlatform.current();
 
   @override
@@ -101,10 +98,10 @@ class UpdateController extends UpdateContollerBase {
     final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
 
     _versionController ??= UpdateVersionController(configModel.versionSettings);
-    final releasesDataWithStatus = _versionController!.setStatuses(releasesData);
+    final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
     _localizer ??= UpdateLocalizer(appLocale: locale, packageInfo: packageInfo);
-    final releases = _localizer!.localizeReleasesData(releasesDataWithStatus);
+    final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
     final globalSources = _globalSources ?? [];
@@ -137,7 +134,6 @@ class UpdateController extends UpdateContollerBase {
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
       appVersion: Version.parse(packageInfo.version),
-      appLocale: locale,
       config: updateConfig,
       currentReleaseStatus: currentReleaseStatus,
       availableRelease: availableRelease,

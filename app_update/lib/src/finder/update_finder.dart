@@ -1,12 +1,9 @@
-// ignore_for_file: avoid-unnecessary-reassignment, prefer-correct-identifier-length
-
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../controller/exceptions.dart';
 import '../localizer/models/release.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_status.dart';
 import '../sources/source.dart';
 
 class UpdateFinder {
@@ -28,10 +25,6 @@ class UpdateFinder {
       final releaseSource = release.targetSource;
 
       if (!releaseSource.platforms.contains(platform)) {
-        continue;
-      }
-
-      if (release.status != UpdateStatus.available) {
         continue;
       }
 
