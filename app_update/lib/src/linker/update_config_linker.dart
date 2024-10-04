@@ -60,15 +60,12 @@ class UpdateConfigLinker {
         // применяем релиз конкретного магазина, если есть
         final version = sourceReleaseConfig?.version ?? releaseConfig.version;
         final dateUtc = sourceReleaseConfig?.dateUtc ?? releaseConfig.dateUtc;
-        final releaseNoteTranslations =
-            sourceReleaseConfig?.releaseNoteTranslations ?? releaseConfig.releaseNoteTranslations;
         final releaseCustomData = sourceReleaseConfig?.customData ?? releaseConfig.customData;
 
         // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг), настройки которого смержены со всеми и находятся в settings
         releases.add(ReleaseData(
           version: version,
           targetSource: targetSource,
-          releaseNoteTranslations: releaseNoteTranslations,
           dateUtc: dateUtc,
           settings: inheritedSettings,
           customData: releaseCustomData,

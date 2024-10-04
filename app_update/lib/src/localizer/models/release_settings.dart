@@ -30,6 +30,7 @@ class ReleaseSettings {
               title: null,
               description: null,
               releaseNoteTitle: null,
+              releaseNote: null,
               skipButtonText: null,
               laterButtonText: null,
               updateButtonText: null,

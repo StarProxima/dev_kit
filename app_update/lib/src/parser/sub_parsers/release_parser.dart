@@ -29,14 +29,8 @@ class ReleaseParser {
         isDebug: isDebug,
       );
       // TODO Добавил эту проверку, ибо как это - релиз и без версии. Если ок, сотри туду
+      // TODO: Если переопределять релиз через сурс, то версия не обязательна
       if (version == null) throw const UpdateConfigException();
-
-      // releaseNote
-      final releaseNoteValue = map.remove('release_note');
-      final releaseNote = _textParser.parse(
-        releaseNoteValue,
-        isDebug: isDebug,
-      );
 
       // dateUtc
       final dateUtcValue = map.remove('date_utc');
@@ -60,7 +54,6 @@ class ReleaseParser {
       return ReleaseConfig(
         version: version,
         dateUtc: dateUtc,
-        releaseNoteTranslations: releaseNote,
         settings: updateSettings,
         sources: sources,
         customData: map,
