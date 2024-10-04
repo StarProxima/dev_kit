@@ -7,13 +7,15 @@ import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import 'exceptions.dart';
 
+// TODO (iamgirya): посмотри на спеку и реализацию, тут различия,
+// мб надо поменять или спеку, или реализацию
 abstract class UpdateContollerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
   /// Check new releases from the update config and stores.
-  Future<void> fetch(); // TODO сделай фетч фетчем - с сохранением инфы с инета
+  Future<void> fetch(); // TODO: сделай фетч фетчем - с сохранением инфы с инета
 
   /// Get current update config
   ///

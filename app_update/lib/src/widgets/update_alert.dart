@@ -42,7 +42,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? UpdateController(locale: Localizations.localeOf(context));
+    _controller = widget.controller ?? UpdateController();
 
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () {
