@@ -65,9 +65,9 @@ class UpdateFinder {
     }
 
     // либо определяем сами откуда установлено приложение
-    final sourceCheckerName = await Sources.checkAppSource();
-    if (sourceCheckerName != null) {
-      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == sourceCheckerName);
+    final sourceCheckerType = await Sources.checkAppSource();
+    if (sourceCheckerType != null) {
+      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.sourceType == sourceCheckerType);
       if (checkedSource != null) {
         // если сурс существует в конфиге, но для него нет обновления
         if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {

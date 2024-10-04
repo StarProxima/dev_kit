@@ -175,6 +175,7 @@ class UpdateController extends UpdateContollerBase {
   }) async {
     try {
       final appUpdate = await findUpdate(locale: locale);
+
       return appUpdate;
     } on UpdateException catch (_) {
       return null;

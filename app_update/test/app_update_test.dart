@@ -1,14 +1,14 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
-import 'package:app_update/src/shared/update_alert_type.dart';
-import 'package:flutter/material.dart';
 import 'package:app_update/src/controller/update_controller.dart';
+import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/shared/update_status.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
-  final controller = UpdateController(locale: const Locale('en'));
+  final controller = UpdateController();
 
   await controller.fetch();
 
@@ -59,7 +59,7 @@ void main() async {
 
   UpdateAlert(
     onUpdateAvailable: (context, update, controller) {
-      switch (update.availableRelease!.status) {
+      switch (update.currentReleaseStatus) {
         case UpdateStatus.required:
           UpdateAlertHandler.screen(context, update, controller);
 
