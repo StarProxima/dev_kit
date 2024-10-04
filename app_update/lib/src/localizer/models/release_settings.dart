@@ -25,16 +25,7 @@ class ReleaseSettings {
     UpdateTexts? texts,
   }) =>
       ReleaseSettings(
-        texts: texts ??
-            const UpdateTexts(
-              title: null,
-              description: null,
-              releaseNoteTitle: null,
-              releaseNote: null,
-              skipButtonText: null,
-              laterButtonText: null,
-              updateButtonText: null,
-            ),
+        texts: texts ?? const UpdateTexts(),
         canSkipRelease: data?.canSkipRelease ?? true,
         canPostponeRelease: data?.canPostponeRelease ?? true,
         reminderPeriod: data?.reminderPeriod ?? const Duration(days: 7),
