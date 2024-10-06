@@ -1,6 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../shared/update_status.dart';
+import '../../shared/app_version_status.dart';
 import 'release.dart';
 import 'update_config.dart';
 
@@ -8,7 +8,7 @@ class AppUpdate {
   final String appName;
   final Version appVersion;
   final UpdateConfig config;
-  final UpdateStatus currentReleaseStatus;
+  final AppVersionStatus appVersionStatus;
   // Available release from priority source
   final Release? availableRelease;
   // Available releases from all available sources
@@ -18,7 +18,7 @@ class AppUpdate {
     required this.appName,
     required this.appVersion,
     required this.config,
-    required this.currentReleaseStatus,
+    required this.appVersionStatus,
     required this.availableRelease,
     required this.availableReleasesFromAllSources,
   });

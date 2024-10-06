@@ -3,7 +3,7 @@ import '../linker/models/release_settings_data.dart';
 import '../localizer/models/release_settings.dart';
 import '../parser/models/release_settings_config.dart';
 import 'update_alert_type.dart';
-import 'update_status.dart';
+import 'app_version_status.dart';
 
 // TODO тут миксин не надо бы применить?
 class UpdateSettingsConfig {
@@ -13,7 +13,7 @@ class UpdateSettingsConfig {
 
   ReleaseSettingsConfig? getBy({
     required UpdateAlertType type,
-    required UpdateStatus status,
+    required AppVersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 
@@ -94,7 +94,7 @@ mixin GetByMixin<T> {
 
   T getBy({
     required UpdateAlertType type,
-    required UpdateStatus status,
+    required AppVersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 

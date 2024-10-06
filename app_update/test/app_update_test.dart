@@ -2,7 +2,7 @@
 
 import 'package:app_update/src/controller/update_controller.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
-import 'package:app_update/src/shared/update_status.dart';
+import 'package:app_update/src/shared/app_version_status.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ void main() async {
         final releaseData = update.config.releases.first;
         update.availableRelease!.settings.getBy(
           type: UpdateAlertType.adaptiveDialog,
-          status: UpdateStatus.available,
+          status: AppVersionStatus.outdated,
         );
         // Release.localizedFromReleaseData(
         //   releaseData: releaseData,
@@ -59,14 +59,14 @@ void main() async {
 
   UpdateAlert(
     onUpdateAvailable: (context, update, controller) {
-      switch (update.currentReleaseStatus) {
-        case UpdateStatus.required:
+      switch (update.appVersionStatus) {
+        case AppVersionStatus.unsupported:
           UpdateAlertHandler.screen(context, update, controller);
 
-        case UpdateStatus.recommended:
+        case AppVersionStatus.deprecated:
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
-        case UpdateStatus.available:
+        case AppVersionStatus.outdated:
           if (DateTime.now().difference(update.availableRelease!.dateUtc!) > const Duration(days: 7)) {
             // Show custom dialog
             return;

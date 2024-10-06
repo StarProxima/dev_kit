@@ -135,7 +135,7 @@ class UpdateController extends UpdateContollerBase {
       appName: packageInfo.appName,
       appVersion: Version.parse(packageInfo.version),
       config: updateConfig,
-      currentReleaseStatus: currentReleaseStatus,
+      appVersionStatus: currentReleaseStatus,
       availableRelease: availableRelease,
       availableReleasesFromAllSources: availableReleasesFromAllSources,
     );
