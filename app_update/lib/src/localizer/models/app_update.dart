@@ -9,17 +9,24 @@ class AppUpdate {
   final Version appVersion;
   final AppVersionStatus appVersionStatus;
   final UpdateConfig config;
-  // Available release from priority source
-  final Release? availableRelease;
-  // Available releases from all available sources
-  final List<Release> availableReleasesFromAllSources;
+
+  /// Available release from priority source.
+  ///
+  /// If it is missing, then the source of the application installation is not defined and is not specified.
+  final Release? releaseFromTargetSource;
+
+  /// A list of available releases from all sources available on the current application platform.
+  ///
+  /// If [releaseFromTargetSource] is not set,
+  /// then you can try to select one of these, but some may not be on the user's device.
+  final List<Release> allReleasesFromAvailableSources;
 
   const AppUpdate({
     required this.appName,
     required this.appVersion,
     required this.config,
     required this.appVersionStatus,
-    required this.availableRelease,
-    required this.availableReleasesFromAllSources,
+    required this.releaseFromTargetSource,
+    required this.allReleasesFromAvailableSources,
   });
 }

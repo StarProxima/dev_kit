@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'dart:async';
+import 'dart:ui';
 
 import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
@@ -25,12 +26,16 @@ abstract class UpdateContollerBase {
   /// Finds an update
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
-  Future<AppUpdate> findUpdate();
+  Future<AppUpdate> findUpdate({
+    Locale locale,
+  });
 
-  /// Finds an update
+  /// Finds an update. Like [findUpdate], but does not throw errors.
   ///
   /// If update not available return null.
-  Future<AppUpdate?> getAvailableAppUpdate();
+  Future<AppUpdate?> findAvailableUpdate({
+    Locale locale,
+  });
 
   /// Skip a release, a release with this version will no longer be displayed.
   Future<void> skipRelease(Release release);

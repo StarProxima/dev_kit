@@ -47,7 +47,6 @@ class UpdateController extends UpdateContollerBase {
   final List<Source>? _globalSources;
   final UpdatePlatform _platform;
   final String? _prioritySourceName;
-  // final Locale _locale;
 
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
@@ -136,8 +135,8 @@ class UpdateController extends UpdateContollerBase {
       appVersion: Version.parse(packageInfo.version),
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
-      availableRelease: availableRelease,
-      availableReleasesFromAllSources: availableReleasesFromAllSources,
+      releaseFromTargetSource: availableRelease,
+      allReleasesFromAvailableSources: availableReleasesFromAllSources,
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
@@ -170,7 +169,7 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<AppUpdate?> getAvailableAppUpdate({
+  Future<AppUpdate?> findAvailableUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
