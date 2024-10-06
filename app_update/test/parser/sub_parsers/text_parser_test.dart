@@ -22,7 +22,7 @@ void main() {
     test('should return default Locale (en) when value is a String', () {
       const value = 'This is a simple string';
       final result = textParser.parse(value, isDebug: isDebug);
-      expect(result, equals({appUpdateDefaultLocale: value}));
+      expect(result, equals({kAppUpdateDefaultLocale: value}));
     });
 
     test('should return map of Locale to String when value is a Map', () {

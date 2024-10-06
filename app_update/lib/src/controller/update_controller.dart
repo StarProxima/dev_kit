@@ -78,7 +78,7 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate> findUpdate({
-    Locale locale = appUpdateDefaultLocale,
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
@@ -100,7 +100,7 @@ class UpdateController extends UpdateContollerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _localizer ??= UpdateLocalizer(appLocale: locale, packageInfo: packageInfo);
+    _localizer ??= UpdateLocalizer(packageInfo: packageInfo);
     final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
@@ -171,7 +171,7 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate?> getAvailableAppUpdate({
-    Locale locale = appUpdateDefaultLocale,
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
       final appUpdate = await findUpdate(locale: locale);

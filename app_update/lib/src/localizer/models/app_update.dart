@@ -7,8 +7,8 @@ import 'update_config.dart';
 class AppUpdate {
   final String appName;
   final Version appVersion;
-  final UpdateConfig config;
   final AppVersionStatus appVersionStatus;
+  final UpdateConfig config;
   // Available release from priority source
   final Release? availableRelease;
   // Available releases from all available sources

@@ -6,7 +6,7 @@ class SettingsTranslationsParser {
 
   const SettingsTranslationsParser();
 
-  UpdateTranslations? parse(
+  UpdateTranslationsData? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
@@ -66,7 +66,7 @@ class SettingsTranslationsParser {
       isDebug: isDebug,
     );
 
-    return UpdateTranslations(
+    return UpdateTranslationsData(
       title: title,
       description: description,
       releaseNoteTitle: releaseNoteTitle,

@@ -1,14 +1,16 @@
 import 'dart:ui';
 
-// ignore: prefer-static-class, prefer-prefixed-global-constants
-const appUpdateDefaultLocale = Locale('en');
+// ignore: prefer-static-class
+const kAppUpdateDefaultLocale = Locale('en');
 
-typedef TextTranslations = Map<Locale, String>;
+class TextTranslations {
+  final Map<Locale, String> value;
 
-extension ByLocaleX on TextTranslations {
+  const TextTranslations(this.value);
+
   String byLocale(Locale locale) =>
-      this[locale] ??
-      this[appUpdateDefaultLocale] ??
-      values.firstOrNull ??
+      value[locale] ??
+      value[kAppUpdateDefaultLocale] ??
+      value.values.firstOrNull ??
       (throw Exception('At least one locale must be specified'));
 }

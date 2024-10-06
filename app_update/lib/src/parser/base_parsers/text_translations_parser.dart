@@ -16,7 +16,7 @@ class TextTranslationsParser {
     var text = value;
     if (text is! Map<String, dynamic>?) {
       if (text is String) {
-        return {appUpdateDefaultLocale: text};
+        return TextTranslations({kAppUpdateDefaultLocale: text});
       }
 
       if (isDebug) throw const UpdateConfigException();

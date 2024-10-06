@@ -84,7 +84,8 @@ class UpdateSettings with GetByMixin<ReleaseSettings> {
 
   const UpdateSettings(this._value);
 
-  factory UpdateSettings.empty() => UpdateSettings({
+  factory UpdateSettings.base() => UpdateSettings({
+        // TODO: Доставать дефолтный UpdateSettings
         'base': {'base': ReleaseSettings.fromData()},
       });
 }

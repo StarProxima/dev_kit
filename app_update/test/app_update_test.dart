@@ -19,10 +19,12 @@ void main() async {
       onUpdateAvailable: (context, update, controller) {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
-        update.availableRelease!.settings.getBy(
+
+        final settings = update.availableRelease!.settings.getBy(
           type: UpdateAlertType.adaptiveDialog,
           status: AppVersionStatus.outdated,
         );
+
         // Release.localizedFromReleaseData(
         //   releaseData: releaseData,
         //   locale: update.appLocale,
