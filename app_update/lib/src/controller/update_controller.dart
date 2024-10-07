@@ -132,7 +132,8 @@ class UpdateController extends UpdateContollerBase {
 
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
-      appVersion: Version.parse(packageInfo.version),
+      appVersion: appVersion,
+
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
       releaseFromTargetSource: availableRelease,

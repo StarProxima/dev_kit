@@ -66,9 +66,11 @@ class UpdateLocalizer {
               ),
             );
 
-            final loxalizedText = interpolationUpdateTranslation(settings.texts);
+            final localizedText = interpolationUpdateTranslation(settings.texts);
+
             final localizedSettings = settings.copyWith(
-              texts: loxalizedText,
+              texts: localizedText,
+
             );
 
             return MapEntry(

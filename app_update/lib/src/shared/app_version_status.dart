@@ -18,7 +18,8 @@ enum AppVersionStatus {
 
   bool get isDeprecated => this == deprecated;
 
-  bool get isOutdated => this == unsupported;
+  bool get isOutdated => this == outdated;
+
 
   // In terms of updates
 
