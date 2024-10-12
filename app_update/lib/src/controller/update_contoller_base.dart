@@ -13,15 +13,13 @@ abstract class UpdateContollerBase {
 
   Stream<UpdateConfig> get updateConfigStream;
 
-  /// Fetch update config data from internet.
+  /// Fetch update config data from UpdateConfigFetcher.
   Future<void> fetchUpdateConfig();
 
-  /// Get current update config
-  ///
-  /// Does not make a new request if the data already exists.
-  Future<UpdateConfig?> getAvailableUpdateConfig();
+  /// Fetch releases list data from SourceReleaseFetcherCoordinator and globalSources.
+  Future<void> fetchGlobalSourceReleases();
 
-  /// Finds an update
+  /// Finds an update from fetched UpdateConfig and global sources releases data
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
@@ -33,7 +31,17 @@ abstract class UpdateContollerBase {
   ///
   /// If update not available return null.
   /// Does not make a new request if the data already exists.
-  Future<AppUpdate?> findAvailableUpdate({
+  Future<AppUpdate?> tryFindUpdate({
+    Locale locale,
+  });
+
+  /// Get last founded update config or call [tryFindUpdate].
+  Future<UpdateConfig?> getLastUpdateConfig({
+    Locale locale,
+  });
+
+  /// Get last founded app update or call [tryFindUpdate].
+  Future<AppUpdate?> getLastAppUpdate({
     Locale locale,
   });
 

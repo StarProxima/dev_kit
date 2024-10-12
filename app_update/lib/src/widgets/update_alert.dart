@@ -55,7 +55,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
   Future<void> _check() async {
     if (!widget.enabled) return;
 
-    final appUpdate = await _controller.findAvailableUpdate();
+    final appUpdate = await _controller.tryFindUpdate();
     if (appUpdate == null) return;
 
     if (context.mounted) {

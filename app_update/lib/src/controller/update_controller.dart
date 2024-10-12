@@ -50,6 +50,7 @@ class UpdateController extends UpdateContollerBase {
   final String? _prioritySourceName;
 
   Completer<UpdateConfigModel>? _updateConfigModelCompleter;
+  Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
   AppUpdate? _lastAppUpdate;
@@ -91,6 +92,23 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
+  Future<void> fetchGlobalSourceReleases({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    _sourceReleasesFromFetchersCompleter = Completer();
+
+    final packageInfo = await _asyncPackageInfo;
+    final releases = <Release>[];
+    for (final source in _globalSources ?? []) {
+      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+      final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
+      releases.add(releaseFromSource);
+    }
+
+    _sourceReleasesFromFetchersCompleter!.complete(releases);
+  }
+
+  @override
   Future<AppUpdate> findUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
@@ -116,13 +134,11 @@ class UpdateController extends UpdateContollerBase {
     final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
-    final globalSources = _globalSources ?? [];
-    for (final source in globalSources) {
-      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
-      final releaseConfig = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
-      releases.add(releaseConfig);
-    }
-    sources.addAll(globalSources);
+
+    if (_sourceReleasesFromFetchersCompleter == null) await fetchGlobalSourceReleases();
+    final releasesFromSources = await _sourceReleasesFromFetchersCompleter!.future;
+    releases.addAll(releasesFromSources);
+    sources.addAll([...?_globalSources]);
 
     final updateConfig = UpdateConfig(
       sources: sources,
@@ -173,7 +189,7 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<AppUpdate?> findAvailableUpdate({
+  Future<AppUpdate?> tryFindUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
@@ -186,11 +202,12 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<UpdateConfig?> getAvailableUpdateConfig() async {
-    final appUpdate = await findAvailableUpdate();
+  Future<UpdateConfig?> getLastUpdateConfig({Locale locale = kAppUpdateDefaultLocale}) async =>
+      _lastUpdateConfig ?? (await tryFindUpdate(locale: locale))?.config;
 
-    return appUpdate?.config;
-  }
+  @override
+  Future<AppUpdate?> getLastAppUpdate({Locale locale = kAppUpdateDefaultLocale}) async =>
+      _lastAppUpdate ?? (await tryFindUpdate(locale: locale));
 
   @override
   Future<void> launchReleaseSource(Release release) async {
@@ -199,7 +216,7 @@ class UpdateController extends UpdateContollerBase {
 
     final url = release.targetSource.url;
     await launchUrl(url);
-    // TODO всё?
+    // TODO надо обсудить, что должна эта функция делать
   }
 
   @override
