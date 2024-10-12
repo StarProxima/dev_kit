@@ -37,6 +37,36 @@ class ReleaseSettings {
         customData: data?.customData,
       );
 
+  const ReleaseSettings.requiredUpdate({
+    required this.texts,
+    this.canSkipRelease = false,
+    this.canPostponeRelease = false,
+    this.reminderPeriod = Duration.zero,
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
+  const ReleaseSettings.recommendedUpdate({
+    required this.texts,
+    this.canSkipRelease = false,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 24),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
+  const ReleaseSettings.availableUpdate({
+    required this.texts,
+    this.canSkipRelease = true,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 72),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
   ReleaseSettings copyWith({
     UpdateTranslations? texts,
     bool? canSkipRelease,

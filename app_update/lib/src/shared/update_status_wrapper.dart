@@ -1,9 +1,10 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
 import '../linker/models/release_settings_data.dart';
 import '../localizer/models/release_settings.dart';
+import '../localizer/models/update_texts.dart';
 import '../parser/models/release_settings_config.dart';
-import 'update_alert_type.dart';
 import 'app_version_status.dart';
+import 'update_alert_type.dart';
 
 // TODO тут миксин не надо бы применить?
 class UpdateSettingsConfig {
@@ -84,9 +85,12 @@ class UpdateSettings with GetByMixin<ReleaseSettings> {
 
   const UpdateSettings(this._value);
 
-  factory UpdateSettings.base() => UpdateSettings({
-        // TODO: Доставать дефолтный UpdateSettings
-        'base': {'base': ReleaseSettings.fromData()},
+  factory UpdateSettings.base() => const UpdateSettings({
+        'base': {
+          'base': ReleaseSettings.availableUpdate(
+            texts: UpdateTranslations({}),
+          ),
+        },
       });
 }
 
