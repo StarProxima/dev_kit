@@ -8,15 +8,13 @@ import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import 'exceptions.dart';
 
-// TODO (iamgirya): посмотри на спеку и реализацию, тут различия,
-// мб надо поменять или спеку, или реализацию
 abstract class UpdateContollerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
-  /// Check new releases from the update config and stores.
-  Future<void> fetch(); // TODO: сделай фетч фетчем - с сохранением инфы с инета
+  /// Fetch update config data from internet.
+  Future<void> fetchUpdateConfig();
 
   /// Get current update config
   ///
@@ -26,6 +24,7 @@ abstract class UpdateContollerBase {
   /// Finds an update
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
+  /// Does not make a new request if the data already exists.
   Future<AppUpdate> findUpdate({
     Locale locale,
   });
@@ -33,6 +32,7 @@ abstract class UpdateContollerBase {
   /// Finds an update. Like [findUpdate], but does not throw errors.
   ///
   /// If update not available return null.
+  /// Does not make a new request if the data already exists.
   Future<AppUpdate?> findAvailableUpdate({
     Locale locale,
   });

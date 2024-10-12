@@ -16,6 +16,7 @@ import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../localizer/update_localizer.dart';
+import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
@@ -48,6 +49,7 @@ class UpdateController extends UpdateContollerBase {
   final UpdatePlatform _platform;
   final String? _prioritySourceName;
 
+  Completer<UpdateConfigModel>? _updateConfigModelCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
   AppUpdate? _lastAppUpdate;
@@ -76,18 +78,28 @@ class UpdateController extends UpdateContollerBase {
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<AppUpdate> findUpdate({
-    Locale locale = kAppUpdateDefaultLocale,
-  }) async {
-    final packageInfo = await _asyncPackageInfo;
-    final appVersion = Version.parse(packageInfo.version);
-    final appName = packageInfo.appName;
+  Future<void> fetchUpdateConfig() async {
+    _updateConfigModelCompleter = Completer();
 
     final fetcher = _updateConfigFetcher;
     if (fetcher == null) throw const UpdateNotFoundException();
     final rawConfig = await fetcher.fetch();
 
     final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
+
+    _updateConfigModelCompleter!.complete(configModel);
+  }
+
+  @override
+  Future<AppUpdate> findUpdate({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
+    final configModel = await _updateConfigModelCompleter!.future;
+
+    final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
+    final appName = packageInfo.appName;
 
     final releasesData = _linker.linkConfigs(
       globalSettingsConfig: _releaseSettings ?? configModel.settings,
@@ -160,15 +172,6 @@ class UpdateController extends UpdateContollerBase {
     return appUpdate;
   }
 
-  // TODO переписать
-  @override
-  Future<void> fetch() async {
-    try {
-      await findUpdate();
-      // ignore: empty_catches
-    } on UpdateException {}
-  }
-
   @override
   Future<AppUpdate?> findAvailableUpdate({
     Locale locale = kAppUpdateDefaultLocale,
@@ -184,9 +187,9 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<UpdateConfig?> getAvailableUpdateConfig() async {
-    if (_lastUpdateConfig == null) await fetch();
+    final appUpdate = await findAvailableUpdate();
 
-    return _lastUpdateConfig;
+    return appUpdate?.config;
   }
 
   @override
