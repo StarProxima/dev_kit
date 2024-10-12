@@ -1,4 +1,3 @@
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';
@@ -8,13 +7,12 @@ import 'models/release_settings.dart';
 import 'models/update_texts.dart';
 
 class UpdateLocalizer {
-  final PackageInfo packageInfo;
-
-  String get appName => packageInfo.appName;
-  Version get appVersion => Version.parse(packageInfo.version);
+  final String appName;
+  final Version appVersion;
 
   const UpdateLocalizer({
-    required this.packageInfo,
+    required this.appName,
+    required this.appVersion,
   });
 
   List<Release> localizeReleasesData(List<ReleaseData> releases) {
@@ -70,7 +68,6 @@ class UpdateLocalizer {
 
             final localizedSettings = settings.copyWith(
               texts: localizedText,
-
             );
 
             return MapEntry(

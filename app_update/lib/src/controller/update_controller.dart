@@ -81,6 +81,7 @@ class UpdateController extends UpdateContollerBase {
   }) async {
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
+    final appName = packageInfo.appName;
 
     final fetcher = _updateConfigFetcher;
     if (fetcher == null) throw const UpdateNotFoundException();
@@ -99,7 +100,7 @@ class UpdateController extends UpdateContollerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _localizer ??= UpdateLocalizer(packageInfo: packageInfo);
+    _localizer ??= UpdateLocalizer(appName: appName, appVersion: appVersion);
     final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
@@ -133,7 +134,6 @@ class UpdateController extends UpdateContollerBase {
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
       appVersion: appVersion,
-
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
       releaseFromTargetSource: availableRelease,
