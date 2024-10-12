@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment, dead_code
+// ignore_for_file: avoid-collection-mutating-methods
 
 part of '../update_config_parser.dart';
 
@@ -13,6 +13,7 @@ class ReleaseParser {
   ReleaseConfig? parse(
     Map<String, dynamic> map, {
     required bool isDebug,
+    required bool isAbleToUseNullVersion,
   }) {
     final isDebugOriginal = isDebug;
 
@@ -27,9 +28,8 @@ class ReleaseParser {
         versionValue,
         isDebug: isDebug,
       );
-      // TODO Добавил эту проверку, ибо как это - релиз и без версии. Если ок, сотри туду
-      // TODO: Если переопределять релиз через сурс, то версия не обязательна
-      if (version == null) throw const UpdateConfigException();
+
+      if (version == null && !isAbleToUseNullVersion) throw const UpdateConfigException();
 
       // dateUtc
       final dateUtcValue = map.remove('date_utc');

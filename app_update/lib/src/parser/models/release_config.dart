@@ -4,7 +4,7 @@ import '../../shared/update_status_wrapper.dart';
 import 'source_config.dart';
 
 class ReleaseConfig {
-  final Version version;
+  final Version? version;
   final DateTime? dateUtc;
   final UpdateSettingsConfig? settings;
   final List<ReleaseSourceConfig>? sources;
