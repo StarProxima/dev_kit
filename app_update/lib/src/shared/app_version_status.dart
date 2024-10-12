@@ -12,14 +12,13 @@ enum AppVersionStatus {
 
   /// The current version is outdated.
   /// The update is available and can be installed.
-  outdated;
+  updatable;
 
   bool get isUnsupported => this == unsupported;
 
   bool get isDeprecated => this == deprecated;
 
-  bool get isOutdated => this == outdated;
-
+  bool get isUpdatable => this == updatable;
 
   // In terms of updates
 
@@ -27,5 +26,5 @@ enum AppVersionStatus {
 
   bool get updateIsRecommended => isDeprecated;
 
-  bool get updateIsAvailable => isOutdated;
+  bool get updateIsAvailable => isUpdatable;
 }

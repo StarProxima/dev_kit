@@ -22,7 +22,7 @@ void main() async {
 
         final settings = update.releaseFromTargetSource!.settings.getBy(
           type: UpdateAlertType.adaptiveDialog,
-          status: AppVersionStatus.outdated,
+          status: AppVersionStatus.updatable,
         );
 
         final text = settings.texts.byLocale(const Locale('en'));
@@ -70,7 +70,7 @@ void main() async {
         case AppVersionStatus.deprecated:
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
-        case AppVersionStatus.outdated:
+        case AppVersionStatus.updatable:
           if (DateTime.now().difference(update.releaseFromTargetSource!.dateUtc!) > const Duration(days: 7)) {
             // Show custom dialog
             return;

@@ -11,11 +11,11 @@ class UpdateVersionController {
   const UpdateVersionController(this.versionSettings);
 
   List<ReleaseData> filterAvailableReleaseData(List<ReleaseData> releases) {
-    return releases.where((release) => setStatusByVersion(release.version) == AppVersionStatus.outdated).toList();
+    return releases.where((release) => setStatusByVersion(release.version) == AppVersionStatus.updatable).toList();
   }
 
   AppVersionStatus setStatusByVersion(Version appVersion) {
-    if (versionSettings == null) return AppVersionStatus.outdated;
+    if (versionSettings == null) return AppVersionStatus.updatable;
     final unsupportedVersions = versionSettings?.unsupportedVersions ?? [];
     final deprecatedVersions = versionSettings?.deprecatedVersions ?? [];
 
@@ -26,6 +26,6 @@ class UpdateVersionController {
       return AppVersionStatus.deprecated;
     }
 
-    return AppVersionStatus.outdated;
+    return AppVersionStatus.updatable;
   }
 }
