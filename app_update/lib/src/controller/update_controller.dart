@@ -47,7 +47,6 @@ class UpdateController extends UpdateContollerBase {
   final List<Source>? _globalSources;
   final UpdatePlatform _platform;
   final String? _prioritySourceName;
-  // final Locale _locale;
 
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
@@ -78,10 +77,11 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<AppUpdate> findUpdate({
-    Locale locale = appUpdateDefaultLocale,
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
+    final appName = packageInfo.appName;
 
     final fetcher = _updateConfigFetcher;
     if (fetcher == null) throw const UpdateNotFoundException();
@@ -100,7 +100,7 @@ class UpdateController extends UpdateContollerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _localizer ??= UpdateLocalizer(appLocale: locale, packageInfo: packageInfo);
+    _localizer ??= UpdateLocalizer(appName: appName, appVersion: appVersion);
     final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
@@ -133,11 +133,11 @@ class UpdateController extends UpdateContollerBase {
 
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
-      appVersion: Version.parse(packageInfo.version),
+      appVersion: appVersion,
       config: updateConfig,
-      currentReleaseStatus: currentReleaseStatus,
-      availableRelease: availableRelease,
-      availableReleasesFromAllSources: availableReleasesFromAllSources,
+      appVersionStatus: currentReleaseStatus,
+      releaseFromTargetSource: availableRelease,
+      allReleasesFromAvailableSources: availableReleasesFromAllSources,
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
@@ -170,8 +170,8 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<AppUpdate?> getAvailableAppUpdate({
-    Locale locale = appUpdateDefaultLocale,
+  Future<AppUpdate?> findAvailableUpdate({
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
       final appUpdate = await findUpdate(locale: locale);

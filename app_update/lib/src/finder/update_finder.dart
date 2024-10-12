@@ -24,9 +24,10 @@ class UpdateFinder {
     for (final release in releases) {
       final releaseSource = release.targetSource;
 
-      if (!releaseSource.platforms.contains(platform)) {
-        continue;
-      }
+      if (!releaseSource.platforms.contains(platform)) continue;
+
+      // обновляемся только на версии, которые строго выше нынешней
+      if (release.version <= appVersion) continue;
 
       final availableRelease = availableReleasesFromAllSources[releaseSource];
       if (availableRelease == null) {

@@ -2,7 +2,7 @@ import '../../linker/models/release_settings_data.dart';
 import 'update_texts.dart';
 
 class ReleaseSettings {
-  final UpdateTexts texts;
+  final UpdateTranslations texts;
   final bool canSkipRelease;
   final bool canPostponeRelease;
   final Duration reminderPeriod;
@@ -22,45 +22,68 @@ class ReleaseSettings {
 
   factory ReleaseSettings.fromData({
     ReleaseSettingsData? data,
-    UpdateTexts? texts,
+    required ReleaseSettings defaultSettings,
   }) =>
       ReleaseSettings(
-        texts: texts ?? const UpdateTexts(),
-        canSkipRelease: data?.canSkipRelease ?? true,
-        canPostponeRelease: data?.canPostponeRelease ?? true,
-        reminderPeriod: data?.reminderPeriod ?? const Duration(days: 7),
-        releaseDelay: data?.releaseDelay ?? Duration.zero,
-        progressiveRolloutDuration: data?.progressiveRolloutDuration ?? Duration.zero,
+        texts: UpdateTranslations.fromData(
+          rawTranslations: data?.translations,
+          defaultTexts: defaultSettings.texts,
+        ),
+        canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
+        canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
+        reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
+        releaseDelay: data?.releaseDelay ?? defaultSettings.releaseDelay,
+        progressiveRolloutDuration: data?.progressiveRolloutDuration ?? defaultSettings.progressiveRolloutDuration,
         customData: data?.customData,
       );
 
-  // const ReleaseSettings.requiredUpdate({
-  //   required this.texts,
-  //   this.canSkipRelease = false,
-  //   this.canPostponeRelease = false,
-  //   this.reminderPeriod = Duration.zero,
-  //   this.releaseDelay = Duration.zero,
-  //   this.progressiveRolloutDuration = Duration.zero,
-  //   this.customData,
-  // });
+  const ReleaseSettings.requiredUpdate({
+    required this.texts,
+    this.canSkipRelease = false,
+    this.canPostponeRelease = false,
+    this.reminderPeriod = Duration.zero,
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
 
-  // const ReleaseSettings.recommendedUpdate({
-  //   required this.texts,
-  //   this.canSkipRelease = false,
-  //   this.canPostponeRelease = true,
-  //   this.reminderPeriod = const Duration(hours: 24),
-  //   this.releaseDelay = Duration.zero,
-  //   this.progressiveRolloutDuration = Duration.zero,
-  //   this.customData,
-  // });
+  const ReleaseSettings.recommendedUpdate({
+    required this.texts,
+    this.canSkipRelease = false,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 24),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
 
-  // const ReleaseSettings.availableUpdate({
-  //   required this.texts,
-  //   this.canSkipRelease = true,
-  //   this.canPostponeRelease = true,
-  //   this.reminderPeriod = const Duration(hours: 72),
-  //   this.releaseDelay = Duration.zero,
-  //   this.progressiveRolloutDuration = Duration.zero,
-  //   this.customData,
-  // });
+  const ReleaseSettings.availableUpdate({
+    required this.texts,
+    this.canSkipRelease = true,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 72),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
+  ReleaseSettings copyWith({
+    UpdateTranslations? texts,
+    bool? canSkipRelease,
+    bool? canPostponeRelease,
+    Duration? reminderPeriod,
+    Duration? releaseDelay,
+    Duration? progressiveRolloutDuration,
+    Map<String, dynamic>? customData,
+  }) {
+    return ReleaseSettings(
+      texts: texts ?? this.texts,
+      canSkipRelease: canSkipRelease ?? this.canSkipRelease,
+      canPostponeRelease: canPostponeRelease ?? this.canPostponeRelease,
+      reminderPeriod: reminderPeriod ?? this.reminderPeriod,
+      releaseDelay: releaseDelay ?? this.releaseDelay,
+      progressiveRolloutDuration: progressiveRolloutDuration ?? this.progressiveRolloutDuration,
+      customData: customData ?? this.customData,
+    );
+  }
 }

@@ -58,7 +58,7 @@ class UpdateSettingsParser {
   }) {
     final settingsByStatus = <String, ReleaseSettingsConfig>{};
 
-    final statusNames = [...UpdateStatus.values.map((e) => e.name), 'base'];
+    final statusNames = [...AppVersionStatus.values.map((e) => e.name), 'base'];
 
     final isByStatus = map.keys.any(statusNames.contains);
 
