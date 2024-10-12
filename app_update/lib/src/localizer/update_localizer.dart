@@ -48,21 +48,12 @@ class UpdateLocalizer {
           ),
         );
 
-    // TODO: С учётом того, что UpdateLocalizer мержит настройки с настройками по умолчанию, он не Localizer
-    final defaultSettings = UpdateSettings.base();
-
     final localizedSettings = releaseData.settings.value.map(
       (alertType, value) => MapEntry(
         alertType,
         value.map(
           (status, releaseSettingsData) {
-            final settings = ReleaseSettings.fromData(
-              data: releaseSettingsData,
-              defaultSettings: defaultSettings.getByRaw(
-                type: alertType,
-                status: status,
-              ),
-            );
+            final settings = ReleaseSettings.fromData(data: releaseSettingsData);
 
             final localizedText = interpolationUpdateTranslation(settings.texts);
 
