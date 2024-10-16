@@ -23,13 +23,10 @@ class ReleaseSettings {
   factory ReleaseSettings.fromData({
     ReleaseSettingsData? data,
   }) {
-    const defaultSettings = ReleaseSettings.availableUpdate(texts: UpdateTranslations({}));
+    final defaultSettings = ReleaseSettings.availableUpdate(texts: UpdateTranslations.defaultTexts);
 
     return ReleaseSettings(
-      texts: UpdateTranslations.fromData(
-        rawTranslations: data?.translations,
-        defaultTexts: defaultSettings.texts,
-      ),
+      texts: UpdateTranslations.fromData(rawTranslations: data?.translations),
       canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
       canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
       reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
