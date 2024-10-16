@@ -14,7 +14,7 @@ class UpdateSettingsConfig {
 
   ReleaseSettingsConfig? getBy({
     required UpdateAlertType type,
-    required AppVersionStatus status,
+    required VersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 
@@ -99,7 +99,7 @@ mixin GetByMixin<T> {
 
   T getBy({
     required UpdateAlertType type,
-    required AppVersionStatus status,
+    required VersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 

@@ -7,7 +7,7 @@ import 'update_config.dart';
 class AppUpdate {
   final String appName;
   final Version appVersion;
-  final AppVersionStatus appVersionStatus;
+  final VersionStatus appVersionStatus;
   final UpdateConfig config;
   final Release release;
 
