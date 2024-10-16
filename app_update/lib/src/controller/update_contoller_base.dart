@@ -10,13 +10,18 @@ import 'exceptions.dart';
 
 // TODO (iamgirya): посмотри на спеку и реализацию, тут различия,
 // мб надо поменять или спеку, или реализацию
-abstract class UpdateContollerBase {
+abstract class UpdateControllerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
-  /// Check new releases from the update config and stores.
-  Future<void> fetch(); // TODO: сделай фетч фетчем - с сохранением инфы с инета
+  /// Going to network to get the config or using fetchers to get the latest updates from sources.
+  ///
+  /// [throttleTime] - The time that must have passed since the last fetch to check for updates again.
+  // TODO: сделай фетч фетчем - с сохранением инфы с инета
+  Future<void> fetch({
+    Duration? throttleTime,
+  });
 
   /// Get current update config
   ///
@@ -34,6 +39,11 @@ abstract class UpdateContollerBase {
   ///
   /// If update not available return null.
   Future<AppUpdate?> findAvailableUpdate({
+    Locale locale,
+  });
+
+  /// Finds updates from all sources available on the current application platform.
+  Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale,
   });
 

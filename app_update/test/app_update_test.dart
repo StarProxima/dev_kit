@@ -20,7 +20,7 @@ void main() async {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
 
-        final settings = update.releaseFromTargetSource!.settings.getBy(
+        final settings = update.release.settings.getBy(
           type: UpdateAlertType.adaptiveDialog,
           status: AppVersionStatus.updatable,
         );
@@ -36,10 +36,10 @@ void main() async {
 
         controller.skipRelease(releaseData);
 
-        final release = update.releaseFromTargetSource;
+        final release = update.release;
 
         // Skip
-        controller.skipRelease(release!);
+        controller.skipRelease(release);
 
         // Later
         // controller.postponeRelease(release,);
@@ -71,7 +71,7 @@ void main() async {
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
         case AppVersionStatus.updatable:
-          if (DateTime.now().difference(update.releaseFromTargetSource!.dateUtc!) > const Duration(days: 7)) {
+          if (DateTime.now().difference(update.release!.dateUtc!) > const Duration(days: 7)) {
             // Show custom dialog
             return;
           }
