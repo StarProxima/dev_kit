@@ -47,7 +47,6 @@ class UpdateController extends UpdateContollerBase {
   final List<Source>? _globalSources;
   final UpdatePlatform _platform;
   final String? _prioritySourceName;
-  // final Locale _locale;
 
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
@@ -68,23 +67,21 @@ class UpdateController extends UpdateContollerBase {
     List<Source>? globalSources,
     UpdatePlatform? platform,
     String? prioritySourceName,
-    // TODO убрать бы локаль по хорошему
-    // required Locale locale,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
         _releaseSettings = releaseSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
         _prioritySourceName = prioritySourceName,
-        // _locale = locale,
         _platform = platform ?? UpdatePlatform.current();
 
   @override
   Future<AppUpdate> findUpdate({
-    Locale locale = appUpdateDefaultLocale,
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
+    final appName = packageInfo.appName;
 
     final fetcher = _updateConfigFetcher;
     if (fetcher == null) throw const UpdateNotFoundException();
@@ -101,10 +98,10 @@ class UpdateController extends UpdateContollerBase {
     final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
 
     _versionController ??= UpdateVersionController(configModel.versionSettings);
-    final releasesDataWithStatus = _versionController!.setStatuses(releasesData);
+    final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _localizer ??= UpdateLocalizer(appLocale: locale, packageInfo: packageInfo);
-    final releases = _localizer!.localizeReleasesData(releasesDataWithStatus);
+    _localizer ??= UpdateLocalizer(appName: appName, appVersion: appVersion);
+    final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
     final globalSources = _globalSources ?? [];
@@ -136,12 +133,11 @@ class UpdateController extends UpdateContollerBase {
 
     final appUpdate = AppUpdate(
       appName: packageInfo.appName,
-      appVersion: Version.parse(packageInfo.version),
-      appLocale: locale,
+      appVersion: appVersion,
       config: updateConfig,
-      currentReleaseStatus: currentReleaseStatus,
-      availableRelease: availableRelease,
-      availableReleasesFromAllSources: availableReleasesFromAllSources,
+      appVersionStatus: currentReleaseStatus,
+      releaseFromTargetSource: availableRelease,
+      allReleasesFromAvailableSources: availableReleasesFromAllSources,
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
@@ -174,11 +170,12 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<AppUpdate?> getAvailableAppUpdate({
-    Locale locale = appUpdateDefaultLocale,
+  Future<AppUpdate?> findAvailableUpdate({
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
       final appUpdate = await findUpdate(locale: locale);
+
       return appUpdate;
     } on UpdateException catch (_) {
       return null;
@@ -231,15 +228,3 @@ class UpdateController extends UpdateContollerBase {
     await _availableUpdateStream.close();
   }
 }
-
-/* TODO
--Серёга на LocalDataService ✅
--Фетчеры не готовы
--Тудушки по коду
--Релиз ноты ✅
--Сделать все сурсы через энамы
--Все хэндлеры
--Тесты пофиксить
-
-
-*/

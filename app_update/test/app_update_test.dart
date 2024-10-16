@@ -1,14 +1,14 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
-import 'package:app_update/src/shared/update_alert_type.dart';
-import 'package:flutter/material.dart';
 import 'package:app_update/src/controller/update_controller.dart';
-import 'package:app_update/src/shared/update_status.dart';
+import 'package:app_update/src/shared/app_version_status.dart';
+import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
-  final controller = UpdateController(locale: const Locale('en'));
+  final controller = UpdateController();
 
   await controller.fetch();
 
@@ -19,10 +19,14 @@ void main() async {
       onUpdateAvailable: (context, update, controller) {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
-        update.availableRelease!.settings.getBy(
+
+        final settings = update.releaseFromTargetSource!.settings.getBy(
           type: UpdateAlertType.adaptiveDialog,
-          status: UpdateStatus.available,
+          status: AppVersionStatus.updatable,
         );
+
+        final text = settings.texts.byLocale(const Locale('en'));
+
         // Release.localizedFromReleaseData(
         //   releaseData: releaseData,
         //   locale: update.appLocale,
@@ -32,7 +36,7 @@ void main() async {
 
         controller.skipRelease(releaseData);
 
-        final release = update.availableRelease;
+        final release = update.releaseFromTargetSource;
 
         // Skip
         controller.skipRelease(release!);
@@ -59,15 +63,15 @@ void main() async {
 
   UpdateAlert(
     onUpdateAvailable: (context, update, controller) {
-      switch (update.availableRelease!.status) {
-        case UpdateStatus.required:
+      switch (update.appVersionStatus) {
+        case AppVersionStatus.unsupported:
           UpdateAlertHandler.screen(context, update, controller);
 
-        case UpdateStatus.recommended:
+        case AppVersionStatus.deprecated:
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
-        case UpdateStatus.available:
-          if (DateTime.now().difference(update.availableRelease!.dateUtc!) > const Duration(days: 7)) {
+        case AppVersionStatus.updatable:
+          if (DateTime.now().difference(update.releaseFromTargetSource!.dateUtc!) > const Duration(days: 7)) {
             // Show custom dialog
             return;
           }

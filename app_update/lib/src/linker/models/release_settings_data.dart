@@ -2,7 +2,7 @@ import '../../parser/models/release_settings_config.dart';
 import '../../parser/models/settings_translations.dart';
 
 class ReleaseSettingsData {
-  final UpdateTranslations? translations;
+  final UpdateTranslationsData? translations;
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
   final Duration? reminderPeriod;

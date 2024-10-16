@@ -14,8 +14,7 @@ class UpdateConfigLinker {
     required List<ReleaseConfig> releasesConfig,
     required List<GlobalSourceConfig>? globalSourcesConfig,
   }) {
-    UpdateSettingsData? inheritedSettings =
-        globalSettingsConfig == null ? null : UpdateSettingsData.fromConfig(globalSettingsConfig);
+    UpdateSettingsData inheritedSettings = UpdateSettingsData.fromConfig(globalSettingsConfig);
 
     final globalSources = <GlobalSourceConfig?>[...?globalSourcesConfig];
     final releases = <ReleaseData>[];
@@ -24,7 +23,7 @@ class UpdateConfigLinker {
       // мержим настройки релиза с глобальными настройками
       final releaseSettings = releaseConfig.settings;
       if (releaseSettings != null) {
-        inheritedSettings = inheritedSettings?.inherit(UpdateSettingsData.fromConfig(releaseSettings));
+        inheritedSettings = inheritedSettings.inherit(UpdateSettingsData.fromConfig(releaseSettings));
       }
 
       final sourcesConfig = releaseConfig.sources;
@@ -47,7 +46,7 @@ class UpdateConfigLinker {
         // мержим настройки сурса с релизными настройками
         final sourceSettings = globalSource?.settings ?? sourceReleaseConfig?.settings;
         if (sourceSettings != null) {
-          inheritedSettings = inheritedSettings?.inherit(UpdateSettingsData.fromConfig(sourceSettings));
+          inheritedSettings = inheritedSettings.inherit(UpdateSettingsData.fromConfig(sourceSettings));
         }
 
         final targetSource = Source(

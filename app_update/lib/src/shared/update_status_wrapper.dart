@@ -1,9 +1,10 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
 import '../linker/models/release_settings_data.dart';
 import '../localizer/models/release_settings.dart';
+import '../localizer/models/update_texts.dart';
 import '../parser/models/release_settings_config.dart';
+import 'app_version_status.dart';
 import 'update_alert_type.dart';
-import 'update_status.dart';
 
 // TODO тут миксин не надо бы применить?
 class UpdateSettingsConfig {
@@ -13,7 +14,7 @@ class UpdateSettingsConfig {
 
   ReleaseSettingsConfig? getBy({
     required UpdateAlertType type,
-    required UpdateStatus status,
+    required AppVersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 
@@ -33,17 +34,26 @@ class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
   @override
   final Map<String, Map<String, ReleaseSettingsData>> _value;
 
-  // TODO зачем вообще _value сделан приватный?
-  // Так этот класс это буквально обёртка над мапой, чтобы с ней безопасно работать,
-  // к ней доступ никому не должен быть нужен
   Map<String, Map<String, ReleaseSettingsData>> get value => _value;
 
   const UpdateSettingsData(this._value);
 
-  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig config) {
+  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig? config) {
     return UpdateSettingsData(
-      config._value.map((key, value) =>
-          MapEntry(key, value.map((key, value) => MapEntry(key, ReleaseSettingsData.fromConfig(value))))),
+      config?._value.map(
+            (key, value) => MapEntry(
+              key,
+              value.map(
+                (key, value) => MapEntry(
+                  key,
+                  ReleaseSettingsData.fromConfig(value),
+                ),
+              ),
+            ),
+          ) ??
+          {
+            'base': {'base': ReleaseSettingsData.fromConfig(null)},
+          },
     );
   }
 
@@ -75,8 +85,12 @@ class UpdateSettings with GetByMixin<ReleaseSettings> {
 
   const UpdateSettings(this._value);
 
-  factory UpdateSettings.empty() => UpdateSettings({
-        'base': {'base': ReleaseSettings.fromData()},
+  factory UpdateSettings.base() => const UpdateSettings({
+        'base': {
+          'base': ReleaseSettings.availableUpdate(
+            texts: UpdateTranslations({}),
+          ),
+        },
       });
 }
 
@@ -85,7 +99,7 @@ mixin GetByMixin<T> {
 
   T getBy({
     required UpdateAlertType type,
-    required UpdateStatus status,
+    required AppVersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 

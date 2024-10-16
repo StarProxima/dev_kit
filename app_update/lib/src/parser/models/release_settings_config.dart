@@ -1,7 +1,7 @@
 import 'settings_translations.dart';
 
 class ReleaseSettingsConfig {
-  final UpdateTranslations? translations;
+  final UpdateTranslationsData? translations;
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
   final Duration? reminderPeriod;

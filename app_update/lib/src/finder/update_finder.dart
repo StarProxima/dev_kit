@@ -1,12 +1,9 @@
-// ignore_for_file: avoid-unnecessary-reassignment, prefer-correct-identifier-length
-
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../controller/exceptions.dart';
 import '../localizer/models/release.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_status.dart';
 import '../sources/source.dart';
 
 class UpdateFinder {
@@ -27,13 +24,10 @@ class UpdateFinder {
     for (final release in releases) {
       final releaseSource = release.targetSource;
 
-      if (!releaseSource.platforms.contains(platform)) {
-        continue;
-      }
+      if (!releaseSource.platforms.contains(platform)) continue;
 
-      if (release.status != UpdateStatus.available) {
-        continue;
-      }
+      // обновляемся только на версии, которые строго выше нынешней
+      if (release.version <= appVersion) continue;
 
       final availableRelease = availableReleasesFromAllSources[releaseSource];
       if (availableRelease == null) {
@@ -72,9 +66,9 @@ class UpdateFinder {
     }
 
     // либо определяем сами откуда установлено приложение
-    final sourceCheckerName = await Sources.checkAppSource();
-    if (sourceCheckerName != null) {
-      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == sourceCheckerName);
+    final sourceCheckerType = await Sources.checkAppSource();
+    if (sourceCheckerType != null) {
+      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.sourceType == sourceCheckerType);
       if (checkedSource != null) {
         // если сурс существует в конфиге, но для него нет обновления
         if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {

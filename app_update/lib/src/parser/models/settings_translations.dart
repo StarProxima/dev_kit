@@ -1,6 +1,6 @@
 import '../../shared/text_translations.dart';
 
-class UpdateTranslations {
+class UpdateTranslationsData {
   final TextTranslations? title;
   final TextTranslations? description;
   final TextTranslations? releaseNoteTitle;
@@ -9,7 +9,7 @@ class UpdateTranslations {
   final TextTranslations? laterButtonText;
   final TextTranslations? updateButtonText;
 
-  const UpdateTranslations({
+  const UpdateTranslationsData({
     required this.title,
     required this.description,
     required this.releaseNoteTitle,
