@@ -28,7 +28,7 @@ import '../version_controller/update_version_controller.dart';
 import 'exceptions.dart';
 import 'update_contoller_base.dart';
 
-class UpdateController extends UpdateContollerBase {
+class UpdateController extends UpdateControllerBase {
   final _asyncPackageInfo = PackageInfo.fromPlatform();
 
   final UpdateConfigFetcher? _updateConfigFetcher;
@@ -136,20 +136,17 @@ class UpdateController extends UpdateContollerBase {
       appVersion: appVersion,
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
-      releaseFromTargetSource: availableRelease,
-      allReleasesFromAvailableSources: availableReleasesFromAllSources,
+      release: availableRelease ?? (throw UnimplementedError()),
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
 
-    if (availableRelease != null) {
-      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
-        throw UpdateSkippedException(update: appUpdate);
-      }
-      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
-        throw UpdatePostponedException(update: appUpdate);
-      }
+    if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+      throw UpdateSkippedException(update: appUpdate);
+    }
+    if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+      throw UpdatePostponedException(update: appUpdate);
     }
 
     _lastUpdateConfig = updateConfig;
@@ -162,7 +159,9 @@ class UpdateController extends UpdateContollerBase {
 
   // TODO переписать
   @override
-  Future<void> fetch() async {
+  Future<void> fetch({
+    Duration? throttleTime,
+  }) async {
     try {
       await findUpdate();
       // ignore: empty_catches
@@ -180,6 +179,14 @@ class UpdateController extends UpdateContollerBase {
     } on UpdateException catch (_) {
       return null;
     }
+  }
+
+  @override
+  Future<List<AppUpdate>> findAllAvailableUpdates({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) {
+    // TODO: implement findAllAvailableUpdates
+    throw UnimplementedError();
   }
 
   @override
