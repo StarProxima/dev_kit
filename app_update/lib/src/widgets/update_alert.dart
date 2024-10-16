@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../controller/update_contoller_base.dart';
 import '../controller/update_controller.dart';
 import '../localizer/models/app_update.dart';
 import 'update_alert_handler.dart';
@@ -11,23 +12,33 @@ import 'update_alert_handler.dart';
 typedef OnUpdateAvailable = FutureOr<void> Function(
   BuildContext context,
   AppUpdate update,
-  UpdateController controller,
+  UpdateControllerBase controller,
+);
+
+typedef OnPickUpdateSource = FutureOr<AppUpdate?> Function(
+  BuildContext context,
+  List<AppUpdate> updates,
+  UpdateControllerBase controller,
 );
 
 class UpdateAlert extends StatefulWidget {
   const UpdateAlert({
     super.key,
-    this.enabled = true,
     this.controller,
+    this.enabled = true,
     this.shouldCheckUpdateAfterAppResume = true,
     this.onUpdateAvailable = UpdateAlertHandler.adaptiveDialog,
+    this.shouldPickUpdateWhenSourceIsNotDefined = true,
+    this.onPickUpdateSource = UpdateAlertHandler.pickUpdate,
     required this.child,
   });
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
-  final UpdateController? controller;
-  final OnUpdateAvailable? onUpdateAvailable;
+  final UpdateControllerBase? controller;
+  final OnUpdateAvailable onUpdateAvailable;
+  final bool shouldPickUpdateWhenSourceIsNotDefined;
+  final OnPickUpdateSource onPickUpdateSource;
 
   final Widget child;
 
@@ -37,16 +48,23 @@ class UpdateAlert extends StatefulWidget {
 
 class _UpdateAlertState extends State<UpdateAlert> {
   late final AppLifecycleListener _appLifecycleListener;
-  late final UpdateController _controller;
+  late final UpdateControllerBase _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? UpdateController();
 
+    const throttleTime = Duration(seconds: 60);
+
+    _controller.fetch(throttleTime: throttleTime);
+
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () {
         if (!widget.shouldCheckUpdateAfterAppResume) return;
+
+        _controller.fetch(throttleTime: throttleTime);
+
         _check();
       },
     );
@@ -55,13 +73,25 @@ class _UpdateAlertState extends State<UpdateAlert> {
   Future<void> _check() async {
     if (!widget.enabled) return;
 
-    final appUpdate = await _controller.tryFindUpdate();
-    if (appUpdate == null) return;
+    final locale = Localizations.localeOf(context);
 
-    if (context.mounted) {
-      // ignore: use_build_context_synchronously
-      widget.onUpdateAvailable?.call(context, appUpdate, _controller);
+    var appUpdate = await _controller.tryFindUpdate();
+
+    if (appUpdate == null) {
+      final onPickUpdateSource = widget.onPickUpdateSource;
+      if (widget.shouldPickUpdateWhenSourceIsNotDefined) return;
+
+      final appUpdates = await _controller.findAllAvailableUpdates(locale: locale);
+
+      if (!mounted) return;
+
+      appUpdate = await onPickUpdateSource(context, appUpdates, _controller);
     }
+
+    if (appUpdate == null) return;
+    if (!mounted) return;
+
+    await widget.onUpdateAvailable.call(context, appUpdate, _controller);
   }
 
   @override

@@ -29,7 +29,7 @@ import '../version_controller/update_version_controller.dart';
 import 'exceptions.dart';
 import 'update_contoller_base.dart';
 
-class UpdateController extends UpdateContollerBase {
+class UpdateController extends UpdateControllerBase {
   final _asyncPackageInfo = PackageInfo.fromPlatform();
 
   final UpdateConfigFetcher? _updateConfigFetcher;
@@ -79,7 +79,9 @@ class UpdateController extends UpdateContollerBase {
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<void> fetchUpdateConfig() async {
+  Future<void> fetchUpdateConfig({
+    Duration? throttleTime,
+  }) async {
     _updateConfigModelCompleter = Completer();
 
     final fetcher = _updateConfigFetcher;
@@ -93,6 +95,7 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<void> fetchGlobalSourceReleases({
+    Duration? throttleTime,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     _sourceReleasesFromFetchersCompleter = Completer();
@@ -164,20 +167,17 @@ class UpdateController extends UpdateContollerBase {
       appVersion: appVersion,
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
-      releaseFromTargetSource: availableRelease,
-      allReleasesFromAvailableSources: availableReleasesFromAllSources,
+      release: availableRelease ?? (throw UnimplementedError()),
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
 
-    if (availableRelease != null) {
-      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
-        throw UpdateSkippedException(update: appUpdate);
-      }
-      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
-        throw UpdatePostponedException(update: appUpdate);
-      }
+    if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+      throw UpdateSkippedException(update: appUpdate);
+    }
+    if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+      throw UpdatePostponedException(update: appUpdate);
     }
 
     _lastUpdateConfig = updateConfig;
@@ -204,6 +204,14 @@ class UpdateController extends UpdateContollerBase {
   @override
   Future<UpdateConfig?> getLastUpdateConfig({Locale locale = kAppUpdateDefaultLocale}) async =>
       _lastUpdateConfig ?? (await tryFindUpdate(locale: locale))?.config;
+
+  @override
+  Future<List<AppUpdate>> findAllAvailableUpdates({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) {
+    // TODO: implement findAllAvailableUpdates
+    throw UnimplementedError();
+  }
 
   @override
   Future<AppUpdate?> getLastAppUpdate({Locale locale = kAppUpdateDefaultLocale}) async =>

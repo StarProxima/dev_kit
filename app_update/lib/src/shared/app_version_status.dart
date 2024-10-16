@@ -1,7 +1,7 @@
 // ignore_for_file: prefer-boolean-prefixes
 
 /// The status of the app version.
-enum AppVersionStatus {
+enum VersionStatus {
   /// The current version is not supported.
   /// The update must be required to be installed before using the application.
   unsupported,
