@@ -57,13 +57,15 @@ class _UpdateAlertState extends State<UpdateAlert> {
 
     const throttleTime = Duration(seconds: 60);
 
-    _controller.fetch(throttleTime: throttleTime);
+    _controller.fetchUpdateConfig(throttleTime: throttleTime);
+    _controller.fetchGlobalSourceReleases(throttleTime: throttleTime);
 
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () {
         if (!widget.shouldCheckUpdateAfterAppResume) return;
 
-        _controller.fetch(throttleTime: throttleTime);
+        _controller.fetchUpdateConfig(throttleTime: throttleTime);
+        _controller.fetchGlobalSourceReleases(throttleTime: throttleTime);
 
         _check();
       },
