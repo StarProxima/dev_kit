@@ -53,8 +53,6 @@ class UpdateController extends UpdateControllerBase {
   Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
-  AppUpdate? _lastAppUpdate;
-  UpdateConfig? _lastUpdateConfig;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
@@ -152,8 +150,6 @@ class UpdateController extends UpdateControllerBase {
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
 
-    final availableReleasesFromAllSources = availableReleasesBySources.values.toList();
-
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       sources: sources,
@@ -167,7 +163,7 @@ class UpdateController extends UpdateControllerBase {
       appVersion: appVersion,
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
-      release: availableRelease ?? (throw UnimplementedError()),
+      release: availableRelease ?? (throw const UpdateNotFoundException()),
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
@@ -180,9 +176,7 @@ class UpdateController extends UpdateControllerBase {
       throw UpdatePostponedException(update: appUpdate);
     }
 
-    _lastUpdateConfig = updateConfig;
     _updateConfigStream.add(updateConfig);
-    _lastAppUpdate = appUpdate;
     _availableUpdateStream.add(appUpdate);
 
     return appUpdate;
@@ -202,10 +196,6 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<UpdateConfig?> getLastUpdateConfig({Locale locale = kAppUpdateDefaultLocale}) async =>
-      _lastUpdateConfig ?? (await tryFindUpdate(locale: locale))?.config;
-
-  @override
   Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale = kAppUpdateDefaultLocale,
   }) {
@@ -214,17 +204,12 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<AppUpdate?> getLastAppUpdate({Locale locale = kAppUpdateDefaultLocale}) async =>
-      _lastAppUpdate ?? (await tryFindUpdate(locale: locale));
-
-  @override
   Future<void> launchReleaseSource(Release release) async {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     await _updateStorage?.saveLastSource(release.targetSource.name);
 
     final url = release.targetSource.url;
     await launchUrl(url);
-    // TODO надо обсудить, что должна эта функция делать
   }
 
   @override

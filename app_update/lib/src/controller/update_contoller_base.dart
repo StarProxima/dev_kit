@@ -44,16 +44,6 @@ abstract class UpdateControllerBase {
     Locale locale,
   });
 
-  /// Get last founded update config or call [tryFindUpdate].
-  Future<UpdateConfig?> getLastUpdateConfig({
-    Locale locale,
-  });
-
-  /// Get last founded app update or call [tryFindUpdate].
-  Future<AppUpdate?> getLastAppUpdate({
-    Locale locale,
-  });
-
   /// Finds updates from all sources available on the current application platform.
   Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale,
