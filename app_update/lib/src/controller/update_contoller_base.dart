@@ -13,18 +13,16 @@ abstract class UpdateControllerBase {
 
   Stream<UpdateConfig> get updateConfigStream;
 
-  /// Going to network to get the UpdateConfig to get the latest updates from sources.
-  ///
-  /// [throttleTime] - The time that must have passed since the last fetch to fetch again.
-  Future<void> fetchUpdateConfig({
-    Duration? throttleTime,
+  /// Going to network to get the UpdateConfig and Releses from global sources to get the latest updates.
+  Future<void> fetch({
+    Locale locale,
   });
 
+  /// Going to network to get the UpdateConfig to get the latest updates from sources.
+  Future<void> fetchUpdateConfig();
+
   /// Fetch releases list data from SourceReleaseFetcherCoordinator and globalSources.
-  ///
-  /// /// [throttleTime] - The time that must have passed since the last fetch to fetch again.
   Future<void> fetchGlobalSourceReleases({
-    Duration? throttleTime,
     Locale locale,
   });
 

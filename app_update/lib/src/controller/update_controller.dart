@@ -77,9 +77,15 @@ class UpdateController extends UpdateControllerBase {
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<void> fetchUpdateConfig({
-    Duration? throttleTime,
+  Future<void> fetch({
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
+    await fetchUpdateConfig();
+    await fetchGlobalSourceReleases(locale: locale);
+  }
+
+  @override
+  Future<void> fetchUpdateConfig() async {
     _updateConfigModelCompleter = Completer();
 
     final fetcher = _updateConfigFetcher;
@@ -93,7 +99,6 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   Future<void> fetchGlobalSourceReleases({
-    Duration? throttleTime,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     _sourceReleasesFromFetchersCompleter = Completer();
