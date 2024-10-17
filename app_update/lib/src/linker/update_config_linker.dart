@@ -56,8 +56,8 @@ class UpdateConfigLinker {
           customData: customData ?? globalSource?.customData,
         );
 
-        // применяем релиз конкретного магазина, если есть
-        final version = sourceReleaseConfig?.version ?? releaseConfig.version;
+        // применяем релиз конкретного магазина, если есть. Уверены, что версия не нулл, так как парсер не пропустит релиз с null версией
+        final version = sourceReleaseConfig?.version ?? releaseConfig.version!;
         final dateUtc = sourceReleaseConfig?.dateUtc ?? releaseConfig.dateUtc;
         final releaseCustomData = sourceReleaseConfig?.customData ?? releaseConfig.customData;
 

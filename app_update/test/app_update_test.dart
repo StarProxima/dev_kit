@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 void main() async {
   final controller = UpdateController();
 
-  await controller.fetch();
+  await controller.fetchUpdateConfig();
 
   // ignore: unused_local_variable
   final widget = Scaffold(

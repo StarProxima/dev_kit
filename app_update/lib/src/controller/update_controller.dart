@@ -16,6 +16,7 @@ import '../localizer/models/app_update.dart';
 import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import '../localizer/update_localizer.dart';
+import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
@@ -48,10 +49,10 @@ class UpdateController extends UpdateControllerBase {
   final UpdatePlatform _platform;
   final String? _prioritySourceName;
 
+  Completer<UpdateConfigModel>? _updateConfigModelCompleter;
+  Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
-  AppUpdate? _lastAppUpdate;
-  UpdateConfig? _lastUpdateConfig;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
@@ -76,18 +77,53 @@ class UpdateController extends UpdateControllerBase {
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<AppUpdate> findUpdate({
+  Future<void> fetch({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
-    final packageInfo = await _asyncPackageInfo;
-    final appVersion = Version.parse(packageInfo.version);
-    final appName = packageInfo.appName;
+    await fetchUpdateConfig();
+    await fetchGlobalSourceReleases(locale: locale);
+  }
+
+  @override
+  Future<void> fetchUpdateConfig() async {
+    _updateConfigModelCompleter = Completer();
 
     final fetcher = _updateConfigFetcher;
     if (fetcher == null) throw const UpdateNotFoundException();
     final rawConfig = await fetcher.fetch();
 
     final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
+
+    _updateConfigModelCompleter!.complete(configModel);
+  }
+
+  @override
+  Future<void> fetchGlobalSourceReleases({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    _sourceReleasesFromFetchersCompleter = Completer();
+
+    final packageInfo = await _asyncPackageInfo;
+    final releases = <Release>[];
+    for (final source in _globalSources ?? []) {
+      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+      final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
+      releases.add(releaseFromSource);
+    }
+
+    _sourceReleasesFromFetchersCompleter!.complete(releases);
+  }
+
+  @override
+  Future<AppUpdate> findUpdate({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
+    final configModel = await _updateConfigModelCompleter!.future;
+
+    final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
+    final appName = packageInfo.appName;
 
     final releasesData = _linker.linkConfigs(
       globalSettingsConfig: _releaseSettings ?? configModel.settings,
@@ -104,13 +140,11 @@ class UpdateController extends UpdateControllerBase {
     final releases = _localizer!.localizeReleasesData(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
-    final globalSources = _globalSources ?? [];
-    for (final source in globalSources) {
-      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
-      final releaseConfig = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
-      releases.add(releaseConfig);
-    }
-    sources.addAll(globalSources);
+
+    if (_sourceReleasesFromFetchersCompleter == null) await fetchGlobalSourceReleases();
+    final releasesFromSources = await _sourceReleasesFromFetchersCompleter!.future;
+    releases.addAll(releasesFromSources);
+    sources.addAll([...?_globalSources]);
 
     final updateConfig = UpdateConfig(
       sources: sources,
@@ -120,8 +154,6 @@ class UpdateController extends UpdateControllerBase {
 
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
-
-    final availableReleasesFromAllSources = availableReleasesBySources.values.toList();
 
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
@@ -136,7 +168,7 @@ class UpdateController extends UpdateControllerBase {
       appVersion: appVersion,
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
-      release: availableRelease ?? (throw UnimplementedError()),
+      release: availableRelease ?? (throw const UpdateNotFoundException()),
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
@@ -149,27 +181,14 @@ class UpdateController extends UpdateControllerBase {
       throw UpdatePostponedException(update: appUpdate);
     }
 
-    _lastUpdateConfig = updateConfig;
     _updateConfigStream.add(updateConfig);
-    _lastAppUpdate = appUpdate;
     _availableUpdateStream.add(appUpdate);
 
     return appUpdate;
   }
 
-  // TODO переписать
   @override
-  Future<void> fetch({
-    Duration? throttleTime,
-  }) async {
-    try {
-      await findUpdate();
-      // ignore: empty_catches
-    } on UpdateException {}
-  }
-
-  @override
-  Future<AppUpdate?> findAvailableUpdate({
+  Future<AppUpdate?> tryFindUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
@@ -190,20 +209,12 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<UpdateConfig?> getAvailableUpdateConfig() async {
-    if (_lastUpdateConfig == null) await fetch();
-
-    return _lastUpdateConfig;
-  }
-
-  @override
   Future<void> launchReleaseSource(Release release) async {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     await _updateStorage?.saveLastSource(release.targetSource.name);
 
     final url = release.targetSource.url;
     await launchUrl(url);
-    // TODO всё?
   }
 
   @override

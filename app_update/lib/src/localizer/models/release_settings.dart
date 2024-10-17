@@ -22,20 +22,22 @@ class ReleaseSettings {
 
   factory ReleaseSettings.fromData({
     ReleaseSettingsData? data,
-    required ReleaseSettings defaultSettings,
-  }) =>
-      ReleaseSettings(
-        texts: UpdateTranslations.fromData(
-          rawTranslations: data?.translations,
-          defaultTexts: defaultSettings.texts,
-        ),
-        canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
-        canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
-        reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
-        releaseDelay: data?.releaseDelay ?? defaultSettings.releaseDelay,
-        progressiveRolloutDuration: data?.progressiveRolloutDuration ?? defaultSettings.progressiveRolloutDuration,
-        customData: data?.customData,
-      );
+  }) {
+    const defaultSettings = ReleaseSettings.availableUpdate(texts: UpdateTranslations({}));
+
+    return ReleaseSettings(
+      texts: UpdateTranslations.fromData(
+        rawTranslations: data?.translations,
+        defaultTexts: defaultSettings.texts,
+      ),
+      canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
+      canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
+      reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
+      releaseDelay: data?.releaseDelay ?? defaultSettings.releaseDelay,
+      progressiveRolloutDuration: data?.progressiveRolloutDuration ?? defaultSettings.progressiveRolloutDuration,
+      customData: data?.customData,
+    );
+  }
 
   const ReleaseSettings.requiredUpdate({
     required this.texts,

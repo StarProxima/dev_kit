@@ -50,20 +50,20 @@ class _UpdateAlertState extends State<UpdateAlert> {
   late final AppLifecycleListener _appLifecycleListener;
   late final UpdateControllerBase _controller;
 
+  Locale get locale => Localizations.localeOf(context);
+
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? UpdateController();
 
-    const throttleTime = Duration(seconds: 60);
-
-    _controller.fetch(throttleTime: throttleTime);
+    _controller.fetch(locale: locale);
 
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () {
         if (!widget.shouldCheckUpdateAfterAppResume) return;
 
-        _controller.fetch(throttleTime: throttleTime);
+        _controller.fetch(locale: locale);
 
         _check();
       },
@@ -73,9 +73,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
   Future<void> _check() async {
     if (!widget.enabled) return;
 
-    final locale = Localizations.localeOf(context);
-
-    var appUpdate = await _controller.findAvailableUpdate(locale: locale);
+    var appUpdate = await _controller.tryFindUpdate();
 
     if (appUpdate == null) {
       final onPickUpdateSource = widget.onPickUpdateSource;

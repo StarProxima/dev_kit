@@ -68,8 +68,10 @@ class UpdateConfigParser {
       throw const UpdateConfigException();
     }
 
-    final releases =
-        releasesValue.map((e) => _releaseParser.parse(e, isDebug: isDebug)).whereType<ReleaseConfig>().toList();
+    final releases = releasesValue
+        .map((e) => _releaseParser.parse(e, isDebug: isDebug, isAbleToUseNullVersion: false))
+        .whereType<ReleaseConfig>()
+        .toList();
 
     return UpdateConfigModel(
       settings: updateSettings,

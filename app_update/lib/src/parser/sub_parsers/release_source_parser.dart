@@ -65,7 +65,7 @@ class ReleaseSourceParser {
 
     // release
     final releaseValue = map.remove('release');
-    final release = _releaseParser.parse(releaseValue, isDebug: isDebug);
+    final release = _releaseParser.parse(releaseValue, isDebug: isDebug, isAbleToUseNullVersion: true);
 
     return ReleaseSourceConfig(
       name: name,

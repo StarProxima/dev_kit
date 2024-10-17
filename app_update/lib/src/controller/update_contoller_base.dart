@@ -8,29 +8,28 @@ import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import 'exceptions.dart';
 
-// TODO (iamgirya): посмотри на спеку и реализацию, тут различия,
-// мб надо поменять или спеку, или реализацию
 abstract class UpdateControllerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
-  /// Going to network to get the config or using fetchers to get the latest updates from sources.
-  ///
-  /// [throttleTime] - The time that must have passed since the last fetch to check for updates again.
-  // TODO: сделай фетч фетчем - с сохранением инфы с инета
+  /// Going to network to get the UpdateConfig and Releses from global sources to get the latest updates.
   Future<void> fetch({
-    Duration? throttleTime,
+    Locale locale,
   });
 
-  /// Get current update config
-  ///
-  /// Does not make a new request if the data already exists.
-  Future<UpdateConfig?> getAvailableUpdateConfig();
+  /// Going to network to get the UpdateConfig to get the latest updates from sources.
+  Future<void> fetchUpdateConfig();
 
-  /// Finds an update
+  /// Fetch releases list data from SourceReleaseFetcherCoordinator and globalSources.
+  Future<void> fetchGlobalSourceReleases({
+    Locale locale,
+  });
+
+  /// Finds an update from fetched UpdateConfig and global sources releases data
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
+  /// Does not make a new request if the data already exists.
   Future<AppUpdate> findUpdate({
     Locale locale,
   });
@@ -38,7 +37,8 @@ abstract class UpdateControllerBase {
   /// Finds an update. Like [findUpdate], but does not throw errors.
   ///
   /// If update not available return null.
-  Future<AppUpdate?> findAvailableUpdate({
+  /// Does not make a new request if the data already exists.
+  Future<AppUpdate?> tryFindUpdate({
     Locale locale,
   });
 
