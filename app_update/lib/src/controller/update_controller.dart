@@ -103,7 +103,7 @@ class UpdateController extends UpdateControllerBase {
     for (final source in _globalSources ?? []) {
       final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
-      releases.add(releaseFromSource);
+      if (releaseFromSource != null) releases.add(releaseFromSource);
     }
 
     _sourceReleasesFromFetchersCompleter!.complete(releases);

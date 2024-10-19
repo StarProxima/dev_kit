@@ -1,6 +1,5 @@
 // Copyright (c) 2018-2022, Larry Aasen.
 
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:html/dom.dart';
