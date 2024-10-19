@@ -11,21 +11,21 @@ class UpdateVersionController {
   const UpdateVersionController(this.versionSettings);
 
   List<ReleaseData> filterAvailableReleaseData(List<ReleaseData> releases) {
-    return releases.where((release) => setStatusByVersion(release.version) == AppVersionStatus.updatable).toList();
+    return releases.where((release) => setStatusByVersion(release.version) == VersionStatus.updatable).toList();
   }
 
-  AppVersionStatus setStatusByVersion(Version version) {
-    if (versionSettings == null) return AppVersionStatus.updatable;
+  VersionStatus setStatusByVersion(Version version) {
+    if (versionSettings == null) return VersionStatus.updatable;
     final unsupportedVersions = versionSettings?.unsupportedVersions ?? [];
     final deprecatedVersions = versionSettings?.deprecatedVersions ?? [];
 
     if (unsupportedVersions.any((constrant) => constrant.allows(version))) {
-      return AppVersionStatus.unsupported;
+      return VersionStatus.unsupported;
     }
     if (deprecatedVersions.any((constrant) => constrant.allows(version))) {
-      return AppVersionStatus.deprecated;
+      return VersionStatus.deprecated;
     }
 
-    return AppVersionStatus.updatable;
+    return VersionStatus.updatable;
   }
 }

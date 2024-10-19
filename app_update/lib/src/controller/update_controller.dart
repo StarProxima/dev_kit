@@ -29,7 +29,7 @@ import '../version_controller/update_version_controller.dart';
 import 'exceptions.dart';
 import 'update_contoller_base.dart';
 
-class UpdateController extends UpdateContollerBase {
+class UpdateController extends UpdateControllerBase {
   final _asyncPackageInfo = PackageInfo.fromPlatform();
 
   final UpdateConfigFetcher? _updateConfigFetcher;
@@ -53,8 +53,6 @@ class UpdateController extends UpdateContollerBase {
   Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
-  AppUpdate? _lastAppUpdate;
-  UpdateConfig? _lastUpdateConfig;
 
   @override
   Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
@@ -79,7 +77,9 @@ class UpdateController extends UpdateContollerBase {
         _platform = platform ?? UpdatePlatform.current();
 
   @override
-  Future<void> fetchUpdateConfig() async {
+  Future<void> fetchUpdateConfig({
+    Duration? throttleTime,
+  }) async {
     _updateConfigModelCompleter = Completer();
 
     final fetcher = _updateConfigFetcher;
@@ -93,6 +93,7 @@ class UpdateController extends UpdateContollerBase {
 
   @override
   Future<void> fetchGlobalSourceReleases({
+    Duration? throttleTime,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     _sourceReleasesFromFetchersCompleter = Completer();
@@ -149,8 +150,6 @@ class UpdateController extends UpdateContollerBase {
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
 
-    final availableReleasesFromAllSources = availableReleasesBySources.values.toList();
-
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       sources: sources,
@@ -164,25 +163,20 @@ class UpdateController extends UpdateContollerBase {
       appVersion: appVersion,
       config: updateConfig,
       appVersionStatus: currentReleaseStatus,
-      releaseFromTargetSource: availableRelease,
-      allReleasesFromAvailableSources: availableReleasesFromAllSources,
+      release: availableRelease ?? (throw const UpdateNotFoundException()),
     );
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
 
-    if (availableRelease != null) {
-      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
-        throw UpdateSkippedException(update: appUpdate);
-      }
-      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
-        throw UpdatePostponedException(update: appUpdate);
-      }
+    if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+      throw UpdateSkippedException(update: appUpdate);
+    }
+    if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+      throw UpdatePostponedException(update: appUpdate);
     }
 
-    _lastUpdateConfig = updateConfig;
     _updateConfigStream.add(updateConfig);
-    _lastAppUpdate = appUpdate;
     _availableUpdateStream.add(appUpdate);
 
     return appUpdate;
@@ -202,12 +196,12 @@ class UpdateController extends UpdateContollerBase {
   }
 
   @override
-  Future<UpdateConfig?> getLastUpdateConfig({Locale locale = kAppUpdateDefaultLocale}) async =>
-      _lastUpdateConfig ?? (await tryFindUpdate(locale: locale))?.config;
-
-  @override
-  Future<AppUpdate?> getLastAppUpdate({Locale locale = kAppUpdateDefaultLocale}) async =>
-      _lastAppUpdate ?? (await tryFindUpdate(locale: locale));
+  Future<List<AppUpdate>> findAllAvailableUpdates({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) {
+    // TODO: implement findAllAvailableUpdates
+    throw UnimplementedError();
+  }
 
   @override
   Future<void> launchReleaseSource(Release release) async {
@@ -216,7 +210,6 @@ class UpdateController extends UpdateContollerBase {
 
     final url = release.targetSource.url;
     await launchUrl(url);
-    // TODO надо обсудить, что должна эта функция делать
   }
 
   @override

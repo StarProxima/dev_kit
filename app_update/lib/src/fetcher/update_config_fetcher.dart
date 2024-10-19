@@ -9,12 +9,12 @@ import '../shared/raw_update_config.dart';
 class UpdateConfigFetcher {
   final Future<RawUpdateConfig> Function() _onFetch;
 
-  const UpdateConfigFetcher.customFetch({
+  const UpdateConfigFetcher.custom({
     required Future<RawUpdateConfig> Function() onFetch,
   }) : _onFetch = onFetch;
 
-  factory UpdateConfigFetcher.fetchByUrl({required Uri uri}) {
-    return UpdateConfigFetcher.customFetch(onFetch: () => _defaultFetchByUrl(uri));
+  factory UpdateConfigFetcher.byUrl({required Uri uri}) {
+    return UpdateConfigFetcher.custom(onFetch: () => _defaultFetchByUrl(uri));
   }
 
   Future<RawUpdateConfig> fetch() {

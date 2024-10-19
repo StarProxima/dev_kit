@@ -8,16 +8,25 @@ import '../localizer/models/release.dart';
 import '../localizer/models/update_config.dart';
 import 'exceptions.dart';
 
-abstract class UpdateContollerBase {
+abstract class UpdateControllerBase {
   Stream<AppUpdate?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
-  /// Fetch update config data from UpdateConfigFetcher.
-  Future<void> fetchUpdateConfig();
+  /// Going to network to get the UpdateConfig to get the latest updates from sources.
+  ///
+  /// [throttleTime] - The time that must have passed since the last fetch to fetch again.
+  Future<void> fetchUpdateConfig({
+    Duration? throttleTime,
+  });
 
   /// Fetch releases list data from SourceReleaseFetcherCoordinator and globalSources.
-  Future<void> fetchGlobalSourceReleases();
+  ///
+  /// /// [throttleTime] - The time that must have passed since the last fetch to fetch again.
+  Future<void> fetchGlobalSourceReleases({
+    Duration? throttleTime,
+    Locale locale,
+  });
 
   /// Finds an update from fetched UpdateConfig and global sources releases data
   ///
@@ -35,13 +44,8 @@ abstract class UpdateContollerBase {
     Locale locale,
   });
 
-  /// Get last founded update config or call [tryFindUpdate].
-  Future<UpdateConfig?> getLastUpdateConfig({
-    Locale locale,
-  });
-
-  /// Get last founded app update or call [tryFindUpdate].
-  Future<AppUpdate?> getLastAppUpdate({
+  /// Finds updates from all sources available on the current application platform.
+  Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale,
   });
 
