@@ -19,9 +19,12 @@ import 'source_fetcher.dart';
 class GooglePlayFetcher extends SourceReleaseFetcher {
   static const playStorePrefixURL = 'play.google.com/store/apps/details';
 
+  /// Provide an HTTP Client that can be replaced for mock testing.
+  http.Client get client => http.Client();
+
   const GooglePlayFetcher();
 
-  Uri lookupURLById({
+  Uri _lookupURLById({
     required String name,
     required Locale locale,
   }) {
@@ -40,23 +43,23 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
   }
 
   @override
-  Future<Release> fetch({
+  Future<Release?> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
     final name = packageInfo.appName;
-    final url = lookupURLById(name: name, locale: locale);
-    final client = http.Client();
+    final url = _lookupURLById(name: name, locale: locale);
 
     final response = await client.get(url);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw HttpException(response.statusCode.toString(), uri: url);
+      return null;
     }
 
     final decodedResults = parse(response.body);
-    final releaseNotesText = _releaseNotes(decodedResults);
-    final versionText = _version(decodedResults);
+    final releaseNotes = _releaseNotes(decodedResults);
+    final sourceVersion = _version(decodedResults);
+    if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
     final defaultTexts = UpdateTranslations.defaultTexts.byLocale(locale);
     final settings = UpdateSettings.base(
@@ -65,7 +68,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
           locale: UpdateTexts(
             title: defaultTexts.title,
             description: defaultTexts.description,
-            releaseNote: releaseNotesText ?? defaultTexts.releaseNote,
+            releaseNote: releaseNotes ?? defaultTexts.releaseNote,
             releaseNoteTitle: defaultTexts.releaseNoteTitle,
             skipButtonText: defaultTexts.skipButtonText,
             laterButtonText: defaultTexts.laterButtonText,
@@ -76,7 +79,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     );
 
     return Release(
-      version: versionText ?? Version(0, 0, 0),
+      version: sourceVersion,
       targetSource: Source.googlePlay(url: url),
       dateUtc: null,
       settings: settings,

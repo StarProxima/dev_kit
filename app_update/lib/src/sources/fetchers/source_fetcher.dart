@@ -33,7 +33,9 @@ base class SourceReleaseFetcherCoordinator {
 abstract class SourceReleaseFetcher {
   const SourceReleaseFetcher();
 
-  Future<Release> fetch({
+  // Return Release parsed from source's page.
+  // Return null if can't parse or if app version abovesource version. //TODO кидать ошибки или возвращать нулл?
+  Future<Release?> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,
