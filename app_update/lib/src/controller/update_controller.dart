@@ -34,7 +34,7 @@ class UpdateController extends UpdateControllerBase {
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
-  final UpdateSettingsConfig? _releaseSettings;
+  final UpdateSettingsConfigContainer? _updateSettings;
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
@@ -63,14 +63,14 @@ class UpdateController extends UpdateControllerBase {
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
-    UpdateSettingsConfig? releaseSettings,
+    UpdateSettingsConfigContainer? updateSettings,
     UpdateStorage? storage,
     List<Source>? globalSources,
     UpdatePlatform? platform,
     String? prioritySourceName,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
-        _releaseSettings = releaseSettings,
+        _updateSettings = updateSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
         _prioritySourceName = prioritySourceName,
@@ -126,7 +126,7 @@ class UpdateController extends UpdateControllerBase {
     final appName = packageInfo.appName;
 
     final releasesData = _linker.linkConfigs(
-      globalSettingsConfig: _releaseSettings ?? configModel.settings,
+      globalSettingsConfig: _updateSettings ?? configModel.settings,
       releasesConfig: configModel.releases,
       globalSourcesConfig: configModel.sources,
     );

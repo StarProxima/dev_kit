@@ -3,7 +3,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../linker/models/release_data.dart';
 import '../shared/update_status_wrapper.dart';
 import 'models/release.dart';
-import 'models/release_settings.dart';
+import 'models/update_settings.dart';
 import 'models/update_texts.dart';
 
 class UpdateLocalizer {
@@ -52,8 +52,8 @@ class UpdateLocalizer {
       (alertType, value) => MapEntry(
         alertType,
         value.map(
-          (status, releaseSettingsData) {
-            final settings = ReleaseSettings.fromData(data: releaseSettingsData);
+          (status, updateSettingsData) {
+            final settings = UpdateSettings.fromData(data: updateSettingsData);
 
             final localizedText = interpolationUpdateTranslation(settings.texts);
 
@@ -74,7 +74,7 @@ class UpdateLocalizer {
       version: releaseData.version,
       targetSource: releaseData.targetSource,
       dateUtc: releaseData.dateUtc,
-      settings: UpdateSettings(localizedSettings),
+      settings: UpdateSettingsContainer(localizedSettings),
       customData: releaseData.customData,
     );
   }

@@ -1,7 +1,7 @@
 import '../../linker/models/release_settings_data.dart';
 import 'update_texts.dart';
 
-class ReleaseSettings {
+class UpdateSettings {
   final UpdateTranslations texts;
   final bool canSkipRelease;
   final bool canPostponeRelease;
@@ -10,7 +10,7 @@ class ReleaseSettings {
   final Duration progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
-  const ReleaseSettings({
+  const UpdateSettings({
     required this.texts,
     required this.canSkipRelease,
     required this.canPostponeRelease,
@@ -20,12 +20,12 @@ class ReleaseSettings {
     required this.customData,
   });
 
-  factory ReleaseSettings.fromData({
-    ReleaseSettingsData? data,
+  factory UpdateSettings.fromData({
+    UpdateSettingsData? data,
   }) {
-    const defaultSettings = ReleaseSettings.availableUpdate(texts: UpdateTranslations({}));
+    const defaultSettings = UpdateSettings.availableUpdate(texts: UpdateTranslations({}));
 
-    return ReleaseSettings(
+    return UpdateSettings(
       texts: UpdateTranslations.fromData(
         rawTranslations: data?.translations,
         defaultTexts: defaultSettings.texts,
@@ -39,7 +39,7 @@ class ReleaseSettings {
     );
   }
 
-  const ReleaseSettings.requiredUpdate({
+  const UpdateSettings.requiredUpdate({
     required this.texts,
     this.canSkipRelease = false,
     this.canPostponeRelease = false,
@@ -49,7 +49,7 @@ class ReleaseSettings {
     this.customData,
   });
 
-  const ReleaseSettings.recommendedUpdate({
+  const UpdateSettings.recommendedUpdate({
     required this.texts,
     this.canSkipRelease = false,
     this.canPostponeRelease = true,
@@ -59,7 +59,7 @@ class ReleaseSettings {
     this.customData,
   });
 
-  const ReleaseSettings.availableUpdate({
+  const UpdateSettings.availableUpdate({
     required this.texts,
     this.canSkipRelease = true,
     this.canPostponeRelease = true,
@@ -69,7 +69,7 @@ class ReleaseSettings {
     this.customData,
   });
 
-  ReleaseSettings copyWith({
+  UpdateSettings copyWith({
     UpdateTranslations? texts,
     bool? canSkipRelease,
     bool? canPostponeRelease,
@@ -78,7 +78,7 @@ class ReleaseSettings {
     Duration? progressiveRolloutDuration,
     Map<String, dynamic>? customData,
   }) {
-    return ReleaseSettings(
+    return UpdateSettings(
       texts: texts ?? this.texts,
       canSkipRelease: canSkipRelease ?? this.canSkipRelease,
       canPostponeRelease: canPostponeRelease ?? this.canPostponeRelease,

@@ -3,7 +3,7 @@
 part of '../update_config_parser.dart';
 
 class GlobalSourceParser {
-  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
+  UpdateSettingsContainerParser get _updateSettingsParser => const UpdateSettingsContainerParser();
 
   const GlobalSourceParser();
 
@@ -38,10 +38,10 @@ class GlobalSourceParser {
     if (platformsValue is! List<String>) throw const UpdateConfigException();
     final platforms = platformsValue.map(UpdatePlatform.new).toList();
 
-    //  releaseSettings
-    final settingsValue = map.remove('settings');
-    final settings = _updateSettingsParser.parse(
-      settingsValue,
+    // updateSettings
+    final updateSettingsValue = map.remove('settings');
+    final updateSettings = _updateSettingsParser.parse(
+      updateSettingsValue,
       isDebug: isDebug,
     );
 
@@ -49,7 +49,7 @@ class GlobalSourceParser {
       name: name,
       url: url,
       platforms: platforms,
-      settings: settings,
+      settings: updateSettings,
       customData: map,
     );
   }

@@ -20,13 +20,13 @@ import 'sub_parsers/version_settings_parser.dart';
 
 part 'sub_parsers/global_source_parser.dart';
 part 'sub_parsers/release_parser.dart';
-part 'sub_parsers/release_settings_parser.dart';
+part 'sub_parsers/update_settings_parser.dart';
 part 'sub_parsers/release_source_parser.dart';
 part 'sub_parsers/settings_translations_parser.dart';
-part 'sub_parsers/update_settings_parser.dart';
+part 'sub_parsers/update_settings_container_parser.dart';
 
 class UpdateConfigParser {
-  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
+  UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();
   VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
   GlobalSourceParser get _sourceParser => const GlobalSourceParser();
   ReleaseParser get _releaseParser => const ReleaseParser();
@@ -37,9 +37,9 @@ class UpdateConfigParser {
     RawUpdateConfig map, {
     required bool isDebug,
   }) {
-    // releaseSettings
+    // updateSettings
     final updateSettingsValue = map.remove('settings');
-    final updateSettings = _updateSettingsParser.parse(
+    final updateSettings = _updateSettingsContainerParser.parse(
       updateSettingsValue,
       isDebug: isDebug,
     );

@@ -4,7 +4,7 @@ import 'source_config.dart';
 import 'versions_settings_config.dart';
 
 class UpdateConfigModel {
-  final UpdateSettingsConfig? settings;
+  final UpdateSettingsConfigContainer? settings;
   final VersionSettingsConfig? versionSettings;
   final List<GlobalSourceConfig>? sources;
   final List<ReleaseConfig> releases;

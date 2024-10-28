@@ -10,20 +10,20 @@ class UpdateConfigLinker {
   const UpdateConfigLinker();
 
   List<ReleaseData> linkConfigs({
-    required UpdateSettingsConfig? globalSettingsConfig,
+    required UpdateSettingsConfigContainer? globalSettingsConfig,
     required List<ReleaseConfig> releasesConfig,
     required List<GlobalSourceConfig>? globalSourcesConfig,
   }) {
-    UpdateSettingsData inheritedSettings = UpdateSettingsData.fromConfig(globalSettingsConfig);
+    UpdateSettingsDataContainer inheritedSettings = UpdateSettingsDataContainer.fromConfig(globalSettingsConfig);
 
     final globalSources = <GlobalSourceConfig?>[...?globalSourcesConfig];
     final releases = <ReleaseData>[];
 
     for (final releaseConfig in releasesConfig) {
       // мержим настройки релиза с глобальными настройками
-      final releaseSettings = releaseConfig.settings;
-      if (releaseSettings != null) {
-        inheritedSettings = inheritedSettings.inherit(UpdateSettingsData.fromConfig(releaseSettings));
+      final updateSettings = releaseConfig.settings;
+      if (updateSettings != null) {
+        inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(updateSettings));
       }
 
       final sourcesConfig = releaseConfig.sources;
@@ -46,7 +46,7 @@ class UpdateConfigLinker {
         // мержим настройки сурса с релизными настройками
         final sourceSettings = globalSource?.settings ?? sourceReleaseConfig?.settings;
         if (sourceSettings != null) {
-          inheritedSettings = inheritedSettings.inherit(UpdateSettingsData.fromConfig(sourceSettings));
+          inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(sourceSettings));
         }
 
         final targetSource = Source(
@@ -109,12 +109,4 @@ class UpdateConfigLinker {
 
     return sources;
   }
-
-  // List<ReleaseData> _parseReleases({
-  //   required List<GlobalSourceConfig> sources,
-  //   required List<ReleaseConfig> releasesConfig,
-  //   required UpdateSettingsData? releaseSettings,
-  // }) {
-
-  // }
 }

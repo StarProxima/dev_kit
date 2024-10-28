@@ -7,7 +7,7 @@ class Release {
   final Version version;
   final Source targetSource;
   final DateTime? dateUtc;
-  final UpdateSettings settings;
+  final UpdateSettingsContainer settings;
   final Map<String, dynamic>? customData;
 
   const Release({

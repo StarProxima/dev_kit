@@ -4,7 +4,7 @@ part of '../update_config_parser.dart';
 
 class ReleaseParser {
   ReleaseSourceParser get _releaseSourceParser => const ReleaseSourceParser();
-  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
+  UpdateSettingsContainerParser get _updateSettingsParser => const UpdateSettingsContainerParser();
   VersionParser get _versionParser => const VersionParser();
   DateTimeParser get _dateTimeParser => const DateTimeParser();
 
@@ -35,7 +35,7 @@ class ReleaseParser {
       final dateUtcValue = map.remove('date_utc');
       final dateUtc = _dateTimeParser.parse(dateUtcValue, isDebug: isDebug);
 
-      // releaseSettings
+      // updateSettings
       final updateSettings = _updateSettingsParser.parse(map, isDebug: isDebug);
 
       // sources

@@ -6,7 +6,7 @@ class GlobalSourceConfig {
   final String name;
   final Uri url;
   final List<UpdatePlatform>? platforms;
-  final UpdateSettingsConfig? settings;
+  final UpdateSettingsConfigContainer? settings;
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({

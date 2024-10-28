@@ -6,7 +6,7 @@ import 'source_config.dart';
 class ReleaseConfig {
   final Version? version;
   final DateTime? dateUtc;
-  final UpdateSettingsConfig? settings;
+  final UpdateSettingsConfigContainer? settings;
   final List<ReleaseSourceConfig>? sources;
   final Map<String, dynamic>? customData;
 
