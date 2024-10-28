@@ -13,20 +13,22 @@ class TextTranslationsParser {
     dynamic value, {
     required bool isDebug,
   }) {
-    var text = value;
-    if (text is! Map<String, dynamic>?) {
-      if (text is String) {
-        return TextTranslations({kAppUpdateDefaultLocale: text});
+    TextTranslations? text;
+    if (value is! Map<String, dynamic>?) {
+      if (value is String) {
+        return TextTranslations({kAppUpdateDefaultLocale: value});
       }
 
       if (isDebug) throw const UpdateConfigException();
       text = null;
-    } else if (text != null) {
-      text = Map<Locale, String>.fromEntries(
-        text.entries.map((e) => MapEntry(Locale(e.key), e.value)),
+    } else if (value != null) {
+      final map = Map<Locale, String>.fromEntries(
+        value.entries.map((e) => MapEntry(Locale(e.key), e.value)),
       );
-      text as Map<Locale, String>;
-      if (text.isEmpty) return null;
+
+      if (map.isEmpty) return null;
+
+      text = TextTranslations(map);
     }
 
     return text;
