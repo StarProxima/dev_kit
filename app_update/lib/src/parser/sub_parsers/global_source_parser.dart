@@ -45,7 +45,7 @@ class GlobalSourceParser {
     );
 
     // updateSettings
-    final versionSettingsValue = map;
+    final versionSettingsValue = map.remove('version_settings');
     final versionSettings = _versionSettingsParser.parse(
       versionSettingsValue,
       isDebug: isDebug,
