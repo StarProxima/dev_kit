@@ -19,10 +19,10 @@ import 'models/update_config_exception.dart';
 import 'models/update_config_model.dart';
 import 'sub_parsers/version_settings_parser.dart';
 
-part 'sub_parsers/global_source_parser.dart';
+part 'sub_parsers/sources/global_source_parser.dart';
 part 'sub_parsers/release_parser.dart';
 part 'sub_parsers/update_settings_parser.dart';
-part 'sub_parsers/release_source_parser.dart';
+part 'sub_parsers/sources/release_source_parser.dart';
 part 'sub_parsers/settings_translations_parser.dart';
 part 'sub_parsers/update_settings_container_parser.dart';
 part 'sub_parsers/sources/global_platform_parser.dart';
@@ -60,7 +60,11 @@ class UpdateConfigParser {
 
     final sources = sourcesValue
         ?.map(
-          (e) => _sourceParser.parse(e, isDebug: true),
+          (e) => _sourceParser.parse(
+            e,
+            isDebug: true,
+            isOverride: false,
+          ),
         )
         .whereType<GlobalSourceConfig>()
         .toList();
@@ -72,7 +76,7 @@ class UpdateConfigParser {
     }
 
     final releases = releasesValue
-        .map((e) => _releaseParser.parse(e, isDebug: isDebug, isAbleToUseNullVersion: false))
+        .map((e) => _releaseParser.parse(e, isDebug: isDebug, isOverride: false))
         .whereType<ReleaseConfig>()
         .toList();
 

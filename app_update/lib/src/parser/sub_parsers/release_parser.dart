@@ -13,7 +13,7 @@ class ReleaseParser {
   ReleaseConfig? parse(
     Map<String, dynamic> map, {
     required bool isDebug,
-    required bool isAbleToUseNullVersion,
+    required bool isOverride,
   }) {
     final isDebugOriginal = isDebug;
 
@@ -29,7 +29,7 @@ class ReleaseParser {
         isDebug: isDebug,
       );
 
-      if (version == null && !isAbleToUseNullVersion) throw const UpdateConfigException();
+      if (version == null && !isOverride) throw const UpdateConfigException();
 
       // dateUtc
       final dateUtcValue = map.remove('date_utc');
@@ -45,7 +45,11 @@ class ReleaseParser {
 
       final sources = sourcesValue
           ?.map(
-            (e) => _releaseSourceParser.parse(e, isDebug: isDebug),
+            (e) => _releaseSourceParser.parse(
+              e,
+              isDebug: isDebug,
+              isOverride: false,
+            ),
           )
           .whereType<ReleaseSourceConfig>()
           .toList();

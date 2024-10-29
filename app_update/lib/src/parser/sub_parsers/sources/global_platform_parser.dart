@@ -39,6 +39,7 @@ class GlobalPlatformParser {
     final source = _sourceParser.parse(
       sourceValue,
       isDebug: isDebug,
+      isOverride: true,
     );
 
     return GlobalPlatformConfig(

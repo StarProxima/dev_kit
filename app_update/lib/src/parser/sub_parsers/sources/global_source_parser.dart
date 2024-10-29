@@ -13,6 +13,7 @@ class GlobalSourceParser {
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
+    required bool isOverride,
   }) {
     if (value is! Map<String, dynamic>) {
       if (isDebug) throw const UpdateConfigException();
@@ -24,27 +25,31 @@ class GlobalSourceParser {
 
     // name
     final name = map.remove('name');
-    if (name is! String) throw const UpdateConfigException();
+    if (name is! String?) throw const UpdateConfigException();
+
+    if (!isOverride && name == null) throw const UpdateConfigException();
 
     // url
     final urlValue = map.remove('url');
-    if (urlValue is! String) {
+    if (urlValue is! String?) {
       throw const UpdateConfigException();
     }
 
+    if (!isOverride && urlValue == null) throw const UpdateConfigException();
+
     Uri? url;
     try {
-      url = Uri.parse(urlValue);
+      url = urlValue == null ? null : Uri.parse(urlValue);
     } catch (e, s) {
-      Error.throwWithStackTrace(const UpdateConfigException(), s);
+      if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
     }
 
     // platforms
     final platformsValue = map.remove('platforms');
-    if (platformsValue is! List<String>?) throw const UpdateConfigException();
+    if (platformsValue is! List?) throw const UpdateConfigException();
 
     final platforms = platformsValue
-        ?.map((e) => _platformParser.parse(platformsValue, isDebug: isDebug))
+        ?.map((e) => _platformParser.parse(e, isDebug: isDebug))
         .whereType<GlobalPlatformConfig>()
         .toList();
 

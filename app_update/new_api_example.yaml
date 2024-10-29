@@ -79,17 +79,21 @@ version_settings:
   deprecated_versions: ["<=5.1.0 >=4.2.0 ", ">5.6.0 <5.6.7"]
 
 sources:
-  - name: googlePlay
-    url: https://example.com
-
   - name: appStore
     url: https://example.com
+    platforms:
+      - macos
+      - name: ios
+        source:
+          version_settings:
+            unsupported_versions: ["1.8.3"]
 
   - name: appGallery
     url: https://example.com
 
   - name: ruStore
     url: https://example.com
+
     settings:
       title: Title
     version_settings:

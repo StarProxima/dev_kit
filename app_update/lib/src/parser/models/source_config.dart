@@ -4,8 +4,8 @@ import 'release_config.dart';
 import 'versions_settings_config.dart';
 
 class GlobalSourceConfig {
-  final String name;
-  final Uri url;
+  final String? name;
+  final Uri? url;
   final List<GlobalPlatformConfig>? platforms;
   final UpdateSettingsConfigContainer? settings;
   final VersionSettingsConfig? versionSettings;
@@ -22,7 +22,7 @@ class GlobalSourceConfig {
 }
 
 class ReleaseSourceConfig {
-  final String name;
+  final String? name;
   final Uri? url;
   final List<ReleasePlatformConfig>? platforms;
   final ReleaseConfig? release;

@@ -39,6 +39,7 @@ class ReleasePlatformParser {
     final source = _sourceParser.parse(
       sourceValue,
       isDebug: isDebug,
+      isOverride: true,
     );
 
     return ReleasePlatformConfig(
