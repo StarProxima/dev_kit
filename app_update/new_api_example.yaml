@@ -36,34 +36,37 @@ settings:
   can_postpone_release: true
 
 
+settings_0:
+  title: title
+  description: description
+  can_skip_release: true
+
+
 settings_1:
   dialog:
     base:
       title: title
       description: description
       can_skip_release: true
-    required:
+    unsupported:
       title: title
       description: description
       can_skip_release: true
-    available:
+    updatable:
       title: title
       description: description
       can_skip_release: true
-
-
-
 
 settings_2:
   base:
     title: title
     description: description
     can_skip_release: true    
-  required:
+  unsupported:
     title: title
     description: description
     can_skip_release: true
-  available:
+  updatable:
     title: title
     description: description
     can_skip_release: true
@@ -72,11 +75,11 @@ settings_3:
   base:
     can_skip_release: true
   dialog: 
-    required:
+    unsupported:
       title: title
       description: description
       can_skip_release: true
-    available:
+    updatable:
       title: title
       description: description
       can_skip_release: true

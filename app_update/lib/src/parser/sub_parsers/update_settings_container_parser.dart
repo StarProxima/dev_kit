@@ -16,7 +16,7 @@ class UpdateSettingsContainerParser {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    if (value == null || value.isEmpty) return null;
 
     // ignore: avoid-dynamic
     UpdateSettingsConfig? parseSettings(dynamic value) {
@@ -28,15 +28,17 @@ class UpdateSettingsContainerParser {
     final updateSettings = <String, Map<String, UpdateSettingsConfig>>{};
 
     final typeNames = [...UpdateAlertType.values.map((e) => e.name), 'base'];
-    final isByType = map.keys.every(typeNames.contains);
+    final isByType = map.keys.any(typeNames.contains);
 
     if (!isByType) {
       final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
 
       // Empty UpdateSettings
-      if (settingsByStatus.isEmpty) return UpdateSettingsConfigContainer(updateSettings);
+      if (settingsByStatus.isEmpty) return const UpdateSettingsConfigContainer({});
 
-      return UpdateSettingsConfigContainer({'base': settingsByStatus});
+      updateSettings['base'] = settingsByStatus;
+
+      return UpdateSettingsConfigContainer(updateSettings);
     }
 
     for (final type in typeNames) {
@@ -46,7 +48,7 @@ class UpdateSettingsContainerParser {
       final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
       if (settingsByStatus.isEmpty) continue;
 
-      value[type] = settingsByStatus;
+      updateSettings[type] = settingsByStatus;
     }
 
     return UpdateSettingsConfigContainer(updateSettings);
@@ -71,6 +73,7 @@ class UpdateSettingsContainerParser {
 
     for (final status in statusNames) {
       final value = map[status];
+      if (value == null) continue;
       final settings = parseSettings(value);
       if (settings == null) continue;
       settingsByStatus[status] = settings;
