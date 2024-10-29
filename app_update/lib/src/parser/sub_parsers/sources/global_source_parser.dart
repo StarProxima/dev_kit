@@ -1,10 +1,11 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-part of '../update_config_parser.dart';
+part of '../../update_config_parser.dart';
 
 class GlobalSourceParser {
   UpdateSettingsContainerParser get _updateSettingsParser => const UpdateSettingsContainerParser();
   VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
+  GlobalPlatformParser get _platformParser => const GlobalPlatformParser();
 
   const GlobalSourceParser();
 
@@ -27,15 +28,25 @@ class GlobalSourceParser {
 
     // url
     final urlValue = map.remove('url');
-    if (urlValue is! String) throw const UpdateConfigException();
+    if (urlValue is! String) {
+      throw const UpdateConfigException();
+    }
 
-    final url = Uri.tryParse(urlValue);
-    if (url == null) throw const UpdateConfigException();
+    Uri? url;
+    try {
+      url = Uri.parse(urlValue);
+    } catch (e, s) {
+      Error.throwWithStackTrace(const UpdateConfigException(), s);
+    }
 
     // platforms
     final platformsValue = map.remove('platforms');
-    if (platformsValue is! List<String>) throw const UpdateConfigException();
-    final platforms = platformsValue.map(UpdatePlatform.new).toList();
+    if (platformsValue is! List<String>?) throw const UpdateConfigException();
+
+    final platforms = platformsValue
+        ?.map((e) => _platformParser.parse(platformsValue, isDebug: isDebug))
+        .whereType<GlobalPlatformConfig>()
+        .toList();
 
     // updateSettings
     final updateSettingsValue = map.remove('settings');
@@ -44,7 +55,7 @@ class GlobalSourceParser {
       isDebug: isDebug,
     );
 
-    // updateSettings
+    // versionSettings
     final versionSettingsValue = map.remove('version_settings');
     final versionSettings = _versionSettingsParser.parse(
       versionSettingsValue,

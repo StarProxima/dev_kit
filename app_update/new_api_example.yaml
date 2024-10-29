@@ -98,12 +98,15 @@ sources:
   - name: gitHub
     url: https://example.com
     platforms:
+      # Full syntax
       - name: android
-        url: https://example.com/android
-        settings:
-          title: Title
-        version_settings:
-          deprecated_versions: [">5.6.0 <5.6.7"]
+        source:
+          url: https://example.com/android
+          settings:
+            title: Title
+          version_settings:
+            deprecated_versions: [">5.6.0 <5.6.7"]
+      # Short syntax
       - windows
       - macos
       - linux
@@ -129,8 +132,9 @@ releases:
       - appStore
       - ruStore
       - name: github
-        url: https://example.com
-        platforms: [android, ios, aurora]
+        source:
+          url: https://example.com
+          platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
     release_note: Minor improvements
@@ -171,19 +175,21 @@ releases:
       - name: googlePlay
         url: www.example.com
         release:
-        date: 2014-10-17 23:00:00
-        settings:
-          can_skip_release: false
+          date: 2014-10-17 23:00:00
+          settings:
+            can_skip_release: false
         platforms:
           - name: android
-            release:
-              settings:
-                base:
+            source:
+              release:
+                settings:
                   base:
-                    can_skip_release: true
+                    base:
+                      can_skip_release: true
 
       - name: appStore
-        release_note: note ios
+        settings:
+          release_note: note ios
         date: 2014-10-18 23:00:00
 
   - version: 0.2.6

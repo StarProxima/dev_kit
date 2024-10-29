@@ -10,6 +10,7 @@ import 'base_parsers/date_time_parser.dart';
 import 'base_parsers/duration_parser.dart';
 import 'base_parsers/text_translations_parser.dart';
 import 'base_parsers/version_parser.dart';
+import 'models/platform_config.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/settings_translations.dart';
@@ -24,6 +25,8 @@ part 'sub_parsers/update_settings_parser.dart';
 part 'sub_parsers/release_source_parser.dart';
 part 'sub_parsers/settings_translations_parser.dart';
 part 'sub_parsers/update_settings_container_parser.dart';
+part 'sub_parsers/sources/global_platform_parser.dart';
+part 'sub_parsers/sources/release_platform_parser.dart';
 
 class UpdateConfigParser {
   UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();

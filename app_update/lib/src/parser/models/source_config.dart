@@ -1,12 +1,12 @@
-import '../../shared/update_platform.dart';
 import '../../shared/update_status_wrapper.dart';
+import 'platform_config.dart';
 import 'release_config.dart';
 import 'versions_settings_config.dart';
 
 class GlobalSourceConfig {
   final String name;
   final Uri url;
-  final List<UpdatePlatform>? platforms;
+  final List<GlobalPlatformConfig>? platforms;
   final UpdateSettingsConfigContainer? settings;
   final VersionSettingsConfig? versionSettings;
   final Map<String, dynamic>? customData;
@@ -24,7 +24,7 @@ class GlobalSourceConfig {
 class ReleaseSourceConfig {
   final String name;
   final Uri? url;
-  final List<UpdatePlatform>? platforms;
+  final List<ReleasePlatformConfig>? platforms;
   final ReleaseConfig? release;
   final Map<String, dynamic>? customData;
 
