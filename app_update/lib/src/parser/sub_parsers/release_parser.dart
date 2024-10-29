@@ -31,9 +31,9 @@ class ReleaseParser {
 
       if (version == null && !isOverride) throw const UpdateConfigException();
 
-      // dateUtc
-      final dateUtcValue = map.remove('date_utc');
-      final dateUtc = _dateTimeParser.parse(dateUtcValue, isDebug: isDebug);
+      // date
+      final dateValue = map.remove('date');
+      final date = _dateTimeParser.parse(dateValue, isDebug: isDebug);
 
       // updateSettings
       final updateSettings = _updateSettingsParser.parse(map, isDebug: isDebug);
@@ -56,7 +56,7 @@ class ReleaseParser {
 
       return ReleaseConfig(
         version: version,
-        dateUtc: dateUtc,
+        dateUtc: date,
         settings: updateSettings,
         sources: sources,
         customData: map,

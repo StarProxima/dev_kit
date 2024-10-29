@@ -127,7 +127,7 @@ releases:
       ### Short notes
       - Added bugs
       - Fixed features
-    date_utc: "2024-08-24 15:35:00"
+    date: "2024-08-24 15:35:00"
     can_skip_release: true
     reminder_period_hours: 48
     release_delay_hours: 48
@@ -148,7 +148,7 @@ releases:
     release_note: Improvements
     sources:
       - name: googlePlay
-        date_utc: 2014-10-17 23:00:00
+        date: 2014-10-17 23:00:00
 
   - version: 0.0.2+30
 
@@ -160,13 +160,15 @@ releases:
       - appStore
       - name: googlePlay
       - name: github
-        url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-        platforms: [windows]
-        release:
-          date_utc: 2014-10-20 12:00:00
+        source:
+          url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+          platforms: [windows]
+          release:
+            date: 2014-10-20 12:00:00
       - name: github
-        url: https://github.com/hiddify/hiddify-next/releases/
-        platforms: [macos, linux]
+        source:
+          url: https://github.com/hiddify/hiddify-next/releases/
+          platforms: [macos, linux]
 
   - version: 0.2.4
     date: 2014-10-17 23:00:00
@@ -187,8 +189,8 @@ releases:
             source:
               release:
                 settings:
-                  base:
-                    base:
+                  dialog:
+                    updatable:
                       can_skip_release: true
 
       - name: appStore

@@ -114,7 +114,7 @@ releases:
       - Added bugs
       - Fixed features
     # Optional. Time is also optional.
-    date_utc: '2024-08-24 15:35:00'
+    date: '2024-08-24 15:35:00Z'
     # Required. Support custom stores
     sources:
         # Supports short syntax
