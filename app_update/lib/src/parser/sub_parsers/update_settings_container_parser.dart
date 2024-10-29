@@ -27,10 +27,15 @@ class UpdateSettingsContainerParser {
 
     final updateSettings = <String, Map<String, UpdateSettingsConfig>>{};
 
-    final typeNames = [...UpdateAlertType.values.map((e) => e.name), 'base'];
-    final isByType = map.keys.any(typeNames.contains);
+    final typeNames = [...UpdateAlertType.values.map((e) => e.name)];
+    final typeNamesFull = [...typeNames, 'base'];
+    final statusNames = [...VersionStatus.values.map((e) => e.name)];
 
-    if (!isByType) {
+    final isContainsBase = map.containsKey('base');
+    final isByType = map.keys.any(typeNames.contains);
+    final isByStatus = map.keys.any(statusNames.contains);
+
+    if (isByStatus || (!isByType && !isByStatus && !isContainsBase)) {
       final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
 
       // Empty UpdateSettings
@@ -41,7 +46,7 @@ class UpdateSettingsContainerParser {
       return UpdateSettingsConfigContainer(updateSettings);
     }
 
-    for (final type in typeNames) {
+    for (final type in typeNamesFull) {
       final value = map[type];
       if (value is! Map<String, dynamic>) continue;
 
@@ -60,9 +65,9 @@ class UpdateSettingsContainerParser {
   }) {
     final settingsByStatus = <String, UpdateSettingsConfig>{};
 
-    final statusNames = [...VersionStatus.values.map((e) => e.name), 'base'];
+    final statusNamesFull = [...VersionStatus.values.map((e) => e.name), 'base'];
 
-    final isByStatus = map.keys.any(statusNames.contains);
+    final isByStatus = map.keys.any(statusNamesFull.contains);
 
     if (!isByStatus) {
       final settings = parseSettings(map);
@@ -71,7 +76,7 @@ class UpdateSettingsContainerParser {
       return {'base': settings};
     }
 
-    for (final status in statusNames) {
+    for (final status in statusNamesFull) {
       final value = map[status];
       if (value == null) continue;
       final settings = parseSettings(value);
