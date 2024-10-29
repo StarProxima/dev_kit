@@ -4,6 +4,7 @@ part of '../update_config_parser.dart';
 
 class GlobalSourceParser {
   UpdateSettingsContainerParser get _updateSettingsParser => const UpdateSettingsContainerParser();
+  VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
 
   const GlobalSourceParser();
 
@@ -17,8 +18,6 @@ class GlobalSourceParser {
 
       return null;
     }
-
-    // full syntax
 
     final map = value;
 
@@ -45,11 +44,19 @@ class GlobalSourceParser {
       isDebug: isDebug,
     );
 
+    // updateSettings
+    final versionSettingsValue = map;
+    final versionSettings = _versionSettingsParser.parse(
+      versionSettingsValue,
+      isDebug: isDebug,
+    );
+
     return GlobalSourceConfig(
       name: name,
       url: url,
       platforms: platforms,
       settings: updateSettings,
+      versionSettings: versionSettings,
       customData: map,
     );
   }
