@@ -19,7 +19,7 @@ void main() {
           'ru': r'Доступна версия $releaseVersion!',
         },
         'description': r'A new version of $appName is available!',
-        'updateButtonText': 'Go to Store',
+        'update_button_text': 'Go to Store',
         'reminder_period_hours': 96,
         'progressive_rollout_hours': 96,
         'release_delay_hours': 20,
@@ -81,9 +81,9 @@ void main() {
           'ru': 'Доступна новая версия!',
         },
         'description': 'A new version is available!',
-        'updateButtonText': 'Update now',
-        'skipButtonText': 'Skip',
-        'laterButtonText': 'Later',
+        'update_button_text': 'Update now',
+        'skip_button_text': 'Skip',
+        'later_button_text': 'Later',
       };
 
       final result = translationsParser.parse(value, isDebug: isDebug);
