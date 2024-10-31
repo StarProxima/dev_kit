@@ -58,7 +58,7 @@ class UpdateConfigLinker {
 
         // применяем релиз конкретного магазина, если есть. Уверены, что версия не нулл, так как парсер не пропустит релиз с null версией
         final version = sourceReleaseConfig?.version ?? releaseConfig.version!;
-        final dateUtc = sourceReleaseConfig?.dateUtc ?? releaseConfig.dateUtc;
+        final dateUtc = sourceReleaseConfig?.date ?? releaseConfig.date;
         final releaseCustomData = sourceReleaseConfig?.customData ?? releaseConfig.customData;
 
         // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг), настройки которого смержены со всеми и находятся в settings

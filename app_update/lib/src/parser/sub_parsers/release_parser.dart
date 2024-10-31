@@ -11,11 +11,21 @@ class ReleaseParser {
   const ReleaseParser();
 
   ReleaseConfig? parse(
-    Map<String, dynamic> map, {
+    // ignore: avoid-dynamic
+    dynamic value, {
     required bool isDebug,
     required bool isOverride,
   }) {
     final isDebugOriginal = isDebug;
+
+    if (value is! Map<String, dynamic>?) throw const UpdateConfigException();
+
+    if (value == null) {
+      if (isOverride) return null;
+      throw const UpdateConfigException();
+    }
+
+    final map = value;
 
     isDebug = true;
 
@@ -35,8 +45,9 @@ class ReleaseParser {
       final dateValue = map.remove('date');
       final date = _dateTimeParser.parse(dateValue, isDebug: isDebug);
 
-      // updateSettings
-      final updateSettings = _updateSettingsParser.parse(map, isDebug: isDebug);
+      // settings
+      final settingsValue = map.remove('settings');
+      final settings = _updateSettingsParser.parse(settingsValue, isDebug: isDebug);
 
       // sources
       final sourcesValue = map.remove('sources');
@@ -56,8 +67,8 @@ class ReleaseParser {
 
       return ReleaseConfig(
         version: version,
-        dateUtc: date,
-        settings: updateSettings,
+        date: date,
+        settings: settings,
         sources: sources,
         customData: map,
       );

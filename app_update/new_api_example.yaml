@@ -159,16 +159,27 @@ releases:
     sources:
       - appStore
       - name: googlePlay
+      - name: ruStore
+        url: www.example.com
+        platforms: [android]
+        release:
+          version: 1.2.1
+          settings:
+            title: RuStore Title
       - name: github
-        source:
-          url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-          platforms: [windows]
-          release:
-            date: 2014-10-20 12:00:00
-      - name: github
-        source:
-          url: https://github.com/hiddify/hiddify-next/releases/
-          platforms: [macos, linux]
+        url: https://github.com/hiddify/hiddify-next/releases/
+        release:
+          date: 2014-10-20 12:00:00
+        platforms:
+          - macos
+          - linux
+          - name: windows
+            source:
+              url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+              release:
+                settings:
+                  release_note: Windows Github release notes
+       
 
   - version: 0.2.4
     date: 2014-10-17 23:00:00

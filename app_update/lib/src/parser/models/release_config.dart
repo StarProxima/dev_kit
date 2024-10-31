@@ -5,14 +5,14 @@ import 'source_config.dart';
 
 class ReleaseConfig {
   final Version? version;
-  final DateTime? dateUtc;
+  final DateTime? date;
   final UpdateSettingsConfigContainer? settings;
   final List<ReleaseSourceConfig>? sources;
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({
     required this.version,
-    required this.dateUtc,
+    required this.date,
     required this.settings,
     required this.sources,
     required this.customData,

@@ -32,35 +32,35 @@ class SettingsTranslationsParser {
     );
 
     // releaseNoteTitle
-    final releaseNoteTitleValue = value.remove('releaseNoteTitle');
+    final releaseNoteTitleValue = value.remove('release_note_title');
     final releaseNoteTitle = _textParser.parse(
       releaseNoteTitleValue,
       isDebug: isDebug,
     );
 
     // releaseNote
-    final releaseNoteValue = value.remove('releaseNote');
+    final releaseNoteValue = value.remove('release_note');
     final releaseNote = _textParser.parse(
       releaseNoteValue,
       isDebug: isDebug,
     );
 
     // skipButtonText
-    final skipButtonTextValue = value.remove('skipButtonText');
+    final skipButtonTextValue = value.remove('skip_button_text');
     final skipButtonText = _textParser.parse(
       skipButtonTextValue,
       isDebug: isDebug,
     );
 
     // laterButtonText
-    final laterButtonTextValue = value.remove('laterButtonText');
+    final laterButtonTextValue = value.remove('later_button_text');
     final laterButtonText = _textParser.parse(
       laterButtonTextValue,
       isDebug: isDebug,
     );
 
     // updateButtonText
-    final updateButtonTextValue = value.remove('updateButtonText');
+    final updateButtonTextValue = value.remove('update_button_text');
     final updateButtonText = _textParser.parse(
       updateButtonTextValue,
       isDebug: isDebug,
