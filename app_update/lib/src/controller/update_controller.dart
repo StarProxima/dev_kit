@@ -92,7 +92,7 @@ class UpdateController extends UpdateControllerBase {
     if (fetcher == null) throw const UpdateNotFoundException();
     final rawConfig = await fetcher.fetch();
 
-    final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
+    final configModel = _parser.parse(rawConfig, isDebug: kDebugMode);
 
     _updateConfigModelCompleter!.complete(configModel);
   }

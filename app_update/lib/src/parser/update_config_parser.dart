@@ -36,7 +36,7 @@ class UpdateConfigParser {
 
   const UpdateConfigParser();
 
-  UpdateConfigModel parseConfig(
+  UpdateConfigModel parse(
     RawUpdateConfig map, {
     required bool isDebug,
   }) {
@@ -56,7 +56,7 @@ class UpdateConfigParser {
 
     // sources
     final sourcesValue = map.remove('sources');
-    if (sourcesValue is! List<Object>?) throw const UpdateConfigException();
+    if (sourcesValue is! List?) throw const UpdateConfigException();
 
     final sources = sourcesValue
         ?.map(
@@ -71,9 +71,7 @@ class UpdateConfigParser {
 
     // releases
     final releasesValue = map.remove('releases');
-    if (releasesValue is! List<Map<String, dynamic>>) {
-      throw const UpdateConfigException();
-    }
+    if (releasesValue is! List) throw const UpdateConfigException();
 
     final releases = releasesValue
         .map((e) => _releaseParser.parse(e, isDebug: isDebug, isOverride: false))
