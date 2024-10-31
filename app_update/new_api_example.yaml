@@ -121,16 +121,17 @@ sources:
 
 releases:
   - version: 0.3.7
-    release_note: |-
-      # Big update!
-      [click](https://example.com) - full changelog.
-      ### Short notes
-      - Added bugs
-      - Fixed features
     date: "2024-08-24 15:35:00"
-    can_skip_release: true
-    reminder_period_hours: 48
-    release_delay_hours: 48
+    settings:
+      release_note: |-
+        # Big update!
+        [click](https://example.com) - full changelog.
+        ### Short notes
+        - Added bugs
+        - Fixed features
+      can_skip_release: true
+      reminder_period_hours: 48
+      release_delay_hours: 48
     sources:
       - googlePlay
       - appStore
@@ -141,11 +142,13 @@ releases:
           platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
-    release_note: Minor improvements
+    settings:
+      release_note: Minor Improvements
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
-    release_note: Improvements
+    settings:
+      release_note: Improvements
     sources:
       - name: googlePlay
         date: 2014-10-17 23:00:00
@@ -153,8 +156,8 @@ releases:
   - version: 0.0.2+30
 
   - version: 1.2.0
-    release_note: Improvements
     settings:
+      release_note: Improvements
       can_skip_release: true
     sources:
       - appStore
@@ -210,20 +213,22 @@ releases:
         date: 2014-10-18 23:00:00
 
   - version: 0.2.6
-    release_note: Note
-    title: Title
-    description: Description
     date: 2014-10-17 23:00:00
-    can_skip_release: true
+    settings:
+      release_note: Note
+      title: Title
+      description: Description
+      can_skip_release: true
     sources:
-      name: googlePlay
-      url:
-      platforms: []
+      - name: googlePlay
+        url: null
+        platforms: []
 
   - version: 0.2.5
-    title: Title
-    description: Description
-    release_note: Note
+    settings:
+      title: Title
+      description: Description
+      release_note: Note
     sources:
       - name: googlePlay
       - name: appStore
