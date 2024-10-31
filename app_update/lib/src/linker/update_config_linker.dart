@@ -6,6 +6,16 @@ import '../shared/update_status_wrapper.dart';
 import '../sources/source.dart';
 import 'models/release_data.dart';
 
+// TODO: (iamgirya)
+// По идее, линкер должен получать ещё сурс и платформу, чтобы всё слинковать и выдавать конкретные ReleaseData.
+// Для линкера 100% нужны тесты.
+//
+// Как минимум, нужно проверить, что:
+// 1) Глобальные сурсах наследуют и переопределяют настройки и настройки версий
+// 2) Платформы в глобальных сторах наследуют и переопределяют свой сурс (с настройками и настройками версий)
+// 3) Релизы наследуют и переопределяют настройки
+// 4) Сурсы в релизах наследуют и переопределяют глобальный сурс и релиз (с настройками)
+// 5) Платформы в сурсах релиза наследуют и переопределяют свой сурс (с релизом)
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
@@ -49,6 +59,9 @@ class UpdateConfigLinker {
           inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(sourceSettings));
         }
 
+        // TODO: Сурсы теперь содержать nullable поля (которые, по идее, должны быть обязательными),
+        // т.к. им можно переопределять (а для этого нужна фулл nullable модель).
+        // См. TODO №10
         final targetSource = Source(
           name: name,
           url: sourceUrl,
@@ -99,6 +112,7 @@ class UpdateConfigLinker {
       final url = sourceConfig.url;
       final platforms = sourceConfig.platforms;
 
+      // См. выше
       sources.add(Source(
         name: name,
         url: url,
