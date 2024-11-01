@@ -66,7 +66,7 @@ void main() {
               'url': 'https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip',
               'release': {
                 'date': '2014-10-20 13:00:00',
-                'settings': {'release_note': 'Windows Github release notes'},
+                'settings': {'release_notes': 'Windows Github release notes'},
               },
             },
           },

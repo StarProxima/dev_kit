@@ -107,7 +107,7 @@ releases:
   - version: 0.3.7 # Required
     # You can also override all release_settings params here (title, release_delay_hours etc.)
     # Optional, may not to be displayed.
-    release_note: |-
+    release_notes: |-
       # Big update!
       [click](https://example.com) - full changelog.
       ### Short notes
@@ -127,11 +127,11 @@ releases:
         url: https://example.com
         platforms: [android, windows]
         # And override any release params
-        release_note: Notes
+        release_notes: Notes
         title: Title
     
   - version: 0.3.8
-    release_note: Minor improvements
+    release_notes: Minor improvements
     # You can add any custom parameters anywhere in the config, 
     # you can access them from the app using Map.
     is_super_ultra_mega_release: true

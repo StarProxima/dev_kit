@@ -39,7 +39,7 @@ class SettingsTranslationsParser {
     );
 
     // releaseNote
-    final releaseNoteValue = value.remove('release_note');
+    final releaseNoteValue = value.remove('release_notes');
     final releaseNote = _textParser.parse(
       releaseNoteValue,
       isDebug: isDebug,

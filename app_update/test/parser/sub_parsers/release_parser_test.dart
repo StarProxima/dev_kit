@@ -16,7 +16,7 @@ void main() {
         'version': '0.3.7',
         'date': '2024-08-24 15:35:00',
         'settings': {
-          'release_note': 'Big update!',
+          'release_notes': 'Big update!',
           'can_skip_release': true,
           'reminder_period_hours': 48,
           'release_delay_hours': 48,
@@ -47,7 +47,7 @@ void main() {
       final value = {
         'version': '0.3.8+10-beta',
         'settings': {
-          'release_note': 'Minor Improvements',
+          'release_notes': 'Minor Improvements',
         },
       };
 
@@ -64,7 +64,7 @@ void main() {
         'settings': {
           'title': 'Title',
           'description': 'Description',
-          'release_note': 'Note',
+          'release_notes': 'Note',
           'can_skip_release': true,
         },
       };

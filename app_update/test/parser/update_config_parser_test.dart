@@ -42,7 +42,7 @@ void main() {
               'version': '1.0.0',
               'date': '2024-08-24T15:35:00Z',
               'settings': {
-                'release_note': 'Big update!',
+                'release_notes': 'Big update!',
                 'can_skip_release': true,
               },
               'sources': ['googlePlay', 'appStore'],
