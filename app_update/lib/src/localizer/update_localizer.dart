@@ -10,12 +10,10 @@ import 'models/update_texts.dart';
 class UpdateLocalizer {
   final String appName;
   final Version appVersion;
-  final Source source;
 
   const UpdateLocalizer({
     required this.appName,
     required this.appVersion,
-    required this.source,
   });
 
   List<Release> localizeReleasesData(List<ReleaseData> releases) {
@@ -39,7 +37,7 @@ class UpdateLocalizer {
         )
         .replaceAll(
           r'$source',
-          source.title,
+          releaseData.targetSource.title,
         );
 
     UpdateTranslations interpolationUpdateTranslation(UpdateTranslations text) => UpdateTranslations(
