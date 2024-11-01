@@ -2,6 +2,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';
 import '../shared/update_status_wrapper.dart';
+import '../sources/source.dart';
 import 'models/release.dart';
 import 'models/update_settings.dart';
 import 'models/update_texts.dart';
@@ -9,10 +10,12 @@ import 'models/update_texts.dart';
 class UpdateLocalizer {
   final String appName;
   final Version appVersion;
+  final Source source;
 
   const UpdateLocalizer({
     required this.appName,
     required this.appVersion,
+    required this.source,
   });
 
   List<Release> localizeReleasesData(List<ReleaseData> releases) {
@@ -20,8 +23,12 @@ class UpdateLocalizer {
   }
 
   Release localizeRelease(ReleaseData releaseData) {
+    // TODO: Оптимизировать, проходясь одной регуркой?
     String interpolation(String text) => text
-        .replaceAll(r'$appName', appName)
+        .replaceAll(
+          r'$appName',
+          appName,
+        )
         .replaceAll(
           r'$appVersion',
           appVersion.toString(),
@@ -29,6 +36,10 @@ class UpdateLocalizer {
         .replaceAll(
           r'$releaseVersion',
           releaseData.version.toString(),
+        )
+        .replaceAll(
+          r'$source',
+          source.title,
         );
 
     UpdateTranslations interpolationUpdateTranslation(UpdateTranslations text) => UpdateTranslations(

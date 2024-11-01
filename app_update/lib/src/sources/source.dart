@@ -4,19 +4,24 @@ import 'package:store_checker/store_checker.dart' as checker;
 import '../shared/update_platform.dart';
 
 enum Sources {
-  googlePlay,
-  appStore,
-  googlePlayPackageInstaller,
-  amazonAppStore,
-  huaweiAppGallery,
-  samsungGalaxyStore,
-  samsungSmartSwitchMobile,
-  xiaomiGetApps,
-  oppoAppMarket,
-  vivoAppStore,
-  ruStore,
-  testFlight,
-  custom;
+  googlePlay('Google Play'),
+  appStore('AppStore'),
+  googlePlayPackageInstaller('Google Play Package Installer'),
+  amazonAppStore('Amazon App Store'),
+  huaweiAppGallery('App Gallery'),
+  samsungGalaxyStore('Galaxy Store'),
+  samsungSmartSwitchMobile('Smart Switch Mobile'),
+  xiaomiGetApps('GetApps'),
+  oppoAppMarket('Oppo AppMarket'),
+  vivoAppStore('Vivo AppStore'),
+  ruStore('RuStore'),
+  testFlight('TestFlight'),
+  custom(null),
+  ;
+
+  const Sources(this.title);
+
+  final String? title;
 
   factory Sources.parse(String name) => values.firstWhere(
         (e) => e.name == name,
@@ -55,6 +60,8 @@ class Source {
 
   final String? _name;
   String get name => _name ?? sourceType.name;
+
+  String get title => sourceType.title ?? name;
 
   @override
   int get hashCode => name.hashCode;
