@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-similar-names
+
 import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';
@@ -56,7 +58,7 @@ class UpdateInterpolator {
           ),
         );
 
-    final localizedSettings = releaseData.settings.value.map(
+    final interpolatedSettingsMap = releaseData.settings.value.map(
       (alertType, value) => MapEntry(
         alertType,
         value.map(
@@ -82,7 +84,7 @@ class UpdateInterpolator {
       version: releaseData.version,
       source: releaseData.targetSource,
       date: releaseData.date,
-      settings: UpdateSettingsContainer(localizedSettings),
+      settings: UpdateSettingsContainer(interpolatedSettingsMap),
       customData: releaseData.customData,
     );
   }
