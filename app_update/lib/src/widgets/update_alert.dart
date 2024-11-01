@@ -1,4 +1,4 @@
-// ignore_for_file: prefer-named-parameters, avoid-late-keyword
+// ignore_for_file: prefer-named-parameters, avoid-late-keyword, avoid-similar-names
 
 import 'dart:async';
 
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../controller/update_contoller_base.dart';
 import '../controller/update_controller.dart';
-import '../localizer/models/app_update.dart';
+import '../interpolator/models/app_update.dart';
 import 'update_alert_handler.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(
@@ -50,20 +50,20 @@ class _UpdateAlertState extends State<UpdateAlert> {
   late final AppLifecycleListener _appLifecycleListener;
   late final UpdateControllerBase _controller;
 
-  Locale get locale => Localizations.localeOf(context);
+  Locale get _locale => Localizations.localeOf(context);
 
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? UpdateController();
 
-    _controller.fetch(locale: locale);
+    _controller.fetch(locale: _locale);
 
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () {
         if (!widget.shouldCheckUpdateAfterAppResume) return;
 
-        _controller.fetch(locale: locale);
+        _controller.fetch(locale: _locale);
 
         _check();
       },
@@ -73,13 +73,13 @@ class _UpdateAlertState extends State<UpdateAlert> {
   Future<void> _check() async {
     if (!widget.enabled) return;
 
-    var appUpdate = await _controller.tryFindUpdate();
+    AppUpdate? appUpdate = await _controller.tryFindUpdate();
 
     if (appUpdate == null) {
       final onPickUpdateSource = widget.onPickUpdateSource;
       if (widget.shouldPickUpdateWhenSourceIsNotDefined) return;
 
-      final appUpdates = await _controller.findAllAvailableUpdates(locale: locale);
+      final appUpdates = await _controller.findAllAvailableUpdates(locale: _locale);
 
       if (!mounted) return;
 
@@ -89,7 +89,8 @@ class _UpdateAlertState extends State<UpdateAlert> {
     if (appUpdate == null) return;
     if (!mounted) return;
 
-    await widget.onUpdateAvailable.call(context, appUpdate, _controller);
+    final futurOr = widget.onUpdateAvailable(context, appUpdate, _controller);
+    if (futurOr is Future) await futurOr;
   }
 
   @override

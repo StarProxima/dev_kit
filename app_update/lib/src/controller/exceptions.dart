@@ -1,4 +1,4 @@
-import '../localizer/models/app_update.dart';
+import '../interpolator/models/app_update.dart';
 
 abstract class UpdateException implements Exception {}
 
