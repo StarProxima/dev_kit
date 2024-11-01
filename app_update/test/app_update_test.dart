@@ -20,6 +20,8 @@ void main() async {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
 
+        update.release.date
+
         final settings = update.release.settings.getBy(
           type: UpdateAlertType.adaptiveDialog,
           status: VersionStatus.updatable,
@@ -71,7 +73,7 @@ void main() async {
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
         case VersionStatus.updatable:
-          if (DateTime.now().difference(update.release.dateUtc!) > const Duration(days: 7)) {
+          if (DateTime.now().difference(update.release.date!) > const Duration(days: 7)) {
             // Show custom dialog
             return;
           }

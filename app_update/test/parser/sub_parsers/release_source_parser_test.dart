@@ -98,7 +98,7 @@ void main() {
         platformSourceRelease?.settings
             ?.getByRaw(type: 'base', status: 'base')
             ?.translations
-            ?.releaseNote
+            ?.releaseNotes
             ?.byLocale(kAppUpdateDefaultLocale),
         'Windows Github release notes',
       );

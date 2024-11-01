@@ -31,17 +31,17 @@ class SettingsTranslationsParser {
       isDebug: isDebug,
     );
 
-    // releaseNoteTitle
-    final releaseNoteTitleValue = value.remove('release_note_title');
-    final releaseNoteTitle = _textParser.parse(
-      releaseNoteTitleValue,
+    // releaseNotesTitle
+    final releaseNotesTitleValue = value.remove('release_note_title');
+    final releaseNotesTitle = _textParser.parse(
+      releaseNotesTitleValue,
       isDebug: isDebug,
     );
 
-    // releaseNote
-    final releaseNoteValue = value.remove('release_notes');
-    final releaseNote = _textParser.parse(
-      releaseNoteValue,
+    // releaseNotes
+    final releaseNotesValue = value.remove('release_notes');
+    final releaseNotes = _textParser.parse(
+      releaseNotesValue,
       isDebug: isDebug,
     );
 
@@ -69,8 +69,8 @@ class SettingsTranslationsParser {
     return UpdateTranslationsData(
       title: title,
       description: description,
-      releaseNoteTitle: releaseNoteTitle,
-      releaseNote: releaseNote,
+      releaseNotesTitle: releaseNotesTitle,
+      releaseNotes: releaseNotes,
       skipButtonText: skipButtonText,
       laterButtonText: laterButtonText,
       updateButtonText: updateButtonText,

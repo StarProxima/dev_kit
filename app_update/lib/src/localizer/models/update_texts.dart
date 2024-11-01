@@ -15,8 +15,8 @@ class UpdateTranslations {
     final trList = [
       rawTranslations?.title,
       rawTranslations?.description,
-      rawTranslations?.releaseNoteTitle,
-      rawTranslations?.releaseNote,
+      rawTranslations?.releaseNotesTitle,
+      rawTranslations?.releaseNotes,
       rawTranslations?.skipButtonText,
       rawTranslations?.laterButtonText,
       rawTranslations?.updateButtonText,
@@ -34,8 +34,9 @@ class UpdateTranslations {
       final updateText = UpdateTexts(
         title: rawTranslations?.title?.byLocale(locale) ?? localizedDefaultTexts.title,
         description: rawTranslations?.description?.byLocale(locale) ?? localizedDefaultTexts.description,
-        releaseNoteTitle: rawTranslations?.releaseNoteTitle?.byLocale(locale) ?? localizedDefaultTexts.releaseNoteTitle,
-        releaseNote: rawTranslations?.releaseNote?.byLocale(locale) ?? localizedDefaultTexts.releaseNote,
+        releaseNotesTitle:
+            rawTranslations?.releaseNotesTitle?.byLocale(locale) ?? localizedDefaultTexts.releaseNotesTitle,
+        releaseNotes: rawTranslations?.releaseNotes?.byLocale(locale) ?? localizedDefaultTexts.releaseNotes,
         skipButtonText: rawTranslations?.skipButtonText?.byLocale(locale) ?? localizedDefaultTexts.skipButtonText,
         laterButtonText: rawTranslations?.laterButtonText?.byLocale(locale) ?? localizedDefaultTexts.laterButtonText,
         updateButtonText: rawTranslations?.updateButtonText?.byLocale(locale) ?? localizedDefaultTexts.updateButtonText,
@@ -57,8 +58,8 @@ class UpdateTranslations {
 class UpdateTexts {
   final String title;
   final String description;
-  final String releaseNoteTitle;
-  final String releaseNote;
+  final String releaseNotesTitle;
+  final String releaseNotes;
   final String skipButtonText;
   final String laterButtonText;
   final String updateButtonText;
@@ -66,8 +67,8 @@ class UpdateTexts {
   const UpdateTexts({
     required this.title,
     required this.description,
-    required this.releaseNoteTitle,
-    required this.releaseNote,
+    required this.releaseNotesTitle,
+    required this.releaseNotes,
     required this.skipButtonText,
     required this.laterButtonText,
     required this.updateButtonText,

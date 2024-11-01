@@ -55,7 +55,7 @@ Here is the full config api structure under consideration:
 # Optianal, default settings for releases
 release_settings:
   title:
-    # Any text (title, description, releaseNote)
+    # Any text (title, description, releaseNotes)
     # supports optional localization, interpolation and markdown.
     # Also supports short syntax without localization.
     en: |-

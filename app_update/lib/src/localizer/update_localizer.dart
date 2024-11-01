@@ -46,8 +46,8 @@ class UpdateLocalizer {
               UpdateTexts(
                 title: interpolation(texts.title),
                 description: interpolation(texts.description),
-                releaseNoteTitle: interpolation(texts.releaseNoteTitle),
-                releaseNote: interpolation(texts.releaseNote),
+                releaseNotesTitle: interpolation(texts.releaseNotesTitle),
+                releaseNotes: interpolation(texts.releaseNotes),
                 skipButtonText: interpolation(texts.skipButtonText),
                 laterButtonText: interpolation(texts.laterButtonText),
                 updateButtonText: interpolation(texts.updateButtonText),
@@ -81,7 +81,7 @@ class UpdateLocalizer {
     return Release(
       version: releaseData.version,
       targetSource: releaseData.targetSource,
-      dateUtc: releaseData.dateUtc,
+      date: releaseData.date,
       settings: UpdateSettingsContainer(localizedSettings),
       customData: releaseData.customData,
     );
