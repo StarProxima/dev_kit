@@ -20,14 +20,21 @@ void main() async {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
 
-        update.release.date
-
         final settings = update.release.settings.getBy(
-          type: UpdateAlertType.adaptiveDialog,
-          status: VersionStatus.updatable,
+          type: UpdateAlertType.dialog,
+          status: update.appVersionStatus,
         );
 
-        final text = settings.texts.byLocale(const Locale('en'));
+        final texts = settings.translations.byLocale(
+          const Locale('en'),
+        );
+
+        // final settings = update.release.settings.getBy(
+        //   type: UpdateAlertType.adaptiveDialog,
+        //   status: VersionStatus.updatable,
+        // );
+
+        // final text = settings.translations.byLocale(const Locale('en'));
 
         // Release.localizedFromReleaseData(
         //   releaseData: releaseData,

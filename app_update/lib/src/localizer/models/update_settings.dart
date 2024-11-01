@@ -2,7 +2,7 @@ import '../../linker/models/release_settings_data.dart';
 import 'update_texts.dart';
 
 class UpdateSettings {
-  final UpdateTranslations texts;
+  final UpdateTranslations translations;
   final bool canSkipRelease;
   final bool canPostponeRelease;
   final Duration reminderPeriod;
@@ -11,7 +11,7 @@ class UpdateSettings {
   final Map<String, dynamic>? customData;
 
   const UpdateSettings({
-    required this.texts,
+    required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,
@@ -23,12 +23,12 @@ class UpdateSettings {
   factory UpdateSettings.fromData({
     UpdateSettingsData? data,
   }) {
-    const defaultSettings = UpdateSettings.availableUpdate(texts: UpdateTranslations({}));
+    const defaultSettings = UpdateSettings.availableUpdate(translations: UpdateTranslations({}));
 
     return UpdateSettings(
-      texts: UpdateTranslations.fromData(
+      translations: UpdateTranslations.fromData(
         rawTranslations: data?.translations,
-        defaultTexts: defaultSettings.texts,
+        defaultTexts: defaultSettings.translations,
       ),
       canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
       canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
@@ -40,7 +40,7 @@ class UpdateSettings {
   }
 
   const UpdateSettings.requiredUpdate({
-    required this.texts,
+    required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = false,
     this.reminderPeriod = Duration.zero,
@@ -50,7 +50,7 @@ class UpdateSettings {
   });
 
   const UpdateSettings.recommendedUpdate({
-    required this.texts,
+    required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = true,
     this.reminderPeriod = const Duration(hours: 24),
@@ -60,7 +60,7 @@ class UpdateSettings {
   });
 
   const UpdateSettings.availableUpdate({
-    required this.texts,
+    required this.translations,
     this.canSkipRelease = true,
     this.canPostponeRelease = true,
     this.reminderPeriod = const Duration(hours: 72),
@@ -70,7 +70,7 @@ class UpdateSettings {
   });
 
   UpdateSettings copyWith({
-    UpdateTranslations? texts,
+    UpdateTranslations? translations,
     bool? canSkipRelease,
     bool? canPostponeRelease,
     Duration? reminderPeriod,
@@ -79,7 +79,7 @@ class UpdateSettings {
     Map<String, dynamic>? customData,
   }) {
     return UpdateSettings(
-      texts: texts ?? this.texts,
+      translations: translations ?? this.translations,
       canSkipRelease: canSkipRelease ?? this.canSkipRelease,
       canPostponeRelease: canPostponeRelease ?? this.canPostponeRelease,
       reminderPeriod: reminderPeriod ?? this.reminderPeriod,

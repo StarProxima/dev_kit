@@ -3,6 +3,26 @@ import 'dart:ui';
 import '../../parser/models/settings_translations.dart';
 import '../../shared/text_translations.dart';
 
+class UpdateTexts {
+  final String title;
+  final String description;
+  final String releaseNotesTitle;
+  final String releaseNotes;
+  final String skipButtonText;
+  final String laterButtonText;
+  final String updateButtonText;
+
+  const UpdateTexts({
+    required this.title,
+    required this.description,
+    required this.releaseNotesTitle,
+    required this.releaseNotes,
+    required this.skipButtonText,
+    required this.laterButtonText,
+    required this.updateButtonText,
+  });
+}
+
 class UpdateTranslations {
   final Map<Locale, UpdateTexts> value;
 
@@ -53,24 +73,4 @@ class UpdateTranslations {
       value[kAppUpdateDefaultLocale] ??
       value.values.firstOrNull ??
       (throw Exception('At least one locale must be specified'));
-}
-
-class UpdateTexts {
-  final String title;
-  final String description;
-  final String releaseNotesTitle;
-  final String releaseNotes;
-  final String skipButtonText;
-  final String laterButtonText;
-  final String updateButtonText;
-
-  const UpdateTexts({
-    required this.title,
-    required this.description,
-    required this.releaseNotesTitle,
-    required this.releaseNotes,
-    required this.skipButtonText,
-    required this.laterButtonText,
-    required this.updateButtonText,
-  });
 }

@@ -6,22 +6,22 @@ import 'models/release.dart';
 import 'models/update_settings.dart';
 import 'models/update_texts.dart';
 
-class UpdateLocalizer {
+class UpdateInterpolator {
   final String appName;
   final Version appVersion;
 
-  const UpdateLocalizer({
+  const UpdateInterpolator({
     required this.appName,
     required this.appVersion,
   });
 
-  List<Release> localizeReleasesData(List<ReleaseData> releases) {
-    return releases.map(localizeRelease).toList();
+  List<Release> interpolateReleases(List<ReleaseData> releases) {
+    return releases.map(interpolateRelease).toList();
   }
 
-  Release localizeRelease(ReleaseData releaseData) {
+  Release interpolateRelease(ReleaseData releaseData) {
     // TODO: Оптимизировать, проходясь одной регуркой?
-    String interpolation(String text) => text
+    String interpolate(String text) => text
         .replaceAll(
           r'$appName',
           appName,
@@ -39,18 +39,18 @@ class UpdateLocalizer {
           releaseData.targetSource.title,
         );
 
-    UpdateTranslations interpolationUpdateTranslation(UpdateTranslations text) => UpdateTranslations(
+    UpdateTranslations interpolateUpdateTranslation(UpdateTranslations text) => UpdateTranslations(
           text.value.map(
             (locale, texts) => MapEntry(
               locale,
               UpdateTexts(
-                title: interpolation(texts.title),
-                description: interpolation(texts.description),
-                releaseNotesTitle: interpolation(texts.releaseNotesTitle),
-                releaseNotes: interpolation(texts.releaseNotes),
-                skipButtonText: interpolation(texts.skipButtonText),
-                laterButtonText: interpolation(texts.laterButtonText),
-                updateButtonText: interpolation(texts.updateButtonText),
+                title: interpolate(texts.title),
+                description: interpolate(texts.description),
+                releaseNotesTitle: interpolate(texts.releaseNotesTitle),
+                releaseNotes: interpolate(texts.releaseNotes),
+                skipButtonText: interpolate(texts.skipButtonText),
+                laterButtonText: interpolate(texts.laterButtonText),
+                updateButtonText: interpolate(texts.updateButtonText),
               ),
             ),
           ),
@@ -63,15 +63,15 @@ class UpdateLocalizer {
           (status, updateSettingsData) {
             final settings = UpdateSettings.fromData(data: updateSettingsData);
 
-            final localizedText = interpolationUpdateTranslation(settings.texts);
+            final interpolatedTranslations = interpolateUpdateTranslation(settings.translations);
 
-            final localizedSettings = settings.copyWith(
-              texts: localizedText,
+            final interpolatedSettings = settings.copyWith(
+              translations: interpolatedTranslations,
             );
 
             return MapEntry(
               status,
-              localizedSettings,
+              interpolatedSettings,
             );
           },
         ),
@@ -80,7 +80,7 @@ class UpdateLocalizer {
 
     return Release(
       version: releaseData.version,
-      targetSource: releaseData.targetSource,
+      source: releaseData.targetSource,
       date: releaseData.date,
       settings: UpdateSettingsContainer(localizedSettings),
       customData: releaseData.customData,

@@ -5,14 +5,14 @@ import '../../sources/source.dart';
 
 class Release {
   final Version version;
-  final Source targetSource;
+  final Source source;
   final DateTime? date;
   final UpdateSettingsContainer settings;
   final Map<String, dynamic>? customData;
 
   const Release({
     required this.version,
-    required this.targetSource,
+    required this.source,
     required this.date,
     required this.settings,
     required this.customData,

@@ -38,7 +38,7 @@ class UpdateController extends UpdateControllerBase {
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
-  UpdateLocalizer? _localizer;
+  UpdateInterpolator? _localizer;
   SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
@@ -136,8 +136,8 @@ class UpdateController extends UpdateControllerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _localizer ??= UpdateLocalizer(appName: appName, appVersion: appVersion);
-    final releases = _localizer!.localizeReleasesData(availableReleasesData);
+    _localizer ??= UpdateInterpolator(appName: appName, appVersion: appVersion);
+    final releases = _localizer!.interpolateReleases(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
 
@@ -211,9 +211,9 @@ class UpdateController extends UpdateControllerBase {
   @override
   Future<void> launchReleaseSource(Release release) async {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-    await _updateStorage?.saveLastSource(release.targetSource.name);
+    await _updateStorage?.saveLastSource(release.source.name);
 
-    final url = release.targetSource.url;
+    final url = release.source.url;
     await launchUrl(url);
   }
 

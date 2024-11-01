@@ -13,7 +13,7 @@ import 'google_play_fetcher.dart';
 base class SourceReleaseFetcherCoordinator {
   const SourceReleaseFetcherCoordinator();
 
-  FutureOr<SourceReleaseFetcher> fetcherBySource(Source source) => switch (source.sourceType) {
+  FutureOr<SourceReleaseFetcher> fetcherBySource(Source source) => switch (source.type) {
         Sources.googlePlay => const GooglePlayFetcher(),
         Sources.appStore => const AppStoreFetcher(),
         Sources.custom => throw UnimplementedError(),
