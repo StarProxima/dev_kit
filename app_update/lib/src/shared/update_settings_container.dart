@@ -2,7 +2,7 @@
 import '../linker/models/release_settings_data.dart';
 import '../interpolator/models/update_settings.dart';
 import '../parser/models/release_settings_config.dart';
-import 'app_version_status.dart';
+import 'version_status.dart';
 import 'update_alert_type.dart';
 
 // TODO тут миксин не надо бы применить?

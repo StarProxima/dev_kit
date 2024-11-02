@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
-import '../shared/app_version_status.dart';
+import '../shared/version_status.dart';
 import '../shared/raw_update_config.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';

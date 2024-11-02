@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
 import 'package:app_update/src/controller/update_controller.dart';
-import 'package:app_update/src/shared/app_version_status.dart';
+import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';

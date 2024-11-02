@@ -4,7 +4,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';
 import '../parser/models/versions_settings_config.dart';
-import '../shared/app_version_status.dart';
+import '../shared/version_status.dart';
 
 class UpdateVersionController {
   final VersionSettingsConfig? versionSettings;

@@ -1,6 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../shared/app_version_status.dart';
+import '../../shared/version_status.dart';
 import 'release.dart';
 import 'update_config.dart';
 
