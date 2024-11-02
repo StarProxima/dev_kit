@@ -25,10 +25,10 @@ class UpdateSettingsContainerParser {
 
     final map = value;
 
-    final updateSettings = <String, Map<String, UpdateSettingsConfig>>{};
+    final RawUpdateSettingsContainer<UpdateSettingsConfig> updateSettings = {};
 
     final typeNames = [...UpdateAlertType.values.map((e) => e.name)];
-    final typeNamesFull = [...typeNames, 'base'];
+    // final typeBaseKeys = UpdateAlertTypeBase.values.map((e) => e.key);
     final statusNames = [...VersionStatus.values.map((e) => e.name)];
 
     final isContainsBase = map.containsKey('base');
@@ -41,13 +41,14 @@ class UpdateSettingsContainerParser {
       // Empty UpdateSettings
       if (settingsByStatus.isEmpty) return const UpdateSettingsConfigContainer({});
 
-      updateSettings['base'] = settingsByStatus;
+      updateSettings[UpdateAlertTypeBase.base] = settingsByStatus;
 
       return UpdateSettingsConfigContainer(updateSettings);
     }
 
-    for (final type in typeNamesFull) {
-      final value = map[type];
+    for (final type in UpdateAlertTypeBase.values) {
+      final key = type.key;
+      final value = map[key];
       if (value is! Map<String, dynamic>) continue;
 
       final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
@@ -59,28 +60,32 @@ class UpdateSettingsContainerParser {
     return UpdateSettingsConfigContainer(updateSettings);
   }
 
-  Map<String, UpdateSettingsConfig> _parseByStatus(
+  Map<VersionStatusBase, UpdateSettingsConfig> _parseByStatus(
     Map<String, dynamic> map, {
     required UpdateSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
   }) {
-    final settingsByStatus = <String, UpdateSettingsConfig>{};
+    final settingsByStatus = <VersionStatusBase, UpdateSettingsConfig>{};
 
-    final statusNamesFull = [...VersionStatus.values.map((e) => e.name), 'base'];
+    final statusBaseKeys = VersionStatusBase.values.map((e) => e.key);
 
-    final isByStatus = map.keys.any(statusNamesFull.contains);
+    final isByStatus = map.keys.any(statusBaseKeys.contains);
 
     if (!isByStatus) {
       final settings = parseSettings(map);
       if (settings == null) return {};
 
-      return {'base': settings};
+      // ignore: avoid-missing-enum-constant-in-map
+      return {VersionStatusBase.base: settings};
     }
 
-    for (final status in statusNamesFull) {
-      final value = map[status];
+    for (final status in VersionStatusBase.values) {
+      final key = status.key;
+      final value = map[key];
       if (value == null) continue;
+
       final settings = parseSettings(value);
       if (settings == null) continue;
+
       settingsByStatus[status] = settings;
     }
 

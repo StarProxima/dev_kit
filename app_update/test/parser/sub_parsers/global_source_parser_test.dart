@@ -3,14 +3,14 @@
 import 'package:app_update/src/parser/models/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
+import 'package:app_update/src/shared/update_alert_type.dart';
+import 'package:app_update/src/shared/version_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('GlobalSourceParser', () {
     const parser = GlobalSourceParser();
     const isDebug = true;
-
-    const base = 'base';
 
     test('parses valid data with multiple sources', () {
       final value = {
@@ -42,7 +42,14 @@ void main() {
       expect(result?.name, 'ruStore');
       expect(result?.url?.toString(), 'https://example.com');
       expect(
-        result?.settings?.getByRaw(type: base, status: base)?.translations?.title?.byLocale(kAppUpdateDefaultLocale),
+        result?.settings
+            ?.getByBase(
+              type: UpdateAlertTypeBase.base,
+              status: VersionStatusBase.base,
+            )
+            ?.translations
+            ?.title
+            ?.byLocale(kAppUpdateDefaultLocale),
         'Title',
       );
       expect(result?.versionSettings?.unsupportedVersions, isNotEmpty);
@@ -87,7 +94,10 @@ void main() {
       );
       expect(
         androidPlatform?.source?.settings
-            ?.getByRaw(type: base, status: base)
+            ?.getByBase(
+              type: UpdateAlertTypeBase.base,
+              status: VersionStatusBase.base,
+            )
             ?.translations
             ?.title
             ?.byLocale(kAppUpdateDefaultLocale),

@@ -5,9 +5,11 @@ import '../parser/models/release_settings_config.dart';
 import 'version_status.dart';
 import 'update_alert_type.dart';
 
+typedef RawUpdateSettingsContainer<T> = Map<UpdateAlertTypeBase, Map<VersionStatusBase, T>>;
+
 // TODO тут миксин не надо бы применить?
 class UpdateSettingsConfigContainer {
-  final Map<String, Map<String, UpdateSettingsConfig>> _value;
+  final RawUpdateSettingsContainer<UpdateSettingsConfig> _value;
 
   const UpdateSettingsConfigContainer(this._value);
 
@@ -15,14 +17,17 @@ class UpdateSettingsConfigContainer {
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
-      getByRaw(type: type.name, status: status.name);
+      getByBase(
+        type: type.toBase(),
+        status: status.toBase(),
+      );
 
-  UpdateSettingsConfig? getByRaw({
-    required String type,
-    required String status,
+  UpdateSettingsConfig? getByBase({
+    required UpdateAlertTypeBase type,
+    required VersionStatusBase status,
   }) {
-    final byType = _value[type] ?? _value['base'];
-    final byStatus = byType?[status] ?? byType?['base'];
+    final byType = _value[type] ?? _value[UpdateAlertTypeBase.base];
+    final byStatus = byType?[status] ?? byType?[VersionStatusBase.base];
 
     return byStatus;
   }
@@ -31,14 +36,15 @@ class UpdateSettingsConfigContainer {
 // TODO разнести бы их по файлам отдельным
 class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
   @override
-  final Map<String, Map<String, UpdateSettingsData>> _value;
+  final RawUpdateSettingsContainer<UpdateSettingsData> _value;
 
-  Map<String, Map<String, UpdateSettingsData>> get value => _value;
+  RawUpdateSettingsContainer<UpdateSettingsData> get value => _value;
 
   const UpdateSettingsDataContainer(this._value);
 
   factory UpdateSettingsDataContainer.fromConfig(UpdateSettingsConfigContainer? config) {
     return UpdateSettingsDataContainer(
+      // ignore: avoid-missing-enum-constant-in-map
       config?._value.map(
             (key, value) => MapEntry(
               key,
@@ -51,7 +57,10 @@ class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
             ),
           ) ??
           {
-            'base': {'base': UpdateSettingsData.fromConfig(null)},
+            // ignore: avoid-missing-enum-constant-in-map
+            UpdateAlertTypeBase.base: {
+              VersionStatusBase.base: UpdateSettingsData.fromConfig(null),
+            },
           },
     );
   }
@@ -80,28 +89,31 @@ class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
 
 class UpdateSettingsContainer with GetByMixin<UpdateSettings> {
   @override
-  final Map<String, Map<String, UpdateSettings>> _value;
+  final RawUpdateSettingsContainer<UpdateSettings> _value;
 
   const UpdateSettingsContainer(this._value);
 }
 
 mixin GetByMixin<T> {
-  abstract final Map<String, Map<String, T>> _value;
+  abstract final RawUpdateSettingsContainer<T> _value;
 
   T getBy({
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
-      getByRaw(type: type.name, status: status.name);
+      getByRaw(
+        type: type.toBase(),
+        status: status.toBase(),
+      );
 
   T getByRaw({
-    required String type,
-    required String status,
+    required UpdateAlertTypeBase type,
+    required VersionStatusBase status,
   }) {
-    final byType = _value[type] ?? _value['base'];
+    final byType = _value[type] ?? _value[UpdateAlertTypeBase.base];
     if (byType == null) throw Exception();
 
-    final byStatus = byType[status] ?? byType['base'];
+    final byStatus = byType[status] ?? byType[VersionStatusBase.base];
     if (byStatus == null) throw Exception();
 
     return byStatus;

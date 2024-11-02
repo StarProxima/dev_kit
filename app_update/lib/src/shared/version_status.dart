@@ -27,4 +27,19 @@ enum VersionStatus {
   bool get updateIsRecommended => isDeprecated;
 
   bool get updateIsAvailable => isUpdatable;
+
+  VersionStatusBase toBase() => VersionStatusBase.values.firstWhere((e) => e.status == this);
+}
+
+enum VersionStatusBase {
+  unsupported(VersionStatus.unsupported),
+  deprecated(VersionStatus.deprecated),
+  updatable(VersionStatus.updatable),
+  base(null);
+
+  const VersionStatusBase(this.status);
+
+  final VersionStatus? status;
+
+  String get key => status?.name ?? name;
 }
