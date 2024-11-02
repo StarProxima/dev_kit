@@ -52,7 +52,9 @@ class ReleaseParser {
       // sources
       final sourcesValue = map.remove('sources');
 
-      if (sourcesValue is! List<Object>?) throw const UpdateConfigException();
+      if (sourcesValue is! List?) throw const UpdateConfigException();
+
+      if (sourcesValue == null && !isOverride) throw const UpdateConfigException();
 
       final sources = sourcesValue
           ?.map(

@@ -82,7 +82,7 @@ void main() {
           {'name': 'appStore', 'url': 'https://example.com'},
         ],
         'releases': [
-          {'version': '1.0.0', 'date': '2024-08-24T15:35:00Z'},
+          {'version': '1.0.0', 'date': '2024-08-24T15:35:00Z', 'sources': []},
         ],
       };
 
@@ -118,8 +118,12 @@ void main() {
           {'name': 'ruStore', 'url': 'https://example.com'},
         ],
         'releases': [
-          {'version': '0.2.6', 'date': '2014-10-17T23:00:00Z'},
-          {'version': '0.3.0', 'date': '2014-10-18T23:00:00Z'},
+          {
+            'version': '0.2.6',
+            'date': '2014-10-17T23:00:00Z',
+            'sources': ['appGallery', 'ruStore'],
+          },
+          {'version': '0.3.0', 'date': '2014-10-18T23:00:00Z', 'sources': []},
         ],
       };
 
@@ -127,6 +131,7 @@ void main() {
 
       expect(result.sources?.length, 2);
       expect(result.releases.length, 2);
+      expect(result.releases.firstOrNull?.sources?.length, 2);
     });
 
     test('throws exception if sources is not a list', () {
