@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../controller/exceptions.dart';
-import '../localizer/models/release.dart';
+import '../interpolator/models/release.dart';
 import '../shared/update_platform.dart';
 import '../sources/source.dart';
 
@@ -22,7 +22,7 @@ class UpdateFinder {
     final availableReleasesFromAllSources = <Source, Release>{};
 
     for (final release in releases) {
-      final releaseSource = release.targetSource;
+      final releaseSource = release.source;
 
       if (!releaseSource.platforms.contains(platform)) continue;
 
@@ -68,7 +68,7 @@ class UpdateFinder {
     // либо определяем сами откуда установлено приложение
     final sourceCheckerType = await Sources.checkAppSource();
     if (sourceCheckerType != null) {
-      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.sourceType == sourceCheckerType);
+      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.type == sourceCheckerType);
       if (checkedSource != null) {
         // если сурс существует в конфиге, но для него нет обновления
         if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {

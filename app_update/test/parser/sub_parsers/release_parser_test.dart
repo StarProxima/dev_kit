@@ -1,158 +1,189 @@
-// // ignore_for_file: avoid-long-functions, prefer-test-matchers, avoid-unsafe-collection-methods
+// ignore_for_file: avoid-long-functions, prefer-test-matchers
+import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/parser/update_config_parser.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pub_semver/pub_semver.dart';
 
-// import 'dart:ui';
+void main() {
+  group('ReleaseParser', () {
+    const parser = ReleaseParser();
+    const isDebug = true;
+    const isOverride = false;
 
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:update_check/src/parser/models/update_config_exception.dart';
-// import 'package:update_check/src/parser/update_config_parser.dart';
-// import 'package:update_check/src/shared/release_status.dart';
-// import 'package:update_check/src/shared/text_translations.dart';
+    test('parses release with version, date, and sources in local timezone', () {
+      final value = {
+        'version': '0.3.7',
+        'date': '2024-08-24 15:35:00',
+        'settings': {
+          'release_notes': 'Big update!',
+          'can_skip_release': true,
+          'reminder_period_hours': 48,
+          'release_delay_hours': 48,
+        },
+        'sources': [],
+      };
 
-// void main() {
-//   group('ReleaseParser', () {
-//     const releaseParser = ReleaseParser();
-//     const isDebug = true;
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
 
-//     test('should parse valid ReleaseConfig', () {
-//       final value = {
-//         'version': '0.3.7',
-//         'ref_version': '0.3.6',
-//         'build_number': 21,
-//         'status': 'required',
-//         'release_note': {
-//           'en': 'New features and bug fixes',
-//         },
-//         'publish_date_utc': '2024-08-24 15:35:00',
-//         'stores': [
-//           {
-//             'name': 'googlePlay',
-//             'url': 'https://example.com',
-//           },
-//           {
-//             'name': 'appStore',
-//             'url': 'https://example.com',
-//           },
-//         ],
-//         'customField': 'customValue',
-//       };
+      expect(result?.version, Version.parse('0.3.7'));
+      expect(result?.date, DateTime(2024, 8, 24, 15, 35));
+      expect(result?.settings, isNotNull);
+      expect(result?.sources, isEmpty);
+    });
 
-//       final result = releaseParser.parse(value, isDebug: isDebug);
+    test('parses release with date in UTC format', () {
+      final value = {
+        'version': '1.0.0',
+        'date': '2024-08-24T15:35:00Z',
+        'sources': [],
+      };
 
-//       expect(result, isNotNull);
-//       expect(result?.version.toString(), '0.3.7');
-//       expect(result?.refVersion?.toString(), '0.3.6');
-//       expect(result?.buildNumber, 21);
-//       expect(result?.status, ReleaseStatus.required);
-//       expect(
-//         result?.releaseNoteTranslations?.byLocale(const Locale('ababa')),
-//         'New features and bug fixes',
-//       );
-//       expect(result?.dateUtc?.toString(), '2024-08-24 15:35:00.000');
-//       expect(result?.sources, hasLength(2));
-//       expect(result?.sources?[0].name, 'googlePlay');
-//       expect(result?.sources?[1].name, 'appStore');
-//       expect(result?.customData?['customField'], 'customValue');
-//     });
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
 
-//     test('should parse short store syntax', () {
-//       final value = {
-//         'version': '0.3.7',
-//         'stores': [
-//           'googlePlay',
-//           {
-//             'name': 'appStore',
-//             'url': 'https://example.com',
-//           },
-//         ],
-//       };
+      expect(result?.version, Version.parse('1.0.0'));
+      expect(result?.date?.isUtc, true);
+      expect(result?.date, DateTime.utc(2024, 8, 24, 15, 35));
+      expect(result?.sources, isEmpty);
+    });
 
-//       final result = releaseParser.parse(value, isDebug: isDebug);
+    test('parses release with version and sources in semantic format with build metadata', () {
+      final value = {
+        'version': '0.3.8+10-beta',
+        'settings': {
+          'release_notes': 'Minor Improvements',
+        },
+        'sources': [
+          {'name': 'googlePlay'},
+          {'name': 'appStore'},
+        ],
+      };
 
-//       expect(result, isNotNull);
-//       expect(result?.version.toString(), '0.3.7');
-//       expect(result?.sources, hasLength(2));
-//       expect(result?.sources?.firstOrNull?.name, 'googlePlay');
-//       expect(result?.sources?[1].name, 'appStore');
-//     });
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
 
-//     test('should return null if version is missing', () {
-//       final value = {
-//         'ref_version': '0.3.6',
-//         'build_number': 21,
-//       };
+      expect(result?.version, Version.parse('0.3.8+10-beta'));
+      expect(result?.settings, isNotNull);
+      expect(result?.sources?.length, 2);
+    });
 
-//       final result = releaseParser.parse(value, isDebug: false);
-//       expect(result, isNull);
+    test('parses release with version, date, custom settings, and sources', () {
+      final value = {
+        'version': '0.2.4',
+        'date': '2014-10-17 23:00:00',
+        'settings': {
+          'title': 'Title',
+          'description': 'Description',
+          'release_notes': 'Note',
+          'can_skip_release': true,
+        },
+        'sources': [
+          {'name': 'googlePlay', 'url': 'https://play.google.com'},
+        ],
+      };
 
-//       expect(
-//         () => releaseParser.parse(value, isDebug: isDebug),
-//         throwsA(isA<UpdateConfigException>()),
-//       );
-//     });
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
 
-//     test('should handle invalid date format', () {
-//       final value = {
-//         'version': '0.3.7',
-//         'publish_date_utc': 'invalid-date',
-//       };
+      expect(result?.version, Version.parse('0.2.4'));
+      expect(result?.date, DateTime(2014, 10, 17, 23));
+      expect(result?.settings, isNotNull);
+      expect(result?.sources?.firstOrNull?.name, 'googlePlay');
+    });
 
-//       final release = releaseParser.parse(value, isDebug: false);
-//       expect(release, isNull);
+    test('throws exception if version is missing and isOverride is false', () {
+      final value = {
+        'date': '2024-08-24 15:35:00',
+        'sources': [],
+      };
 
-//       expect(
-//         () => releaseParser.parse(value, isDebug: isDebug),
-//         throwsA(isA<UpdateConfigException>()),
-//       );
-//     });
+      expect(
+        () => parser.parse(value, isDebug: isDebug, isOverride: isOverride),
+        throwsA(isA<UpdateConfigException>()),
+      );
+    });
 
-//     test('should throw exception in debug mode when invalid build_number', () {
-//       final value = {
-//         'version': '0.3.7',
-//         'build_number': 'invalid-number', // Некорректный тип для build_number
-//       };
+    test('parses release without version if isOverride is true', () {
+      final value = {
+        'date': '2024-08-24 15:35:00',
+        'sources': [],
+      };
 
-//       final release = releaseParser.parse(value, isDebug: false);
-//       expect(release, isNull);
+      final result = parser.parse(value, isDebug: isDebug, isOverride: true);
 
-//       expect(
-//         () => releaseParser.parse(value, isDebug: isDebug),
-//         throwsA(isA<UpdateConfigException>()),
-//       );
-//     });
+      expect(result?.version, isNull);
+      expect(result?.date?.isUtc, false);
+      expect(result?.date, DateTime(2024, 8, 24, 15, 35));
+      expect(result?.sources, isEmpty);
+    });
 
-//     test('should parse ReleaseConfig with missing optional fields', () {
-//       final value = {
-//         'version': '0.3.7',
-//         'ref_version': '0.3.6',
-//         // Опциональные поля отсутствуют
-//       };
+    test('throws exception if date is invalid', () {
+      final value = {
+        'version': '0.3.7',
+        'date': 'invalid-date-format',
+        'sources': [],
+      };
 
-//       final result = releaseParser.parse(value, isDebug: isDebug);
+      expect(
+        () => parser.parse(value, isDebug: isDebug, isOverride: isOverride),
+        throwsA(isA<UpdateConfigException>()),
+      );
+    });
 
-//       expect(result, isNotNull);
-//       expect(result?.version.toString(), '0.3.7');
-//       expect(result?.refVersion?.toString(), '0.3.6');
-//       expect(result?.buildNumber, isNull);
-//       expect(result?.status, isNull);
-//       expect(result?.releaseNoteTranslations, isNull);
-//       expect(result?.dateUtc, isNull);
-//       expect(result?.sources, isNull);
-//       expect(result?.customData, hasLength(0));
-//     });
+    test('parses release with custom metadata fields', () {
+      final value = {
+        'version': '0.3.7',
+        'date': '2024-08-24 15:35:00',
+        'is_super_ultra_mega_release': true,
+        'sources': [],
+      };
 
-//     test('should throw exception in debug mode for invalid status', () {
-//       final value = {
-//         'version': '0.3.7',
-//         'status': 'invalid-status', // Некорректное значение статуса
-//       };
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
 
-//       final release = releaseParser.parse(value, isDebug: false);
-//       expect(release, isNull);
+      expect(result?.version, Version.parse('0.3.7'));
+      expect(result?.customData?['is_super_ultra_mega_release'], isTrue);
+      expect(result?.sources, isEmpty);
+    });
 
-//       expect(
-//         () => releaseParser.parse(value, isDebug: isDebug),
-//         throwsA(isA<UpdateConfigException>()),
-//       );
-//     });
-//   });
-// }
+    test('parses release with timezone offset in date', () {
+      final value = {
+        'version': '1.2.0',
+        'date': '2024-08-24T15:35:00+02:00',
+        'sources': [],
+      };
+
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
+
+      expect(result?.version, Version.parse('1.2.0'));
+      expect(result?.date?.isUtc, true);
+      expect(result?.date, DateTime.utc(2024, 8, 24, 13, 35));
+      expect(result?.sources, isEmpty);
+    });
+
+    test('throws exception if sources is missing', () {
+      final value = {
+        'version': '0.3.7',
+        'date': '2024-08-24 15:35:00',
+      };
+
+      expect(
+        () => parser.parse(value, isDebug: isDebug, isOverride: isOverride),
+        throwsA(isA<UpdateConfigException>()),
+      );
+    });
+
+    test('parses release with multiple sources', () {
+      final value = {
+        'version': '0.3.7',
+        'date': '2024-08-24 15:35:00',
+        'sources': [
+          'googlePlay',
+          {'name': 'appStore', 'url': 'https://apple.com/app-store'},
+        ],
+      };
+
+      final result = parser.parse(value, isDebug: isDebug, isOverride: isOverride);
+
+      expect(result?.sources?.length, 2);
+      expect(result?.sources?.firstOrNull?.name, 'googlePlay');
+      expect(result?.sources?.elementAtOrNull(1)?.name, 'appStore');
+    });
+  });
+}

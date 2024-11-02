@@ -12,15 +12,15 @@ import 'package:url_launcher/url_launcher.dart';
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_config_linker.dart';
-import '../localizer/models/app_update.dart';
-import '../localizer/models/release.dart';
-import '../localizer/models/update_config.dart';
-import '../localizer/update_localizer.dart';
+import '../interpolator/models/app_update.dart';
+import '../interpolator/models/release.dart';
+import '../interpolator/models/update_config.dart';
+import '../interpolator/update_interpolator.dart';
 import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_status_wrapper.dart';
+import '../shared/update_settings_container.dart';
 import '../sources/fetchers/source_fetcher.dart';
 import '../sources/source.dart';
 import '../storage/update_storage.dart';
@@ -34,11 +34,11 @@ class UpdateController extends UpdateControllerBase {
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
-  final UpdateSettingsConfig? _releaseSettings;
+  final UpdateSettingsConfigContainer? _updateSettings;
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
-  UpdateLocalizer? _localizer;
+  UpdateInterpolator? _interpolator;
   SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
@@ -47,7 +47,9 @@ class UpdateController extends UpdateControllerBase {
 
   final List<Source>? _globalSources;
   final UpdatePlatform _platform;
-  final String? _prioritySourceName;
+
+  final Source? _targetSource;
+  final Source? _defaultSource;
 
   Completer<UpdateConfigModel>? _updateConfigModelCompleter;
   Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
@@ -63,18 +65,20 @@ class UpdateController extends UpdateControllerBase {
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
-    UpdateSettingsConfig? releaseSettings,
+    UpdateSettingsConfigContainer? updateSettings,
     UpdateStorage? storage,
     List<Source>? globalSources,
-    UpdatePlatform? platform,
-    String? prioritySourceName,
+    UpdatePlatform? targetPlatform,
+    Source? targetSource,
+    Source? defaultSource,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator,
-        _releaseSettings = releaseSettings,
+        _updateSettings = updateSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
-        _prioritySourceName = prioritySourceName,
-        _platform = platform ?? UpdatePlatform.current();
+        _targetSource = targetSource,
+        _defaultSource = defaultSource,
+        _platform = targetPlatform ?? UpdatePlatform.current();
 
   @override
   Future<void> fetch({
@@ -92,7 +96,7 @@ class UpdateController extends UpdateControllerBase {
     if (fetcher == null) throw const UpdateNotFoundException();
     final rawConfig = await fetcher.fetch();
 
-    final configModel = _parser.parseConfig(rawConfig, isDebug: kDebugMode);
+    final configModel = _parser.parse(rawConfig, isDebug: kDebugMode);
 
     _updateConfigModelCompleter!.complete(configModel);
   }
@@ -126,7 +130,7 @@ class UpdateController extends UpdateControllerBase {
     final appName = packageInfo.appName;
 
     final releasesData = _linker.linkConfigs(
-      globalSettingsConfig: _releaseSettings ?? configModel.settings,
+      globalSettingsConfig: _updateSettings ?? configModel.settings,
       releasesConfig: configModel.releases,
       globalSourcesConfig: configModel.sources,
     );
@@ -136,8 +140,8 @@ class UpdateController extends UpdateControllerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _localizer ??= UpdateLocalizer(appName: appName, appVersion: appVersion);
-    final releases = _localizer!.localizeReleasesData(availableReleasesData);
+    _interpolator ??= UpdateInterpolator(appName: appName, appVersion: appVersion);
+    final releases = _interpolator!.interpolateReleases(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
 
@@ -158,7 +162,8 @@ class UpdateController extends UpdateControllerBase {
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       sources: sources,
-      prioritySourceName: _prioritySourceName,
+      // TODO: Завести типизацию, без стингов
+      prioritySourceName: _targetSource?.name,
     );
 
     final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
@@ -211,9 +216,9 @@ class UpdateController extends UpdateControllerBase {
   @override
   Future<void> launchReleaseSource(Release release) async {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-    await _updateStorage?.saveLastSource(release.targetSource.name);
+    await _updateStorage?.saveLastSource(release.source.name);
 
-    final url = release.targetSource.url;
+    final url = release.source.url;
     await launchUrl(url);
   }
 

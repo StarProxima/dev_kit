@@ -4,18 +4,28 @@ part of '../update_config_parser.dart';
 
 class ReleaseParser {
   ReleaseSourceParser get _releaseSourceParser => const ReleaseSourceParser();
-  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
+  UpdateSettingsContainerParser get _updateSettingsParser => const UpdateSettingsContainerParser();
   VersionParser get _versionParser => const VersionParser();
   DateTimeParser get _dateTimeParser => const DateTimeParser();
 
   const ReleaseParser();
 
   ReleaseConfig? parse(
-    Map<String, dynamic> map, {
+    // ignore: avoid-dynamic
+    dynamic value, {
     required bool isDebug,
-    required bool isAbleToUseNullVersion,
+    required bool isOverride,
   }) {
     final isDebugOriginal = isDebug;
+
+    if (value is! Map<String, dynamic>?) throw const UpdateConfigException();
+
+    if (value == null) {
+      if (isOverride) return null;
+      throw const UpdateConfigException();
+    }
+
+    final map = value;
 
     isDebug = true;
 
@@ -29,31 +39,38 @@ class ReleaseParser {
         isDebug: isDebug,
       );
 
-      if (version == null && !isAbleToUseNullVersion) throw const UpdateConfigException();
+      if (version == null && !isOverride) throw const UpdateConfigException();
 
-      // dateUtc
-      final dateUtcValue = map.remove('date_utc');
-      final dateUtc = _dateTimeParser.parse(dateUtcValue, isDebug: isDebug);
+      // date
+      final dateValue = map.remove('date');
+      final date = _dateTimeParser.parse(dateValue, isDebug: isDebug);
 
-      // releaseSettings
-      final updateSettings = _updateSettingsParser.parse(map, isDebug: isDebug);
+      // settings
+      final settingsValue = map.remove('settings');
+      final settings = _updateSettingsParser.parse(settingsValue, isDebug: isDebug);
 
       // sources
       final sourcesValue = map.remove('sources');
 
-      if (sourcesValue is! List<Object>?) throw const UpdateConfigException();
+      if (sourcesValue is! List?) throw const UpdateConfigException();
+
+      if (sourcesValue == null && !isOverride) throw const UpdateConfigException();
 
       final sources = sourcesValue
           ?.map(
-            (e) => _releaseSourceParser.parse(e, isDebug: isDebug),
+            (e) => _releaseSourceParser.parse(
+              e,
+              isDebug: isDebug,
+              isOverride: false,
+            ),
           )
           .whereType<ReleaseSourceConfig>()
           .toList();
 
       return ReleaseConfig(
         version: version,
-        dateUtc: dateUtc,
-        settings: updateSettings,
+        date: date,
+        settings: settings,
         sources: sources,
         customData: map,
       );

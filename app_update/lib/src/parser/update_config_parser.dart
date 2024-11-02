@@ -1,15 +1,16 @@
 // ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
-import '../shared/app_version_status.dart';
+import '../shared/version_status.dart';
 import '../shared/raw_update_config.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_status_wrapper.dart';
+import '../shared/update_settings_container.dart';
 import 'base_parsers/bool_parser.dart';
 import 'base_parsers/date_time_parser.dart';
 import 'base_parsers/duration_parser.dart';
 import 'base_parsers/text_translations_parser.dart';
 import 'base_parsers/version_parser.dart';
+import 'models/platform_config.dart';
 import 'models/release_config.dart';
 import 'models/release_settings_config.dart';
 import 'models/settings_translations.dart';
@@ -18,28 +19,30 @@ import 'models/update_config_exception.dart';
 import 'models/update_config_model.dart';
 import 'sub_parsers/version_settings_parser.dart';
 
-part 'sub_parsers/global_source_parser.dart';
+part 'sub_parsers/sources/global_source_parser.dart';
 part 'sub_parsers/release_parser.dart';
-part 'sub_parsers/release_settings_parser.dart';
-part 'sub_parsers/release_source_parser.dart';
-part 'sub_parsers/settings_translations_parser.dart';
 part 'sub_parsers/update_settings_parser.dart';
+part 'sub_parsers/sources/release_source_parser.dart';
+part 'sub_parsers/settings_translations_parser.dart';
+part 'sub_parsers/update_settings_container_parser.dart';
+part 'sub_parsers/sources/global_platform_parser.dart';
+part 'sub_parsers/sources/release_platform_parser.dart';
 
 class UpdateConfigParser {
-  UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
+  UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();
   VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
   GlobalSourceParser get _sourceParser => const GlobalSourceParser();
   ReleaseParser get _releaseParser => const ReleaseParser();
 
   const UpdateConfigParser();
 
-  UpdateConfigModel parseConfig(
+  UpdateConfigModel parse(
     RawUpdateConfig map, {
     required bool isDebug,
   }) {
-    // releaseSettings
+    // updateSettings
     final updateSettingsValue = map.remove('settings');
-    final updateSettings = _updateSettingsParser.parse(
+    final updateSettings = _updateSettingsContainerParser.parse(
       updateSettingsValue,
       isDebug: isDebug,
     );
@@ -53,23 +56,25 @@ class UpdateConfigParser {
 
     // sources
     final sourcesValue = map.remove('sources');
-    if (sourcesValue is! List<Object>?) throw const UpdateConfigException();
+    if (sourcesValue is! List?) throw const UpdateConfigException();
 
     final sources = sourcesValue
         ?.map(
-          (e) => _sourceParser.parse(e, isDebug: true),
+          (e) => _sourceParser.parse(
+            e,
+            isDebug: true,
+            isOverride: false,
+          ),
         )
         .whereType<GlobalSourceConfig>()
         .toList();
 
     // releases
     final releasesValue = map.remove('releases');
-    if (releasesValue is! List<Map<String, dynamic>>) {
-      throw const UpdateConfigException();
-    }
+    if (releasesValue is! List) throw const UpdateConfigException();
 
     final releases = releasesValue
-        .map((e) => _releaseParser.parse(e, isDebug: isDebug, isAbleToUseNullVersion: false))
+        .map((e) => _releaseParser.parse(e, isDebug: isDebug, isOverride: false))
         .whereType<ReleaseConfig>()
         .toList();
 

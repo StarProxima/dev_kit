@@ -1,10 +1,10 @@
-import '../../shared/update_status_wrapper.dart';
+import '../../shared/update_settings_container.dart';
 import 'release_config.dart';
 import 'source_config.dart';
 import 'versions_settings_config.dart';
 
 class UpdateConfigModel {
-  final UpdateSettingsConfig? settings;
+  final UpdateSettingsConfigContainer? settings;
   final VersionSettingsConfig? versionSettings;
   final List<GlobalSourceConfig>? sources;
   final List<ReleaseConfig> releases;

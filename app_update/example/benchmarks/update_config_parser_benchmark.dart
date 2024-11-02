@@ -90,7 +90,7 @@ class UpdateConfigParserBenchmark extends BenchmarkBase {
     };
 
     try {
-      parser.parseConfig(configMap, isDebug: false);
+      parser.parse(configMap, isDebug: false);
     } catch (e) {
       // Ошибка при парсинге некорректных данных
       print('Error during parsing: $e');

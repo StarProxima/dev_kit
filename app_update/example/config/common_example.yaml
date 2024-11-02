@@ -1,14 +1,14 @@
 
 releases:
   - version: 1.1.0
-    release_note: Improvements release
+    release_notes: Improvements release
     date: 2014-10-17 23:00:00
     sources:
       - googlePlay
       - appStore
 
   - version: 1.1.0
-    release_note: Improvements release
+    release_notes: Improvements release
     date: 2014-10-17 23:00:00
     sources:
       - googlePlay
@@ -16,7 +16,7 @@ releases:
 
 
   # - version: 1.0.0
-  #   release_note: Improvements release
+  #   release_notes: Improvements release
   #   date: 2014-10-10 23:00:00
   #   sources:
   #     - name: googlePlay
@@ -26,14 +26,14 @@ releases:
   #     - appStore
 
   # - version: 1.0.0
-  #   release_note: Improvements release
+  #   release_notes: Improvements release
   #   date: 2014-10-10 23:00:00
   #   postavki:
   #     - googlePlay
   #     - appStore
 
   # - version: 1.0.0
-  #   release_note: Improvements release
+  #   release_notes: Improvements release
   #   date: 2014-10-10 23:00:00
   #   postavki:
   #     - source: 
@@ -46,7 +46,7 @@ releases:
 
 
 version:
-release_note: Improvements release
+release_notes: Improvements release
 date: 2014-10-10 23:00:00
 source: 
   name: googlePlay
@@ -56,14 +56,14 @@ source:
 
 list:
   - version:
-    release_note: Improvements release
+    release_notes: Improvements release
     date: 2014-10-10 23:00:00
     source: 
       name: googlePlay
       url: https://play.google.com/store/apps/details?id=app.hiddify.com
       platforms: [android]
   - version:
-    release_note: Improvements release
+    release_notes: Improvements release
     date: 2014-10-10 23:00:00
     source: 
       name: googlePlay

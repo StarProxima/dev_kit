@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../localizer/models/release.dart';
+import '../../interpolator/models/release.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
 

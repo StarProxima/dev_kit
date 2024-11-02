@@ -1,8 +1,9 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
-part of '../update_config_parser.dart';
+part of '../../update_config_parser.dart';
 
 class ReleaseSourceParser {
   ReleaseParser get _releaseParser => const ReleaseParser();
+  ReleasePlatformParser get _platformParser => const ReleasePlatformParser();
 
   const ReleaseSourceParser();
 
@@ -10,6 +11,7 @@ class ReleaseSourceParser {
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
+    required bool isOverride,
   }) {
     // short string syntax
     if (value is! Map<String, dynamic>) {
@@ -34,11 +36,13 @@ class ReleaseSourceParser {
 
     // name
     final name = map.remove('name');
-    if (name is! String) {
+    if (name is! String?) {
       if (isDebug) throw const UpdateConfigException();
 
       return null;
     }
+
+    if (!isOverride && name == null) throw const UpdateConfigException();
 
     // url
     var urlValue = map.remove('url');
@@ -56,16 +60,17 @@ class ReleaseSourceParser {
     }
 
     // platforms
-    var platformsValue = map.remove('platforms');
-    if (platformsValue is! List<String>?) {
-      if (isDebug) throw const UpdateConfigException();
-      platformsValue = null;
-    }
-    final platforms = platformsValue?.map(UpdatePlatform.new).toList();
+    final platformsValue = map.remove('platforms');
+    if (platformsValue is! List?) throw const UpdateConfigException();
+
+    final platforms = platformsValue
+        ?.map((e) => _platformParser.parse(e, isDebug: isDebug))
+        .whereType<ReleasePlatformConfig>()
+        .toList();
 
     // release
     final releaseValue = map.remove('release');
-    final release = _releaseParser.parse(releaseValue, isDebug: isDebug, isAbleToUseNullVersion: true);
+    final release = _releaseParser.parse(releaseValue, isDebug: isDebug, isOverride: true);
 
     return ReleaseSourceConfig(
       name: name,
