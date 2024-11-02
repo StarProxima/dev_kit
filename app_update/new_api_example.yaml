@@ -86,6 +86,7 @@ releases:
   - version: 0.3.8+10-beta
     settings:
       release_notes: Minor Improvements
+    sources: []
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
@@ -96,6 +97,7 @@ releases:
         date: 2014-10-17 23:00:00
 
   - version: 0.0.2+30
+    sources: []
 
   - version: 1.2.0
     settings:
@@ -172,5 +174,5 @@ releases:
       description: Description
       release_notes: Note
     sources:
-      - name: googlePlay
+      - googlePlay
       - name: appStore
