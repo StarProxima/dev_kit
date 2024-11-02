@@ -38,7 +38,7 @@ class UpdateInterpolator {
         )
         .replaceAll(
           r'$source',
-          releaseData.targetSource.title,
+          releaseData.source.title,
         );
 
     UpdateTranslations interpolateUpdateTranslation(UpdateTranslations text) => UpdateTranslations(
@@ -82,7 +82,7 @@ class UpdateInterpolator {
 
     return Release(
       version: releaseData.version,
-      source: releaseData.targetSource,
+      source: releaseData.source,
       date: releaseData.date,
       settings: UpdateSettingsContainer(interpolatedSettingsMap),
       customData: releaseData.customData,

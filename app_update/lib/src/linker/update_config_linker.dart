@@ -77,7 +77,7 @@ class UpdateConfigLinker {
         // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг), настройки которого смержены со всеми и находятся в settings
         releases.add(ReleaseData(
           version: version,
-          targetSource: targetSource,
+          source: targetSource,
           date: date,
           settings: inheritedSettings,
           customData: releaseCustomData,
