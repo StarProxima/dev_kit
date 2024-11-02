@@ -4,7 +4,7 @@ import '../shared/app_version_status.dart';
 import '../shared/raw_update_config.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_status_wrapper.dart';
+import '../shared/update_settings_container.dart';
 import 'base_parsers/bool_parser.dart';
 import 'base_parsers/date_time_parser.dart';
 import 'base_parsers/duration_parser.dart';

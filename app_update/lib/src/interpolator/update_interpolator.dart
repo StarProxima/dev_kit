@@ -3,7 +3,7 @@
 import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';
-import '../shared/update_status_wrapper.dart';
+import '../shared/update_settings_container.dart';
 import 'models/release.dart';
 import 'models/update_settings.dart';
 import 'models/update_texts.dart';

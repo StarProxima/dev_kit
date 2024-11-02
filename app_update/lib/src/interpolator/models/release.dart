@@ -1,6 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../shared/update_status_wrapper.dart';
+import '../../shared/update_settings_container.dart';
 import '../../sources/source.dart';
 
 class Release {

@@ -20,7 +20,7 @@ import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_status_wrapper.dart';
+import '../shared/update_settings_container.dart';
 import '../sources/fetchers/source_fetcher.dart';
 import '../sources/source.dart';
 import '../storage/update_storage.dart';

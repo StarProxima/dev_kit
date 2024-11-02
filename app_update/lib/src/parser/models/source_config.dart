@@ -1,4 +1,4 @@
-import '../../shared/update_status_wrapper.dart';
+import '../../shared/update_settings_container.dart';
 import 'platform_config.dart';
 import 'release_config.dart';
 import 'versions_settings_config.dart';

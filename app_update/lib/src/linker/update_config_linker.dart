@@ -2,7 +2,7 @@
 
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
-import '../shared/update_status_wrapper.dart';
+import '../shared/update_settings_container.dart';
 import '../sources/source.dart';
 import 'models/release_data.dart';
 
