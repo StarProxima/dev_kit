@@ -9,9 +9,9 @@ typedef RawUpdateSettingsContainer<T> = Map<UpdateAlertTypeBase, Map<VersionStat
 
 // TODO тут миксин не надо бы применить?
 class UpdateSettingsConfigContainer {
-  final RawUpdateSettingsContainer<UpdateSettingsConfig> _value;
+  final RawUpdateSettingsContainer<UpdateSettingsConfig> value;
 
-  const UpdateSettingsConfigContainer(this._value);
+  const UpdateSettingsConfigContainer(this.value);
 
   UpdateSettingsConfig? getBy({
     required UpdateAlertType type,
@@ -26,7 +26,7 @@ class UpdateSettingsConfigContainer {
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
-    final byType = _value[type] ?? _value[UpdateAlertTypeBase.base];
+    final byType = value[type] ?? value[UpdateAlertTypeBase.base];
     final byStatus = byType?[status] ?? byType?[VersionStatusBase.base];
 
     return byStatus;
@@ -36,16 +36,14 @@ class UpdateSettingsConfigContainer {
 // TODO разнести бы их по файлам отдельным
 class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
   @override
-  final RawUpdateSettingsContainer<UpdateSettingsData> _value;
+  final RawUpdateSettingsContainer<UpdateSettingsData> value;
 
-  RawUpdateSettingsContainer<UpdateSettingsData> get value => _value;
-
-  const UpdateSettingsDataContainer(this._value);
+  const UpdateSettingsDataContainer(this.value);
 
   factory UpdateSettingsDataContainer.fromConfig(UpdateSettingsConfigContainer? config) {
     return UpdateSettingsDataContainer(
       // ignore: avoid-missing-enum-constant-in-map
-      config?._value.map(
+      config?.value.map(
             (key, value) => MapEntry(
               key,
               value.map(
@@ -89,13 +87,13 @@ class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
 
 class UpdateSettingsContainer with GetByMixin<UpdateSettings> {
   @override
-  final RawUpdateSettingsContainer<UpdateSettings> _value;
+  final RawUpdateSettingsContainer<UpdateSettings> value;
 
-  const UpdateSettingsContainer(this._value);
+  const UpdateSettingsContainer(this.value);
 }
 
 mixin GetByMixin<T> {
-  abstract final RawUpdateSettingsContainer<T> _value;
+  abstract final RawUpdateSettingsContainer<T> value;
 
   T getBy({
     required UpdateAlertType type,
@@ -110,10 +108,11 @@ mixin GetByMixin<T> {
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
-    final byType = _value[type] ?? _value[UpdateAlertTypeBase.base];
+    final byType = value[type] ?? value[UpdateAlertTypeBase.base];
     if (byType == null) throw Exception();
 
-    final byStatus = byType[status] ?? byType[VersionStatusBase.base];
+    final byStatus =
+        byType[status] ?? byType[VersionStatusBase.base] ?? value[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
     if (byStatus == null) throw Exception();
 
     return byStatus;

@@ -20,10 +20,23 @@ class UpdateSettings {
     required this.customData,
   });
 
+  const UpdateSettings.base({
+    required this.translations,
+    this.canSkipRelease = true,
+    this.canPostponeRelease = true,
+    this.reminderPeriod = const Duration(hours: 36),
+    this.releaseDelay = Duration.zero,
+    this.progressiveRolloutDuration = Duration.zero,
+    this.customData,
+  });
+
   factory UpdateSettings.fromData({
     UpdateSettingsData? data,
   }) {
-    const defaultSettings = UpdateSettings.availableUpdate(translations: UpdateTranslations({}));
+    // TODO: Доставать всё из DefaultUpdateSettingsContainer
+    final defaultSettings = UpdateSettings.base(
+      translations: UpdateTranslations.base(),
+    );
 
     return UpdateSettings(
       translations: UpdateTranslations.fromData(
@@ -38,36 +51,6 @@ class UpdateSettings {
       customData: data?.customData,
     );
   }
-
-  const UpdateSettings.requiredUpdate({
-    required this.translations,
-    this.canSkipRelease = false,
-    this.canPostponeRelease = false,
-    this.reminderPeriod = Duration.zero,
-    this.releaseDelay = Duration.zero,
-    this.progressiveRolloutDuration = Duration.zero,
-    this.customData,
-  });
-
-  const UpdateSettings.recommendedUpdate({
-    required this.translations,
-    this.canSkipRelease = false,
-    this.canPostponeRelease = true,
-    this.reminderPeriod = const Duration(hours: 24),
-    this.releaseDelay = Duration.zero,
-    this.progressiveRolloutDuration = Duration.zero,
-    this.customData,
-  });
-
-  const UpdateSettings.availableUpdate({
-    required this.translations,
-    this.canSkipRelease = true,
-    this.canPostponeRelease = true,
-    this.reminderPeriod = const Duration(hours: 72),
-    this.releaseDelay = Duration.zero,
-    this.progressiveRolloutDuration = Duration.zero,
-    this.customData,
-  });
 
   UpdateSettings copyWith({
     UpdateTranslations? translations,

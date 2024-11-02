@@ -1,0 +1,38 @@
+// ignore_for_file: avoid-missing-enum-constant-in-map
+
+import '../interpolator/models/update_settings.dart';
+import '../interpolator/models/update_texts.dart';
+import '../shared/update_alert_type.dart';
+import '../shared/update_settings_container.dart';
+import '../shared/version_status.dart';
+
+class DefaultUpdateSettingsContainer extends UpdateSettingsContainer {
+  static final _base = UpdateSettings.base(
+    translations: UpdateTranslations.base(),
+  );
+
+  static final RawUpdateSettingsContainer<UpdateSettings> _settings = {
+    UpdateAlertTypeBase.base: {
+      VersionStatusBase.base: _base,
+      VersionStatusBase.unsupported: _base.copyWith(
+        canSkipRelease: false,
+        canPostponeRelease: false,
+        reminderPeriod: Duration.zero,
+      ),
+      VersionStatusBase.deprecated: _base.copyWith(
+        canSkipRelease: false,
+        reminderPeriod: const Duration(hours: 6),
+      ),
+    },
+  };
+
+  DefaultUpdateSettingsContainer() : super(_settings);
+
+  DefaultUpdateSettingsContainer.merge(
+    RawUpdateSettingsContainer<UpdateSettings> settings,
+  ) : super(
+          {..._settings, ...settings},
+        );
+
+  void test() {}
+}

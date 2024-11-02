@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import '../../parser/models/settings_translations.dart';
+import '../../default_settings/translations/default_update_translations.dart';
 import '../../shared/text_translations.dart';
 
+/// See aloso [DefaultUpdateTexts].
 class UpdateTexts {
   final String title;
   final String description;
@@ -21,12 +23,38 @@ class UpdateTexts {
     required this.laterButtonText,
     required this.updateButtonText,
   });
+
+  UpdateTexts copyWith({
+    String? title,
+    String? description,
+    String? releaseNotesTitle,
+    String? releaseNotes,
+    String? skipButtonText,
+    String? laterButtonText,
+    String? updateButtonText,
+  }) =>
+      UpdateTexts(
+        title: title ?? this.title,
+        description: description ?? this.description,
+        releaseNotesTitle: releaseNotesTitle ?? this.releaseNotesTitle,
+        releaseNotes: releaseNotes ?? this.releaseNotes,
+        skipButtonText: skipButtonText ?? this.skipButtonText,
+        laterButtonText: laterButtonText ?? this.laterButtonText,
+        updateButtonText: updateButtonText ?? this.updateButtonText,
+      );
 }
 
+/// See aloso [DefaultUpdateTranslations].
 class UpdateTranslations {
   final Map<Locale, UpdateTexts> value;
 
   const UpdateTranslations(this.value);
+
+  factory UpdateTranslations.base() = DefaultUpdateTranslations.base;
+
+  factory UpdateTranslations.merge(
+    Map<Locale, UpdateTexts> translations,
+  ) = DefaultUpdateTranslations.merge;
 
   factory UpdateTranslations.fromData({
     required UpdateTranslationsData? rawTranslations,

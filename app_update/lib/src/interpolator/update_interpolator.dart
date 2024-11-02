@@ -25,19 +25,19 @@ class UpdateInterpolator {
     // TODO: Оптимизировать, проходясь одной регуркой?
     String interpolate(String text) => text
         .replaceAll(
-          r'$appName',
+          _regExpForField('appName'),
           appName,
         )
         .replaceAll(
-          r'$appVersion',
+          _regExpForField('appVersion'),
           appVersion.toString(),
         )
         .replaceAll(
-          r'$releaseVersion',
+          _regExpForField('releaseVersion'),
           releaseData.version.toString(),
         )
         .replaceAll(
-          r'$source',
+          _regExpForField('source'),
           releaseData.source.title,
         );
 
@@ -88,4 +88,6 @@ class UpdateInterpolator {
       customData: releaseData.customData,
     );
   }
+
+  RegExp _regExpForField(String name) => RegExp('\$$name|{$name}|\${$name}');
 }
