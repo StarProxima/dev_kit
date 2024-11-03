@@ -9,21 +9,21 @@ import '../../../shared/version_status.dart';
 
 class RuTranslationsContainer extends Translations {
   @override
-  final RawUpdateSettingsContainer<UpdateTexts> value;
+  final RawUpdateSettingsContainer<UpdateText> value;
 
   factory RuTranslationsContainer() {
-    const baseTexts = UpdateTexts(
+    const baseTexts = UpdateText(
       title: r'Обновите $appName',
       description:
           r'Вы можете обновиться до последней версии приложения. Версия $releaseVersion теперь доступна, текущаяя - $appVersion.',
       releaseNotesTitle: 'Что нового?',
       releaseNotes: '',
-      skipButtonText: 'Пропустить',
-      laterButtonText: 'Позже',
-      updateButtonText: 'Обновить',
+      skipButton: 'Пропустить',
+      laterButton: 'Позже',
+      updateButton: 'Обновить',
     );
 
-    final RawUpdateSettingsContainer<UpdateTexts> value = {
+    final RawUpdateSettingsContainer<UpdateText> value = {
       UpdateAlertTypeBase.base: {
         VersionStatusBase.base: baseTexts,
         VersionStatusBase.unsupported: baseTexts.copyWith(
@@ -51,4 +51,4 @@ class RuTranslationsContainer extends Translations {
   RuTranslationsContainer._internal(this.value);
 }
 
-abstract class Translations with GetByMixin<UpdateTexts> {}
+abstract class Translations with GetByMixin<UpdateText> {}

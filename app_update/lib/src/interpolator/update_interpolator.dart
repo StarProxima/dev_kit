@@ -2,8 +2,10 @@
 
 import 'package:pub_semver/pub_semver.dart';
 
+import '../default_settings/translations/default_update_translations.dart';
 import '../linker/models/release_data.dart';
 import '../shared/update_settings_container.dart';
+import '../shared/update_text_container.dart';
 import 'models/release.dart';
 import 'models/update_settings.dart';
 import 'models/update_texts.dart';
@@ -41,50 +43,72 @@ class UpdateInterpolator {
           releaseData.source.title,
         );
 
-    UpdateTranslations interpolateUpdateTranslation(UpdateTranslations text) => UpdateTranslations(
-          text.value.map(
-            (locale, texts) => MapEntry(
-              locale,
-              UpdateTexts(
-                title: interpolate(texts.title),
-                description: interpolate(texts.description),
-                releaseNotesTitle: interpolate(texts.releaseNotesTitle),
-                releaseNotes: interpolate(texts.releaseNotes),
-                skipButtonText: interpolate(texts.skipButtonText),
-                laterButtonText: interpolate(texts.laterButtonText),
-                updateButtonText: interpolate(texts.updateButtonText),
-              ),
-            ),
-          ),
+    UpdateText interpolateUpdateText(UpdateText text) => UpdateText(
+          title: interpolate(text.title),
+          description: interpolate(text.description),
+          releaseNotesTitle: interpolate(text.releaseNotesTitle),
+          releaseNotes: interpolate(text.releaseNotes),
+          skipButton: interpolate(text.skipButton),
+          laterButton: interpolate(text.laterButton),
+          updateButton: interpolate(text.updateButton),
         );
 
-    final interpolatedSettingsMap = releaseData.settings.value.map(
+    final interpolatedTextMap = releaseData.text.value.map(
+      (locale, value) => MapEntry(
+        locale,
+        value.map(
+          (alertType, value) => MapEntry(
+            alertType,
+            value.map(
+              (status, textConfig) {
+                final updateText = UpdateText.fromConfig(
+                  textConfig,
+                  // TODO: Откуда доставать дефолтные
+                  defaultText: const DefaultUpdateTexts.ru(),
+                );
+
+                final interpolatedText = interpolateUpdateText(updateText);
+
+                return MapEntry(
+                  status,
+                  interpolatedText,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final settingsMap = releaseData.settings.value.map(
       (alertType, value) => MapEntry(
         alertType,
         value.map(
-          (status, updateSettingsData) {
-            final settings = UpdateSettings.fromData(data: updateSettingsData);
-
-            final interpolatedTranslations = interpolateUpdateTranslation(settings.translations);
-
-            final interpolatedSettings = settings.copyWith(
-              translations: interpolatedTranslations,
+          (status, settings) {
+            final updateSettings = UpdateSettings.fromData(
+              settings,
+              // TODO: Откуда доставать дефолтные
+              defaultSettings: const UpdateSettings.base(),
             );
 
             return MapEntry(
               status,
-              interpolatedSettings,
+              updateSettings,
             );
           },
         ),
       ),
     );
 
+    final text = UpdateTextContainer(interpolatedTextMap);
+    final settings = UpdateSettingsContainer(settingsMap);
+
     return Release(
       version: releaseData.version,
       source: releaseData.source,
       date: releaseData.date,
-      settings: UpdateSettingsContainer(interpolatedSettingsMap),
+      text: text,
+      settings: settings,
       customData: releaseData.customData,
     );
   }

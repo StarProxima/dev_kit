@@ -1,8 +1,6 @@
 import '../../linker/models/release_settings_data.dart';
-import 'update_texts.dart';
 
 class UpdateSettings {
-  final UpdateTranslations translations;
   final bool canSkipRelease;
   final bool canPostponeRelease;
   final Duration reminderPeriod;
@@ -11,7 +9,6 @@ class UpdateSettings {
   final Map<String, dynamic>? customData;
 
   const UpdateSettings({
-    required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,
@@ -21,7 +18,6 @@ class UpdateSettings {
   });
 
   const UpdateSettings.base({
-    required this.translations,
     this.canSkipRelease = true,
     this.canPostponeRelease = true,
     this.reminderPeriod = const Duration(hours: 36),
@@ -30,19 +26,11 @@ class UpdateSettings {
     this.customData,
   });
 
-  factory UpdateSettings.fromData({
-    UpdateSettingsData? data,
+  factory UpdateSettings.fromData(
+    UpdateSettingsData? data, {
+    required UpdateSettings defaultSettings,
   }) {
-    // TODO: Доставать всё из DefaultUpdateSettingsContainer
-    final defaultSettings = UpdateSettings.base(
-      translations: UpdateTranslations.base(),
-    );
-
     return UpdateSettings(
-      translations: UpdateTranslations.fromData(
-        rawTranslations: data?.translations,
-        defaultTexts: defaultSettings.translations,
-      ),
       canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
       canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
       reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
@@ -53,7 +41,6 @@ class UpdateSettings {
   }
 
   UpdateSettings copyWith({
-    UpdateTranslations? translations,
     bool? canSkipRelease,
     bool? canPostponeRelease,
     Duration? reminderPeriod,
@@ -62,7 +49,6 @@ class UpdateSettings {
     Map<String, dynamic>? customData,
   }) {
     return UpdateSettings(
-      translations: translations ?? this.translations,
       canSkipRelease: canSkipRelease ?? this.canSkipRelease,
       canPostponeRelease: canPostponeRelease ?? this.canPostponeRelease,
       reminderPeriod: reminderPeriod ?? this.reminderPeriod,
