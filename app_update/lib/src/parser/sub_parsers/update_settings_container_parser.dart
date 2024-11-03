@@ -4,6 +4,7 @@ part of '../update_config_parser.dart';
 
 class UpdateSettingsContainerParser {
   UpdateSettingsParser get _updateSettingsParser => const UpdateSettingsParser();
+  RawContainerParser get _rawContainerParser => const RawContainerParser();
 
   const UpdateSettingsContainerParser();
 
@@ -22,6 +23,14 @@ class UpdateSettingsContainerParser {
     UpdateSettingsConfig? parseSettings(dynamic value) {
       return _updateSettingsParser.parse(value, isDebug: isDebug);
     }
+
+    final d = _rawContainerParser.parse(value, parse: parseSettings);
+
+    final res = d[Locale('base')];
+
+    if (res == null) return null;
+
+    return UpdateSettingsConfigContainer(res);
 
     final map = value;
 

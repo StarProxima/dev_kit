@@ -6,7 +6,7 @@ import 'update_alert_type.dart';
 import 'version_status.dart';
 
 class UpdateTextConfigContainer {
-  final Map<UpdateAlertTypeBase, Map<VersionStatusBase, Map<Locale, UpdateTextConfig>>> value;
+  final Map<Locale, Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextConfig>>> value;
 
   const UpdateTextConfigContainer(this.value);
 
@@ -26,10 +26,10 @@ class UpdateTextConfigContainer {
     required VersionStatusBase status,
     required Locale locale,
   }) {
-    final byType = value[type] ?? value[UpdateAlertTypeBase.base];
+    final byLocale = value[locale] ?? value[const Locale('base')];
+    final byType = byLocale?[type] ?? byLocale?[UpdateAlertTypeBase.base];
     final byStatus = byType?[status] ?? byType?[VersionStatusBase.base];
-    final byLocale = byStatus?[locale] ?? byStatus?[const Locale('base')];
 
-    return byLocale;
+    return byStatus;
   }
 }

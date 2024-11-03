@@ -3,7 +3,6 @@
 import 'dart:ui';
 
 import '../shared/raw_update_config.dart';
-import '../shared/text_translations.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_settings_container.dart';
@@ -35,6 +34,7 @@ part 'sub_parsers/update_settings_container_parser.dart';
 part 'sub_parsers/update_settings_parser.dart';
 part 'sub_parsers/update_text_parser.dart';
 part 'sub_parsers/update_text_container_parser.dart';
+part 'sub_parsers/raw_container_parser.dart';
 
 class UpdateConfigParser {
   UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();
