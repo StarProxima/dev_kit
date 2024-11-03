@@ -31,7 +31,7 @@ void main() {
       final value = {
         'name': 'ruStore',
         'url': 'https://example.com',
-        'settings': {'title': 'Title'},
+        'text': {'title': 'Title'},
         'version_settings': {
           'unsupported_versions': ['<=4.2.0'],
         },
@@ -42,14 +42,13 @@ void main() {
       expect(result?.name, 'ruStore');
       expect(result?.url?.toString(), 'https://example.com');
       expect(
-        result?.settings
+        result?.text
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
+              locale: kAppUpdateDefaultLocale,
             )
-            ?.translations
-            ?.title
-            ?.byLocale(kAppUpdateDefaultLocale),
+            ?.title,
         'Title',
       );
       expect(result?.versionSettings?.unsupportedVersions, isNotEmpty);
@@ -68,7 +67,8 @@ void main() {
             'name': 'android',
             'source': {
               'url': 'https://example.com/android',
-              'settings': {'title': 'Title'},
+              'text': {'title': 'Title'},
+              'settings': {'can_skip_release': false},
               'version_settings': {
                 'deprecated_versions': ['>5.6.0 <5.6.7'],
               },
@@ -93,15 +93,23 @@ void main() {
         'https://example.com/android',
       );
       expect(
+        androidPlatform?.source?.text
+            ?.getByBase(
+              type: UpdateAlertTypeBase.base,
+              status: VersionStatusBase.base,
+              locale: kAppUpdateDefaultLocale,
+            )
+            ?.title,
+        'Title',
+      );
+      expect(
         androidPlatform?.source?.settings
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
             )
-            ?.translations
-            ?.title
-            ?.byLocale(kAppUpdateDefaultLocale),
-        'Title',
+            ?.canSkipRelease,
+        false,
       );
       expect(
         androidPlatform?.source?.versionSettings?.deprecatedVersions?.firstOrNull?.toString(),

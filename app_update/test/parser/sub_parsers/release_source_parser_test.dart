@@ -24,14 +24,14 @@ void main() {
       expect(result?.release, isNull);
     });
 
-    test('parses full syntax with name, url, and release settings', () {
+    test('parses full syntax with name, url, and release text', () {
       final value = {
         'name': 'ruStore',
         'url': 'https://www.example.com',
         'platforms': ['android'],
         'release': {
           'version': '1.2.1',
-          'settings': {'title': 'RuStore Title'},
+          'text': {'title': 'RuStore Title'},
         },
       };
 
@@ -43,14 +43,13 @@ void main() {
       expect(result?.platforms?.firstOrNull?.platform.name, 'android');
       expect(result?.release?.version?.toString(), '1.2.1');
       expect(
-        result?.release?.settings
+        result?.release?.text
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
+              locale: kAppUpdateDefaultLocale,
             )
-            ?.translations
-            ?.title
-            ?.byLocale(kAppUpdateDefaultLocale),
+            ?.title,
         'RuStore Title',
       );
     });
@@ -71,7 +70,7 @@ void main() {
               'url': 'https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip',
               'release': {
                 'date': '2014-10-20 13:00:00',
-                'settings': {'release_notes': 'Windows Github release notes'},
+                'text': {'release_notes': 'Windows Github release notes'},
               },
             },
           },
@@ -100,14 +99,13 @@ void main() {
 
       final platformSourceRelease = windowsPlatform?.source?.release;
       expect(
-        platformSourceRelease?.settings
+        platformSourceRelease?.text
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
+              locale: kAppUpdateDefaultLocale,
             )
-            ?.translations
-            ?.releaseNotes
-            ?.byLocale(kAppUpdateDefaultLocale),
+            ?.releaseNotes,
         'Windows Github release notes',
       );
       expect(

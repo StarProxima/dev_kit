@@ -1,10 +1,7 @@
 // ignore_for_file: prefer-correct-test-file-name, avoid-long-functions, prefer-moving-to-variable, prefer-test-matchers, avoid-similar-names, no-equal-arguments, avoid-missing-enum-constant-in-map
 
-import 'dart:ui';
-
 import 'package:app_update/src/parser/models/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
-import 'package:app_update/src/shared/text_translations.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/shared/version_status.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,8 +13,6 @@ void main() {
 
     test('parses single base settings', () {
       final value = {
-        'title': 'title',
-        'description': 'description',
         'can_skip_release': true,
       };
 
@@ -136,18 +131,12 @@ void main() {
       final value = <String, dynamic>{
         UpdateAlertTypeBase.dialog.key: {
           VersionStatusBase.base.key: {
-            'title': 'title',
-            'description': 'description',
             'can_skip_release': true,
           },
           VersionStatusBase.unsupported.key: {
-            'title': 'title',
-            'description': 'description',
             'can_skip_release': true,
           },
           VersionStatusBase.updatable.key: {
-            'title': 'title',
-            'description': 'description',
             'can_skip_release': true,
           },
         },
@@ -173,16 +162,13 @@ void main() {
       () {
         final value = <String, dynamic>{
           VersionStatusBase.base.key: {
-            'title': 'title',
-            'description': 'description',
             'can_skip_release': true,
           },
           VersionStatusBase.unsupported.key: {
-            'title': 'title',
             'can_skip_release': false,
           },
           VersionStatusBase.updatable.key: {
-            'title': 'updatable title',
+            'can_postpone_release': true,
             'can_skip_release': false,
           },
         };
@@ -201,12 +187,8 @@ void main() {
           isFalse,
         );
         expect(
-          result
-              ?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.updatable)
-              ?.translations
-              ?.title
-              ?.byLocale(kAppUpdateDefaultLocale),
-          'updatable title',
+          result?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.updatable)?.canPostponeRelease,
+          isTrue,
         );
       },
     );
@@ -218,19 +200,13 @@ void main() {
         },
         UpdateAlertTypeBase.dialog.key: {
           VersionStatusBase.unsupported.key: {
-            'title': 'title',
-            'description': 'description',
             'can_skip_release': true,
           },
           VersionStatusBase.updatable.key: {
-            'title': 'title',
-            'description': 'description',
             'can_skip_release': true,
           },
         },
         UpdateAlertTypeBase.card.key: {
-          'title': 'title',
-          'description': 'description',
           'can_skip_release': true,
         },
       };
@@ -275,12 +251,11 @@ void main() {
       final value = <String, dynamic>{
         UpdateAlertTypeBase.dialog.key: {
           VersionStatusBase.unsupported.key: {
-            'title': 'title',
-            'description': 'description',
+            'can_postpone_release': true,
           },
         },
         UpdateAlertTypeBase.card.key: {
-          'description': 'only description',
+          'release_delay_hours': 32,
           'can_skip_release': false,
         },
       };
@@ -288,24 +263,16 @@ void main() {
       final result = containerParser.parse(value, isDebug: isDebug);
 
       expect(
-        result
-            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)
-            ?.translations
-            ?.title
-            ?.byLocale(const Locale('en')),
-        'title',
+        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)?.canPostponeRelease,
+        isTrue,
       );
       expect(
         result?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)?.canSkipRelease,
         isFalse,
       );
       expect(
-        result
-            ?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)
-            ?.translations
-            ?.description
-            ?.byLocale(const Locale('en')),
-        'only description',
+        result?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)?.releaseDelay,
+        const Duration(hours: 32),
       );
     });
   });
