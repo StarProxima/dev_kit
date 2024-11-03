@@ -5,7 +5,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../localizer/models/release.dart';
+import '../../interpolator/models/release.dart';
 import '../source.dart';
 import 'app_store_fetcher.dart';
 import 'google_play_fetcher.dart';
@@ -13,7 +13,7 @@ import 'google_play_fetcher.dart';
 base class SourceReleaseFetcherCoordinator {
   const SourceReleaseFetcherCoordinator();
 
-  FutureOr<SourceReleaseFetcher> fetcherBySource(Source source) => switch (source.sourceType) {
+  FutureOr<SourceReleaseFetcher> fetcherBySource(Source source) => switch (source.type) {
         Sources.googlePlay => const GooglePlayFetcher(),
         Sources.appStore => const AppStoreFetcher(),
         Sources.custom => throw UnimplementedError(),

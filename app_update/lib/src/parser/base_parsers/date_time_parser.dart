@@ -15,9 +15,9 @@ class DateTimeParser {
     }
 
     try {
-      final dateUtc = DateTime.parse(value);
+      final date = DateTime.parse(value);
 
-      return dateUtc;
+      return date;
     } on FormatException catch (e, s) {
       if (isDebug) Error.throwWithStackTrace(const UpdateConfigException(), s);
 

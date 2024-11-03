@@ -1,24 +1,23 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
 import '../linker/models/release_settings_data.dart';
-import '../localizer/models/release_settings.dart';
-import '../localizer/models/update_texts.dart';
+import '../interpolator/models/update_settings.dart';
 import '../parser/models/release_settings_config.dart';
-import 'app_version_status.dart';
+import 'version_status.dart';
 import 'update_alert_type.dart';
 
 // TODO тут миксин не надо бы применить?
-class UpdateSettingsConfig {
-  final Map<String, Map<String, ReleaseSettingsConfig>> _value;
+class UpdateSettingsConfigContainer {
+  final Map<String, Map<String, UpdateSettingsConfig>> _value;
 
-  const UpdateSettingsConfig(this._value);
+  const UpdateSettingsConfigContainer(this._value);
 
-  ReleaseSettingsConfig? getBy({
+  UpdateSettingsConfig? getBy({
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
       getByRaw(type: type.name, status: status.name);
 
-  ReleaseSettingsConfig? getByRaw({
+  UpdateSettingsConfig? getByRaw({
     required String type,
     required String status,
   }) {
@@ -30,34 +29,34 @@ class UpdateSettingsConfig {
 }
 
 // TODO разнести бы их по файлам отдельным
-class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
+class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
   @override
-  final Map<String, Map<String, ReleaseSettingsData>> _value;
+  final Map<String, Map<String, UpdateSettingsData>> _value;
 
-  Map<String, Map<String, ReleaseSettingsData>> get value => _value;
+  Map<String, Map<String, UpdateSettingsData>> get value => _value;
 
-  const UpdateSettingsData(this._value);
+  const UpdateSettingsDataContainer(this._value);
 
-  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig? config) {
-    return UpdateSettingsData(
+  factory UpdateSettingsDataContainer.fromConfig(UpdateSettingsConfigContainer? config) {
+    return UpdateSettingsDataContainer(
       config?._value.map(
             (key, value) => MapEntry(
               key,
               value.map(
                 (key, value) => MapEntry(
                   key,
-                  ReleaseSettingsData.fromConfig(value),
+                  UpdateSettingsData.fromConfig(value),
                 ),
               ),
             ),
           ) ??
           {
-            'base': {'base': ReleaseSettingsData.fromConfig(null)},
+            'base': {'base': UpdateSettingsData.fromConfig(null)},
           },
     );
   }
 
-  UpdateSettingsData inherit(UpdateSettingsData child) {
+  UpdateSettingsDataContainer inherit(UpdateSettingsDataContainer child) {
     final inheritedValue = {...child.value};
 
     for (final type in value.entries) {
@@ -75,23 +74,15 @@ class UpdateSettingsData with GetByMixin<ReleaseSettingsData> {
       }
     }
 
-    return UpdateSettingsData(inheritedValue);
+    return UpdateSettingsDataContainer(inheritedValue);
   }
 }
 
-class UpdateSettings with GetByMixin<ReleaseSettings> {
+class UpdateSettingsContainer with GetByMixin<UpdateSettings> {
   @override
-  final Map<String, Map<String, ReleaseSettings>> _value;
+  final Map<String, Map<String, UpdateSettings>> _value;
 
-  const UpdateSettings(this._value);
-
-  factory UpdateSettings.base({UpdateTranslations? translations}) => UpdateSettings({
-        'base': {
-          'base': ReleaseSettings.availableUpdate(
-            texts: translations ?? UpdateTranslations.defaultTexts,
-          ),
-        },
-      });
+  const UpdateSettingsContainer(this._value);
 }
 
 mixin GetByMixin<T> {

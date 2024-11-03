@@ -1,7 +1,7 @@
 import '../../parser/models/release_settings_config.dart';
 import '../../parser/models/settings_translations.dart';
 
-class ReleaseSettingsData {
+class UpdateSettingsData {
   final UpdateTranslationsData? translations;
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
@@ -10,7 +10,7 @@ class ReleaseSettingsData {
   final Duration? progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
-  const ReleaseSettingsData({
+  const UpdateSettingsData({
     required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,
@@ -20,8 +20,8 @@ class ReleaseSettingsData {
     required this.customData,
   });
 
-  factory ReleaseSettingsData.fromConfig(ReleaseSettingsConfig? config) {
-    return ReleaseSettingsData(
+  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig? config) {
+    return UpdateSettingsData(
       translations: config?.translations,
       canSkipRelease: config?.canSkipRelease,
       canPostponeRelease: config?.canPostponeRelease,
@@ -32,7 +32,7 @@ class ReleaseSettingsData {
     );
   }
 
-  const ReleaseSettingsData.requiredUpdate({
+  const UpdateSettingsData.requiredUpdate({
     required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = false,
@@ -42,7 +42,7 @@ class ReleaseSettingsData {
     this.customData,
   });
 
-  const ReleaseSettingsData.recommendedUpdate({
+  const UpdateSettingsData.recommendedUpdate({
     required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = true,
@@ -52,7 +52,7 @@ class ReleaseSettingsData {
     this.customData,
   });
 
-  const ReleaseSettingsData.availableUpdate({
+  const UpdateSettingsData.availableUpdate({
     required this.translations,
     this.canSkipRelease = true,
     this.canPostponeRelease = true,
@@ -62,8 +62,8 @@ class ReleaseSettingsData {
     this.customData,
   });
 
-  ReleaseSettingsData inherit(ReleaseSettingsData child) {
-    return ReleaseSettingsData(
+  UpdateSettingsData inherit(UpdateSettingsData child) {
+    return UpdateSettingsData(
       translations: child.translations ?? translations,
       canSkipRelease: child.canSkipRelease ?? canSkipRelease,
       canPostponeRelease: child.canPostponeRelease ?? canPostponeRelease,

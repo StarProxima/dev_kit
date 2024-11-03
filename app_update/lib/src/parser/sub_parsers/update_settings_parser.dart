@@ -3,7 +3,9 @@
 part of '../update_config_parser.dart';
 
 class UpdateSettingsParser {
-  ReleaseSettingsParser get _releaseSettingsParser => const ReleaseSettingsParser();
+  SettingsTranslationsParser get _settingsTranslationsParser => const SettingsTranslationsParser();
+  DurationParser get _durationParser => const DurationParser();
+  BoolParser get _boolParser => const BoolParser();
 
   const UpdateSettingsParser();
 
@@ -18,64 +20,55 @@ class UpdateSettingsParser {
 
     if (value == null) return null;
 
-    // ignore: avoid-dynamic
-    ReleaseSettingsConfig? parseSettings(dynamic value) {
-      return _releaseSettingsParser.parse(value, isDebug: isDebug);
-    }
+    // canSkipRelease
+    final canSkipReleaseValue = value.remove('can_skip_release');
+    final canSkipRelease = _boolParser.parse(
+      canSkipReleaseValue,
+      isDebug: isDebug,
+    );
 
-    final map = value;
+    // canPostponeRelease
+    final canPostponeReleaseValue = value.remove('can_postpone_release');
+    final canPostponeRelease = _boolParser.parse(
+      canPostponeReleaseValue,
+      isDebug: isDebug,
+    );
 
-    final updateSettings = <String, Map<String, ReleaseSettingsConfig>>{};
+    // reminderPeriodHours
+    final reminderPeriodHours = value.remove('reminder_period_hours');
+    final reminderPeriod = _durationParser.parse(
+      hours: reminderPeriodHours,
+      isDebug: isDebug,
+    );
 
-    final typeNames = [...UpdateAlertType.values.map((e) => e.name), 'base'];
-    final isByType = map.keys.every(typeNames.contains);
+    // releaseDelayHours
+    final releaseDelayHours = value.remove('release_delay_hours');
+    final releaseDelay = _durationParser.parse(
+      hours: releaseDelayHours,
+      isDebug: isDebug,
+    );
 
-    if (!isByType) {
-      final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
+    // progressiveRolloutHours
+    final progressiveRolloutHours = value.remove('progressive_rollout_hours');
+    final progressiveRolloutDuration = _durationParser.parse(
+      hours: progressiveRolloutHours,
+      isDebug: isDebug,
+    );
 
-      // Empty UpdateSettings
-      if (settingsByStatus.isEmpty) return UpdateSettingsConfig(updateSettings);
+    // translations
+    final translations = _settingsTranslationsParser.parse(
+      value,
+      isDebug: isDebug,
+    );
 
-      return UpdateSettingsConfig({'base': settingsByStatus});
-    }
-
-    for (final type in typeNames) {
-      final value = map[type];
-      if (value is! Map<String, dynamic>) continue;
-
-      final settingsByStatus = _parseByStatus(value, parseSettings: parseSettings);
-      if (settingsByStatus.isEmpty) continue;
-
-      value[type] = settingsByStatus;
-    }
-
-    return UpdateSettingsConfig(updateSettings);
-  }
-
-  Map<String, ReleaseSettingsConfig> _parseByStatus(
-    Map<String, dynamic> map, {
-    required ReleaseSettingsConfig? Function(Map<String, dynamic> map) parseSettings,
-  }) {
-    final settingsByStatus = <String, ReleaseSettingsConfig>{};
-
-    final statusNames = [...VersionStatus.values.map((e) => e.name), 'base'];
-
-    final isByStatus = map.keys.any(statusNames.contains);
-
-    if (!isByStatus) {
-      final settings = parseSettings(map);
-      if (settings == null) return {};
-
-      return {'base': settings};
-    }
-
-    for (final status in statusNames) {
-      final value = map[status];
-      final settings = parseSettings(value);
-      if (settings == null) continue;
-      settingsByStatus[status] = settings;
-    }
-
-    return settingsByStatus;
+    return UpdateSettingsConfig(
+      translations: translations,
+      canSkipRelease: canSkipRelease,
+      canPostponeRelease: canPostponeRelease,
+      reminderPeriod: reminderPeriod,
+      releaseDelay: releaseDelay,
+      progressiveRolloutDuration: progressiveRolloutDuration,
+      customData: value,
+    );
   }
 }

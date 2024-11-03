@@ -31,36 +31,36 @@ class SettingsTranslationsParser {
       isDebug: isDebug,
     );
 
-    // releaseNoteTitle
-    final releaseNoteTitleValue = value.remove('releaseNoteTitle');
-    final releaseNoteTitle = _textParser.parse(
-      releaseNoteTitleValue,
+    // releaseNotesTitle
+    final releaseNotesTitleValue = value.remove('release_note_title');
+    final releaseNotesTitle = _textParser.parse(
+      releaseNotesTitleValue,
       isDebug: isDebug,
     );
 
-    // releaseNote
-    final releaseNoteValue = value.remove('releaseNote');
-    final releaseNote = _textParser.parse(
-      releaseNoteValue,
+    // releaseNotes
+    final releaseNotesValue = value.remove('release_notes');
+    final releaseNotes = _textParser.parse(
+      releaseNotesValue,
       isDebug: isDebug,
     );
 
     // skipButtonText
-    final skipButtonTextValue = value.remove('skipButtonText');
+    final skipButtonTextValue = value.remove('skip_button_text');
     final skipButtonText = _textParser.parse(
       skipButtonTextValue,
       isDebug: isDebug,
     );
 
     // laterButtonText
-    final laterButtonTextValue = value.remove('laterButtonText');
+    final laterButtonTextValue = value.remove('later_button_text');
     final laterButtonText = _textParser.parse(
       laterButtonTextValue,
       isDebug: isDebug,
     );
 
     // updateButtonText
-    final updateButtonTextValue = value.remove('updateButtonText');
+    final updateButtonTextValue = value.remove('update_button_text');
     final updateButtonText = _textParser.parse(
       updateButtonTextValue,
       isDebug: isDebug,
@@ -69,8 +69,8 @@ class SettingsTranslationsParser {
     return UpdateTranslationsData(
       title: title,
       description: description,
-      releaseNoteTitle: releaseNoteTitle,
-      releaseNote: releaseNote,
+      releaseNotesTitle: releaseNotesTitle,
+      releaseNotes: releaseNotes,
       skipButtonText: skipButtonText,
       laterButtonText: laterButtonText,
       updateButtonText: updateButtonText,

@@ -16,17 +16,17 @@ class UpdatePlatform {
 
   final String _platform;
 
-  String get platform => _platform.toLowerCase();
+  String get name => _platform.toLowerCase();
 
   const UpdatePlatform(this._platform);
 
   factory UpdatePlatform.current() => UpdatePlatform(
-        kIsWeb ? web.platform : Platform.operatingSystem,
+        kIsWeb ? web.name : Platform.operatingSystem,
       );
 
   // ignore: member-ordering
   @override
-  int get hashCode => platform.hashCode;
+  int get hashCode => name.hashCode;
 
   @override
   bool operator ==(Object other) {
@@ -34,6 +34,6 @@ class UpdatePlatform {
 
     if (other is! UpdatePlatform) return false;
 
-    return other.platform == platform;
+    return other.name == name;
   }
 }

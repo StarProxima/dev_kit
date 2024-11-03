@@ -1,3 +1,5 @@
+// ignore_for_file: prefer-test-matchers
+
 import 'dart:ui';
 
 import 'package:app_update/src/parser/base_parsers/text_translations_parser.dart';
@@ -22,7 +24,7 @@ void main() {
     test('should return default Locale (en) when value is a String', () {
       const value = 'This is a simple string';
       final result = textParser.parse(value, isDebug: isDebug);
-      expect(result, equals({kAppUpdateDefaultLocale: value}));
+      expect(result, TextTranslations({kAppUpdateDefaultLocale: value}));
     });
 
     test('should return map of Locale to String when value is a Map', () {
@@ -34,7 +36,7 @@ void main() {
       final result = textParser.parse(value, isDebug: isDebug);
       expect(
         result,
-        equals({
+        TextTranslations({
           const Locale('en'): enText,
           const Locale('es'): esText,
           const Locale('ru'): ruText,
@@ -67,8 +69,7 @@ void main() {
       expect(result, isNull);
     });
 
-    // TODO: Что должно быть при пустой мапе? Null?
-    test('should handle empty Map and return empty map', () {
+    test('should handle empty Map and return null', () {
       final value = <String, String>{};
       final result = textParser.parse(value, isDebug: isDebug);
       expect(result, isNull);
@@ -78,10 +79,10 @@ void main() {
       final result = textParser.parse(mixedLocalesMap, isDebug: isDebug);
       expect(
         result,
-        equals({
-          const Locale('en'): mixedLocalesMap['en'],
-          const Locale('fr'): mixedLocalesMap['fr'],
-          const Locale('de'): mixedLocalesMap['de'],
+        TextTranslations({
+          const Locale('de'): mixedLocalesMap['de']!,
+          const Locale('en'): mixedLocalesMap['en']!,
+          const Locale('fr'): mixedLocalesMap['fr']!,
         }),
       );
     });

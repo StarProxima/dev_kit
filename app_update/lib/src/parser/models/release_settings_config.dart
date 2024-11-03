@@ -1,6 +1,6 @@
 import 'settings_translations.dart';
 
-class ReleaseSettingsConfig {
+class UpdateSettingsConfig {
   final UpdateTranslationsData? translations;
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
@@ -17,7 +17,7 @@ class ReleaseSettingsConfig {
       releaseDelay == null &&
       progressiveRolloutDuration == null;
 
-  const ReleaseSettingsConfig({
+  const UpdateSettingsConfig({
     required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,

@@ -2,7 +2,7 @@
 # Old api
 releases:
   - version: 0.0.2-android
-    release_note: Improvements
+    release_notes: Improvements
     date: 2014-10-17 23:00:00
     status: required
     sources:
@@ -26,7 +26,7 @@ releases:
 # New api
 releases2:
   - version: 0.0.2
-    release_note: Improvements
+    release_notes: Improvements
     
     sources:
      - name: googlePlay

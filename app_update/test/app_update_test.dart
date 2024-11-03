@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
 import 'package:app_update/src/controller/update_controller.dart';
-import 'package:app_update/src/shared/app_version_status.dart';
+import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';
@@ -21,11 +21,20 @@ void main() async {
         final releaseData = update.config.releases.first;
 
         final settings = update.release.settings.getBy(
-          type: UpdateAlertType.adaptiveDialog,
-          status: VersionStatus.updatable,
+          type: UpdateAlertType.dialog,
+          status: update.appVersionStatus,
         );
 
-        final text = settings.texts.byLocale(const Locale('en'));
+        final texts = settings.translations.byLocale(
+          const Locale('en'),
+        );
+
+        // final settings = update.release.settings.getBy(
+        //   type: UpdateAlertType.adaptiveDialog,
+        //   status: VersionStatus.updatable,
+        // );
+
+        // final text = settings.translations.byLocale(const Locale('en'));
 
         // Release.localizedFromReleaseData(
         //   releaseData: releaseData,
@@ -71,7 +80,7 @@ void main() async {
           UpdateAlertHandler.adaptiveDialog(context, update, controller);
 
         case VersionStatus.updatable:
-          if (DateTime.now().difference(update.release!.dateUtc!) > const Duration(days: 7)) {
+          if (DateTime.now().difference(update.release.date!) > const Duration(days: 7)) {
             // Show custom dialog
             return;
           }

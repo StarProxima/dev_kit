@@ -1,8 +1,8 @@
 import '../../linker/models/release_settings_data.dart';
 import 'update_texts.dart';
 
-class ReleaseSettings {
-  final UpdateTranslations texts;
+class UpdateSettings {
+  final UpdateTranslations translations;
   final bool canSkipRelease;
   final bool canPostponeRelease;
   final Duration reminderPeriod;
@@ -10,8 +10,8 @@ class ReleaseSettings {
   final Duration progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
-  const ReleaseSettings({
-    required this.texts,
+  const UpdateSettings({
+    required this.translations,
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,
@@ -20,13 +20,16 @@ class ReleaseSettings {
     required this.customData,
   });
 
-  factory ReleaseSettings.fromData({
-    ReleaseSettingsData? data,
+  factory UpdateSettings.fromData({
+    UpdateSettingsData? data,
   }) {
-    final defaultSettings = ReleaseSettings.availableUpdate(texts: UpdateTranslations.defaultTexts);
+    const defaultSettings = UpdateSettings.availableUpdate(translations: UpdateTranslations({}));
 
-    return ReleaseSettings(
-      texts: UpdateTranslations.fromData(rawTranslations: data?.translations),
+    return UpdateSettings(
+      translations: UpdateTranslations.fromData(
+        rawTranslations: data?.translations,
+        defaultTexts: defaultSettings.translations,
+      ),
       canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
       canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
       reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
@@ -36,8 +39,8 @@ class ReleaseSettings {
     );
   }
 
-  const ReleaseSettings.requiredUpdate({
-    required this.texts,
+  const UpdateSettings.requiredUpdate({
+    required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = false,
     this.reminderPeriod = Duration.zero,
@@ -46,8 +49,8 @@ class ReleaseSettings {
     this.customData,
   });
 
-  const ReleaseSettings.recommendedUpdate({
-    required this.texts,
+  const UpdateSettings.recommendedUpdate({
+    required this.translations,
     this.canSkipRelease = false,
     this.canPostponeRelease = true,
     this.reminderPeriod = const Duration(hours: 24),
@@ -56,8 +59,8 @@ class ReleaseSettings {
     this.customData,
   });
 
-  const ReleaseSettings.availableUpdate({
-    required this.texts,
+  const UpdateSettings.availableUpdate({
+    required this.translations,
     this.canSkipRelease = true,
     this.canPostponeRelease = true,
     this.reminderPeriod = const Duration(hours: 72),
@@ -66,8 +69,8 @@ class ReleaseSettings {
     this.customData,
   });
 
-  ReleaseSettings copyWith({
-    UpdateTranslations? texts,
+  UpdateSettings copyWith({
+    UpdateTranslations? translations,
     bool? canSkipRelease,
     bool? canPostponeRelease,
     Duration? reminderPeriod,
@@ -75,8 +78,8 @@ class ReleaseSettings {
     Duration? progressiveRolloutDuration,
     Map<String, dynamic>? customData,
   }) {
-    return ReleaseSettings(
-      texts: texts ?? this.texts,
+    return UpdateSettings(
+      translations: translations ?? this.translations,
       canSkipRelease: canSkipRelease ?? this.canSkipRelease,
       canPostponeRelease: canPostponeRelease ?? this.canPostponeRelease,
       reminderPeriod: reminderPeriod ?? this.reminderPeriod,

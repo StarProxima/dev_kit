@@ -10,14 +10,14 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../localizer/models/release.dart';
-import '../../localizer/models/update_texts.dart';
-import '../../shared/update_status_wrapper.dart';
+import '../../interpolator/models/release.dart';
+import '../../interpolator/models/update_settings.dart';
+import '../../interpolator/models/update_texts.dart';
+import '../../shared/update_settings_container.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
 
 class AppStoreFetcher extends SourceReleaseFetcher {
-  /// iTunes Lookup API URL
   static const lookupPrefixURL = 'https://itunes.apple.com/lookup';
 
   /// Provide an HTTP Client that can be replaced for mock testing.
@@ -46,14 +46,14 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
     final defaultTexts = UpdateTranslations.defaultTexts.byLocale(locale);
-    final settings = UpdateSettings.base(
+    final settings = UpdateSettings.availableUpdate(
       translations: UpdateTranslations(
         {
           locale: UpdateTexts(
             title: defaultTexts.title,
             description: defaultTexts.description,
-            releaseNote: releaseNotes ?? defaultTexts.releaseNote,
-            releaseNoteTitle: defaultTexts.releaseNoteTitle,
+            releaseNotesTitle: defaultTexts.releaseNotesTitle,
+            releaseNotes: releaseNotes ?? defaultTexts.releaseNotes,
             skipButtonText: defaultTexts.skipButtonText,
             laterButtonText: defaultTexts.laterButtonText,
             updateButtonText: defaultTexts.updateButtonText,
@@ -64,9 +64,11 @@ class AppStoreFetcher extends SourceReleaseFetcher {
 
     return Release(
       version: sourceVersion,
-      targetSource: Source.appStore(url: url),
-      dateUtc: null,
-      settings: settings,
+      source: Source.appStore(url: url),
+      date: null,
+      settings: UpdateSettingsContainer({
+        'base': {'base': settings},
+      }),
       customData: {},
     );
   }
@@ -76,7 +78,9 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     String? country = 'US',
     String? language = 'en',
     bool useCacheBuster = true,
-  }) async {}
+  }) async {
+    // TODO write this
+  }
 
   /// Look up URL by QSP.
   Uri _lookupURL(Map<String, String?> qsp, {bool useCacheBuster = true}) {

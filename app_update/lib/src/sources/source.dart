@@ -4,19 +4,24 @@ import 'package:store_checker/store_checker.dart' as checker;
 import '../shared/update_platform.dart';
 
 enum Sources {
-  googlePlay,
-  appStore,
-  googlePlayPackageInstaller,
-  amazonAppStore,
-  huaweiAppGallery,
-  samsungGalaxyStore,
-  samsungSmartSwitchMobile,
-  xiaomiGetApps,
-  oppoAppMarket,
-  vivoAppStore,
-  ruStore,
-  testFlight,
-  custom;
+  googlePlay('Google Play'),
+  appStore('AppStore'),
+  googlePlayPackageInstaller('Google Play Package Installer'),
+  amazonAppStore('Amazon App Store'),
+  huaweiAppGallery('App Gallery'),
+  samsungGalaxyStore('Galaxy Store'),
+  samsungSmartSwitchMobile('Smart Switch Mobile'),
+  xiaomiGetApps('GetApps'),
+  oppoAppMarket('Oppo AppMarket'),
+  vivoAppStore('Vivo AppStore'),
+  ruStore('RuStore'),
+  testFlight('TestFlight'),
+  custom(null),
+  ;
+
+  const Sources(this.title);
+
+  final String? title;
 
   factory Sources.parse(String name) => values.firstWhere(
         (e) => e.name == name,
@@ -48,13 +53,15 @@ enum Sources {
 
 @immutable
 class Source {
-  final Sources sourceType;
+  final Sources type;
   final Uri url;
   final List<UpdatePlatform> platforms;
   final Map<String, dynamic>? customData;
 
   final String? _name;
-  String get name => _name ?? sourceType.name;
+  String get name => _name ?? type.name;
+
+  String get title => type.title ?? name;
 
   @override
   int get hashCode => name.hashCode;
@@ -85,84 +92,84 @@ class Source {
   const Source.googlePlay({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.googlePlay,
+  })  : type = Sources.googlePlay,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.appStore({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.appStore,
+  })  : type = Sources.appStore,
         platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
         _name = null;
 
   const Source.googlePlayPackageInstaller({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.googlePlayPackageInstaller,
+  })  : type = Sources.googlePlayPackageInstaller,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.amazonAppStore({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.amazonAppStore,
+  })  : type = Sources.amazonAppStore,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.huaweiAppGallery({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.huaweiAppGallery,
+  })  : type = Sources.huaweiAppGallery,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.samsungGalaxyStore({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.samsungGalaxyStore,
+  })  : type = Sources.samsungGalaxyStore,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.samsungSmartSwitchMobile({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.samsungSmartSwitchMobile,
+  })  : type = Sources.samsungSmartSwitchMobile,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.xiaomiGetApps({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.xiaomiGetApps,
+  })  : type = Sources.xiaomiGetApps,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.oppoAppMarket({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.oppoAppMarket,
+  })  : type = Sources.oppoAppMarket,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.vivoAppStore({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.vivoAppStore,
+  })  : type = Sources.vivoAppStore,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.ruStore({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.ruStore,
+  })  : type = Sources.ruStore,
         platforms = const [UpdatePlatform.android],
         _name = null;
 
   const Source.testFlight({
     required this.url,
     this.customData,
-  })  : sourceType = Sources.testFlight,
+  })  : type = Sources.testFlight,
         platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
         _name = null;
 
@@ -171,7 +178,7 @@ class Source {
     required this.url,
     required this.platforms,
     this.customData,
-  })  : sourceType = Sources.custom,
+  })  : type = Sources.custom,
         _name = name;
 
   @override

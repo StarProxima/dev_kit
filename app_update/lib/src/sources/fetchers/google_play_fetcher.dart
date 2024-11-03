@@ -1,5 +1,7 @@
 // Copyright (c) 2018-2022, Larry Aasen.
 
+// ignore_for_file: avoid-non-null-assertion, avoid-unsafe-collection-methods
+
 import 'dart:ui';
 
 import 'package:html/dom.dart';
@@ -8,9 +10,10 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../localizer/models/release.dart';
-import '../../localizer/models/update_texts.dart';
-import '../../shared/update_status_wrapper.dart';
+import '../../interpolator/models/release.dart';
+import '../../interpolator/models/update_settings.dart';
+import '../../interpolator/models/update_texts.dart';
+import '../../shared/update_settings_container.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
 //TODO http.Client и clientHeaders надо бы сделать изменяемыми из вне
@@ -22,24 +25,6 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
   http.Client get client => http.Client();
 
   const GooglePlayFetcher();
-
-  Uri _lookupURLById({
-    required String name,
-    required Locale locale,
-  }) {
-    final countryCode = locale.countryCode;
-    final languageCode = locale.languageCode;
-
-    final parameters = {'id': name};
-    if (countryCode != null && countryCode.isNotEmpty) {
-      parameters['gl'] = countryCode;
-    }
-    if (languageCode.isNotEmpty) {
-      parameters['hl'] = languageCode;
-    }
-
-    return Uri.https(playStorePrefixURL, '', parameters);
-  }
 
   @override
   Future<Release?> fetch({
@@ -61,14 +46,14 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
     final defaultTexts = UpdateTranslations.defaultTexts.byLocale(locale);
-    final settings = UpdateSettings.base(
+    final settings = UpdateSettings.availableUpdate(
       translations: UpdateTranslations(
         {
           locale: UpdateTexts(
             title: defaultTexts.title,
             description: defaultTexts.description,
-            releaseNote: releaseNotes ?? defaultTexts.releaseNote,
-            releaseNoteTitle: defaultTexts.releaseNoteTitle,
+            releaseNotesTitle: defaultTexts.releaseNotesTitle,
+            releaseNotes: releaseNotes ?? defaultTexts.releaseNotes,
             skipButtonText: defaultTexts.skipButtonText,
             laterButtonText: defaultTexts.laterButtonText,
             updateButtonText: defaultTexts.updateButtonText,
@@ -79,18 +64,38 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
 
     return Release(
       version: sourceVersion,
-      targetSource: Source.googlePlay(url: url),
-      dateUtc: null,
-      settings: settings,
+      source: Source.googlePlay(url: url),
+      date: null,
+      settings: UpdateSettingsContainer({
+        'base': {'base': settings},
+      }),
       customData: {},
     );
+  }
+
+  Uri _lookupURLById({
+    required String name,
+    required Locale locale,
+  }) {
+    final countryCode = locale.countryCode;
+    final languageCode = locale.languageCode;
+
+    final parameters = {'id': name};
+    if (countryCode != null && countryCode.isNotEmpty) {
+      parameters['gl'] = countryCode;
+    }
+    if (languageCode.isNotEmpty) {
+      parameters['hl'] = languageCode;
+    }
+
+    return Uri.https(playStorePrefixURL, '', parameters);
   }
 
   String? _releaseNotes(Document pageBody) {
     try {
       final sectionElements = pageBody.getElementsByClassName('W4P4ne');
       final releaseNotesElement = sectionElements
-          .firstWhere((elm) => elm.querySelector('.wSaTQd')!.text == "What's New", orElse: () => sectionElements[0]);
+          .firstWhere((elm) => elm.querySelector('.wSaTQd')!.text == "What's New", orElse: () => sectionElements.first);
       final rawReleaseNotes = releaseNotesElement.querySelector('.PHBdkd')?.querySelector('.DWPxHb');
 
       return _multilineReleaseNotes(rawReleaseNotes!);
@@ -99,8 +104,11 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     try {
       final sectionElementsRedesigned = pageBody.querySelectorAll('[itemprop="description"]');
       final rawReleaseNotesRedesigned = sectionElementsRedesigned.lastOrNull;
+
       return _multilineReleaseNotes(rawReleaseNotesRedesigned!);
     } catch (_) {}
+
+    return null;
   }
 
   String _multilineReleaseNotes(Element rawReleaseNotes) {
@@ -151,5 +159,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
 
       return Version.parse(storeVersion);
     } catch (_) {}
+
+    return null;
   }
 }
