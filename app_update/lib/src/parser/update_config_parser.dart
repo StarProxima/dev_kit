@@ -1,13 +1,18 @@
 // ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
 
-import '../shared/version_status.dart';
+import 'dart:ui';
+
 import '../shared/raw_update_config.dart';
+import '../shared/text_translations.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_settings_container.dart';
+import '../shared/update_text_container.dart';
+import '../shared/version_status.dart';
 import 'base_parsers/bool_parser.dart';
 import 'base_parsers/date_time_parser.dart';
 import 'base_parsers/duration_parser.dart';
+import 'base_parsers/string_parser.dart';
 import 'base_parsers/text_translations_parser.dart';
 import 'base_parsers/version_parser.dart';
 import 'models/platform_config.dart';
@@ -17,16 +22,19 @@ import 'models/settings_translations.dart';
 import 'models/source_config.dart';
 import 'models/update_config_exception.dart';
 import 'models/update_config_model.dart';
+import 'models/update_text_config.dart';
 import 'sub_parsers/version_settings_parser.dart';
 
-part 'sub_parsers/sources/global_source_parser.dart';
 part 'sub_parsers/release_parser.dart';
-part 'sub_parsers/update_settings_parser.dart';
-part 'sub_parsers/sources/release_source_parser.dart';
 part 'sub_parsers/settings_translations_parser.dart';
-part 'sub_parsers/update_settings_container_parser.dart';
 part 'sub_parsers/sources/global_platform_parser.dart';
+part 'sub_parsers/sources/global_source_parser.dart';
 part 'sub_parsers/sources/release_platform_parser.dart';
+part 'sub_parsers/sources/release_source_parser.dart';
+part 'sub_parsers/update_settings_container_parser.dart';
+part 'sub_parsers/update_settings_parser.dart';
+part 'sub_parsers/update_text_parser.dart';
+part 'sub_parsers/update_text_container_parser.dart';
 
 class UpdateConfigParser {
   UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();

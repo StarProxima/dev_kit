@@ -1,12 +1,13 @@
 text:
   base:
     base:
+      en:
+        title: Update App 
+        description: Description
       ru:
         title: Обновите приложение
         description: Описание
-      en:
-        title: Update App
-        description: Description
+
     unsupported:
       title:
   card:
@@ -15,6 +16,58 @@ text:
       title: Обновите приложение
       description: Описание
 
+text_0:
+  title: Title
+
+text_1:
+  ru:
+    title: Title
+  en:
+    title: Title
+
+
+text_2:
+  base:
+    ru:
+      title: Title
+    en:
+      title: Title
+  unsupported:
+    ru:
+      title: Title
+
+text_3:
+  base:
+    base:
+      ru:
+        title: Title
+      en:
+        title: Title
+    unsupported:
+      ru:
+        title: Title
+  card:
+    title: Title
+
+text_999:
+  ru:
+    unsupported:
+      dialog:
+        title: Title
+  en:
+    dialog:
+      unsupported:
+        title: Title
+  fr:
+    dialog:
+      title: Title
+
+  es:
+    unsupported:
+      title: Title
+  
+  ch:
+    title: Title
   
 settings:
   base:

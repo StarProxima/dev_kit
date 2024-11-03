@@ -1,5 +1,7 @@
 // ignore_for_file: prefer-boolean-prefixes
 
+import 'package:collection/collection.dart';
+
 /// The status of the update.
 enum UpdateAlertType {
   dialog,
@@ -34,4 +36,12 @@ enum UpdateAlertTypeBase {
   final UpdateAlertType? type;
 
   String get key => type?.name ?? name;
+
+  static UpdateAlertTypeBase? parse(
+    String str, {
+    bool includeBase = true,
+  }) =>
+      values.where((e) => includeBase || e != base).firstWhereOrNull(
+            (e) => str.replaceAll('_', '').toLowerCase() == e.name.toLowerCase(),
+          );
 }

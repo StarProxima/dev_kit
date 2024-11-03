@@ -1,5 +1,7 @@
 // ignore_for_file: prefer-boolean-prefixes
 
+import 'package:collection/collection.dart';
+
 /// The status of the app or update version.
 enum VersionStatus {
   /// The current version is not supported.
@@ -42,4 +44,12 @@ enum VersionStatusBase {
   final VersionStatus? status;
 
   String get key => status?.name ?? name;
+
+  static VersionStatusBase? parse(
+    String str, {
+    bool includeBase = true,
+  }) =>
+      values.where((e) => includeBase || e != base).firstWhereOrNull(
+            (e) => str.replaceAll('_', '').toLowerCase() == e.name.toLowerCase(),
+          );
 }

@@ -25,9 +25,11 @@ void main() async {
           status: update.appVersionStatus,
         );
 
-        final texts = settings.translations.byLocale(
-          const Locale('en'),
-        );
+        // final texts = update.release.texts.getBy(
+        //   type: UpdateAlertType.dialog,
+        //   status: update.appVersionStatus,
+        //   locale:  const Locale('en'),
+        // );
 
         // final settings = update.release.settings.getBy(
         //   type: UpdateAlertType.adaptiveDialog,
