@@ -38,6 +38,7 @@ part 'sub_parsers/raw_container_parser.dart';
 
 class UpdateConfigParser {
   UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();
+  UpdateTextContainerParser get _updateTextContainerParser => const UpdateTextContainerParser();
   VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
   GlobalSourceParser get _sourceParser => const GlobalSourceParser();
   ReleaseParser get _releaseParser => const ReleaseParser();
@@ -48,6 +49,10 @@ class UpdateConfigParser {
     RawUpdateConfig map, {
     required bool isDebug,
   }) {
+    // text
+    final textValue = map.remove('text');
+    final text = _updateTextContainerParser.parse(textValue, isDebug: isDebug);
+
     // updateSettings
     final updateSettingsValue = map.remove('settings');
     final updateSettings = _updateSettingsContainerParser.parse(
@@ -87,6 +92,7 @@ class UpdateConfigParser {
         .toList();
 
     return UpdateConfigModel(
+      text: text,
       settings: updateSettings,
       versionSettings: versionSettings,
       sources: sources,
