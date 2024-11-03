@@ -30,7 +30,7 @@ class UpdateTranslations {
 
   factory UpdateTranslations.fromData({
     required UpdateTranslationsData? rawTranslations,
-    UpdateTranslations? defaultTexts,
+    required UpdateTranslations defaultTexts,
   }) {
     final trList = [
       rawTranslations?.title,
@@ -49,7 +49,7 @@ class UpdateTranslations {
     final value = <Locale, UpdateTexts>{};
 
     for (final locale in locales) {
-      final localizedDefaultTexts = (defaultTexts ?? UpdateTranslations.defaultTexts).byLocale(locale);
+      final localizedDefaultTexts = defaultTexts.byLocale(locale);
 
       final updateText = UpdateTexts(
         title: rawTranslations?.title?.byLocale(locale) ?? localizedDefaultTexts.title,
@@ -73,17 +73,4 @@ class UpdateTranslations {
       value[kAppUpdateDefaultLocale] ??
       value.values.firstOrNull ??
       (throw Exception('At least one locale must be specified'));
-
-  // TODO было бы классно как-то из вне иметь возможность задавать дефолтные текста
-  static UpdateTranslations defaultTexts = UpdateTranslations({
-    const Locale('en'): const UpdateTexts(
-      title: 'New Update',
-      description: 'New update',
-      releaseNoteTitle: 'What’s New',
-      releaseNote: 'Some fixes',
-      skipButtonText: 'Skip update',
-      laterButtonText: 'Update later',
-      updateButtonText: 'Update',
-    ),
-  });
 }

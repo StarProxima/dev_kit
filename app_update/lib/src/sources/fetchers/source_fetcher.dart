@@ -5,7 +5,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../interpolator/models/release.dart';
+import '../../linker/models/release_data.dart';
 import '../source.dart';
 import 'app_store_fetcher.dart';
 import 'google_play_fetcher.dart';
@@ -35,7 +35,7 @@ abstract class SourceReleaseFetcher {
 
   // Return Release parsed from source's page.
   // Return null if can't parse or if app version abovesource version. //TODO кидать ошибки или возвращать нулл?
-  Future<Release?> fetch({
+  Future<ReleaseData?> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,

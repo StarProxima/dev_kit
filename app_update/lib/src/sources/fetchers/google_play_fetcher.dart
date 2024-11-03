@@ -13,6 +13,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../../interpolator/models/release.dart';
 import '../../interpolator/models/update_settings.dart';
 import '../../interpolator/models/update_texts.dart';
+import '../../linker/models/release_data.dart';
 import '../../shared/update_settings_container.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
@@ -27,7 +28,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
   const GooglePlayFetcher();
 
   @override
-  Future<Release?> fetch({
+  Future<ReleaseData?> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,
@@ -45,7 +46,8 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     final sourceVersion = _version(decodedResults);
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
-    final defaultTexts = UpdateTranslations.defaultTexts.byLocale(locale);
+    // TODO переписать когда выделятся текста
+    final defaultTexts = ;
     final settings = UpdateSettings.availableUpdate(
       translations: UpdateTranslations(
         {
@@ -62,13 +64,11 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
       ),
     );
 
-    return Release(
+    return ReleaseData(
       version: sourceVersion,
       source: Source.googlePlay(url: url),
       date: null,
-      settings: UpdateSettingsContainer({
-        'base': {'base': settings},
-      }),
+      settings: const UpdateSettingsDataContainer({}),
       customData: {},
     );
   }
