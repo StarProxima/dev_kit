@@ -5,6 +5,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../default_settings/default_update_settings_container.dart';
 import '../default_settings/translations/default_update_text_container.dart';
 import '../linker/models/release_data.dart';
+import '../linker/models/update_text_data.dart';
 import '../shared/update_settings_container.dart';
 import '../shared/update_text_container.dart';
 import 'models/release.dart';
@@ -66,7 +67,7 @@ class UpdateFinalizer {
             value.map(
               (status, textConfig) {
                 final updateText = UpdateText.fromData(
-                  textConfig,
+                  UpdateTextData.fromConfig(textConfig),
                   defaultText: _defaulUpdateTextContainer.getByBase(
                     locale: locale,
                     type: alertType,

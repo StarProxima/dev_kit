@@ -1,18 +1,21 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
-import '../linker/models/release_settings_data.dart';
+
+import 'package:flutter/widgets.dart';
+
 import '../finalizer/models/update_settings.dart';
+import '../linker/models/release_settings_data.dart';
 import '../parser/models/release_settings_config.dart';
-import 'version_status.dart';
 import 'update_alert_type.dart';
+import 'version_status.dart';
 
 typedef RawUpdateSettingsContainer<T> = Map<UpdateAlertTypeBase, Map<VersionStatusBase, T>>;
 
-// TODO тут миксин не надо бы применить?
 class UpdateSettingsConfigContainer {
   final RawUpdateSettingsContainer<UpdateSettingsConfig> value;
 
   const UpdateSettingsConfigContainer(this.value);
 
+  @visibleForTesting
   UpdateSettingsConfig? getBy({
     required UpdateAlertType type,
     required VersionStatus status,
@@ -22,6 +25,7 @@ class UpdateSettingsConfigContainer {
         status: status.toBase(),
       );
 
+  @visibleForTesting
   UpdateSettingsConfig? getByBase({
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
@@ -34,8 +38,7 @@ class UpdateSettingsConfigContainer {
 }
 
 // TODO разнести бы их по файлам отдельным
-class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
-  @override
+class UpdateSettingsDataContainer {
   final RawUpdateSettingsContainer<UpdateSettingsData> value;
 
   const UpdateSettingsDataContainer(this.value);
@@ -85,17 +88,12 @@ class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
   }
 }
 
-class UpdateSettingsContainer with GetByMixin<UpdateSettings> {
-  @override
+class UpdateSettingsContainer {
   final RawUpdateSettingsContainer<UpdateSettings> value;
 
   const UpdateSettingsContainer(this.value);
-}
 
-mixin GetByMixin<T> {
-  abstract final RawUpdateSettingsContainer<T> value;
-
-  T getBy({
+  UpdateSettings getBy({
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
@@ -104,7 +102,7 @@ mixin GetByMixin<T> {
         status: status.toBase(),
       );
 
-  T getByRaw({
+  UpdateSettings getByRaw({
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {

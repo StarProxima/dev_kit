@@ -1,4 +1,4 @@
-import '../../shared/update_text_container.dart';
+import '../../linker/models/update_text_data.dart';
 
 class UpdateText {
   final String title;

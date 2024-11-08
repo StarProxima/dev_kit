@@ -1,6 +1,8 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
+
 import '../finalizer/models/update_texts.dart';
 import '../parser/models/update_text_config.dart';
 import 'update_alert_type.dart';
@@ -11,6 +13,7 @@ class UpdateTextConfigContainer {
 
   const UpdateTextConfigContainer(this.value);
 
+  @visibleForTesting
   UpdateTextConfig? getBy({
     required UpdateAlertType type,
     required VersionStatus status,
@@ -22,6 +25,7 @@ class UpdateTextConfigContainer {
         locale: locale,
       );
 
+  @visibleForTesting
   UpdateTextConfig? getByBase({
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
@@ -34,8 +38,6 @@ class UpdateTextConfigContainer {
     return byStatus;
   }
 }
-
-typedef UpdateTextData = UpdateTextConfig;
 
 class UpdateTextContainer {
   final Map<Locale, Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateText>>> map;

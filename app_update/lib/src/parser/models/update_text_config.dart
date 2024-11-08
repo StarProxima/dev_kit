@@ -29,19 +29,4 @@ class UpdateTextConfig {
     required this.updateButton,
     required this.customData,
   });
-
-  UpdateTextConfig merge(UpdateTextConfig? data) {
-    final customData = {...?this.customData, ...?data?.customData};
-
-    return UpdateTextConfig.byRequired(
-      title: data?.title ?? title,
-      description: data?.description ?? description,
-      releaseNotesTitle: data?.releaseNotesTitle ?? releaseNotesTitle,
-      releaseNotes: data?.releaseNotes ?? releaseNotes,
-      skipButton: data?.skipButton ?? skipButton,
-      laterButton: data?.laterButton ?? laterButton,
-      updateButton: data?.updateButton ?? updateButton,
-      customData: customData.isEmpty ? null : customData,
-    );
-  }
 }
