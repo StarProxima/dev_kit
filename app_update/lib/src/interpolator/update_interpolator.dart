@@ -1,8 +1,9 @@
-// ignore_for_file: avoid-similar-names
+// ignore_for_file: avoid-similar-names, avoid-long-functions
 
 import 'package:pub_semver/pub_semver.dart';
 
-import '../default_settings/translations/default_update_translations.dart';
+import '../default_settings/default_update_settings_container.dart';
+import '../default_settings/translations/default_update_text_container.dart';
 import '../linker/models/release_data.dart';
 import '../shared/update_settings_container.dart';
 import '../shared/update_text_container.dart';
@@ -10,20 +11,22 @@ import 'models/release.dart';
 import 'models/update_settings.dart';
 import 'models/update_texts.dart';
 
-class UpdateInterpolator {
+class UpdateFinalizer {
   final String appName;
   final Version appVersion;
 
-  const UpdateInterpolator({
+  const UpdateFinalizer({
     required this.appName,
     required this.appVersion,
   });
 
-  List<Release> interpolateReleases(List<ReleaseData> releases) {
-    return releases.map(interpolateRelease).toList();
+  List<Release> fializeReleases(List<ReleaseData> releases) {
+    return releases.map(finalizeRelease).toList();
   }
 
-  Release interpolateRelease(ReleaseData releaseData) {
+  static final _defaulUpdateTextContainer = DefaultUpdateTextContainer();
+
+  Release finalizeRelease(ReleaseData releaseData) {
     // TODO: Оптимизировать, проходясь одной регуркой?
     String interpolate(String text) => text
         .replaceAll(
@@ -53,7 +56,7 @@ class UpdateInterpolator {
           updateButton: interpolate(text.updateButton),
         );
 
-    final interpolatedTextMap = releaseData.text.value.map(
+    final finalizedTextMap = releaseData.text.value.map(
       (locale, value) => MapEntry(
         locale,
         value.map(
@@ -61,10 +64,13 @@ class UpdateInterpolator {
             alertType,
             value.map(
               (status, textConfig) {
-                final updateText = UpdateText.fromConfig(
+                final updateText = UpdateText.fromData(
                   textConfig,
-                  // TODO: Откуда доставать дефолтные
-                  defaultText: const DefaultUpdateTexts.ru(),
+                  defaultText: _defaulUpdateTextContainer.getByBase(
+                    locale: locale,
+                    type: alertType,
+                    status: status,
+                  ),
                 );
 
                 final interpolatedText = interpolateUpdateText(updateText);
@@ -80,15 +86,18 @@ class UpdateInterpolator {
       ),
     );
 
-    final settingsMap = releaseData.settings.value.map(
+    final defaultSettingsContainer = DefaultUpdateSettingsContainer();
+
+    final finalizedSettingsMap = releaseData.settings.value.map(
       (alertType, value) => MapEntry(
         alertType,
         value.map(
           (status, settings) {
+            final defaultSettings = defaultSettingsContainer.getByRaw(type: alertType, status: status);
+
             final updateSettings = UpdateSettings.fromData(
               settings,
-              // TODO: Откуда доставать дефолтные
-              defaultSettings: const UpdateSettings.base(),
+              defaultSettings: defaultSettings,
             );
 
             return MapEntry(
@@ -100,8 +109,8 @@ class UpdateInterpolator {
       ),
     );
 
-    final text = UpdateTextContainer(interpolatedTextMap);
-    final settings = UpdateSettingsContainer(settingsMap);
+    final text = UpdateTextContainer(finalizedTextMap);
+    final settings = UpdateSettingsContainer(finalizedSettingsMap);
 
     return Release(
       version: releaseData.version,

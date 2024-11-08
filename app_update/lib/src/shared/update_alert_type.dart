@@ -28,7 +28,10 @@ enum UpdateAlertTypeBase {
   snackbar(UpdateAlertType.snackbar),
   card(UpdateAlertType.card),
   custom(UpdateAlertType.custom),
+
+  // Custom
   base(null),
+  all(null),
   ;
 
   const UpdateAlertTypeBase(this.type);

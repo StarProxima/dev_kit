@@ -37,7 +37,11 @@ enum VersionStatusBase {
   unsupported(VersionStatus.unsupported),
   deprecated(VersionStatus.deprecated),
   updatable(VersionStatus.updatable),
-  base(null);
+
+  // Custom
+  base(null),
+  all(null),
+  ;
 
   const VersionStatusBase(this.status);
 

@@ -155,7 +155,7 @@ releases:
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
-    settings:
+    text:
       release_notes: Improvements
     sources:
       - name: googlePlay
@@ -165,8 +165,9 @@ releases:
     sources: []
 
   - version: 1.2.0
-    settings:
+    text:
       release_notes: Improvements
+    settings:
       can_skip_release: true
     sources:
       - appStore
@@ -176,7 +177,7 @@ releases:
         platforms: [android]
         release:
           version: 1.2.1
-          settings:
+          text:
             title: RuStore Title
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
@@ -198,10 +199,11 @@ releases:
 
   - version: 0.2.4
     date: 2014-10-17 23:00:00Z
-    settings:
+    text:
       title: Title
       description: Description
       release_notes: Note
+    settings:
       can_skip_release: true
     sources:
       - name: googlePlay
@@ -220,16 +222,17 @@ releases:
                       can_skip_release: true
 
       - name: appStore
-        settings:
+        text:
           release_notes: note ios
         date: 2014-10-18 23:00:00
 
   - version: 0.2.6
     date: 2014-10-17 23:00:00
-    settings:
+    text:
       release_notes: Note
       title: Title
       description: Description
+    settings:
       can_skip_release: true
     sources:
       - name: googlePlay
@@ -237,7 +240,7 @@ releases:
         platforms: []
 
   - version: 0.2.5
-    settings:
+    text:
       title: Title
       description: Description
       release_notes: Note

@@ -38,7 +38,7 @@ class UpdateController extends UpdateControllerBase {
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
-  UpdateInterpolator? _interpolator;
+  UpdateFinalizer? _interpolator;
   SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
@@ -140,8 +140,8 @@ class UpdateController extends UpdateControllerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _interpolator ??= UpdateInterpolator(appName: appName, appVersion: appVersion);
-    final releases = _interpolator!.interpolateReleases(availableReleasesData);
+    _interpolator ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
+    final releases = _interpolator!.fializeReleases(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
 

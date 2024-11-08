@@ -1,7 +1,5 @@
-import '../../default_settings/translations/default_update_translations.dart';
-import '../../parser/models/update_text_config.dart';
+import '../../shared/update_text_container.dart';
 
-/// See aloso [DefaultUpdateTexts].
 class UpdateText {
   final String title;
   final String description;
@@ -21,18 +19,30 @@ class UpdateText {
     required this.updateButton,
   });
 
-  factory UpdateText.fromConfig(
-    UpdateTextConfig? config, {
+  factory UpdateText.fromData(
+    UpdateTextData? data, {
     required UpdateText defaultText,
   }) {
     return UpdateText(
-      title: config?.title ?? defaultText.title,
-      description: config?.description ?? defaultText.description,
-      releaseNotesTitle: config?.releaseNotesTitle ?? defaultText.releaseNotesTitle,
-      releaseNotes: config?.releaseNotes ?? defaultText.releaseNotes,
-      skipButton: config?.skipButton ?? defaultText.skipButton,
-      laterButton: config?.laterButton ?? defaultText.laterButton,
-      updateButton: config?.updateButton ?? defaultText.updateButton,
+      title: data?.title ?? defaultText.title,
+      description: data?.description ?? defaultText.description,
+      releaseNotesTitle: data?.releaseNotesTitle ?? defaultText.releaseNotesTitle,
+      releaseNotes: data?.releaseNotes ?? defaultText.releaseNotes,
+      skipButton: data?.skipButton ?? defaultText.skipButton,
+      laterButton: data?.laterButton ?? defaultText.laterButton,
+      updateButton: data?.updateButton ?? defaultText.updateButton,
+    );
+  }
+
+  UpdateText merge(UpdateTextData? data) {
+    return UpdateText(
+      title: data?.title ?? title,
+      description: data?.description ?? description,
+      releaseNotesTitle: data?.releaseNotesTitle ?? releaseNotesTitle,
+      releaseNotes: data?.releaseNotes ?? releaseNotes,
+      skipButton: data?.skipButton ?? skipButton,
+      laterButton: data?.laterButton ?? laterButton,
+      updateButton: data?.updateButton ?? updateButton,
     );
   }
 

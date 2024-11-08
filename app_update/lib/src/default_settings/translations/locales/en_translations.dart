@@ -7,8 +7,8 @@ import '../../../shared/update_alert_type.dart';
 import '../../../shared/version_status.dart';
 import '../default_update_text_container.dart';
 
-class RuUpdateTranslations extends UpdateTranslations {
-  const RuUpdateTranslations();
+class EnUpdateTranslations extends UpdateTranslations {
+  const EnUpdateTranslations();
 
   @override
   Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateText>> translations() {
