@@ -3,9 +3,9 @@
 import 'dart:async';
 import 'dart:ui';
 
-import '../interpolator/models/app_update.dart';
-import '../interpolator/models/release.dart';
-import '../interpolator/models/update_config.dart';
+import '../finalizer/models/app_update.dart';
+import '../finalizer/models/release.dart';
+import '../finalizer/models/update_config.dart';
 import 'exceptions.dart';
 
 abstract class UpdateControllerBase {

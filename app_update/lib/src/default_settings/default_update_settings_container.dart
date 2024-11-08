@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-missing-enum-constant-in-map
 
-import '../interpolator/models/update_settings.dart';
+import '../finalizer/models/update_settings.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_settings_container.dart';
 import '../shared/version_status.dart';

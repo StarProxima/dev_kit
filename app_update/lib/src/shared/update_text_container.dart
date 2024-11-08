@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
 import 'dart:ui';
 
-import '../interpolator/models/update_texts.dart';
+import '../finalizer/models/update_texts.dart';
 import '../parser/models/update_text_config.dart';
 import 'update_alert_type.dart';
 import 'version_status.dart';

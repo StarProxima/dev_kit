@@ -2,7 +2,7 @@
 
 import 'dart:ui';
 
-import '../../interpolator/models/update_texts.dart';
+import '../../finalizer/models/update_texts.dart';
 import '../../shared/update_alert_type.dart';
 import '../../shared/update_text_container.dart';
 import '../../shared/version_status.dart';

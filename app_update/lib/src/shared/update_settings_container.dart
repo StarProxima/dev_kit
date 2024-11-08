@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
 import '../linker/models/release_settings_data.dart';
-import '../interpolator/models/update_settings.dart';
+import '../finalizer/models/update_settings.dart';
 import '../parser/models/release_settings_config.dart';
 import 'version_status.dart';
 import 'update_alert_type.dart';

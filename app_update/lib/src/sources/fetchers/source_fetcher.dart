@@ -5,7 +5,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../interpolator/models/release.dart';
+import '../../finalizer/models/release.dart';
 import '../source.dart';
 import 'app_store_fetcher.dart';
 import 'google_play_fetcher.dart';
