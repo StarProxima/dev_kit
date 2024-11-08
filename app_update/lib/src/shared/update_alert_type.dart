@@ -31,7 +31,6 @@ enum UpdateAlertTypeBase {
 
   // Custom
   base(null),
-  all(null),
   ;
 
   const UpdateAlertTypeBase(this.type);

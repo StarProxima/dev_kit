@@ -15,7 +15,7 @@ class ReleasePlatformParser {
     if (value is! Map<String, dynamic>) {
       // Short syntax
       if (value is String) {
-        return ReleasePlatformConfig(
+        return ReleasePlatformConfig.byRequired(
           platform: UpdatePlatform(value),
           source: null,
           customData: null,
@@ -42,7 +42,7 @@ class ReleasePlatformParser {
       isOverride: true,
     );
 
-    return ReleasePlatformConfig(
+    return ReleasePlatformConfig.byRequired(
       platform: name,
       source: source,
       customData: map,

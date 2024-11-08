@@ -72,7 +72,7 @@ class GlobalSourceParser {
       isDebug: isDebug,
     );
 
-    return GlobalSourceConfig(
+    return GlobalSourceConfig.byRequired(
       name: name,
       url: url,
       platforms: platforms,

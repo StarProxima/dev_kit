@@ -88,7 +88,7 @@ class UpdateConfigParser {
         .whereType<ReleaseConfig>()
         .toList();
 
-    return UpdateConfigModel(
+    return UpdateConfigModel.byRequired(
       text: text,
       settings: updateSettings,
       versionSettings: versionSettings,

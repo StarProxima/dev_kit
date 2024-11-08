@@ -1,14 +1,22 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
 
 import 'package:app_update/src/controller/update_controller.dart';
-import 'package:app_update/src/shared/version_status.dart';
+import 'package:app_update/src/parser/models/release_settings_config.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
+import 'package:app_update/src/shared/update_settings_container.dart';
+import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
-  final controller = UpdateController();
+  final controller = UpdateController(
+    updateSettings: const UpdateSettingsConfigContainer({
+      UpdateAlertTypeBase.base: {
+        VersionStatusBase.base: UpdateSettingsConfig.byRequired(),
+      },
+    }),
+  );
 
   await controller.fetchUpdateConfig();
 

@@ -40,7 +40,6 @@ enum VersionStatusBase {
 
   // Custom
   base(null),
-  all(null),
   ;
 
   const VersionStatusBase(this.status);

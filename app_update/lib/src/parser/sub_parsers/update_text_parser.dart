@@ -66,7 +66,7 @@ class UpdateTextParser {
       isDebug: isDebug,
     );
 
-    return UpdateTextConfig(
+    return UpdateTextConfig.byRequired(
       title: title,
       description: description,
       releaseNotesTitle: releaseNotesTitle,

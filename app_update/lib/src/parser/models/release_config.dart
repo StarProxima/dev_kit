@@ -13,6 +13,15 @@ class ReleaseConfig {
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({
+    this.version,
+    this.date,
+    this.text,
+    this.settings,
+    this.sources,
+    this.customData,
+  });
+
+  const ReleaseConfig.byRequired({
     required this.version,
     required this.date,
     required this.text,

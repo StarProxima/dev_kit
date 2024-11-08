@@ -15,6 +15,9 @@ class UpdateFinalizer {
   final String appName;
   final Version appVersion;
 
+  static final _defaulUpdateTextContainer = DefaultUpdateTextContainer();
+  static final _defaultSettingsContainer = DefaultUpdateSettingsContainer();
+
   const UpdateFinalizer({
     required this.appName,
     required this.appVersion,
@@ -23,8 +26,6 @@ class UpdateFinalizer {
   List<Release> fializeReleases(List<ReleaseData> releases) {
     return releases.map(finalizeRelease).toList();
   }
-
-  static final _defaulUpdateTextContainer = DefaultUpdateTextContainer();
 
   Release finalizeRelease(ReleaseData releaseData) {
     // TODO: Оптимизировать, проходясь одной регуркой?
@@ -86,14 +87,15 @@ class UpdateFinalizer {
       ),
     );
 
-    final defaultSettingsContainer = DefaultUpdateSettingsContainer();
-
     final finalizedSettingsMap = releaseData.settings.value.map(
       (alertType, value) => MapEntry(
         alertType,
         value.map(
           (status, settings) {
-            final defaultSettings = defaultSettingsContainer.getByRaw(type: alertType, status: status);
+            final defaultSettings = _defaultSettingsContainer.getByRaw(
+              type: alertType,
+              status: status,
+            );
 
             final updateSettings = UpdateSettings.fromData(
               settings,

@@ -72,7 +72,7 @@ class ReleaseParser {
           .whereType<ReleaseSourceConfig>()
           .toList();
 
-      return ReleaseConfig(
+      return ReleaseConfig.byRequired(
         version: version,
         date: date,
         text: text,

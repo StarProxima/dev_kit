@@ -13,6 +13,15 @@ class UpdateConfigModel {
   final Map<String, dynamic>? customData;
 
   const UpdateConfigModel({
+    this.text,
+    this.settings,
+    this.versionSettings,
+    this.sources,
+    this.releases = const [],
+    this.customData,
+  });
+
+  const UpdateConfigModel.byRequired({
     required this.text,
     required this.settings,
     required this.versionSettings,

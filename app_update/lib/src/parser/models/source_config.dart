@@ -14,6 +14,16 @@ class GlobalSourceConfig {
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({
+    this.name,
+    this.url,
+    this.platforms,
+    this.text,
+    this.settings,
+    this.versionSettings,
+    this.customData,
+  });
+
+  const GlobalSourceConfig.byRequired({
     required this.name,
     required this.url,
     required this.platforms,
@@ -32,6 +42,14 @@ class ReleaseSourceConfig {
   final Map<String, dynamic>? customData;
 
   const ReleaseSourceConfig({
+    this.name,
+    this.url,
+    this.platforms,
+    this.release,
+    this.customData,
+  });
+
+  const ReleaseSourceConfig.byRequired({
     required this.name,
     required this.url,
     required this.platforms,

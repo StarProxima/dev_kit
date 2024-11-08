@@ -9,6 +9,17 @@ class UpdateTextConfig {
   final Map<String, dynamic>? customData;
 
   const UpdateTextConfig({
+    this.title,
+    this.description,
+    this.releaseNotesTitle,
+    this.releaseNotes,
+    this.skipButton,
+    this.laterButton,
+    this.updateButton,
+    this.customData,
+  });
+
+  const UpdateTextConfig.byRequired({
     required this.title,
     required this.description,
     required this.releaseNotesTitle,
@@ -22,7 +33,7 @@ class UpdateTextConfig {
   UpdateTextConfig merge(UpdateTextConfig? data) {
     final customData = {...?this.customData, ...?data?.customData};
 
-    return UpdateTextConfig(
+    return UpdateTextConfig.byRequired(
       title: data?.title ?? title,
       description: data?.description ?? description,
       releaseNotesTitle: data?.releaseNotesTitle ?? releaseNotesTitle,

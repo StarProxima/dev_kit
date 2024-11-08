@@ -54,7 +54,7 @@ class UpdateSettingsParser {
       isDebug: isDebug,
     );
 
-    return UpdateSettingsConfig(
+    return UpdateSettingsConfig.byRequired(
       canSkipRelease: canSkipRelease,
       canPostponeRelease: canPostponeRelease,
       reminderPeriod: reminderPeriod,
