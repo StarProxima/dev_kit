@@ -15,8 +15,8 @@ import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../finalizer/update_finalizer.dart';
 import '../finder/update_finder.dart';
-import '../linker/models/release_data.dart';
 import '../linker/update_config_linker.dart';
+import '../parser/models/release_config.dart';
 import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
@@ -53,7 +53,7 @@ class UpdateController extends UpdateControllerBase {
   final Source? _defaultSource;
 
   Completer<UpdateConfigModel>? _updateConfigModelCompleter;
-  Completer<List<ReleaseData>>? _sourceReleasesDataFromFetchersCompleter;
+  Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
 
@@ -106,17 +106,17 @@ class UpdateController extends UpdateControllerBase {
   Future<void> fetchGlobalSourceReleases({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
-    _sourceReleasesDataFromFetchersCompleter = Completer();
+    _sourceReleasesConfigFromFetchersCompleter = Completer();
 
     final packageInfo = await _asyncPackageInfo;
-    final releases = <ReleaseData>[];
+    final releases = <ReleaseConfig>[];
     for (final source in _globalSources ?? []) {
       final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
       if (releaseFromSource != null) releases.add(releaseFromSource);
     }
 
-    _sourceReleasesDataFromFetchersCompleter!.complete(releases);
+    _sourceReleasesConfigFromFetchersCompleter!.complete(releases);
   }
 
   @override
@@ -130,21 +130,20 @@ class UpdateController extends UpdateControllerBase {
     final appVersion = Version.parse(packageInfo.version);
     final appName = packageInfo.appName;
 
+    if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases();
+    final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
+
     final releasesData = _linker.linkConfigs(
       globalSettingsConfig: _updateSettings ?? configModel.settings,
-      releasesConfig: configModel.releases,
+      releasesConfig: [...configModel.releases, ...releasesFromSources],
       globalSourcesConfig: configModel.sources,
     );
 
     final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
+    sources.addAll([...?_globalSources]);
 
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
-
-    if (_sourceReleasesDataFromFetchersCompleter == null) await fetchGlobalSourceReleases();
-    final releasesFromSources = await _sourceReleasesDataFromFetchersCompleter!.future;
-    availableReleasesData.addAll(releasesFromSources);
-    sources.addAll([...?_globalSources]);
 
     _interpolator ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
     final releases = _interpolator!.fializeReleases(availableReleasesData);

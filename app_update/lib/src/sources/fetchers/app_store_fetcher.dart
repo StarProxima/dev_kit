@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../linker/models/release_data.dart';
+import '../../parser/models/release_config.dart';
+import '../../parser/models/source_config.dart';
 import '../../parser/models/update_text_config.dart';
 import '../../shared/update_settings_container.dart';
 import '../../shared/update_text_container.dart';
@@ -25,7 +26,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
   const AppStoreFetcher();
 
   @override
-  Future<ReleaseData?> fetch({
+  Future<ReleaseConfig?> fetch({
     required Source source,
     required Locale locale,
     required PackageInfo packageInfo,
@@ -45,12 +46,11 @@ class AppStoreFetcher extends SourceReleaseFetcher {
       releaseNotes: releaseNotes,
     );
 
-    return ReleaseData(
+    return ReleaseConfig(
       version: sourceVersion,
-      source: Source.appStore(url: url),
-      date: null,
       text: UpdateTextConfigContainer.fromUpdateTextConfig(updateTextConfig),
-      settings: const UpdateSettingsDataContainer({}),
+      settings: const UpdateSettingsConfigContainer({}),
+      sources: [const ReleaseSourceConfig(name: 'appStore')],
       customData: {},
     );
   }
