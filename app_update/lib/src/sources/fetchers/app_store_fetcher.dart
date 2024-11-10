@@ -10,10 +10,10 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../finalizer/models/update_settings.dart';
-import '../../finalizer/models/update_texts.dart';
 import '../../linker/models/release_data.dart';
+import '../../parser/models/update_text_config.dart';
 import '../../shared/update_settings_container.dart';
+import '../../shared/update_text_container.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
 
@@ -44,29 +44,16 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     final releaseNotes = _releaseNotes(decodedResults);
     final sourceVersion = _version(decodedResults);
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
-    
-    // TODO переписать когда выделятся текста
-    final defaultTexts = ;
-    final settings = UpdateSettings.availableUpdate(
-      translations: UpdateTranslations(
-        {
-          locale: UpdateTexts(
-            title: defaultTexts.title,
-            description: defaultTexts.description,
-            releaseNotesTitle: defaultTexts.releaseNotesTitle,
-            releaseNotes: releaseNotes ?? defaultTexts.releaseNotes,
-            skipButtonText: defaultTexts.skipButtonText,
-            laterButtonText: defaultTexts.laterButtonText,
-            updateButtonText: defaultTexts.updateButtonText,
-          ),
-        },
-      ),
+
+    final updateTextConfig = UpdateTextConfig(
+      releaseNotes: releaseNotes,
     );
 
     return ReleaseData(
       version: sourceVersion,
       source: Source.appStore(url: url),
       date: null,
+      text: UpdateTextConfigContainer.fromUpdateTextConfig(updateTextConfig),
       settings: const UpdateSettingsDataContainer({}),
       customData: {},
     );

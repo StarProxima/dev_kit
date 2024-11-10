@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
+// ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods, avoid-missing-enum-constant-in-map
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -12,6 +12,13 @@ class UpdateTextConfigContainer {
   final Map<Locale, Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextConfig>>> value;
 
   const UpdateTextConfigContainer(this.value);
+
+  UpdateTextConfigContainer.fromUpdateTextConfig(UpdateTextConfig config)
+      : value = {
+          const Locale('base'): {
+            UpdateAlertTypeBase.base: {VersionStatusBase.base: config},
+          },
+        };
 
   @visibleForTesting
   UpdateTextConfig? getBy({
