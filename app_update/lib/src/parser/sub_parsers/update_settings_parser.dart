@@ -3,7 +3,6 @@
 part of '../update_config_parser.dart';
 
 class UpdateSettingsParser {
-  SettingsTranslationsParser get _settingsTranslationsParser => const SettingsTranslationsParser();
   DurationParser get _durationParser => const DurationParser();
   BoolParser get _boolParser => const BoolParser();
 
@@ -55,14 +54,7 @@ class UpdateSettingsParser {
       isDebug: isDebug,
     );
 
-    // translations
-    final translations = _settingsTranslationsParser.parse(
-      value,
-      isDebug: isDebug,
-    );
-
-    return UpdateSettingsConfig(
-      translations: translations,
+    return UpdateSettingsConfig.byRequired(
       canSkipRelease: canSkipRelease,
       canPostponeRelease: canPostponeRelease,
       reminderPeriod: reminderPeriod,

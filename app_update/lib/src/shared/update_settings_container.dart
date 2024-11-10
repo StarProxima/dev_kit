@@ -1,45 +1,52 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
+
+import 'package:flutter/widgets.dart';
+
+import '../finalizer/models/update_settings.dart';
 import '../linker/models/release_settings_data.dart';
-import '../interpolator/models/update_settings.dart';
 import '../parser/models/release_settings_config.dart';
-import 'version_status.dart';
 import 'update_alert_type.dart';
+import 'version_status.dart';
 
-// TODO тут миксин не надо бы применить?
+typedef RawUpdateSettingsContainer<T> = Map<UpdateAlertTypeBase, Map<VersionStatusBase, T>>;
+
 class UpdateSettingsConfigContainer {
-  final Map<String, Map<String, UpdateSettingsConfig>> _value;
+  final RawUpdateSettingsContainer<UpdateSettingsConfig> value;
 
-  const UpdateSettingsConfigContainer(this._value);
+  const UpdateSettingsConfigContainer(this.value);
 
+  @visibleForTesting
   UpdateSettingsConfig? getBy({
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
-      getByRaw(type: type.name, status: status.name);
+      getByBase(
+        type: type.toBase(),
+        status: status.toBase(),
+      );
 
-  UpdateSettingsConfig? getByRaw({
-    required String type,
-    required String status,
+  @visibleForTesting
+  UpdateSettingsConfig? getByBase({
+    required UpdateAlertTypeBase type,
+    required VersionStatusBase status,
   }) {
-    final byType = _value[type] ?? _value['base'];
-    final byStatus = byType?[status] ?? byType?['base'];
+    final byType = value[type] ?? value[UpdateAlertTypeBase.base];
+    final byStatus = byType?[status] ?? byType?[VersionStatusBase.base];
 
     return byStatus;
   }
 }
 
 // TODO разнести бы их по файлам отдельным
-class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
-  @override
-  final Map<String, Map<String, UpdateSettingsData>> _value;
+class UpdateSettingsDataContainer {
+  final RawUpdateSettingsContainer<UpdateSettingsData> value;
 
-  Map<String, Map<String, UpdateSettingsData>> get value => _value;
-
-  const UpdateSettingsDataContainer(this._value);
+  const UpdateSettingsDataContainer(this.value);
 
   factory UpdateSettingsDataContainer.fromConfig(UpdateSettingsConfigContainer? config) {
     return UpdateSettingsDataContainer(
-      config?._value.map(
+      // ignore: avoid-missing-enum-constant-in-map
+      config?.value.map(
             (key, value) => MapEntry(
               key,
               value.map(
@@ -51,7 +58,10 @@ class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
             ),
           ) ??
           {
-            'base': {'base': UpdateSettingsData.fromConfig(null)},
+            // ignore: avoid-missing-enum-constant-in-map
+            UpdateAlertTypeBase.base: {
+              VersionStatusBase.base: UpdateSettingsData.fromConfig(null),
+            },
           },
     );
   }
@@ -78,30 +88,29 @@ class UpdateSettingsDataContainer with GetByMixin<UpdateSettingsData> {
   }
 }
 
-class UpdateSettingsContainer with GetByMixin<UpdateSettings> {
-  @override
-  final Map<String, Map<String, UpdateSettings>> _value;
+class UpdateSettingsContainer {
+  final RawUpdateSettingsContainer<UpdateSettings> value;
 
-  const UpdateSettingsContainer(this._value);
-}
+  const UpdateSettingsContainer(this.value);
 
-mixin GetByMixin<T> {
-  abstract final Map<String, Map<String, T>> _value;
-
-  T getBy({
+  UpdateSettings getBy({
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
-      getByRaw(type: type.name, status: status.name);
+      getByRaw(
+        type: type.toBase(),
+        status: status.toBase(),
+      );
 
-  T getByRaw({
-    required String type,
-    required String status,
+  UpdateSettings getByRaw({
+    required UpdateAlertTypeBase type,
+    required VersionStatusBase status,
   }) {
-    final byType = _value[type] ?? _value['base'];
+    final byType = value[type] ?? value[UpdateAlertTypeBase.base];
     if (byType == null) throw Exception();
 
-    final byStatus = byType[status] ?? byType['base'];
+    final byStatus =
+        byType[status] ?? byType[VersionStatusBase.base] ?? value[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
     if (byStatus == null) throw Exception();
 
     return byStatus;

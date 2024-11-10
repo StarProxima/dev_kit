@@ -1,12 +1,14 @@
 import 'package:pub_semver/pub_semver.dart';
 
 import '../../shared/update_settings_container.dart';
+import '../../shared/update_text_container.dart';
 import '../../sources/source.dart';
 
 class Release {
   final Version version;
   final Source source;
   final DateTime? date;
+  final UpdateTextContainer text;
   final UpdateSettingsContainer settings;
   final Map<String, dynamic>? customData;
 
@@ -14,6 +16,7 @@ class Release {
     required this.version,
     required this.source,
     required this.date,
+    required this.text,
     required this.settings,
     required this.customData,
   });

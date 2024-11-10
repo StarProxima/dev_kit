@@ -9,6 +9,12 @@ class GlobalPlatformConfig {
 
   const GlobalPlatformConfig({
     required this.platform,
+    this.source,
+    this.customData,
+  });
+
+  const GlobalPlatformConfig.byRequired({
+    required this.platform,
     required this.source,
     required this.customData,
   });
@@ -23,5 +29,11 @@ class ReleasePlatformConfig {
     required this.platform,
     required this.source,
     required this.customData,
+  });
+
+  const ReleasePlatformConfig.byRequired({
+    required this.platform,
+    this.source,
+    this.customData,
   });
 }

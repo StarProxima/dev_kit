@@ -12,10 +12,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_config_linker.dart';
-import '../interpolator/models/app_update.dart';
-import '../interpolator/models/release.dart';
-import '../interpolator/models/update_config.dart';
-import '../interpolator/update_interpolator.dart';
+import '../finalizer/models/app_update.dart';
+import '../finalizer/models/release.dart';
+import '../finalizer/models/update_config.dart';
+import '../finalizer/update_finalizer.dart';
 import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
@@ -38,7 +38,7 @@ class UpdateController extends UpdateControllerBase {
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
-  UpdateInterpolator? _interpolator;
+  UpdateFinalizer? _interpolator;
   SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
@@ -140,8 +140,8 @@ class UpdateController extends UpdateControllerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _interpolator ??= UpdateInterpolator(appName: appName, appVersion: appVersion);
-    final releases = _interpolator!.interpolateReleases(availableReleasesData);
+    _interpolator ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
+    final releases = _interpolator!.fializeReleases(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
 

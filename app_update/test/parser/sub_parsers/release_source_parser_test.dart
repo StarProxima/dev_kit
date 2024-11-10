@@ -3,6 +3,8 @@
 import 'package:app_update/src/parser/models/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
+import 'package:app_update/src/shared/update_alert_type.dart';
+import 'package:app_update/src/shared/version_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -22,14 +24,14 @@ void main() {
       expect(result?.release, isNull);
     });
 
-    test('parses full syntax with name, url, and release settings', () {
+    test('parses full syntax with name, url, and release text', () {
       final value = {
         'name': 'ruStore',
         'url': 'https://www.example.com',
         'platforms': ['android'],
         'release': {
           'version': '1.2.1',
-          'settings': {'title': 'RuStore Title'},
+          'text': {'title': 'RuStore Title'},
         },
       };
 
@@ -41,11 +43,13 @@ void main() {
       expect(result?.platforms?.firstOrNull?.platform.name, 'android');
       expect(result?.release?.version?.toString(), '1.2.1');
       expect(
-        result?.release?.settings
-            ?.getByRaw(type: 'base', status: 'base')
-            ?.translations
-            ?.title
-            ?.byLocale(kAppUpdateDefaultLocale),
+        result?.release?.text
+            ?.getByBase(
+              type: UpdateAlertTypeBase.base,
+              status: VersionStatusBase.base,
+              locale: kAppUpdateDefaultLocale,
+            )
+            ?.title,
         'RuStore Title',
       );
     });
@@ -66,7 +70,7 @@ void main() {
               'url': 'https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip',
               'release': {
                 'date': '2014-10-20 13:00:00',
-                'settings': {'release_notes': 'Windows Github release notes'},
+                'text': {'release_notes': 'Windows Github release notes'},
               },
             },
           },
@@ -95,11 +99,13 @@ void main() {
 
       final platformSourceRelease = windowsPlatform?.source?.release;
       expect(
-        platformSourceRelease?.settings
-            ?.getByRaw(type: 'base', status: 'base')
-            ?.translations
-            ?.releaseNotes
-            ?.byLocale(kAppUpdateDefaultLocale),
+        platformSourceRelease?.text
+            ?.getByBase(
+              type: UpdateAlertTypeBase.base,
+              status: VersionStatusBase.base,
+              locale: kAppUpdateDefaultLocale,
+            )
+            ?.releaseNotes,
         'Windows Github release notes',
       );
       expect(

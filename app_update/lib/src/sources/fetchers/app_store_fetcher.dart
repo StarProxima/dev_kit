@@ -10,8 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../interpolator/models/update_settings.dart';
-import '../../interpolator/models/update_texts.dart';
+import '../../finalizer/models/update_settings.dart';
+import '../../finalizer/models/update_texts.dart';
 import '../../linker/models/release_data.dart';
 import '../../shared/update_settings_container.dart';
 import '../source.dart';

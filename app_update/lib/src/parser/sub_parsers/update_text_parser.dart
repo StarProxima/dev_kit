@@ -1,12 +1,12 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 part of '../update_config_parser.dart';
 
-class SettingsTranslationsParser {
-  TextTranslationsParser get _textParser => const TextTranslationsParser();
+class UpdateTextParser {
+  StringParser get _stringParser => const StringParser();
 
-  const SettingsTranslationsParser();
+  const UpdateTextParser();
 
-  UpdateTranslationsData? parse(
+  UpdateTextConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
@@ -19,61 +19,62 @@ class SettingsTranslationsParser {
 
     // title
     final titleValue = value.remove('title');
-    final title = _textParser.parse(
+    final title = _stringParser.parse(
       titleValue,
       isDebug: isDebug,
     );
 
     // description
     final descriptionValue = value.remove('description');
-    final description = _textParser.parse(
+    final description = _stringParser.parse(
       descriptionValue,
       isDebug: isDebug,
     );
 
     // releaseNotesTitle
     final releaseNotesTitleValue = value.remove('release_note_title');
-    final releaseNotesTitle = _textParser.parse(
+    final releaseNotesTitle = _stringParser.parse(
       releaseNotesTitleValue,
       isDebug: isDebug,
     );
 
     // releaseNotes
     final releaseNotesValue = value.remove('release_notes');
-    final releaseNotes = _textParser.parse(
+    final releaseNotes = _stringParser.parse(
       releaseNotesValue,
       isDebug: isDebug,
     );
 
-    // skipButtonText
-    final skipButtonTextValue = value.remove('skip_button_text');
-    final skipButtonText = _textParser.parse(
-      skipButtonTextValue,
+    // skipButton
+    final skipButtonValue = value.remove('skip_button');
+    final skipButton = _stringParser.parse(
+      skipButtonValue,
       isDebug: isDebug,
     );
 
-    // laterButtonText
-    final laterButtonTextValue = value.remove('later_button_text');
-    final laterButtonText = _textParser.parse(
-      laterButtonTextValue,
+    // laterButton
+    final laterButtonValue = value.remove('later_button');
+    final laterButton = _stringParser.parse(
+      laterButtonValue,
       isDebug: isDebug,
     );
 
-    // updateButtonText
-    final updateButtonTextValue = value.remove('update_button_text');
-    final updateButtonText = _textParser.parse(
-      updateButtonTextValue,
+    // updateButton
+    final updateButtonValue = value.remove('update_button');
+    final updateButton = _stringParser.parse(
+      updateButtonValue,
       isDebug: isDebug,
     );
 
-    return UpdateTranslationsData(
+    return UpdateTextConfig.byRequired(
       title: title,
       description: description,
       releaseNotesTitle: releaseNotesTitle,
       releaseNotes: releaseNotes,
-      skipButtonText: skipButtonText,
-      laterButtonText: laterButtonText,
-      updateButtonText: updateButtonText,
+      skipButton: skipButton,
+      laterButton: laterButton,
+      updateButton: updateButton,
+      customData: value,
     );
   }
 }

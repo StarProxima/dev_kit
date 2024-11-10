@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../controller/exceptions.dart';
-import '../interpolator/models/release.dart';
+import '../finalizer/models/release.dart';
 import '../shared/update_platform.dart';
 import '../sources/source.dart';
 

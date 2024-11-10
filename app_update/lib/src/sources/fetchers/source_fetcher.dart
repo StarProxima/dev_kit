@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../finalizer/models/release.dart';
 import '../../linker/models/release_data.dart';
 import '../source.dart';
 import 'app_store_fetcher.dart';
