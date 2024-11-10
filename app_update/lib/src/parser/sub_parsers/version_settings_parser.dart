@@ -51,7 +51,7 @@ class VersionSettingsParser {
         .whereType<VersionConstraint>()
         .toList();
 
-    return VersionSettingsConfig(
+    return VersionSettingsConfig.byRequired(
       unsupportedVersions: unsupportedVersions,
       deprecatedVersions: deprecatedVersions,
     );

@@ -1,19 +1,89 @@
+text:
+  base:
+    base:
+      en:
+        title: Update App 
+        description: Description
+      ru:
+        title: Обновите приложение
+        description: Описание
+
+    unsupported:
+      title:
+  card:
+    base:
+     ru:
+      title: Обновите приложение
+      description: Описание
+
+text_0:
+  title: Title
+
+text_1:
+  ru:
+    title: Title
+  en:
+    title: Title
+
+
+text_2:
+  base:
+    ru:
+      title: Title
+    en:
+      title: Title
+  unsupported:
+    ru:
+      title: Title
+
+text_3:
+  base:
+    base:
+      ru:
+        title: Title
+      en:
+        title: Title
+    unsupported:
+      ru:
+        title: Title
+  card:
+    title: Title
+
+text_999:
+  ru:
+    unsupported:
+      dialog:
+        title: Title
+  en:
+    dialog:
+      unsupported:
+        title: Title
+  fr:
+    dialog:
+      title: Title
+
+  es:
+    unsupported:
+      title: Title
+  
+  ch:
+    title: Title
+
+text:
+  card:
+    unsupported:
+      title: Title 2
+
+  
 settings:
   base:
     can_skip_release: true
-    update_button_text: Go to Store
   dialog:
     unsupported:
-      title: title
-      description: description
       can_skip_release: true
     updatable:
-      title: title
-      description: description
       can_skip_release: true
   card:
-    title: title
-    description: description
     can_skip_release: true
 
 version_settings:
@@ -36,7 +106,7 @@ sources:
   - name: ruStore
     url: https://example.com
 
-    settings:
+    text:
       title: Title
     version_settings:
       unsupported_versions: ["<=4.2.0"]
@@ -48,7 +118,7 @@ sources:
       - name: android
         source:
           url: https://example.com/android
-          settings:
+          text:
             title: Title
           version_settings:
             deprecated_versions: [">5.6.0 <5.6.7"]
@@ -64,13 +134,14 @@ sources:
 releases:
   - version: 0.3.7
     date: "2024-08-24 15:35:00"
-    settings:
+    text:
       release_notes: |-
         # Big update!
         [click](https://example.com) - full changelog.
         ### Short notes
         - Added bugs
         - Fixed features
+    settings:
       can_skip_release: true
       reminder_period_hours: 48
       release_delay_hours: 48
@@ -84,13 +155,13 @@ releases:
           platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
-    settings:
+    text:
       release_notes: Minor Improvements
     sources: []
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
-    settings:
+    text:
       release_notes: Improvements
     sources:
       - name: googlePlay
@@ -100,8 +171,9 @@ releases:
     sources: []
 
   - version: 1.2.0
-    settings:
+    text:
       release_notes: Improvements
+    settings:
       can_skip_release: true
     sources:
       - appStore
@@ -111,7 +183,7 @@ releases:
         platforms: [android]
         release:
           version: 1.2.1
-          settings:
+          text:
             title: RuStore Title
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
@@ -124,16 +196,20 @@ releases:
             source:
               url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
               release:
+                text:
+                  ru:
+                    release_notes: Windows Github release notes
                 settings:
-                  release_notes: Windows Github release notes
+                  can_skip_release: false
        
 
   - version: 0.2.4
-    date: 2014-10-17 23:00:00
-    settings:
+    date: 2014-10-17 23:00:00Z
+    text:
       title: Title
       description: Description
       release_notes: Note
+    settings:
       can_skip_release: true
     sources:
       - name: googlePlay
@@ -152,16 +228,17 @@ releases:
                       can_skip_release: true
 
       - name: appStore
-        settings:
+        text:
           release_notes: note ios
         date: 2014-10-18 23:00:00
 
   - version: 0.2.6
     date: 2014-10-17 23:00:00
-    settings:
+    text:
       release_notes: Note
       title: Title
       description: Description
+    settings:
       can_skip_release: true
     sources:
       - name: googlePlay
@@ -169,10 +246,15 @@ releases:
         platforms: []
 
   - version: 0.2.5
-    settings:
+    text:
       title: Title
       description: Description
       release_notes: Note
     sources:
       - googlePlay
       - name: appStore
+        platforms: ['ios']
+    
+
+
+      

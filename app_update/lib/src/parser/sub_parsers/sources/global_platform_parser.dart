@@ -15,7 +15,7 @@ class GlobalPlatformParser {
     if (value is! Map<String, dynamic>) {
       // Short syntax
       if (value is String) {
-        return GlobalPlatformConfig(
+        return GlobalPlatformConfig.byRequired(
           platform: UpdatePlatform(value),
           source: null,
           customData: null,
@@ -42,7 +42,7 @@ class GlobalPlatformParser {
       isOverride: true,
     );
 
-    return GlobalPlatformConfig(
+    return GlobalPlatformConfig.byRequired(
       platform: name,
       source: source,
       customData: map,

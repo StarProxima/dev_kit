@@ -1,4 +1,5 @@
 import '../../shared/update_settings_container.dart';
+import '../../shared/update_text_container.dart';
 import 'platform_config.dart';
 import 'release_config.dart';
 import 'versions_settings_config.dart';
@@ -7,14 +8,26 @@ class GlobalSourceConfig {
   final String? name;
   final Uri? url;
   final List<GlobalPlatformConfig>? platforms;
+  final UpdateTextConfigContainer? text;
   final UpdateSettingsConfigContainer? settings;
   final VersionSettingsConfig? versionSettings;
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({
+    this.name,
+    this.url,
+    this.platforms,
+    this.text,
+    this.settings,
+    this.versionSettings,
+    this.customData,
+  });
+
+  const GlobalSourceConfig.byRequired({
     required this.name,
     required this.url,
     required this.platforms,
+    required this.text,
     required this.settings,
     required this.versionSettings,
     required this.customData,
@@ -29,6 +42,14 @@ class ReleaseSourceConfig {
   final Map<String, dynamic>? customData;
 
   const ReleaseSourceConfig({
+    this.name,
+    this.url,
+    this.platforms,
+    this.release,
+    this.customData,
+  });
+
+  const ReleaseSourceConfig.byRequired({
     required this.name,
     required this.url,
     required this.platforms,

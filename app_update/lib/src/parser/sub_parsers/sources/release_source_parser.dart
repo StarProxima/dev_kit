@@ -16,7 +16,7 @@ class ReleaseSourceParser {
     // short string syntax
     if (value is! Map<String, dynamic>) {
       if (value is String) {
-        return ReleaseSourceConfig(
+        return ReleaseSourceConfig.byRequired(
           name: value,
           url: null,
           platforms: null,
@@ -72,7 +72,7 @@ class ReleaseSourceParser {
     final releaseValue = map.remove('release');
     final release = _releaseParser.parse(releaseValue, isDebug: isDebug, isOverride: true);
 
-    return ReleaseSourceConfig(
+    return ReleaseSourceConfig.byRequired(
       name: name,
       url: url,
       platforms: platforms,

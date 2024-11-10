@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 // ignore: prefer-static-class
 const kAppUpdateDefaultLocale = Locale('en');
 
+// ignore: prefer-static-class
+const kBaseLocale = Locale('base');
+
 @immutable
 class TextTranslations {
   final Map<Locale, String> value;

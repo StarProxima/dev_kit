@@ -1,7 +1,4 @@
-import 'settings_translations.dart';
-
 class UpdateSettingsConfig {
-  final UpdateTranslationsData? translations;
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
   final Duration? reminderPeriod;
@@ -10,7 +7,6 @@ class UpdateSettingsConfig {
   final Map<String, dynamic>? customData;
 
   bool get isEmpty =>
-      translations == null &&
       canSkipRelease == null &&
       canPostponeRelease == null &&
       reminderPeriod == null &&
@@ -18,7 +14,15 @@ class UpdateSettingsConfig {
       progressiveRolloutDuration == null;
 
   const UpdateSettingsConfig({
-    required this.translations,
+    this.canSkipRelease,
+    this.canPostponeRelease,
+    this.reminderPeriod,
+    this.releaseDelay,
+    this.progressiveRolloutDuration,
+    this.customData,
+  });
+
+  const UpdateSettingsConfig.byRequired({
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,
