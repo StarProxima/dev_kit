@@ -105,46 +105,44 @@ class UpdateSettingsDataContainer {
     final byTypeAndStatus = value[type]?[status];
     settingsData = settingsData?.inherit(byTypeAndStatus) ?? byTypeAndStatus;
 
-    return byStatus;
+    return settingsData;
   }
 }
+
+// class UpdateSettingsContainer {
+//   final RawUpdateSettingsContainer<UpdateSettings> value;
+
+//   const UpdateSettingsContainer(this.value);
+
+//   UpdateSettings getBy({
+//     required UpdateAlertType type,
+//     required VersionStatus status,
+//   }) =>
+//       getByBase(
+//         type: type.toBase(),
+//         status: status.toBase(),
+//       );
+
+//   UpdateSettings getByBase({
+//     required UpdateAlertTypeBase type,
+//     required VersionStatusBase status,
+//   }) {
+//     final byType = value[type] ?? value[UpdateAlertTypeBase.base];
+//     if (byType == null) throw Exception();
+
+//     final byStatus =
+//         byType[status] ?? byType[VersionStatusBase.base] ?? value[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
+//     if (byStatus == null) throw Exception();
+
+//     return byStatus;
+//   }
+// }
 
 class UpdateSettingsContainer {
-  final RawUpdateSettingsContainer<UpdateSettings> value;
-
-  const UpdateSettingsContainer(this.value);
-
-  UpdateSettings getBy({
-    required UpdateAlertType type,
-    required VersionStatus status,
-  }) =>
-      getByBase(
-        type: type.toBase(),
-        status: status.toBase(),
-      );
-
-  UpdateSettings getByBase({
-    required UpdateAlertTypeBase type,
-    required VersionStatusBase status,
-  }) {
-    final byType = value[type] ?? value[UpdateAlertTypeBase.base];
-    if (byType == null) throw Exception();
-
-    final byStatus =
-        byType[status] ?? byType[VersionStatusBase.base] ?? value[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
-    if (byStatus == null) throw Exception();
-
-    return byStatus;
-  }
-}
-
-class UpdateSettingsContainer2 {
   final UpdateSettingsDataContainer dataContainer;
-  final UpdateSettingsContainer defaultContainer;
 
-  const UpdateSettingsContainer2({
+  const UpdateSettingsContainer({
     required this.dataContainer,
-    required this.defaultContainer,
   });
 
   UpdateSettings getBy({
@@ -161,10 +159,20 @@ class UpdateSettingsContainer2 {
     required VersionStatusBase status,
   }) {
     final settingsData = dataContainer.getByBase(type: type, status: status);
-    final settings = defaultContainer.getByBase(type: type, status: status);
 
-    final finalSettings = settings.merge(settingsData);
+    if (settingsData == null) throw 'Ти хуесос полный';
 
-    return finalSettings;
+    try {
+      return UpdateSettings(
+        canSkipRelease: settingsData.canSkipRelease!,
+        canPostponeRelease: settingsData.canPostponeRelease!,
+        reminderPeriod: settingsData.reminderPeriod!,
+        releaseDelay: settingsData.releaseDelay!,
+        progressiveRolloutDuration: settingsData.progressiveRolloutDuration!,
+        customData: {},
+      );
+    } catch (e, s) {
+      throw Error.throwWithStackTrace('Ти хуесос полный', s);
+    }
   }
 }

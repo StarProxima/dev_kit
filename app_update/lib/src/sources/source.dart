@@ -72,6 +72,7 @@ class Source {
     required List<UpdatePlatform>? platforms,
     required Map<String, dynamic>? customData,
   }) {
+    // TODO: Учитывать платформы для всех сурсов, а не только для кастомных
     switch (Sources.parse(name)) {
       case Sources.googlePlay:
         return Source.googlePlay(url: url, customData: customData);
