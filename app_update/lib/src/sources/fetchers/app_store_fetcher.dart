@@ -1,6 +1,6 @@
 // Copyright (c) 2018-2023 Larry Aasen
 
-// ignore_for_file: avoid_dynamic_calls
+// ignore_for_file: avoid_dynamic_calls, avoid-collection-mutating-methods, avoid-unnecessary-collections, prefer-boolean-prefixes
 
 import 'dart:async';
 import 'dart:convert';
@@ -20,7 +20,6 @@ import 'source_fetcher.dart';
 class AppStoreFetcher extends SourceReleaseFetcher {
   static const lookupPrefixURL = 'https://itunes.apple.com/lookup';
 
-  /// Provide an HTTP Client that can be replaced for mock testing.
   http.Client get client => http.Client();
 
   const AppStoreFetcher();
@@ -31,11 +30,8 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
-    final bundleId = DateTime.now().toString(); // TODO откуда
-    final url =
-        _lookupURL({'bundleId': bundleId, 'country': locale.countryCode?.toUpperCase(), 'lang': locale.languageCode});
-    // final url = _lookupURL({'id': id, 'country': country.toUpperCase()}, useCacheBuster: useCacheBuster);
-    // TODO parseById?
+    final bundleId = packageInfo.packageName;
+    final url = _lookupURL(bundleId, locale);
 
     final response = await client.get(url);
     final decodedResults = _decodeResults(response);
@@ -59,17 +55,9 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     );
   }
 
-  Future<Map?> parseByBundleId(
-    String bundleId, {
-    String? country = 'US',
-    String? language = 'en',
-    bool useCacheBuster = true,
-  }) async {
-    // TODO write this
-  }
-
   /// Look up URL by QSP.
-  Uri _lookupURL(Map<String, String?> qsp, {bool useCacheBuster = true}) {
+  Uri _lookupURL(String bundleId, Locale locale, {bool useCacheBuster = true}) {
+    final qsp = {'bundleId': bundleId, 'country': locale.countryCode?.toUpperCase(), 'lang': locale.languageCode};
     if (useCacheBuster) {
       qsp.addAll({'_cb': DateTime.now().microsecondsSinceEpoch.toString()});
     }

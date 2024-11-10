@@ -5,7 +5,6 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../finalizer/models/release.dart';
 import '../../linker/models/release_data.dart';
 import '../source.dart';
 import 'app_store_fetcher.dart';
@@ -34,8 +33,8 @@ base class SourceReleaseFetcherCoordinator {
 abstract class SourceReleaseFetcher {
   const SourceReleaseFetcher();
 
-  // Return Release parsed from source's page.
-  // Return null if can't parse or if app version abovesource version. //TODO кидать ошибки или возвращать нулл?
+  // Return ReleaseData parsed from source's page.
+  // Return null if can't parse. //TODO кидать ошибки или возвращать нулл?
   Future<ReleaseData?> fetch({
     required Source source,
     required Locale locale,
