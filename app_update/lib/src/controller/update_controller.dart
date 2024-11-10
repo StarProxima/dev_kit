@@ -10,12 +10,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../fetcher/update_config_fetcher.dart';
-import '../finder/update_finder.dart';
-import '../linker/update_config_linker.dart';
 import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../finalizer/update_finalizer.dart';
+import '../finder/update_finder.dart';
+import '../linker/models/release_data.dart';
+import '../linker/update_config_linker.dart';
 import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
@@ -52,7 +53,7 @@ class UpdateController extends UpdateControllerBase {
   final Source? _defaultSource;
 
   Completer<UpdateConfigModel>? _updateConfigModelCompleter;
-  Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
+  Completer<List<ReleaseData>>? _sourceReleasesDataFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
 
@@ -105,17 +106,17 @@ class UpdateController extends UpdateControllerBase {
   Future<void> fetchGlobalSourceReleases({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
-    _sourceReleasesFromFetchersCompleter = Completer();
+    _sourceReleasesDataFromFetchersCompleter = Completer();
 
     final packageInfo = await _asyncPackageInfo;
-    final releases = <Release>[];
+    final releases = <ReleaseData>[];
     for (final source in _globalSources ?? []) {
       final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
       if (releaseFromSource != null) releases.add(releaseFromSource);
     }
 
-    _sourceReleasesFromFetchersCompleter!.complete(releases);
+    _sourceReleasesDataFromFetchersCompleter!.complete(releases);
   }
 
   @override
@@ -140,15 +141,15 @@ class UpdateController extends UpdateControllerBase {
     _versionController ??= UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
+    if (_sourceReleasesDataFromFetchersCompleter == null) await fetchGlobalSourceReleases();
+    final releasesFromSources = await _sourceReleasesDataFromFetchersCompleter!.future;
+    availableReleasesData.addAll(releasesFromSources);
+    sources.addAll([...?_globalSources]);
+
     _interpolator ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
     final releases = _interpolator!.fializeReleases(availableReleasesData);
 
     _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
-
-    if (_sourceReleasesFromFetchersCompleter == null) await fetchGlobalSourceReleases();
-    final releasesFromSources = await _sourceReleasesFromFetchersCompleter!.future;
-    releases.addAll(releasesFromSources);
-    sources.addAll([...?_globalSources]);
 
     final updateConfig = UpdateConfig(
       sources: sources,
