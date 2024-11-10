@@ -31,5 +31,4 @@ class DefaultUpdateSettingsContainer extends UpdateSettingsContainer {
           {..._settings, ...settings},
         );
 
-  void test() {}
 }
