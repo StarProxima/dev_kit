@@ -35,7 +35,7 @@ class UpdateController extends UpdateControllerBase {
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
-  final UpdateSettingsConfigContainer? _updateSettings;
+  final UpdateSettingsDataContainer? _updateSettings;
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
@@ -66,8 +66,10 @@ class UpdateController extends UpdateControllerBase {
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
-    UpdateSettingsConfigContainer? updateSettings,
+    UpdateSettingsDataContainer? updateSettings,
     UpdateStorage? storage,
+    // TODO: Нам, поидее, нужно передавать List<GlobalSourceConfig>
+    // TODO: Потом сделать, чтобы передавалось GlobalSource без nullable name и config
     List<Source>? globalSources,
     UpdatePlatform? targetPlatform,
     Source? targetSource,
@@ -134,7 +136,7 @@ class UpdateController extends UpdateControllerBase {
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
     final releasesData = _linker.linkConfigs(
-      globalSettingsConfig: _updateSettings ?? configModel.settings,
+      globalSettingsConfig: configModel.settings,
       releasesConfig: [...configModel.releases, ...releasesFromSources],
       globalSourcesConfig: configModel.sources,
     );

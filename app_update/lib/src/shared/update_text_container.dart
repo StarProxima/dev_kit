@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 import '../finalizer/models/update_texts.dart';
+import '../linker/models/update_text_data.dart';
 import '../parser/models/update_text_config.dart';
 import 'update_alert_type.dart';
 import 'version_status.dart';
@@ -43,6 +44,46 @@ class UpdateTextConfigContainer {
     final byStatus = byType?[status] ?? byType?[VersionStatusBase.base];
 
     return byStatus;
+  }
+}
+
+class UpdateTextDataContainer {
+  final Map<Locale, Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextData>>> value;
+
+  const UpdateTextDataContainer(this.value);
+
+  UpdateTextDataContainer inherit(UpdateTextDataContainer child) {
+    final inheritedValue = {...child.value};
+
+    for (final byLocale in value.entries) {
+      final childByLocale = inheritedValue[byLocale.key];
+
+      if (childByLocale == null) {
+        inheritedValue[byLocale.key] = byLocale.value;
+        continue;
+      }
+
+      for (final byType in byLocale.value.entries) {
+        final childByType = childByLocale[byType.key];
+        if (childByType == null) {
+          childByLocale[byType.key] = byType.value;
+          continue;
+        }
+
+        for (final byStatus in byType.value.entries) {
+          final childByStatus = childByType[byStatus.key];
+          if (childByStatus == null) {
+            childByType[byStatus.key] = byStatus.value;
+            continue;
+          }
+
+          final childText = childByStatus;
+          childByType[byStatus.key] = byStatus.value.inherit(childText);
+        }
+      }
+    }
+
+    return UpdateTextDataContainer(inheritedValue);
   }
 }
 

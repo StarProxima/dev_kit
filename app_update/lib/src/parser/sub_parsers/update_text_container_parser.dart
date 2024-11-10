@@ -1,5 +1,3 @@
-// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment, prefer-correct-identifier-length, avoid-recursive-calls, avoid-non-null-assertion, avoid-explicit-type-declaration
-
 part of '../update_config_parser.dart';
 
 class UpdateTextContainerParser {

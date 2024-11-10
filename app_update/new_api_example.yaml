@@ -68,6 +68,12 @@ text_999:
   
   ch:
     title: Title
+
+text:
+  card:
+    unsupported:
+      title: Title 2
+
   
 settings:
   base:
@@ -247,6 +253,8 @@ releases:
     sources:
       - googlePlay
       - name: appStore
+        platforms: ['ios']
+    
 
 
       

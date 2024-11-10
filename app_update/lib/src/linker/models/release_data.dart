@@ -8,7 +8,7 @@ class ReleaseData {
   final Version version;
   final Source source;
   final DateTime? date;
-  final UpdateTextConfigContainer text;
+  final UpdateTextDataContainer text;
   final UpdateSettingsDataContainer settings;
   final Map<String, dynamic>? customData;
 

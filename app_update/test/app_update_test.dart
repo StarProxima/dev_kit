@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-unused-instances, avoid-non-null-assertion
+// ignore_for_file: avoid-unused-instances, avoid-non-null-assertion, avoid-missing-enum-constant-in-map
 
 import 'package:app_update/src/controller/update_controller.dart';
 import 'package:app_update/src/parser/models/release_settings_config.dart';
@@ -13,7 +13,7 @@ void main() async {
   final controller = UpdateController(
     updateSettings: const UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsConfig.byRequired(),
+        VersionStatusBase.base: UpdateSettingsConfig(),
       },
     }),
   );
