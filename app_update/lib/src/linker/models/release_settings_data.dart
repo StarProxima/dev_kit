@@ -28,14 +28,14 @@ class UpdateSettingsData {
     );
   }
 
-  UpdateSettingsData inherit(UpdateSettingsData child) {
+  UpdateSettingsData inherit(UpdateSettingsData? child) {
     return UpdateSettingsData(
-      canSkipRelease: child.canSkipRelease ?? canSkipRelease,
-      canPostponeRelease: child.canPostponeRelease ?? canPostponeRelease,
-      reminderPeriod: child.reminderPeriod ?? reminderPeriod,
-      releaseDelay: child.releaseDelay ?? releaseDelay,
-      progressiveRolloutDuration: child.progressiveRolloutDuration ?? progressiveRolloutDuration,
-      customData: child.customData ?? customData,
+      canSkipRelease: child?.canSkipRelease ?? canSkipRelease,
+      canPostponeRelease: child?.canPostponeRelease ?? canPostponeRelease,
+      reminderPeriod: child?.reminderPeriod ?? reminderPeriod,
+      releaseDelay: child?.releaseDelay ?? releaseDelay,
+      progressiveRolloutDuration: child?.progressiveRolloutDuration ?? progressiveRolloutDuration,
+      customData: child?.customData ?? customData,
     );
   }
 }

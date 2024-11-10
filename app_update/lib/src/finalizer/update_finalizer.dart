@@ -93,15 +93,12 @@ class UpdateFinalizer {
         alertType,
         value.map(
           (status, settings) {
-            final defaultSettings = _defaultSettingsContainer.getByRaw(
+            final defaultSettings = _defaultSettingsContainer.getByBase(
               type: alertType,
               status: status,
             );
 
-            final updateSettings = UpdateSettings.fromData(
-              settings,
-              defaultSettings: defaultSettings,
-            );
+            final updateSettings = defaultSettings.merge(settings);
 
             return MapEntry(
               status,

@@ -26,17 +26,18 @@ class UpdateSettings {
     this.customData,
   });
 
-  factory UpdateSettings.fromData(
-    UpdateSettingsData? data, {
-    required UpdateSettings defaultSettings,
-  }) {
+  UpdateSettings merge(
+    UpdateSettingsData? data,
+  ) {
+    final customData = {...?this.customData, ...?data?.customData};
+
     return UpdateSettings(
-      canSkipRelease: data?.canSkipRelease ?? defaultSettings.canSkipRelease,
-      canPostponeRelease: data?.canPostponeRelease ?? defaultSettings.canPostponeRelease,
-      reminderPeriod: data?.reminderPeriod ?? defaultSettings.reminderPeriod,
-      releaseDelay: data?.releaseDelay ?? defaultSettings.releaseDelay,
-      progressiveRolloutDuration: data?.progressiveRolloutDuration ?? defaultSettings.progressiveRolloutDuration,
-      customData: data?.customData,
+      canSkipRelease: data?.canSkipRelease ?? canSkipRelease,
+      canPostponeRelease: data?.canPostponeRelease ?? canPostponeRelease,
+      reminderPeriod: data?.reminderPeriod ?? reminderPeriod,
+      releaseDelay: data?.releaseDelay ?? releaseDelay,
+      progressiveRolloutDuration: data?.progressiveRolloutDuration ?? progressiveRolloutDuration,
+      customData: customData.isEmpty ? null : customData,
     );
   }
 
