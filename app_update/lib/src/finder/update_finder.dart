@@ -72,7 +72,7 @@ class UpdateFinder {
       if (checkedSource != null) {
         // если сурс существует в конфиге, но для него нет обновления
         if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {
-          throw const UpdateNotFoundException();
+          return null;
         }
 
         return availableReleasesBySources[checkedSource];

@@ -26,11 +26,19 @@ abstract class UpdateControllerBase {
     Locale locale,
   });
 
-  /// Finds an update from fetched UpdateConfig and global sources releases data
+  /// Finds an update from fetched UpdateConfig and global sources releases data.
+  /// If update founded add data to [availableUpdateStream] and [updateConfigStream]
+  ///
+  /// Does not make a new request if the data already exists.
+  Future<AppUpdate> findUpdate({
+    Locale locale,
+  });
+
+  /// Finds updates from all sources available on the current application platform from fetched UpdateConfig and global sources releases data.
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
-  Future<AppUpdate> findUpdate({
+  Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale,
   });
 
@@ -39,11 +47,6 @@ abstract class UpdateControllerBase {
   /// If update not available return null.
   /// Does not make a new request if the data already exists.
   Future<AppUpdate?> tryFindUpdate({
-    Locale locale,
-  });
-
-  /// Finds updates from all sources available on the current application platform.
-  Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale,
   });
 

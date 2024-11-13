@@ -123,8 +123,137 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   Future<AppUpdate> findUpdate({
+    Locale locale = kAppUpdateDefaultLocale, // TODO нам тут, получается, локаль и не нужна?
+  }) async {
+    final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
+    final updateConfig = await _findUpdateConfig();
+
+    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
+
+    final availableRelease = await _finder!.findAvailableRelease(
+      availableReleasesBySources: availableReleasesBySources,
+      sources: updateConfig.sources,
+      // TODO: Завести типизацию, без стингов
+      prioritySourceName: _targetSource?.name,
+    );
+
+    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
+
+    final appUpdate = AppUpdate(
+      appName: packageInfo.appName,
+      appVersion: appVersion,
+      config: updateConfig,
+      appVersionStatus: currentReleaseStatus,
+      release: availableRelease ?? (throw const UpdateNotFoundException()),
+    );
+
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+
+    if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+      throw UpdateSkippedException(update: appUpdate);
+    }
+    if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+      throw UpdatePostponedException(update: appUpdate);
+    }
+
+    _updateConfigStream.add(updateConfig);
+    _availableUpdateStream.add(appUpdate);
+
+    return appUpdate;
+  }
+
+  @override
+  Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
+    final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
+    final updateConfig = await _findUpdateConfig();
+
+    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
+
+    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
+
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+
+    final appUpdateList = <AppUpdate>[];
+    for (final availableReleaseAndSource in availableReleasesBySources.entries) {
+      final availableRelease = availableReleaseAndSource.value;
+
+      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+        continue;
+      }
+      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+        continue;
+      }
+
+      appUpdateList.add(AppUpdate(
+        appName: packageInfo.appName,
+        appVersion: appVersion,
+        config: updateConfig,
+        appVersionStatus: currentReleaseStatus,
+        release: availableRelease,
+      ));
+    }
+
+    return appUpdateList;
+  }
+
+  @override
+  Future<AppUpdate?> tryFindUpdate({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    try {
+      final appUpdate = await findUpdate(locale: locale);
+
+      return appUpdate;
+    } on UpdateException catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> launchReleaseSource(Release release) async {
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    await _updateStorage?.saveLastSource(release.source.name);
+
+    final url = release.source.url;
+    await launchUrl(url);
+  }
+
+  @override
+  Future<void> postponeRelease({
+    required Release release,
+    required Duration postponeDuration,
+  }) async {
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+
+    await _updateStorage?.addPostponedRelease(
+      releaseVersion: release.version,
+      postponeDuration: postponeDuration,
+    );
+  }
+
+  @override
+  Future<void> skipRelease(Release release) async {
+    // TODO: Подумать вообще над инициализацией полей в контроллере, мб это делать всё в одном месте
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+
+    await _updateStorage?.addSkippedRelease(release.version);
+  }
+
+  @override
+  Future<void> dispose() async {
+    await _updateConfigStream.close();
+    await _availableUpdateStream.close();
+  }
+
+  Future<UpdateConfig> _findUpdateConfig() async {
     if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
     final configModel = await _updateConfigModelCompleter!.future;
 
@@ -158,98 +287,6 @@ class UpdateController extends UpdateControllerBase {
       customData: configModel.customData,
     );
 
-    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
-    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
-
-    final availableRelease = await _finder!.findAvailableRelease(
-      availableReleasesBySources: availableReleasesBySources,
-      sources: sources,
-      // TODO: Завести типизацию, без стингов
-      prioritySourceName: _targetSource?.name,
-    );
-
-    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
-
-    final appUpdate = AppUpdate(
-      appName: packageInfo.appName,
-      appVersion: appVersion,
-      config: updateConfig,
-      appVersionStatus: currentReleaseStatus,
-      release: availableRelease ?? (throw const UpdateNotFoundException()),
-    );
-
-    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
-
-    if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
-      throw UpdateSkippedException(update: appUpdate);
-    }
-    if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
-      throw UpdatePostponedException(update: appUpdate);
-    }
-
-    _updateConfigStream.add(updateConfig);
-    _availableUpdateStream.add(appUpdate);
-
-    return appUpdate;
-  }
-
-  @override
-  Future<AppUpdate?> tryFindUpdate({
-    Locale locale = kAppUpdateDefaultLocale,
-  }) async {
-    try {
-      final appUpdate = await findUpdate(locale: locale);
-
-      return appUpdate;
-    } on UpdateException catch (_) {
-      return null;
-    }
-  }
-
-  @override
-  Future<List<AppUpdate>> findAllAvailableUpdates({
-    Locale locale = kAppUpdateDefaultLocale,
-  }) {
-    // TODO: implement findAllAvailableUpdates
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> launchReleaseSource(Release release) async {
-    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-    await _updateStorage?.saveLastSource(release.source.name);
-
-    final url = release.source.url;
-    await launchUrl(url);
-  }
-
-  @override
-  Future<void> postponeRelease({
-    required Release release,
-    required Duration postponeDuration,
-  }) async {
-    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-
-    // передаём postponeDuration так как в этой функции не получится определить статус релиза и карточки
-    // TODO: Почему? Статус можно определить можно из Release, а UpdateAlertType передавать в метод из ui
-    await _updateStorage?.addPostponedRelease(
-      releaseVersion: release.version,
-      postponeDuration: postponeDuration,
-    );
-  }
-
-  @override
-  Future<void> skipRelease(Release release) async {
-    // TODO: Подумать вообще над инициализацией полей в контроллере, мб это делать всё в одном месте
-    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-
-    await _updateStorage?.addSkippedRelease(release.version);
-  }
-
-  @override
-  Future<void> dispose() async {
-    await _updateConfigStream.close();
-    await _availableUpdateStream.close();
+    return updateConfig;
   }
 }
