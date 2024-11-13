@@ -2,10 +2,10 @@
 library app_update;
 
 // TODO:
-// 1) [ ] Fetch и другие методы в UpdateController
-// 2) [ ] Реализация findAllAvailableUpdates в UpdateController
-// 3) [ ] UpdateConfigFetcher - получение и парсинг с remote url (для тестов можно оставить файл)
-// 4) [ ] SourceReleaseFetcher для Google Play и AppStore
+// 1) [x] Fetch и другие методы в UpdateController
+// 2) [x] Реализация findAllAvailableUpdates в UpdateController
+// 3) [x] UpdateConfigFetcher - получение и парсинг с remote url (для тестов можно оставить файл)
+// 4) [x] SourceReleaseFetcher для Google Play и AppStore
 // 5) [ ] Реализация UpdateAlertHandler.materialDialog
 // 6) [ ] Тесты на Parser
 // 7) [ ] Интеграционные тесты нескольких компонентов
@@ -18,18 +18,20 @@ library app_update;
 // + Могда мерж нада будет писать только для ReleaseConfig + ReleaseConfigOverride. 
 // И не будет циклов (что мы переопределяем в сурсе релиз, а в нём сурсы и т.д.).
 // Что скажешь?
+//
+// Го сделаем только GlobalSourceConfigOverride и хватит
 
-// 11) Вынести все текста как?
+// 11) [ ] Вынести все текста как?
 // settings:
 //  texts:
 //    title: ...
 //    description: ...
 //    
 
-// 12) Доработать линкер и написать под него тесты, см. TODO в UpdateConfigLinker
+// 12) [ ] Доработать линкер и написать под него тесты, см. TODO в UpdateConfigLinker
 
 // CANCELLED - ОТМЕНЕНА
-// 13) Логика мержа (или инхерита) - когда задаётся base,
+// 13) [-] Логика мержа (или инхерита) - когда задаётся base,
 // мы меняем не только исходный base, но и удаляем все варианты, оставляя только те, которые заданы.
 // 
 // Если юзер задаст:
@@ -50,6 +52,6 @@ library app_update;
 //   can_skip_release: true
 // РЕШЕНО - делаем логику получения отдельного UpdateSettings в getByBase
 
-// 14.
+// 14 [ ]
 // Мержить дефолтный контейнер и контейнером Controller и с контейнером ReleaseData, чтобы получить один,
 // который передать в Release, из которого будет вытаскиваться нужные настройки или текст (по пункт. 13)
