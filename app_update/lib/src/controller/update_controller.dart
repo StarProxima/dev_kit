@@ -39,8 +39,8 @@ class UpdateController extends UpdateControllerBase {
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
-  UpdateFinalizer? _interpolator;
-  SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
+  UpdateFinalizer? _finalizer;
+  final SourceReleaseFetcherCoordinator _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
   UpdateStorage? _updateStorage;
@@ -75,7 +75,7 @@ class UpdateController extends UpdateControllerBase {
     Source? targetSource,
     Source? defaultSource,
   })  : _updateConfigFetcher = updateConfigFetcher,
-        _sourceFetcherCoordinator = sourceFetcherCoordinator,
+        _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
@@ -113,7 +113,7 @@ class UpdateController extends UpdateControllerBase {
     final packageInfo = await _asyncPackageInfo;
     final releases = <ReleaseConfig>[];
     for (final source in _globalSources ?? []) {
-      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+      final fetcher = await _sourceFetcherCoordinator.fetcherBySource(source);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
       if (releaseFromSource != null) releases.add(releaseFromSource);
     }
@@ -241,7 +241,6 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   Future<void> skipRelease(Release release) async {
-    // TODO: Подумать вообще над инициализацией полей в контроллере, мб это делать всё в одном месте
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
 
     await _updateStorage?.addSkippedRelease(release.version);
@@ -275,13 +274,11 @@ class UpdateController extends UpdateControllerBase {
     final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
     sources.addAll([...?_globalSources]);
 
-    _versionController ??= UpdateVersionController(configModel.versionSettings);
+    _versionController = UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _interpolator ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
-    final releases = _interpolator!.fializeReleases(availableReleasesData);
-
-    _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
+    _finalizer ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
+    final releases = _finalizer!.fializeReleases(availableReleasesData);
 
     final updateConfig = UpdateConfig(
       sources: sources,
