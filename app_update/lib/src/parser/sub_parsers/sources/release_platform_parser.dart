@@ -17,8 +17,6 @@ class ReleasePlatformParser {
       if (value is String) {
         return ReleasePlatformConfig.byRequired(
           platform: UpdatePlatform(value),
-          source: null,
-          customData: null,
         );
       }
 

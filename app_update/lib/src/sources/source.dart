@@ -72,13 +72,12 @@ class Source {
     required List<UpdatePlatform>? platforms,
     required Map<String, dynamic>? customData,
   }) {
-    // TODO: Учитывать платформы для всех сурсов, а не только для кастомных
     switch (Sources.parse(name)) {
       case Sources.googlePlay:
-        return Source.googlePlay(url: url, customData: customData);
+        return Source.googlePlay(url: url, customPlatforms: platforms, customData: customData);
 
       case Sources.appStore:
-        return Source.appStore(url: url, customData: customData);
+        return Source.appStore(url: url, customPlatforms: platforms, customData: customData);
 
       default:
         return Source.custom(
@@ -92,86 +91,98 @@ class Source {
 
   const Source.googlePlay({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.googlePlay,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.appStore({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.appStore,
-        platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
+        platforms = customPlatforms ?? const [UpdatePlatform.ios, UpdatePlatform.macos],
         _name = null;
 
   const Source.googlePlayPackageInstaller({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.googlePlayPackageInstaller,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.amazonAppStore({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.amazonAppStore,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.huaweiAppGallery({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.huaweiAppGallery,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.samsungGalaxyStore({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.samsungGalaxyStore,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.samsungSmartSwitchMobile({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.samsungSmartSwitchMobile,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.xiaomiGetApps({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.xiaomiGetApps,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.oppoAppMarket({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.oppoAppMarket,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.vivoAppStore({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.vivoAppStore,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.ruStore({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.ruStore,
-        platforms = const [UpdatePlatform.android],
+        platforms = customPlatforms ?? const [UpdatePlatform.android],
         _name = null;
 
   const Source.testFlight({
     required this.url,
+    List<UpdatePlatform>? customPlatforms,
     this.customData,
   })  : type = Sources.testFlight,
-        platforms = const [UpdatePlatform.ios, UpdatePlatform.macos],
+        platforms = customPlatforms ?? const [UpdatePlatform.ios, UpdatePlatform.macos],
         _name = null;
 
   const Source.custom({
