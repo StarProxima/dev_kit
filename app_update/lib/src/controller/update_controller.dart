@@ -123,11 +123,11 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   Future<AppUpdate> findUpdate({
-    Locale locale = kAppUpdateDefaultLocale, // TODO нам тут, получается, локаль и не нужна?
+    Locale locale = kAppUpdateDefaultLocale,
   }) async {
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
-    final updateConfig = await _findUpdateConfig();
+    final updateConfig = await _findUpdateConfig(locale: locale);
 
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
@@ -171,7 +171,7 @@ class UpdateController extends UpdateControllerBase {
   }) async {
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
-    final updateConfig = await _findUpdateConfig();
+    final updateConfig = await _findUpdateConfig(locale: locale);
 
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
@@ -253,7 +253,9 @@ class UpdateController extends UpdateControllerBase {
     await _availableUpdateStream.close();
   }
 
-  Future<UpdateConfig> _findUpdateConfig() async {
+  Future<UpdateConfig> _findUpdateConfig({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
     if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
     final configModel = await _updateConfigModelCompleter!.future;
 
@@ -261,7 +263,7 @@ class UpdateController extends UpdateControllerBase {
     final appVersion = Version.parse(packageInfo.version);
     final appName = packageInfo.appName;
 
-    if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases();
+    if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases(locale: locale);
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
     final releasesData = _linker.linkConfigs(
