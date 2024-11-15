@@ -411,6 +411,9 @@ dart_code_metrics:
     # Гемор. Плохо работает с ApiWrap
     - prefer-extracting-function-callbacks: false
 
+    - avoid-importing-entrypoint-exports:
+        severity: error
+
     - arguments-ordering:
         last:
           - onTap
