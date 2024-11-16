@@ -2,31 +2,25 @@
 
 import 'dart:ui';
 
-import '../../finalizer/models/update_texts.dart';
+import '../../linker/models/update_text_data.dart';
 import '../../shared/update_alert_type.dart';
 import '../../shared/update_text_container.dart';
 import '../../shared/version_status.dart';
 import 'locales/en_translations.dart';
 import 'locales/ru_translations.dart';
 
-class DefaultUpdateTextContainer extends UpdateTextContainer {
+class DefaultUpdateTextDataContainer extends UpdateTextDataContainer {
   static final _defaultText = {
     const Locale('base'): const EnUpdateTranslations().translations(),
     const Locale('en'): const EnUpdateTranslations().translations(),
     const Locale('ru'): const RuUpdateTranslations().translations(),
   };
 
-  DefaultUpdateTextContainer() : super(_defaultText);
-
-  DefaultUpdateTextContainer.merge(
-    Map<Locale, Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateText>>> text,
-  ) : super(
-          {..._defaultText, ...text},
-        );
+  DefaultUpdateTextDataContainer() : super(_defaultText);
 }
 
 abstract class UpdateTranslations {
   const UpdateTranslations();
 
-  Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateText>> translations();
+  Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextData>> translations();
 }

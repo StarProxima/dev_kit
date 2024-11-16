@@ -16,8 +16,8 @@ class UpdateFinalizer {
   final String appName;
   final Version appVersion;
 
-  static final _defaulUpdateTextContainer = DefaultUpdateTextContainer();
-  static final _defaultSettingsContainer = DefaultUpdateSettingsContainer();
+  static final _defaulUpdateTextContainer = DefaultUpdateTextDataContainer();
+  static final _defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
 
   const UpdateFinalizer({
     required this.appName,

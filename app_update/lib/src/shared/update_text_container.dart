@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods, avoid-missing-enum-constant-in-map
+// ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods, avoid-missing-enum-constant-in-map, avoid-non-null-assertion
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -85,12 +85,52 @@ class UpdateTextDataContainer {
 
     return UpdateTextDataContainer(inheritedValue);
   }
+
+  UpdateTextData? getBy({
+    required Locale locale,
+    required UpdateAlertType type,
+    required VersionStatus status,
+  }) =>
+      getByBase(
+        locale: locale,
+        type: type.toBase(),
+        status: status.toBase(),
+      );
+
+  UpdateTextData? getByBase({
+    required Locale locale,
+    required UpdateAlertTypeBase type,
+    required VersionStatusBase status,
+  }) {
+    final combinations = [
+      (const Locale('base'), UpdateAlertTypeBase.base, VersionStatusBase.base),
+      (const Locale('base'), UpdateAlertTypeBase.base, status),
+      (const Locale('base'), type, VersionStatusBase.base),
+      (const Locale('base'), type, status),
+      (locale, UpdateAlertTypeBase.base, VersionStatusBase.base),
+      (locale, UpdateAlertTypeBase.base, status),
+      (locale, type, VersionStatusBase.base),
+      (locale, type, status),
+    ];
+
+    UpdateTextData? textData;
+
+    for (final combination in combinations) {
+      // ignore: avoid-positional-record-field-access
+      final byCombination = value[combination.$1]?[combination.$2]?[combination.$3];
+      textData = textData?.inherit(byCombination) ?? byCombination ?? textData;
+    }
+
+    return textData;
+  }
 }
 
 class UpdateTextContainer {
-  final Map<Locale, Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateText>>> map;
+  final UpdateTextDataContainer dataContainer;
 
-  const UpdateTextContainer(this.map);
+  const UpdateTextContainer({
+    required this.dataContainer,
+  });
 
   UpdateText getBy({
     required Locale locale,
@@ -108,37 +148,23 @@ class UpdateTextContainer {
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
-    // final byBaseLocale = map[const Locale('base')];
-    // if (byBaseLocale == null) throw Exception();
+    final textData = dataContainer.getByBase(locale: locale, type: type, status: status);
 
-    // final byLocale = map[locale] ?? byBaseLocale;
+    if (textData == null) throw Exception('UpdateTextData has null field');
 
-    // final byType = byLocale[type] ??
-    //     byBaseLocale[type] ??
-    //     byLocale[UpdateAlertTypeBase.base] ??
-    //     byBaseLocale[UpdateAlertTypeBase.base];
-
-    // if (byType == null) throw Exception();
-
-    // final byStatus = byType[status] ??
-    //     byBaseLocale[UpdateAlertTypeBase.base]?[status] ??
-    //     byType[VersionStatusBase.base] ??
-    //     byBaseLocale[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
-
-    // if (byStatus == null) throw Exception();
-
-    const baseLocale = Locale('base');
-    const baseType = UpdateAlertTypeBase.base;
-    const baseStatus = VersionStatusBase.base;
-
-    // TODO: Это пиздец, нихуя непонятно
-
-    final byLocale = map[locale] ?? map[baseLocale]!;
-
-    final byType = byLocale[type] ?? map[baseLocale]![type] ?? byLocale[baseType] ?? map[baseLocale]![baseType]!;
-
-    final byStatus = byType[status] ?? byType[baseStatus]!;
-
-    return byStatus;
+    try {
+      return UpdateText(
+        title: textData.title!,
+        description: textData.description!,
+        releaseNotesTitle: textData.releaseNotesTitle!,
+        releaseNotes: textData.releaseNotes!,
+        skipButton: textData.skipButton!,
+        laterButton: textData.laterButton!,
+        updateButton: textData.updateButton!,
+        customData: textData.customData,
+      );
+    } catch (e, s) {
+      Error.throwWithStackTrace(Exception('UpdateTextData has null field'), s);
+    }
   }
 }

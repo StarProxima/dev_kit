@@ -9,6 +9,8 @@ class UpdateText {
   final String laterButton;
   final String updateButton;
 
+  final Map<String, dynamic>? customData;
+
   const UpdateText({
     required this.title,
     required this.description,
@@ -17,6 +19,7 @@ class UpdateText {
     required this.skipButton,
     required this.laterButton,
     required this.updateButton,
+    required this.customData,
   });
 
   factory UpdateText.fromData(
@@ -31,6 +34,7 @@ class UpdateText {
       skipButton: data?.skipButton ?? defaultText.skipButton,
       laterButton: data?.laterButton ?? defaultText.laterButton,
       updateButton: data?.updateButton ?? defaultText.updateButton,
+      customData: data?.customData,
     );
   }
 
@@ -43,6 +47,7 @@ class UpdateText {
       skipButton: data?.skipButton ?? skipButton,
       laterButton: data?.laterButton ?? laterButton,
       updateButton: data?.updateButton ?? updateButton,
+      customData: data?.customData ?? customData,
     );
   }
 
@@ -54,6 +59,7 @@ class UpdateText {
     String? skipButton,
     String? laterButton,
     String? updateButton,
+    Map<String, dynamic>? customData,
   }) =>
       UpdateText(
         title: title ?? this.title,
@@ -63,5 +69,6 @@ class UpdateText {
         skipButton: skipButton ?? this.skipButton,
         laterButton: laterButton ?? this.laterButton,
         updateButton: updateButton ?? this.updateButton,
+        customData: customData ?? this.customData,
       );
 }

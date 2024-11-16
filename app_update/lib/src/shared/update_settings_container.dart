@@ -37,7 +37,6 @@ class UpdateSettingsConfigContainer {
   }
 }
 
-// TODO разнести бы их по файлам отдельным
 class UpdateSettingsDataContainer {
   final RawUpdateSettingsContainer<UpdateSettingsData> value;
 
@@ -91,52 +90,24 @@ class UpdateSettingsDataContainer {
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
+    final combinations = [
+      (UpdateAlertTypeBase.base, VersionStatusBase.base),
+      (UpdateAlertTypeBase.base, status),
+      (type, VersionStatusBase.base),
+      (type, status),
+    ];
+
     UpdateSettingsData? settingsData;
 
-    final base = value[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
-    settingsData = base;
-
-    final byStatus = value[UpdateAlertTypeBase.base]?[status];
-    settingsData = settingsData?.inherit(byStatus) ?? byStatus;
-
-    final byType = value[type]?[VersionStatusBase.base];
-    settingsData = settingsData?.inherit(byType) ?? byType;
-
-    final byTypeAndStatus = value[type]?[status];
-    settingsData = settingsData?.inherit(byTypeAndStatus) ?? byTypeAndStatus;
+    for (final combination in combinations) {
+      // ignore: avoid-positional-record-field-access
+      final byCombination = value[combination.$1]?[combination.$2];
+      settingsData = settingsData?.inherit(byCombination) ?? byCombination ?? settingsData;
+    }
 
     return settingsData;
   }
 }
-
-// class UpdateSettingsContainer {
-//   final RawUpdateSettingsContainer<UpdateSettings> value;
-
-//   const UpdateSettingsContainer(this.value);
-
-//   UpdateSettings getBy({
-//     required UpdateAlertType type,
-//     required VersionStatus status,
-//   }) =>
-//       getByBase(
-//         type: type.toBase(),
-//         status: status.toBase(),
-//       );
-
-//   UpdateSettings getByBase({
-//     required UpdateAlertTypeBase type,
-//     required VersionStatusBase status,
-//   }) {
-//     final byType = value[type] ?? value[UpdateAlertTypeBase.base];
-//     if (byType == null) throw Exception();
-
-//     final byStatus =
-//         byType[status] ?? byType[VersionStatusBase.base] ?? value[UpdateAlertTypeBase.base]?[VersionStatusBase.base];
-//     if (byStatus == null) throw Exception();
-
-//     return byStatus;
-//   }
-// }
 
 class UpdateSettingsContainer {
   final UpdateSettingsDataContainer dataContainer;
@@ -169,7 +140,7 @@ class UpdateSettingsContainer {
         reminderPeriod: settingsData.reminderPeriod!,
         releaseDelay: settingsData.releaseDelay!,
         progressiveRolloutDuration: settingsData.progressiveRolloutDuration!,
-        customData: {},
+        customData: settingsData.customData,
       );
     } catch (e, s) {
       Error.throwWithStackTrace(Exception('SettingsData has null field'), s);
