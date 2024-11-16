@@ -20,7 +20,7 @@ class DefaultUpdateTextDataContainer extends UpdateTextDataContainer {
 }
 
 abstract class UpdateTranslations {
-  const UpdateTranslations();
+  final Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextData>> translations;
 
-  Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextData>> translations();
+  const UpdateTranslations(this.translations);
 }

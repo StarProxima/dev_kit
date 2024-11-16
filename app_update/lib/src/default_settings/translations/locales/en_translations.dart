@@ -8,40 +8,37 @@ import '../../../shared/version_status.dart';
 import '../default_update_text_container.dart';
 
 class EnUpdateTranslations extends UpdateTranslations {
-  const EnUpdateTranslations();
+  static const tr = {
+    UpdateAlertTypeBase.base: {
+      VersionStatusBase.base: UpdateTextData.byRequired(
+        title: r'Обновите $appName',
+        description:
+            r'Вы можете обновиться до последней версии приложения. Версия $releaseVersion теперь доступна, текущаяя - $appVersion.',
+        releaseNotesTitle: 'Что нового?',
+        releaseNotes: '',
+        skipButton: 'Пропустить',
+        laterButton: 'Позже',
+        updateButton: 'Обновить',
+        customData: null,
+      ),
+      VersionStatusBase.unsupported: UpdateTextData(
+        title: r'Обновите $appName',
+        description:
+            r'Чтобы продолжить пользоваться приложением, обновите его до последней версии. Версия $releaseVersion теперь доступна, текущая - $appVersion.',
+      ),
+      VersionStatusBase.deprecated: UpdateTextData(
+        title: r'Обновите $appName',
+        description:
+            r'Текущая версия приложения устарала и скоро перестанет поддерживаться, обновите его до последней версии. Версия $releaseVersion теперь доступна, текущая - $appVersion.',
+      ),
+    },
+    UpdateAlertTypeBase.card: {
+      VersionStatusBase.base: UpdateTextData(
+        title: r'Обновите $appName',
+        description: 'Дайте ему возможность стать лучше!',
+      ),
+    },
+  };
 
-  @override
-  Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateTextData>> translations() {
-    return {
-      UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: const UpdateTextData.byRequired(
-          title: r'Обновите $appName',
-          description:
-              r'Вы можете обновиться до последней версии приложения. Версия $releaseVersion теперь доступна, текущаяя - $appVersion.',
-          releaseNotesTitle: 'Что нового?',
-          releaseNotes: '',
-          skipButton: 'Пропустить',
-          laterButton: 'Позже',
-          updateButton: 'Обновить',
-          customData: null,
-        ),
-        VersionStatusBase.unsupported: const UpdateTextData(
-          title: r'Обновите $appName',
-          description:
-              r'Чтобы продолжить пользоваться приложением, обновите его до последней версии. Версия $releaseVersion теперь доступна, текущая - $appVersion.',
-        ),
-        VersionStatusBase.deprecated: const UpdateTextData(
-          title: r'Обновите $appName',
-          description:
-              r'Текущая версия приложения устарала и скоро перестанет поддерживаться, обновите его до последней версии. Версия $releaseVersion теперь доступна, текущая - $appVersion.',
-        ),
-      },
-      UpdateAlertTypeBase.card: {
-        VersionStatusBase.base: const UpdateTextData(
-          title: r'Обновите $appName',
-          description: 'Дайте ему возможность стать лучше!',
-        ),
-      },
-    };
-  }
+  const EnUpdateTranslations() : super(tr);
 }

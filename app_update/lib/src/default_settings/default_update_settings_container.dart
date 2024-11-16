@@ -6,9 +6,9 @@ import '../shared/update_alert_type.dart';
 import '../shared/version_status.dart';
 
 class DefaultUpdateSettingsDataContainer extends UpdateSettingsDataContainer {
-  static final _settings = {
+  static const _settings = {
     UpdateAlertTypeBase.base: {
-      VersionStatusBase.base: const UpdateSettingsData.byRequired(
+      VersionStatusBase.base: UpdateSettingsData.byRequired(
         canSkipRelease: false,
         canPostponeRelease: true,
         reminderPeriod: Duration(hours: 36),
@@ -16,12 +16,12 @@ class DefaultUpdateSettingsDataContainer extends UpdateSettingsDataContainer {
         progressiveRolloutDuration: Duration.zero,
         customData: null,
       ),
-      VersionStatusBase.deprecated: const UpdateSettingsData(
+      VersionStatusBase.deprecated: UpdateSettingsData(
         canSkipRelease: false,
         canPostponeRelease: true,
         reminderPeriod: Duration(hours: 6),
       ),
-      VersionStatusBase.unsupported: const UpdateSettingsData(
+      VersionStatusBase.unsupported: UpdateSettingsData(
         canSkipRelease: false,
         canPostponeRelease: false,
         reminderPeriod: Duration.zero,
@@ -29,5 +29,5 @@ class DefaultUpdateSettingsDataContainer extends UpdateSettingsDataContainer {
     },
   };
 
-  DefaultUpdateSettingsDataContainer() : super(_settings);
+  const DefaultUpdateSettingsDataContainer() : super(_settings);
 }

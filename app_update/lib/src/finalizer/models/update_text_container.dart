@@ -9,8 +9,12 @@ import 'update_texts.dart';
 class UpdateTextContainer {
   final UpdateTextDataContainer dataContainer;
 
+  // ignore: prefer-correct-callback-field-name
+  final UpdateText Function(UpdateText text) interpolate;
+
   const UpdateTextContainer({
     required this.dataContainer,
+    required this.interpolate,
   });
 
   UpdateText getBy({
@@ -34,7 +38,7 @@ class UpdateTextContainer {
     if (textData == null) throw Exception('UpdateTextData has null field');
 
     try {
-      return UpdateText(
+      final updateText = UpdateText(
         title: textData.title!,
         description: textData.description!,
         releaseNotesTitle: textData.releaseNotesTitle!,
@@ -44,6 +48,10 @@ class UpdateTextContainer {
         updateButton: textData.updateButton!,
         customData: textData.customData,
       );
+
+      final interpolatedUpdateText = interpolate(updateText);
+
+      return interpolatedUpdateText;
     } catch (e, s) {
       Error.throwWithStackTrace(Exception('UpdateTextData has null field'), s);
     }

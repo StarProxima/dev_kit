@@ -16,6 +16,7 @@ import '../finalizer/models/update_config.dart';
 import '../finalizer/update_finalizer.dart';
 import '../finder/update_finder.dart';
 import '../linker/models/update_settings_data_container.dart';
+import '../linker/models/update_text_data_container.dart';
 import '../linker/update_config_linker.dart';
 import '../parser/models/release_config.dart';
 import '../parser/models/update_config_model.dart';
@@ -36,6 +37,7 @@ class UpdateController extends UpdateControllerBase {
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
   final UpdateSettingsDataContainer? _updateSettings;
+  final UpdateTextDataContainer? _updateText;
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
@@ -67,6 +69,7 @@ class UpdateController extends UpdateControllerBase {
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
     UpdateSettingsDataContainer? updateSettings,
+    UpdateTextDataContainer? updateText,
     UpdateStorage? storage,
     // TODO: Нам, поидее, нужно передавать List<GlobalSourceConfig>
     // TODO: Потом сделать, чтобы передавалось GlobalSource без nullable name и config
@@ -77,6 +80,7 @@ class UpdateController extends UpdateControllerBase {
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
+        _updateText = updateText,
         _updateStorage = storage,
         _globalSources = globalSources,
         _targetSource = targetSource,
@@ -263,7 +267,9 @@ class UpdateController extends UpdateControllerBase {
     final appVersion = Version.parse(packageInfo.version);
     final appName = packageInfo.appName;
 
-    if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases(locale: locale);
+    if (_sourceReleasesConfigFromFetchersCompleter == null) {
+      await fetchGlobalSourceReleases(locale: locale);
+    }
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
     final releasesData = _linker.linkConfigs(
@@ -278,7 +284,13 @@ class UpdateController extends UpdateControllerBase {
     _versionController = UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _finalizer ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
+    _finalizer ??= UpdateFinalizer(
+      appName: appName,
+      appVersion: appVersion,
+      textContainer: _updateText,
+      settingsContainer: _updateSettings,
+    );
+
     final releases = _finalizer!.fializeReleases(availableReleasesData);
 
     final updateConfig = UpdateConfig(

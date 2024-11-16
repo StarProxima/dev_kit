@@ -1,13 +1,13 @@
-// ignore_for_file: avoid-similar-names, avoid-long-functions
+// ignore_for_file: avoid-long-functions, avoid-late-keyword
 
 import 'package:pub_semver/pub_semver.dart';
 
 import '../default_settings/default_update_settings_container.dart';
 import '../default_settings/translations/default_update_text_container.dart';
 import '../linker/models/release_data.dart';
-import '../linker/models/update_text_data.dart';
+import '../linker/models/update_settings_data_container.dart';
+import '../linker/models/update_text_data_container.dart';
 import 'models/release.dart';
-import 'models/update_settings.dart';
 import 'models/update_settings_container.dart';
 import 'models/update_text_container.dart';
 import 'models/update_texts.dart';
@@ -16,13 +16,29 @@ class UpdateFinalizer {
   final String appName;
   final Version appVersion;
 
-  static final _defaulUpdateTextContainer = DefaultUpdateTextDataContainer();
-  static final _defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
+  late final UpdateTextDataContainer _textContainer;
+  late final UpdateSettingsDataContainer _settingsContainer;
 
-  const UpdateFinalizer({
+  UpdateFinalizer({
     required this.appName,
     required this.appVersion,
-  });
+    required UpdateTextDataContainer? textContainer,
+    required UpdateSettingsDataContainer? settingsContainer,
+  }) {
+    final defaultTextContainer = DefaultUpdateTextDataContainer();
+    const defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
+
+    _textContainer = textContainer == null
+        ? defaultTextContainer
+        : defaultTextContainer.inherit(
+            textContainer,
+          );
+    _settingsContainer = settingsContainer == null
+        ? defaultSettingsContainer
+        : defaultSettingsContainer.inherit(
+            settingsContainer,
+          );
+  }
 
   List<Release> fializeReleases(List<ReleaseData> releases) {
     return releases.map(finalizeRelease).toList();
@@ -59,59 +75,16 @@ class UpdateFinalizer {
           customData: text.customData,
         );
 
-    final finalizedTextMap = releaseData.text.value.map(
-      (locale, value) => MapEntry(
-        locale,
-        value.map(
-          (alertType, value) => MapEntry(
-            alertType,
-            value.map(
-              (status, textConfig) {
-                final updateText = UpdateText.fromData(
-                  UpdateTextData.fromConfig(textConfig),
-                  defaultText: _defaulUpdateTextContainer.getByBase(
-                    locale: locale,
-                    type: alertType,
-                    status: status,
-                  ),
-                );
-
-                final interpolatedText = interpolateUpdateText(updateText);
-
-                return MapEntry(
-                  status,
-                  interpolatedText,
-                );
-              },
-            ),
-          ),
-        ),
-      ),
+    final textContainer = _textContainer.inherit(releaseData.text);
+    final text = UpdateTextContainer(
+      dataContainer: textContainer,
+      interpolate: interpolateUpdateText,
     );
 
-    final finalizedSettingsMap = releaseData.settings.value.map(
-      (alertType, value) => MapEntry(
-        alertType,
-        value.map(
-          (status, settings) {
-            final defaultSettings = _defaultSettingsContainer.getByBase(
-              type: alertType,
-              status: status,
-            );
-
-            final updateSettings = defaultSettings.merge(settings);
-
-            return MapEntry(
-              status,
-              updateSettings,
-            );
-          },
-        ),
-      ),
+    final settingsContainer = _settingsContainer.inherit(releaseData.settings);
+    final settings = UpdateSettingsContainer(
+      dataContainer: settingsContainer,
     );
-
-    final text = UpdateTextContainer(finalizedTextMap);
-    final settings = UpdateSettingsContainer(finalizedSettingsMap);
 
     return Release(
       version: releaseData.version,

@@ -3,7 +3,6 @@
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
-import '../shared/update_settings_container.dart';
 import '../sources/source.dart';
 import 'models/release_data.dart';
 import 'models/update_settings_data_container.dart';
