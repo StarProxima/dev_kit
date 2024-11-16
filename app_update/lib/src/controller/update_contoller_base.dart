@@ -34,9 +34,8 @@ abstract class UpdateControllerBase {
     Locale locale,
   });
 
-  /// Finds updates from all sources available on the current application platform from fetched UpdateConfig and global sources releases data.
+  /// Finds updates from all sources for current platform.
   ///
-  /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
   Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale,
