@@ -15,6 +15,8 @@ class UpdateFinder {
     required this.platform,
   });
 
+  // Для каждого имеющегося сурса ставит в соответствие самый актуальный из доступных релизов.
+  // Т.е. если для аппстора есть версии 1.0.0 и 1.1.0, то аппстору будет соответствовать только 1.1.0
   Map<Source, Release> findAvailableReleasesBySource({
     required List<Release> releases,
   }) {
