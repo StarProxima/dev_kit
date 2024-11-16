@@ -33,25 +33,25 @@ class UpdateSettingsDataContainer {
     );
   }
 
-  UpdateSettingsDataContainer inherit(UpdateSettingsDataContainer child) {
-    final inheritedValue = {...child.value};
+  UpdateSettingsDataContainer merge(UpdateSettingsDataContainer child) {
+    final mergedValue = {...child.value};
 
     for (final type in value.entries) {
-      if (inheritedValue.containsKey(type.key)) {
+      if (mergedValue.containsKey(type.key)) {
         for (final status in type.value.entries) {
-          if (inheritedValue[type.key]!.containsKey(status.key)) {
-            final childSettings = inheritedValue[type.key]![status.key]!;
-            inheritedValue[type.key]?[status.key] = status.value.inherit(childSettings);
+          if (mergedValue[type.key]!.containsKey(status.key)) {
+            final childSettings = mergedValue[type.key]![status.key]!;
+            mergedValue[type.key]?[status.key] = status.value.merge(childSettings);
           } else {
-            inheritedValue[type.key]?[status.key] = status.value;
+            mergedValue[type.key]?[status.key] = status.value;
           }
         }
       } else {
-        inheritedValue[type.key] = type.value;
+        mergedValue[type.key] = type.value;
       }
     }
 
-    return UpdateSettingsDataContainer(inheritedValue);
+    return UpdateSettingsDataContainer(mergedValue);
   }
 
   UpdateSettingsData? getByBase({
@@ -70,7 +70,7 @@ class UpdateSettingsDataContainer {
     for (final combination in combinations) {
       // ignore: avoid-positional-record-field-access
       final byCombination = value[combination.$1]?[combination.$2];
-      settingsData = settingsData?.inherit(byCombination) ?? byCombination ?? settingsData;
+      settingsData = settingsData?.merge(byCombination) ?? byCombination ?? settingsData;
     }
 
     return settingsData;

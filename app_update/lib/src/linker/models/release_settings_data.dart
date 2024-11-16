@@ -37,14 +37,16 @@ class UpdateSettingsData {
     );
   }
 
-  UpdateSettingsData inherit(UpdateSettingsData? child) {
+  UpdateSettingsData merge(UpdateSettingsData? child) {
+    final customData = {...?this.customData, ...?child?.customData};
+
     return UpdateSettingsData.byRequired(
       canSkipRelease: child?.canSkipRelease ?? canSkipRelease,
       canPostponeRelease: child?.canPostponeRelease ?? canPostponeRelease,
       reminderPeriod: child?.reminderPeriod ?? reminderPeriod,
       releaseDelay: child?.releaseDelay ?? releaseDelay,
       progressiveRolloutDuration: child?.progressiveRolloutDuration ?? progressiveRolloutDuration,
-      customData: child?.customData ?? customData,
+      customData: customData.isEmpty ? null : customData,
     );
   }
 }

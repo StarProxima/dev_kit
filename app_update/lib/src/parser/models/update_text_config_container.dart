@@ -13,7 +13,7 @@ class UpdateTextConfigContainer {
 
   const UpdateTextConfigContainer(this.value);
 
-  UpdateTextConfigContainer.fromUpdateTextConfig(UpdateTextConfig config)
+  UpdateTextConfigContainer.fromBase(UpdateTextConfig config)
       : value = {
           const Locale('base'): {
             UpdateAlertTypeBase.base: {VersionStatusBase.base: config},

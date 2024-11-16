@@ -9,14 +9,14 @@ class UpdateTextDataContainer {
 
   const UpdateTextDataContainer(this.value);
 
-  UpdateTextDataContainer inherit(UpdateTextDataContainer child) {
-    final inheritedValue = {...child.value};
+  UpdateTextDataContainer merge(UpdateTextDataContainer child) {
+    final mergedValue = {...child.value};
 
     for (final byLocale in value.entries) {
-      final childByLocale = inheritedValue[byLocale.key];
+      final childByLocale = mergedValue[byLocale.key];
 
       if (childByLocale == null) {
-        inheritedValue[byLocale.key] = byLocale.value;
+        mergedValue[byLocale.key] = byLocale.value;
         continue;
       }
 
@@ -35,12 +35,12 @@ class UpdateTextDataContainer {
           }
 
           final childText = childByStatus;
-          childByType[byStatus.key] = byStatus.value.inherit(childText);
+          childByType[byStatus.key] = byStatus.value.merge(childText);
         }
       }
     }
 
-    return UpdateTextDataContainer(inheritedValue);
+    return UpdateTextDataContainer(mergedValue);
   }
 
   UpdateTextData? getBy({
@@ -75,7 +75,7 @@ class UpdateTextDataContainer {
     for (final combination in combinations) {
       // ignore: avoid-positional-record-field-access
       final byCombination = value[combination.$1]?[combination.$2]?[combination.$3];
-      textData = textData?.inherit(byCombination) ?? byCombination ?? textData;
+      textData = textData?.merge(byCombination) ?? byCombination ?? textData;
     }
 
     return textData;

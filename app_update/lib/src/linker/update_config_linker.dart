@@ -34,7 +34,7 @@ class UpdateConfigLinker {
       // мержим настройки релиза с глобальными настройками
       final updateSettings = releaseConfig.settings;
       if (updateSettings != null) {
-        inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(updateSettings));
+        inheritedSettings = inheritedSettings.merge(UpdateSettingsDataContainer.fromConfig(updateSettings));
       }
 
       final sourcesConfig = releaseConfig.sources;
@@ -57,7 +57,7 @@ class UpdateConfigLinker {
         // мержим настройки сурса с релизными настройками
         final sourceSettings = globalSource?.settings ?? sourceReleaseConfig?.settings;
         if (sourceSettings != null) {
-          inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(sourceSettings));
+          inheritedSettings = inheritedSettings.merge(UpdateSettingsDataContainer.fromConfig(sourceSettings));
         }
 
         // TODO: Сурсы теперь содержать nullable поля (которые, по идее, должны быть обязательными),

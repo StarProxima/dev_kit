@@ -30,12 +30,12 @@ class UpdateFinalizer {
 
     _textContainer = textContainer == null
         ? defaultTextContainer
-        : defaultTextContainer.inherit(
+        : defaultTextContainer.merge(
             textContainer,
           );
     _settingsContainer = settingsContainer == null
         ? defaultSettingsContainer
-        : defaultSettingsContainer.inherit(
+        : defaultSettingsContainer.merge(
             settingsContainer,
           );
   }
@@ -75,13 +75,13 @@ class UpdateFinalizer {
           customData: text.customData,
         );
 
-    final textContainer = _textContainer.inherit(releaseData.text);
+    final textContainer = _textContainer.merge(releaseData.text);
     final text = UpdateTextContainer(
       dataContainer: textContainer,
       interpolate: interpolateUpdateText,
     );
 
-    final settingsContainer = _settingsContainer.inherit(releaseData.settings);
+    final settingsContainer = _settingsContainer.merge(releaseData.settings);
     final settings = UpdateSettingsContainer(
       dataContainer: settingsContainer,
     );

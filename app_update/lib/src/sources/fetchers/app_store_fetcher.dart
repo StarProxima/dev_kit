@@ -48,7 +48,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
 
     return ReleaseConfig(
       version: sourceVersion,
-      text: UpdateTextConfigContainer.fromUpdateTextConfig(updateTextConfig),
+      text: UpdateTextConfigContainer.fromBase(updateTextConfig),
       settings: const UpdateSettingsConfigContainer({}),
       sources: [const ReleaseSourceConfig(name: 'appStore')],
       customData: {},
