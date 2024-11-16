@@ -21,6 +21,7 @@ dependencies:
   url_launcher: ^6.1.14
   store_checker: ^1.6.0
   collection: ^1.18.0
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

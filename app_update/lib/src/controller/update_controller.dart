@@ -16,6 +16,7 @@ import '../finalizer/models/update_config.dart';
 import '../finalizer/update_finalizer.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_config_linker.dart';
+import '../parser/models/release_config.dart';
 import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
@@ -38,8 +39,8 @@ class UpdateController extends UpdateControllerBase {
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
-  UpdateFinalizer? _interpolator;
-  SourceReleaseFetcherCoordinator? _sourceFetcherCoordinator;
+  UpdateFinalizer? _finalizer;
+  final SourceReleaseFetcherCoordinator _sourceFetcherCoordinator;
   UpdateFinder? _finder;
 
   UpdateStorage? _updateStorage;
@@ -52,7 +53,7 @@ class UpdateController extends UpdateControllerBase {
   final Source? _defaultSource;
 
   Completer<UpdateConfigModel>? _updateConfigModelCompleter;
-  Completer<List<Release>>? _sourceReleasesFromFetchersCompleter;
+  Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
 
@@ -74,7 +75,7 @@ class UpdateController extends UpdateControllerBase {
     Source? targetSource,
     Source? defaultSource,
   })  : _updateConfigFetcher = updateConfigFetcher,
-        _sourceFetcherCoordinator = sourceFetcherCoordinator,
+        _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
@@ -107,63 +108,34 @@ class UpdateController extends UpdateControllerBase {
   Future<void> fetchGlobalSourceReleases({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
-    _sourceReleasesFromFetchersCompleter = Completer();
+    _sourceReleasesConfigFromFetchersCompleter = Completer();
 
     final packageInfo = await _asyncPackageInfo;
-    final releases = <Release>[];
+    final releases = <ReleaseConfig>[];
     for (final source in _globalSources ?? []) {
-      final fetcher = await _sourceFetcherCoordinator!.fetcherBySource(source);
+      final fetcher = await _sourceFetcherCoordinator.fetcherBySource(source);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
-      releases.add(releaseFromSource);
+      if (releaseFromSource != null) releases.add(releaseFromSource);
     }
 
-    _sourceReleasesFromFetchersCompleter!.complete(releases);
+    _sourceReleasesConfigFromFetchersCompleter!.complete(releases);
   }
 
   @override
   Future<AppUpdate> findUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
-    if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
-    final configModel = await _updateConfigModelCompleter!.future;
-
     final packageInfo = await _asyncPackageInfo;
     final appVersion = Version.parse(packageInfo.version);
-    final appName = packageInfo.appName;
-
-    final releasesData = _linker.linkConfigs(
-      globalSettingsConfig: configModel.settings,
-      releasesConfig: configModel.releases,
-      globalSourcesConfig: configModel.sources,
-    );
-
-    final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
-
-    _versionController ??= UpdateVersionController(configModel.versionSettings);
-    final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
-
-    _interpolator ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
-    final releases = _interpolator!.fializeReleases(availableReleasesData);
-
-    _sourceFetcherCoordinator ??= const SourceReleaseFetcherCoordinator();
-
-    if (_sourceReleasesFromFetchersCompleter == null) await fetchGlobalSourceReleases();
-    final releasesFromSources = await _sourceReleasesFromFetchersCompleter!.future;
-    releases.addAll(releasesFromSources);
-    sources.addAll([...?_globalSources]);
-
-    final updateConfig = UpdateConfig(
-      sources: sources,
-      releases: releases,
-      customData: configModel.customData,
-    );
+    final updateConfig = await _findUpdateConfig(locale: locale);
 
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
-    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: releases);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
 
+    // TODO сделать больше обобщение метода
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
-      sources: sources,
+      sources: updateConfig.sources,
       // TODO: Завести типизацию, без стингов
       prioritySourceName: _targetSource?.name,
     );
@@ -195,6 +167,45 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
+  Future<List<AppUpdate>> findAllAvailableUpdates({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
+    final updateConfig = await _findUpdateConfig(locale: locale);
+
+    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
+    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
+
+    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
+
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+
+    final appUpdateList = <AppUpdate>[];
+    for (final availableReleaseAndSource in availableReleasesBySources.entries) {
+      final availableRelease = availableReleaseAndSource.value;
+
+      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+        continue;
+      }
+      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+        continue;
+      }
+
+      appUpdateList.add(AppUpdate(
+        appName: packageInfo.appName,
+        appVersion: appVersion,
+        config: updateConfig,
+        appVersionStatus: currentReleaseStatus,
+        release: availableRelease,
+      ));
+    }
+
+    return appUpdateList;
+  }
+
+  @override
   Future<AppUpdate?> tryFindUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
@@ -205,14 +216,6 @@ class UpdateController extends UpdateControllerBase {
     } on UpdateException catch (_) {
       return null;
     }
-  }
-
-  @override
-  Future<List<AppUpdate>> findAllAvailableUpdates({
-    Locale locale = kAppUpdateDefaultLocale,
-  }) {
-    // TODO: implement findAllAvailableUpdates
-    throw UnimplementedError();
   }
 
   @override
@@ -231,8 +234,6 @@ class UpdateController extends UpdateControllerBase {
   }) async {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
 
-    // передаём postponeDuration так как в этой функции не получится определить статус релиза и карточки
-    // TODO: Почему? Статус можно определить можно из Release, а UpdateAlertType передавать в метод из ui
     await _updateStorage?.addPostponedRelease(
       releaseVersion: release.version,
       postponeDuration: postponeDuration,
@@ -241,7 +242,6 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   Future<void> skipRelease(Release release) async {
-    // TODO: Подумать вообще над инициализацией полей в контроллере, мб это делать всё в одном месте
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
 
     await _updateStorage?.addSkippedRelease(release.version);
@@ -251,5 +251,42 @@ class UpdateController extends UpdateControllerBase {
   Future<void> dispose() async {
     await _updateConfigStream.close();
     await _availableUpdateStream.close();
+  }
+
+  Future<UpdateConfig> _findUpdateConfig({
+    Locale locale = kAppUpdateDefaultLocale,
+  }) async {
+    if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
+    final configModel = await _updateConfigModelCompleter!.future;
+
+    final packageInfo = await _asyncPackageInfo;
+    final appVersion = Version.parse(packageInfo.version);
+    final appName = packageInfo.appName;
+
+    if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases(locale: locale);
+    final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
+
+    final releasesData = _linker.linkConfigs(
+      globalSettingsConfig: configModel.settings,
+      releasesConfig: [...configModel.releases, ...releasesFromSources],
+      globalSourcesConfig: configModel.sources,
+    );
+
+    final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
+    sources.addAll([...?_globalSources]);
+
+    _versionController = UpdateVersionController(configModel.versionSettings);
+    final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
+
+    _finalizer ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
+    final releases = _finalizer!.fializeReleases(availableReleasesData);
+
+    final updateConfig = UpdateConfig(
+      sources: sources,
+      releases: releases,
+      customData: configModel.customData,
+    );
+
+    return updateConfig;
   }
 }

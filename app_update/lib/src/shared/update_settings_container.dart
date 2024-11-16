@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods
+// ignore_for_file: avoid-collection-mutating-methods, avoid-non-null-assertion
 
 import 'package:flutter/widgets.dart';
 
@@ -160,7 +160,7 @@ class UpdateSettingsContainer {
   }) {
     final settingsData = dataContainer.getByBase(type: type, status: status);
 
-    if (settingsData == null) throw 'Ти хуесос полный';
+    if (settingsData == null) throw Exception('SettingsData has null field');
 
     try {
       return UpdateSettings(
@@ -172,7 +172,7 @@ class UpdateSettingsContainer {
         customData: {},
       );
     } catch (e, s) {
-      throw Error.throwWithStackTrace('Ти хуесос полный', s);
+      Error.throwWithStackTrace(Exception('SettingsData has null field'), s);
     }
   }
 }
