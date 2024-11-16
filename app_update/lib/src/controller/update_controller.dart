@@ -132,6 +132,7 @@ class UpdateController extends UpdateControllerBase {
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
 
+    // TODO сделать больше обобщение метода
     final availableRelease = await _finder!.findAvailableRelease(
       availableReleasesBySources: availableReleasesBySources,
       sources: updateConfig.sources,
