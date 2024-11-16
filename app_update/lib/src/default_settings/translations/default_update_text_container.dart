@@ -11,9 +11,9 @@ import 'locales/ru_translations.dart';
 
 class DefaultUpdateTextDataContainer extends UpdateTextDataContainer {
   static final _defaultText = {
-    const Locale('base'): const EnUpdateTranslations().translations(),
-    const Locale('en'): const EnUpdateTranslations().translations(),
-    const Locale('ru'): const RuUpdateTranslations().translations(),
+    const Locale('base'): const EnUpdateTranslations().translations,
+    const Locale('en'): const EnUpdateTranslations().translations,
+    const Locale('ru'): const RuUpdateTranslations().translations,
   };
 
   DefaultUpdateTextDataContainer() : super(_defaultText);

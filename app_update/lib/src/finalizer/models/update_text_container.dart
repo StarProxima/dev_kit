@@ -1,19 +1,25 @@
 // ignore_for_file: avoid-accessing-other-classes-private-members, avoid-unnecessary-getter, avoid-collection-mutating-methods, avoid-missing-enum-constant-in-map, avoid-non-null-assertion
 import 'dart:ui';
 
+import '../../linker/models/update_container_storage.dart';
+import '../../linker/models/update_text_data.dart';
 import '../../linker/models/update_text_data_container.dart';
 import '../../shared/update_alert_type.dart';
 import '../../shared/version_status.dart';
 import 'update_texts.dart';
 
 class UpdateTextContainer {
-  final UpdateTextDataContainer dataContainer;
+  final UpdateTextDataContainer defaultContainer;
+  final UpdateTextDataContainer? controllerContainer;
+  final UpdateContainerStorage<UpdateTextDataContainer> containerStorage;
 
   // ignore: prefer-correct-callback-field-name
   final UpdateText Function(UpdateText text) interpolate;
 
   const UpdateTextContainer({
-    required this.dataContainer,
+    required this.defaultContainer,
+    required this.controllerContainer,
+    required this.containerStorage,
     required this.interpolate,
   });
 
@@ -33,7 +39,27 @@ class UpdateTextContainer {
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
-    final textData = dataContainer.getByBase(locale: locale, type: type, status: status);
+    // Store in a map to make it more clear which specific containers are merged next
+    final dataFromAllContainers = {
+      'default': defaultContainer.getByBase(locale: locale, type: type, status: status),
+      'controller': controllerContainer?.getByBase(locale: locale, type: type, status: status),
+      'global': containerStorage.global?.getByBase(locale: locale, type: type, status: status),
+      'globalSource': containerStorage.globalSource?.getByBase(locale: locale, type: type, status: status),
+      'globalSourcePlatform':
+          containerStorage.globalSourcePlatform?.getByBase(locale: locale, type: type, status: status),
+      'release': containerStorage.release?.getByBase(locale: locale, type: type, status: status),
+      'releaseSource': containerStorage.releaseSource?.getByBase(locale: locale, type: type, status: status),
+      'releaseSourcePlatform':
+          containerStorage.releaseSourcePlatform?.getByBase(locale: locale, type: type, status: status),
+    };
+
+    UpdateTextData? textData;
+
+    // ignore: unused_local_variable
+    for (final MapEntry(key: name, :value) in dataFromAllContainers.entries) {
+      if (value == null) continue;
+      textData = textData?.merge(value) ?? value;
+    }
 
     if (textData == null) throw Exception('UpdateTextData has null field');
 

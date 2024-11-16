@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-long-functions, avoid-late-keyword
+// ignore_for_file: avoid-long-functions
 
 import 'package:pub_semver/pub_semver.dart';
 
@@ -16,29 +16,18 @@ class UpdateFinalizer {
   final String appName;
   final Version appVersion;
 
-  late final UpdateTextDataContainer _textContainer;
-  late final UpdateSettingsDataContainer _settingsContainer;
+  final UpdateTextDataContainer? textContainer;
+  final UpdateSettingsDataContainer? settingsContainer;
 
-  UpdateFinalizer({
+  static final _defaultTextContainer = DefaultUpdateTextDataContainer();
+  static const _defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
+
+  const UpdateFinalizer({
     required this.appName,
     required this.appVersion,
-    required UpdateTextDataContainer? textContainer,
-    required UpdateSettingsDataContainer? settingsContainer,
-  }) {
-    final defaultTextContainer = DefaultUpdateTextDataContainer();
-    const defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
-
-    _textContainer = textContainer == null
-        ? defaultTextContainer
-        : defaultTextContainer.merge(
-            textContainer,
-          );
-    _settingsContainer = settingsContainer == null
-        ? defaultSettingsContainer
-        : defaultSettingsContainer.merge(
-            settingsContainer,
-          );
-  }
+    required this.textContainer,
+    required this.settingsContainer,
+  });
 
   List<Release> fializeReleases(List<ReleaseData> releases) {
     return releases.map(finalizeRelease).toList();
@@ -75,15 +64,17 @@ class UpdateFinalizer {
           customData: text.customData,
         );
 
-    final textContainer = _textContainer.merge(releaseData.text);
     final text = UpdateTextContainer(
-      dataContainer: textContainer,
+      defaultContainer: _defaultTextContainer,
+      controllerContainer: textContainer,
+      containerStorage: releaseData.textContainers,
       interpolate: interpolateUpdateText,
     );
 
-    final settingsContainer = _settingsContainer.merge(releaseData.settings);
     final settings = UpdateSettingsContainer(
-      dataContainer: settingsContainer,
+      defaultContainer: _defaultSettingsContainer,
+      controllerContainer: settingsContainer,
+      containerStorage: releaseData.settingsContainers,
     );
 
     return Release(
