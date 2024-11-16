@@ -5,8 +5,6 @@ import 'dart:ui';
 import '../shared/raw_update_config.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_settings_container.dart';
-import '../shared/update_text_container.dart';
 import '../shared/version_status.dart';
 import 'base_parsers/bool_parser.dart';
 import 'base_parsers/date_time_parser.dart';

@@ -1,8 +1,8 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../shared/update_settings_container.dart';
-import '../../shared/update_text_container.dart';
 import 'source_config.dart';
+import 'update_settings_config_container.dart';
+import 'update_text_config_container.dart';
 
 class ReleaseConfig {
   final Version? version;

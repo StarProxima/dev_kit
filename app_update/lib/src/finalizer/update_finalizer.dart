@@ -6,10 +6,10 @@ import '../default_settings/default_update_settings_container.dart';
 import '../default_settings/translations/default_update_text_container.dart';
 import '../linker/models/release_data.dart';
 import '../linker/models/update_text_data.dart';
-import '../shared/update_settings_container.dart';
-import '../shared/update_text_container.dart';
 import 'models/release.dart';
 import 'models/update_settings.dart';
+import 'models/update_settings_container.dart';
+import 'models/update_text_container.dart';
 import 'models/update_texts.dart';
 
 class UpdateFinalizer {
@@ -56,6 +56,7 @@ class UpdateFinalizer {
           skipButton: interpolate(text.skipButton),
           laterButton: interpolate(text.laterButton),
           updateButton: interpolate(text.updateButton),
+          customData: text.customData,
         );
 
     final finalizedTextMap = releaseData.text.value.map(

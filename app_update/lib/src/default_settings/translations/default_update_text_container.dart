@@ -3,8 +3,8 @@
 import 'dart:ui';
 
 import '../../linker/models/update_text_data.dart';
+import '../../linker/models/update_text_data_container.dart';
 import '../../shared/update_alert_type.dart';
-import '../../shared/update_text_container.dart';
 import '../../shared/version_status.dart';
 import 'locales/en_translations.dart';
 import 'locales/ru_translations.dart';

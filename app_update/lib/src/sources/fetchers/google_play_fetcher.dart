@@ -12,9 +12,9 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
+import '../../parser/models/update_settings_config_container.dart';
 import '../../parser/models/update_text_config.dart';
-import '../../shared/update_settings_container.dart';
-import '../../shared/update_text_container.dart';
+import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
 //TODO http.Client и clientHeaders надо бы сделать изменяемыми из вне. Или переписать всё на нативные дартовые клиенты

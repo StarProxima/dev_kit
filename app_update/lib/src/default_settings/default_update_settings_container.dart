@@ -1,8 +1,8 @@
 // ignore_for_file: avoid-missing-enum-constant-in-map, no-equal-arguments
 
 import '../linker/models/release_settings_data.dart';
+import '../linker/models/update_settings_data_container.dart';
 import '../shared/update_alert_type.dart';
-import '../shared/update_settings_container.dart';
 import '../shared/version_status.dart';
 
 class DefaultUpdateSettingsDataContainer extends UpdateSettingsDataContainer {
