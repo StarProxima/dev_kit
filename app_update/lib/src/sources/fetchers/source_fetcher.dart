@@ -7,13 +7,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../parser/models/release_config.dart';
 import '../source.dart';
+import '../sources.dart';
 import 'app_store_fetcher.dart';
 import 'google_play_fetcher.dart';
 
 base class SourceReleaseFetcherCoordinator {
   const SourceReleaseFetcherCoordinator();
 
-  FutureOr<SourceReleaseFetcher> fetcherBySource(Source source) => switch (source.type) {
+  FutureOr<SourceReleaseFetcher> fetcherBySource(String sourceName) => switch (Sources.parse(sourceName)) {
         Sources.googlePlay => const GooglePlayFetcher(),
         Sources.appStore => const AppStoreFetcher(),
         Sources.custom => throw UnimplementedError(),
@@ -34,7 +35,7 @@ abstract class SourceReleaseFetcher {
   const SourceReleaseFetcher();
 
   // Return ReleaseData parsed from source's page.
-  // Return null if can't parse. //TODO кидать ошибки или возвращать нулл?
+  // Return null if can't parse.
   Future<ReleaseConfig?> fetch({
     required Source source,
     required Locale locale,

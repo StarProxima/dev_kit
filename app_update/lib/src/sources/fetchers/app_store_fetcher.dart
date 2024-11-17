@@ -13,7 +13,6 @@ import 'package:pub_semver/pub_semver.dart';
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
 import '../../parser/models/update_text_config.dart';
-import '../../shared/update_settings_container.dart';
 import '../../shared/update_text_container.dart';
 import '../source.dart';
 import 'source_fetcher.dart';
@@ -49,9 +48,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     return ReleaseConfig(
       version: sourceVersion,
       text: UpdateTextConfigContainer.fromUpdateTextConfig(updateTextConfig),
-      settings: const UpdateSettingsConfigContainer({}),
-      sources: [const ReleaseSourceConfig(name: 'appStore')],
-      customData: {},
+      sources: [ReleaseSourceConfig(name: source.name, url: source.url)],
     );
   }
 

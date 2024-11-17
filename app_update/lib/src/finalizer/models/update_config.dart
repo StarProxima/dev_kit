@@ -1,8 +1,8 @@
-import '../../sources/source.dart';
+import '../../sources/release_source.dart';
 import 'release.dart';
 
 class UpdateConfig {
-  final List<Source> sources;
+  final List<ReleaseSource> sources;
   final List<Release> releases;
   final Map<String, dynamic>? customData;
 

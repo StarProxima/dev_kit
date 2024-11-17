@@ -10,6 +10,7 @@ class GlobalSourceConfig {
   final List<GlobalPlatformConfig>? platforms;
   final UpdateTextConfigContainer? text;
   final UpdateSettingsConfigContainer? settings;
+  // TODO нигде не юзается
   final VersionSettingsConfig? versionSettings;
   final Map<String, dynamic>? customData;
 

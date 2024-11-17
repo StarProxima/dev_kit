@@ -4,7 +4,8 @@ import 'package:pub_semver/pub_semver.dart';
 import '../controller/exceptions.dart';
 import '../finalizer/models/release.dart';
 import '../shared/update_platform.dart';
-import '../sources/source.dart';
+import '../sources/release_source.dart';
+import '../sources/sources.dart';
 
 class UpdateFinder {
   final Version appVersion;
@@ -17,11 +18,11 @@ class UpdateFinder {
 
   // Для каждого имеющегося сурса ставит в соответствие самый актуальный из доступных релизов.
   // Т.е. если для аппстора есть версии 1.0.0 и 1.1.0, то аппстору будет соответствовать только 1.1.0
-  Map<Source, Release> findAvailableReleasesBySource({
+  Map<ReleaseSource, Release> findAvailableReleasesBySource({
     required List<Release> releases,
   }) {
     // в Source определено сравнение по Url
-    final availableReleasesFromAllSources = <Source, Release>{};
+    final availableReleasesFromAllSources = <ReleaseSource, Release>{};
 
     for (final release in releases) {
       final releaseSource = release.source;
@@ -53,8 +54,8 @@ class UpdateFinder {
   /// Если требуется для кастомных сторов поддержать возможность обновления с одного и того же источника, то
   /// можно воспользоваться [prioritySourceName].
   Future<Release?> findAvailableRelease({
-    required Map<Source, Release> availableReleasesBySources,
-    required List<Source> sources,
+    required Map<ReleaseSource, Release> availableReleasesBySources,
+    required List<ReleaseSource> sources,
     String? prioritySourceName,
   }) async {
     final sourcesWithReleases = availableReleasesBySources.keys.toList();

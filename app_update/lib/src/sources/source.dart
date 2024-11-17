@@ -1,61 +1,20 @@
 import 'package:flutter/foundation.dart';
-import 'package:store_checker/store_checker.dart' as checker;
 
+import '../parser/models/platform_config.dart';
+import '../parser/models/source_config.dart';
 import '../shared/update_platform.dart';
-
-enum Sources {
-  googlePlay('Google Play'),
-  appStore('AppStore'),
-  googlePlayPackageInstaller('Google Play Package Installer'),
-  amazonAppStore('Amazon App Store'),
-  huaweiAppGallery('App Gallery'),
-  samsungGalaxyStore('Galaxy Store'),
-  samsungSmartSwitchMobile('Smart Switch Mobile'),
-  xiaomiGetApps('GetApps'),
-  oppoAppMarket('Oppo AppMarket'),
-  vivoAppStore('Vivo AppStore'),
-  ruStore('RuStore'),
-  testFlight('TestFlight'),
-  custom(null),
-  ;
-
-  const Sources(this.title);
-
-  final String? title;
-
-  factory Sources.parse(String name) => values.firstWhere(
-        (e) => e.name == name,
-        orElse: () => custom,
-      );
-
-  static Future<Sources?> checkAppSource() async {
-    final installationSource = await checker.StoreChecker.getSource;
-    final sourceCheckerName = switch (installationSource) {
-      checker.Source.IS_INSTALLED_FROM_PLAY_STORE => Sources.googlePlay,
-      checker.Source.IS_INSTALLED_FROM_PLAY_PACKAGE_INSTALLER => Sources.googlePlayPackageInstaller,
-      checker.Source.IS_INSTALLED_FROM_AMAZON_APP_STORE => Sources.amazonAppStore,
-      checker.Source.IS_INSTALLED_FROM_HUAWEI_APP_GALLERY => Sources.huaweiAppGallery,
-      checker.Source.IS_INSTALLED_FROM_SAMSUNG_GALAXY_STORE => Sources.samsungGalaxyStore,
-      checker.Source.IS_INSTALLED_FROM_SAMSUNG_SMART_SWITCH_MOBILE => Sources.samsungSmartSwitchMobile,
-      checker.Source.IS_INSTALLED_FROM_XIAOMI_GET_APPS => Sources.xiaomiGetApps,
-      checker.Source.IS_INSTALLED_FROM_OPPO_APP_MARKET => Sources.oppoAppMarket,
-      checker.Source.IS_INSTALLED_FROM_VIVO_APP_STORE => Sources.vivoAppStore,
-      checker.Source.IS_INSTALLED_FROM_TEST_FLIGHT => Sources.testFlight,
-      checker.Source.IS_INSTALLED_FROM_RU_STORE => Sources.ruStore,
-      checker.Source.IS_INSTALLED_FROM_APP_STORE => Sources.appStore,
-      // ignore: avoid-wildcard-cases-with-enums
-      _ => null, //  UNKNOWN, IS_INSTALLED_FROM_LOCAL_SOURCE, IS_INSTALLED_FROM_OTHER_SOURCE
-    };
-
-    return sourceCheckerName;
-  }
-}
+import '../shared/update_settings_container.dart';
+import '../shared/update_text_container.dart';
+import 'sources.dart';
 
 @immutable
 class Source {
   final Sources type;
   final Uri url;
   final List<UpdatePlatform> platforms;
+  // TODO скрыть Config из названия
+  final UpdateTextConfigContainer? text;
+  final UpdateSettingsConfigContainer? settings;
   final Map<String, dynamic>? customData;
 
   final String? _name;
@@ -63,136 +22,22 @@ class Source {
 
   String get title => type.title ?? name;
 
-  @override
-  int get hashCode => name.hashCode;
-
-  factory Source({
-    required String name,
-    required Uri url,
-    required List<UpdatePlatform>? platforms,
-    required Map<String, dynamic>? customData,
-  }) {
-    switch (Sources.parse(name)) {
-      case Sources.googlePlay:
-        return Source.googlePlay(url: url, customPlatforms: platforms, customData: customData);
-
-      case Sources.appStore:
-        return Source.appStore(url: url, customPlatforms: platforms, customData: customData);
-
-      default:
-        return Source.custom(
-          name: name,
-          url: url,
-          platforms: platforms ?? (throw Exception('Custom source should contains platforms')),
-          customData: customData,
-        );
-    }
-  }
-
-  const Source.googlePlay({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.googlePlay,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.appStore({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.appStore,
-        platforms = customPlatforms ?? const [UpdatePlatform.ios, UpdatePlatform.macos],
-        _name = null;
-
-  const Source.googlePlayPackageInstaller({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.googlePlayPackageInstaller,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.amazonAppStore({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.amazonAppStore,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.huaweiAppGallery({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.huaweiAppGallery,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.samsungGalaxyStore({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.samsungGalaxyStore,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.samsungSmartSwitchMobile({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.samsungSmartSwitchMobile,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.xiaomiGetApps({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.xiaomiGetApps,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.oppoAppMarket({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.oppoAppMarket,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.vivoAppStore({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.vivoAppStore,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.ruStore({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.ruStore,
-        platforms = customPlatforms ?? const [UpdatePlatform.android],
-        _name = null;
-
-  const Source.testFlight({
-    required this.url,
-    List<UpdatePlatform>? customPlatforms,
-    this.customData,
-  })  : type = Sources.testFlight,
-        platforms = customPlatforms ?? const [UpdatePlatform.ios, UpdatePlatform.macos],
-        _name = null;
-
-  const Source.custom({
+  Source({
     required String name,
     required this.url,
     required this.platforms,
-    this.customData,
-  })  : type = Sources.custom,
-        _name = name;
+    required this.text,
+    required this.settings,
+    required this.customData,
+  })  : _name = name,
+        type = Sources.parse(name);
 
-  @override
-  bool operator ==(Object other) => identical(this, other) || other is Source && name == other.name;
+  GlobalSourceConfig toGlobalSourceConfig() => GlobalSourceConfig(
+        name: _name,
+        url: url,
+        platforms: platforms.map((p) => GlobalPlatformConfig(platform: p)).toList(),
+        text: text,
+        settings: settings,
+        customData: customData,
+      );
 }

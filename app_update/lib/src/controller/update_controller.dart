@@ -49,8 +49,7 @@ class UpdateController extends UpdateControllerBase {
   final List<Source>? _globalSources;
   final UpdatePlatform _platform;
 
-  final Source? _targetSource;
-  final Source? _defaultSource;
+  final String? _targetSourceName;
 
   Completer<UpdateConfigModel>? _updateConfigModelCompleter;
   Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
@@ -68,19 +67,15 @@ class UpdateController extends UpdateControllerBase {
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
     UpdateSettingsDataContainer? updateSettings,
     UpdateStorage? storage,
-    // TODO: Нам, поидее, нужно передавать List<GlobalSourceConfig>
-    // TODO: Потом сделать, чтобы передавалось GlobalSource без nullable name и config
     List<Source>? globalSources,
     UpdatePlatform? targetPlatform,
-    Source? targetSource,
-    Source? defaultSource,
+    String? targetSourceName,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
         _updateStorage = storage,
         _globalSources = globalSources,
-        _targetSource = targetSource,
-        _defaultSource = defaultSource,
+        _targetSourceName = targetSourceName,
         _platform = targetPlatform ?? UpdatePlatform.current();
 
   @override
@@ -112,8 +107,9 @@ class UpdateController extends UpdateControllerBase {
 
     final packageInfo = await _asyncPackageInfo;
     final releases = <ReleaseConfig>[];
-    for (final source in _globalSources ?? []) {
-      final fetcher = await _sourceFetcherCoordinator.fetcherBySource(source);
+    // TODO сделать здесь ещё создание дефолтного сурса
+    for (final source in _globalSources ?? <Source>[]) {
+      final fetcher = await _sourceFetcherCoordinator.fetcherBySource(source.name);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
       if (releaseFromSource != null) releases.add(releaseFromSource);
     }
@@ -137,7 +133,7 @@ class UpdateController extends UpdateControllerBase {
       availableReleasesBySources: availableReleasesBySources,
       sources: updateConfig.sources,
       // TODO: Завести типизацию, без стингов
-      prioritySourceName: _targetSource?.name,
+      prioritySourceName: _targetSourceName,
     );
 
     final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
@@ -266,14 +262,17 @@ class UpdateController extends UpdateControllerBase {
     if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases(locale: locale);
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
+    final globalSourcesConfig = [
+      ...?configModel.sources,
+      ...?_globalSources?.map((e) => e.toGlobalSourceConfig()),
+    ];
+
     final releasesData = _linker.linkConfigs(
       globalSettingsConfig: configModel.settings,
       releasesConfig: [...configModel.releases, ...releasesFromSources],
-      globalSourcesConfig: configModel.sources,
+      globalSourcesConfig: globalSourcesConfig,
     );
-
-    final sources = _linker.parseSources(sourcesConfig: configModel.sources ?? []);
-    sources.addAll([...?_globalSources]);
+    final sources = _linker.parseSources(sourcesConfig: globalSourcesConfig);
 
     _versionController = UpdateVersionController(configModel.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
