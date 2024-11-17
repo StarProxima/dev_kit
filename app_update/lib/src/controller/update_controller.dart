@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, use_late_for_private_fields_and_variables, avoid-non-null-assertion, prefer-unwrapping-future-or, prefer-moving-to-variable
+// ignore_for_file: use_late_for_private_fields_and_variables, avoid-non-null-assertion, prefer-unwrapping-future-or
 
 import 'dart:async';
 import 'dart:ui';
@@ -23,6 +23,7 @@ import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_settings_container.dart';
 import '../sources/fetchers/source_release_fetcher_coordinator.dart';
+import '../sources/release_source.dart';
 import '../sources/source.dart';
 import '../storage/update_storage.dart';
 import '../storage/update_storage_manager.dart';
@@ -121,86 +122,15 @@ class UpdateController extends UpdateControllerBase {
   @override
   Future<AppUpdate> findUpdate({
     Locale locale = kAppUpdateDefaultLocale,
-  }) async {
-    final packageInfo = await _asyncPackageInfo;
-    final appVersion = Version.parse(packageInfo.version);
-    final updateConfig = await _findUpdateConfig(locale: locale);
-
-    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
-    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
-
-    // TODO сделать больше обобщение метода
-    final availableRelease = await _finder!.findAvailableRelease(
-      availableReleasesBySources: availableReleasesBySources,
-      sources: updateConfig.sources,
-      // TODO: Завести типизацию, без стингов
-      prioritySourceName: _targetSourceName,
-    );
-
-    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
-
-    final appUpdate = AppUpdate(
-      appName: packageInfo.appName,
-      appVersion: appVersion,
-      config: updateConfig,
-      appVersionStatus: currentReleaseStatus,
-      release: availableRelease ?? (throw const UpdateNotFoundException()),
-    );
-
-    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
-
-    if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
-      throw UpdateSkippedException(update: appUpdate);
-    }
-    if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
-      throw UpdatePostponedException(update: appUpdate);
-    }
-
-    _updateConfigStream.add(updateConfig);
-    _availableUpdateStream.add(appUpdate);
-
-    return appUpdate;
-  }
+  }) async =>
+      (await _findAppUpdatesFromConfig(isFindUpdateFromOneSource: true, locale: locale)).firstOrNull ??
+      (throw const UpdateNotFoundException());
 
   @override
   Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale = kAppUpdateDefaultLocale,
-  }) async {
-    final packageInfo = await _asyncPackageInfo;
-    final appVersion = Version.parse(packageInfo.version);
-    final updateConfig = await _findUpdateConfig(locale: locale);
-
-    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
-    final availableReleasesBySources = _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
-
-    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
-
-    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
-    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
-
-    final appUpdateList = <AppUpdate>[];
-    for (final availableReleaseAndSource in availableReleasesBySources.entries) {
-      final availableRelease = availableReleaseAndSource.value;
-
-      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
-        continue;
-      }
-      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
-        continue;
-      }
-
-      appUpdateList.add(AppUpdate(
-        appName: packageInfo.appName,
-        appVersion: appVersion,
-        config: updateConfig,
-        appVersionStatus: currentReleaseStatus,
-        release: availableRelease,
-      ));
-    }
-
-    return appUpdateList;
-  }
+  }) =>
+      _findAppUpdatesFromConfig(isFindUpdateFromOneSource: false, locale: locale);
 
   @override
   Future<AppUpdate?> tryFindUpdate({
@@ -250,7 +180,9 @@ class UpdateController extends UpdateControllerBase {
     await _availableUpdateStream.close();
   }
 
-  Future<UpdateConfig> _findUpdateConfig({
+  // TODO название так себе, но лучше я не придумал
+  Future<List<AppUpdate>> _findAppUpdatesFromConfig({
+    required bool isFindUpdateFromOneSource,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     if (_updateConfigModelCompleter == null) await fetchUpdateConfig();
@@ -287,6 +219,55 @@ class UpdateController extends UpdateControllerBase {
       customData: configModel?.customData,
     );
 
-    return updateConfig;
+    _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
+    Map<ReleaseSource, Release> availableReleasesBySources =
+        _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
+
+    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
+
+    if (isFindUpdateFromOneSource) {
+      final availableRelease = await _finder!.findAvailableRelease(
+        availableReleasesBySources: availableReleasesBySources,
+        sources: updateConfig.sources,
+        // TODO: Завести типизацию, без стингов
+        prioritySourceName: _targetSourceName,
+      );
+
+      if (availableRelease == null) throw const UpdateNotFoundException();
+      availableReleasesBySources = {availableRelease.source: availableRelease};
+    }
+
+    _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
+    _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+
+    final appUpdateList = <AppUpdate>[];
+    for (final availableReleaseAndSource in availableReleasesBySources.entries) {
+      final availableRelease = availableReleaseAndSource.value;
+      final appUpdate = AppUpdate(
+        appName: appName,
+        appVersion: appVersion,
+        config: updateConfig,
+        appVersionStatus: currentReleaseStatus,
+        release: availableRelease,
+      );
+
+      if (_updateStorageManager!.isSkippedRelease(availableRelease.version)) {
+        if (isFindUpdateFromOneSource) throw UpdateSkippedException(update: appUpdate);
+        continue;
+      }
+      if (_updateStorageManager!.isPostponedRelease(availableRelease.version)) {
+        if (isFindUpdateFromOneSource) throw UpdatePostponedException(update: appUpdate);
+        continue;
+      }
+
+      if (isFindUpdateFromOneSource) {
+        _updateConfigStream.add(updateConfig);
+        _availableUpdateStream.add(appUpdate);
+      }
+
+      appUpdateList.add(appUpdate);
+    }
+
+    return appUpdateList;
   }
 }
