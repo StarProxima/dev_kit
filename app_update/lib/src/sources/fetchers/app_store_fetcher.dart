@@ -15,6 +15,7 @@ import '../../parser/models/source_config.dart';
 import '../../parser/models/update_text_config.dart';
 import '../../shared/update_text_container.dart';
 import '../source.dart';
+import '../sources.dart';
 import 'source_fetcher.dart';
 
 class AppStoreFetcher extends SourceReleaseFetcher {
@@ -26,7 +27,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
 
   @override
   Future<ReleaseConfig?> fetch({
-    required Source source,
+    required Source? source,
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
@@ -48,7 +49,12 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     return ReleaseConfig(
       version: sourceVersion,
       text: UpdateTextConfigContainer.fromUpdateTextConfig(updateTextConfig),
-      sources: [ReleaseSourceConfig(name: source.name, url: source.url)],
+      sources: [
+        ReleaseSourceConfig(
+          name: source?.name ?? Sources.googlePlay.name,
+          url: source?.url ?? Uri.tryParse(_appStoreUrl(decodedResults, locale) ?? ''),
+        ),
+      ],
     );
   }
 
@@ -83,6 +89,21 @@ class AppStoreFetcher extends SourceReleaseFetcher {
   String? _releaseNotes(Map response) {
     try {
       return response['results'][0]['releaseNotes'];
+    } catch (_) {}
+
+    return null;
+  }
+
+  /// Return field trackViewUrl from iTunes results and change locale.
+  String? _appStoreUrl(Map response, Locale locale) {
+    try {
+      String? appStoreUrl = response['results'][0]['trackViewUrl'];
+      if (appStoreUrl == null) return null;
+
+      final languageCode = locale.languageCode;
+      appStoreUrl = appStoreUrl.replaceFirst(RegExp(r'apps\.apple\.com\/.*\/app'), 'apps.apple.com/$languageCode/app');
+
+      return appStoreUrl;
     } catch (_) {}
 
     return null;

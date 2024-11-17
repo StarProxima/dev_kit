@@ -22,7 +22,7 @@ import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_settings_container.dart';
-import '../sources/fetchers/source_fetcher.dart';
+import '../sources/fetchers/source_release_fetcher_coordinator.dart';
 import '../sources/source.dart';
 import '../storage/update_storage.dart';
 import '../storage/update_storage_manager.dart';
@@ -47,11 +47,11 @@ class UpdateController extends UpdateControllerBase {
   UpdateStorageManager? _updateStorageManager;
 
   final List<Source>? _globalSources;
-  final UpdatePlatform _platform;
 
+  final UpdatePlatform _platform;
   final String? _targetSourceName;
 
-  Completer<UpdateConfigModel>? _updateConfigModelCompleter;
+  Completer<UpdateConfigModel?>? _updateConfigModelCompleter;
   Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
   final _availableUpdateStream = StreamController<AppUpdate>();
   final _updateConfigStream = StreamController<UpdateConfig>();
@@ -91,12 +91,14 @@ class UpdateController extends UpdateControllerBase {
     _updateConfigModelCompleter = Completer();
 
     final fetcher = _updateConfigFetcher;
-    if (fetcher == null) throw const UpdateNotFoundException();
-    final rawConfig = await fetcher.fetch();
+    if (fetcher == null) {
+      _updateConfigModelCompleter!.complete(null);
+    } else {
+      final rawConfig = await fetcher.fetch();
+      final configModel = _parser.parse(rawConfig, isDebug: kDebugMode);
 
-    final configModel = _parser.parse(rawConfig, isDebug: kDebugMode);
-
-    _updateConfigModelCompleter!.complete(configModel);
+      _updateConfigModelCompleter!.complete(configModel);
+    }
   }
 
   @override
@@ -107,9 +109,8 @@ class UpdateController extends UpdateControllerBase {
 
     final packageInfo = await _asyncPackageInfo;
     final releases = <ReleaseConfig>[];
-    // TODO сделать здесь ещё создание дефолтного сурса
-    for (final source in _globalSources ?? <Source>[]) {
-      final fetcher = await _sourceFetcherCoordinator.fetcherBySource(source.name);
+    for (final source in _globalSources ?? <Source?>[null]) {
+      final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
       final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
       if (releaseFromSource != null) releases.add(releaseFromSource);
     }
@@ -263,18 +264,18 @@ class UpdateController extends UpdateControllerBase {
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
     final globalSourcesConfig = [
-      ...?configModel.sources,
+      ...?configModel?.sources,
       ...?_globalSources?.map((e) => e.toGlobalSourceConfig()),
     ];
 
     final releasesData = _linker.linkConfigs(
-      globalSettingsConfig: configModel.settings,
-      releasesConfig: [...configModel.releases, ...releasesFromSources],
+      globalSettingsConfig: configModel?.settings,
+      releasesConfig: [...?configModel?.releases, ...releasesFromSources],
       globalSourcesConfig: globalSourcesConfig,
     );
     final sources = _linker.parseSources(sourcesConfig: globalSourcesConfig);
 
-    _versionController = UpdateVersionController(configModel.versionSettings);
+    _versionController = UpdateVersionController(configModel?.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
     _finalizer ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
@@ -283,7 +284,7 @@ class UpdateController extends UpdateControllerBase {
     final updateConfig = UpdateConfig(
       sources: sources,
       releases: releases,
-      customData: configModel.customData,
+      customData: configModel?.customData,
     );
 
     return updateConfig;
