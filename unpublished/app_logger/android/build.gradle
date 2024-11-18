@@ -34,6 +34,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'com.crefter.app_logger.app_logger' 
     compileSdkVersion 30
 
     compileOptions {
