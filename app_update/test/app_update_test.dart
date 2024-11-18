@@ -28,6 +28,7 @@ void main() async {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
 
+        // ignore: unused_local_variable
         final settings = update.release.settings.getBy(
           type: UpdateAlertType.dialog,
           status: update.appVersionStatus,
