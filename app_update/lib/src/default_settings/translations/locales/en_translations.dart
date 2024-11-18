@@ -7,6 +7,7 @@ import '../../../shared/update_alert_type.dart';
 import '../../../shared/version_status.dart';
 import '../default_update_text_container.dart';
 
+// TODO: Перевести на английский
 class EnUpdateTranslations extends UpdateTranslations {
   static const tr = {
     UpdateAlertTypeBase.base: {
