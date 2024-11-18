@@ -13,7 +13,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
 import '../../parser/models/update_text_config.dart';
-import '../../shared/update_text_container.dart';
+import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
 import '../sources.dart';
 import 'source_fetcher.dart';
@@ -52,7 +52,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
 
     return ReleaseConfig(
       version: sourceVersion,
-      text: UpdateTextConfigContainer.fromUpdateTextConfig(updateTextConfig),
+      text: UpdateTextConfigContainer.fromBase(updateTextConfig),
       sources: [
         ReleaseSourceConfig(
           name: source?.name ?? Sources.googlePlay.name,

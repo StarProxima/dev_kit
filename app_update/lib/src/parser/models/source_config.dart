@@ -1,7 +1,7 @@
-import '../../shared/update_settings_container.dart';
-import '../../shared/update_text_container.dart';
 import 'platform_config.dart';
 import 'release_config.dart';
+import 'update_settings_config_container.dart';
+import 'update_text_config_container.dart';
 import 'versions_settings_config.dart';
 
 class GlobalSourceConfig {

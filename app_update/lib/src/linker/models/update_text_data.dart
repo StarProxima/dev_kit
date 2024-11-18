@@ -36,7 +36,7 @@ class UpdateTextData extends UpdateTextConfig {
     );
   }
 
-  UpdateTextData inherit(UpdateTextData? child) {
+  UpdateTextData merge(UpdateTextData? child) {
     final customData = {...?this.customData, ...?child?.customData};
 
     return UpdateTextData.byRequired(

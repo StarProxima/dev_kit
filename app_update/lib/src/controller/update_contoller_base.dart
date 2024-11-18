@@ -6,7 +6,6 @@ import 'dart:ui';
 import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
-import 'exceptions.dart';
 
 abstract class UpdateControllerBase {
   Stream<AppUpdate?> get availableUpdateStream;

@@ -15,13 +15,14 @@ import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../finalizer/update_finalizer.dart';
 import '../finder/update_finder.dart';
+import '../linker/models/update_settings_data_container.dart';
+import '../linker/models/update_text_data_container.dart';
 import '../linker/update_config_linker.dart';
 import '../parser/models/release_config.dart';
 import '../parser/models/update_config_model.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_settings_container.dart';
 import '../sources/fetchers/source_release_fetcher_coordinator.dart';
 import '../sources/release_source.dart';
 import '../sources/source.dart';
@@ -37,6 +38,7 @@ class UpdateController extends UpdateControllerBase {
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
   final UpdateSettingsDataContainer? _updateSettings;
+  final UpdateTextDataContainer? _updateText;
   final _linker = const UpdateConfigLinker();
 
   UpdateVersionController? _versionController;
@@ -67,6 +69,7 @@ class UpdateController extends UpdateControllerBase {
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
     UpdateSettingsDataContainer? updateSettings,
+    UpdateTextDataContainer? updateText,
     UpdateStorage? storage,
     List<Source>? globalSources,
     UpdatePlatform? targetPlatform,
@@ -74,6 +77,7 @@ class UpdateController extends UpdateControllerBase {
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
+        _updateText = updateText,
         _updateStorage = storage,
         _globalSources = globalSources,
         _targetSourceName = targetSourceName,
@@ -123,14 +127,14 @@ class UpdateController extends UpdateControllerBase {
   Future<AppUpdate> findUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async =>
-      (await _findAppUpdatesFromConfig(isFindUpdateFromOneSource: true, locale: locale)).firstOrNull ??
+      (await _findUpdatesFromConfig(isFindUpdateFromOneSource: true, locale: locale)).firstOrNull ??
       (throw const UpdateNotFoundException());
 
   @override
   Future<List<AppUpdate>> findAllAvailableUpdates({
     Locale locale = kAppUpdateDefaultLocale,
   }) =>
-      _findAppUpdatesFromConfig(isFindUpdateFromOneSource: false, locale: locale);
+      _findUpdatesFromConfig(isFindUpdateFromOneSource: false, locale: locale);
 
   @override
   Future<AppUpdate?> tryFindUpdate({
@@ -180,9 +184,7 @@ class UpdateController extends UpdateControllerBase {
     await _availableUpdateStream.close();
   }
 
-  // TODO название так себе, но лучше я не придумал
   Future<List<AppUpdate>> _findUpdatesFromConfig({
-
     required bool isFindUpdateFromOneSource,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
@@ -193,7 +195,9 @@ class UpdateController extends UpdateControllerBase {
     final appVersion = Version.parse(packageInfo.version);
     final appName = packageInfo.appName;
 
-    if (_sourceReleasesConfigFromFetchersCompleter == null) await fetchGlobalSourceReleases(locale: locale);
+    if (_sourceReleasesConfigFromFetchersCompleter == null) {
+      await fetchGlobalSourceReleases(locale: locale);
+    }
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
     final globalSourcesConfig = [
@@ -211,7 +215,13 @@ class UpdateController extends UpdateControllerBase {
     _versionController = UpdateVersionController(configModel?.versionSettings);
     final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
 
-    _finalizer ??= UpdateFinalizer(appName: appName, appVersion: appVersion);
+    _finalizer ??= UpdateFinalizer(
+      appName: appName,
+      appVersion: appVersion,
+      textContainer: _updateText,
+      settingsContainer: _updateSettings,
+    );
+
     final releases = _finalizer!.fializeReleases(availableReleasesData);
 
     final updateConfig = UpdateConfig(

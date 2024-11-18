@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-long-functions, prefer-test-matchers, no-equal-arguments
+// ignore_for_file: avoid-long-functions, no-equal-arguments
 
 import 'package:app_update/src/parser/models/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
