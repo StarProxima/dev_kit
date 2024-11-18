@@ -1,5 +1,3 @@
-// ignore_for_file: prefer-returning-conditional-expressions
-
 import 'package:pub_semver/pub_semver.dart';
 
 import '../linker/models/release_data.dart';

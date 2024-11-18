@@ -5,8 +5,6 @@ import 'dart:ui';
 import '../shared/raw_update_config.dart';
 import '../shared/update_alert_type.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_settings_container.dart';
-import '../shared/update_text_container.dart';
 import '../shared/version_status.dart';
 import 'base_parsers/bool_parser.dart';
 import 'base_parsers/date_time_parser.dart';
@@ -19,7 +17,9 @@ import 'models/release_settings_config.dart';
 import 'models/source_config.dart';
 import 'models/update_config_exception.dart';
 import 'models/update_config_model.dart';
+import 'models/update_settings_config_container.dart';
 import 'models/update_text_config.dart';
+import 'models/update_text_config_container.dart';
 import 'sub_parsers/version_settings_parser.dart';
 
 part 'sub_parsers/release_parser.dart';

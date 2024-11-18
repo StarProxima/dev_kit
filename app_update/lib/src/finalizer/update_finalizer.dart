@@ -1,27 +1,32 @@
-// ignore_for_file: avoid-similar-names, avoid-long-functions
+// ignore_for_file: avoid-long-functions
 
 import 'package:pub_semver/pub_semver.dart';
 
 import '../default_settings/default_update_settings_container.dart';
 import '../default_settings/translations/default_update_text_container.dart';
 import '../linker/models/release_data.dart';
-import '../linker/models/update_text_data.dart';
-import '../shared/update_settings_container.dart';
-import '../shared/update_text_container.dart';
+import '../linker/models/update_settings_data_container.dart';
+import '../linker/models/update_text_data_container.dart';
 import 'models/release.dart';
-import 'models/update_settings.dart';
+import 'models/update_settings_container.dart';
+import 'models/update_text_container.dart';
 import 'models/update_texts.dart';
 
 class UpdateFinalizer {
   final String appName;
   final Version appVersion;
 
-  static final _defaulUpdateTextContainer = DefaultUpdateTextContainer();
-  static final _defaultSettingsContainer = DefaultUpdateSettingsContainer();
+  final UpdateTextDataContainer? textContainer;
+  final UpdateSettingsDataContainer? settingsContainer;
+
+  static final _defaultTextContainer = DefaultUpdateTextDataContainer();
+  static const _defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
 
   const UpdateFinalizer({
     required this.appName,
     required this.appVersion,
+    required this.textContainer,
+    required this.settingsContainer,
   });
 
   List<Release> fializeReleases(List<ReleaseData> releases) {
@@ -56,61 +61,21 @@ class UpdateFinalizer {
           skipButton: interpolate(text.skipButton),
           laterButton: interpolate(text.laterButton),
           updateButton: interpolate(text.updateButton),
+          customData: text.customData,
         );
 
-    final finalizedTextMap = releaseData.text.value.map(
-      (locale, value) => MapEntry(
-        locale,
-        value.map(
-          (alertType, value) => MapEntry(
-            alertType,
-            value.map(
-              (status, textConfig) {
-                final updateText = UpdateText.fromData(
-                  UpdateTextData.fromConfig(textConfig),
-                  defaultText: _defaulUpdateTextContainer.getByBase(
-                    locale: locale,
-                    type: alertType,
-                    status: status,
-                  ),
-                );
-
-                final interpolatedText = interpolateUpdateText(updateText);
-
-                return MapEntry(
-                  status,
-                  interpolatedText,
-                );
-              },
-            ),
-          ),
-        ),
-      ),
+    final text = UpdateTextContainer(
+      defaultContainer: _defaultTextContainer,
+      controllerContainer: textContainer,
+      containerStorage: releaseData.textContainers,
+      interpolate: interpolateUpdateText,
     );
 
-    final finalizedSettingsMap = releaseData.settings.value.map(
-      (alertType, value) => MapEntry(
-        alertType,
-        value.map(
-          (status, settings) {
-            final defaultSettings = _defaultSettingsContainer.getByBase(
-              type: alertType,
-              status: status,
-            );
-
-            final updateSettings = defaultSettings.merge(settings);
-
-            return MapEntry(
-              status,
-              updateSettings,
-            );
-          },
-        ),
-      ),
+    final settings = UpdateSettingsContainer(
+      defaultContainer: _defaultSettingsContainer,
+      controllerContainer: settingsContainer,
+      containerStorage: releaseData.settingsContainers,
     );
-
-    final text = UpdateTextContainer(finalizedTextMap);
-    final settings = UpdateSettingsContainer(finalizedSettingsMap);
 
     return Release(
       version: releaseData.version,

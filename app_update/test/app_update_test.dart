@@ -1,9 +1,9 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion, avoid-missing-enum-constant-in-map
 
 import 'package:app_update/src/controller/update_controller.dart';
-import 'package:app_update/src/parser/models/release_settings_config.dart';
+import 'package:app_update/src/linker/models/release_settings_data.dart';
+import 'package:app_update/src/linker/models/update_settings_data_container.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
-import 'package:app_update/src/shared/update_settings_container.dart';
 import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/widgets/update_alert.dart';
 import 'package:app_update/src/widgets/update_alert_handler.dart';
@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 
 void main() async {
   final controller = UpdateController(
-    updateSettings: const UpdateSettingsConfigContainer({
+    updateSettings: const UpdateSettingsDataContainer({
       UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsConfig(),
+        VersionStatusBase.base: UpdateSettingsData(),
       },
     }),
   );
@@ -28,6 +28,7 @@ void main() async {
         // ignore: avoid-unsafe-collection-methods
         final releaseData = update.config.releases.first;
 
+        // ignore: unused_local_variable
         final settings = update.release.settings.getBy(
           type: UpdateAlertType.dialog,
           status: update.appVersionStatus,

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer-named-parameters, avoid-late-keyword, avoid-similar-names
+// ignore_for_file: prefer-named-parameters, avoid-late-keyword
 
 import 'dart:async';
 

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer-test-matchers
-
 import 'dart:ui';
 
 import 'package:app_update/src/parser/base_parsers/text_translations_parser.dart';

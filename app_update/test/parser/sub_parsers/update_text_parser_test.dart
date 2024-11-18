@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-long-functions, prefer-test-matchers, prefer-moving-to-variable, avoid-long-files, avoid-similar-names
+// ignore_for_file: avoid-long-functions, prefer-moving-to-variable, avoid-long-files
 
 import 'dart:ui';
 

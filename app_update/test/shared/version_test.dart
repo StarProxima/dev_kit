@@ -1,4 +1,4 @@
-// ignore_for_file: prefer-test-matchers, avoid-long-functions
+// ignore_for_file: avoid-long-functions
 
 import 'package:app_update/src/shared/version_x.dart';
 import 'package:flutter_test/flutter_test.dart';

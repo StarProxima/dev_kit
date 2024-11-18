@@ -2,20 +2,14 @@
 
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
-import '../shared/update_settings_container.dart';
+import '../parser/models/update_settings_config_container.dart';
 import '../sources/source.dart';
 import 'models/release_data.dart';
+import 'models/update_settings_data_container.dart';
 
 // TODO: (iamgirya)
 // По идее, линкер должен получать ещё сурс и платформу, чтобы всё слинковать и выдавать конкретные ReleaseData.
-// Для линкера 100% нужны тесты.
-//
-// Как минимум, нужно проверить, что:
-// 1) Глобальные сурсах наследуют и переопределяют настройки и настройки версий
-// 2) Платформы в глобальных сторах наследуют и переопределяют свой сурс (с настройками и настройками версий)
-// 3) Релизы наследуют и переопределяют настройки
-// 4) Сурсы в релизах наследуют и переопределяют глобальный сурс и релиз (с настройками)
-// 5) Платформы в сурсах релиза наследуют и переопределяют свой сурс (с релизом)
+// Для линкера нужны тесты.
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
@@ -33,7 +27,7 @@ class UpdateConfigLinker {
       // мержим настройки релиза с глобальными настройками
       final updateSettings = releaseConfig.settings;
       if (updateSettings != null) {
-        inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(updateSettings));
+        inheritedSettings = inheritedSettings.merge(UpdateSettingsDataContainer.fromConfig(updateSettings));
       }
 
       final sourcesConfig = releaseConfig.sources;
@@ -56,7 +50,7 @@ class UpdateConfigLinker {
         // мержим настройки сурса с релизными настройками
         final sourceSettings = globalSource?.settings ?? sourceReleaseConfig?.settings;
         if (sourceSettings != null) {
-          inheritedSettings = inheritedSettings.inherit(UpdateSettingsDataContainer.fromConfig(sourceSettings));
+          inheritedSettings = inheritedSettings.merge(UpdateSettingsDataContainer.fromConfig(sourceSettings));
         }
 
         // TODO: Сурсы теперь содержать nullable поля (которые, по идее, должны быть обязательными),
@@ -79,7 +73,7 @@ class UpdateConfigLinker {
           version: version,
           source: targetSource,
           date: date,
-          settings: inheritedSettings,
+          settingsContainers: inheritedSettings,
           customData: releaseCustomData,
         ));
       }
