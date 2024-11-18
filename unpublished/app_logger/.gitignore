@@ -39,3 +39,6 @@
 
 # Web related
 lib/generated_plugin_registrant.dart
+
+# FVM Version Cache
+.fvm/
