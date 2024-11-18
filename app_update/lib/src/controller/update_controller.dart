@@ -181,7 +181,8 @@ class UpdateController extends UpdateControllerBase {
   }
 
   // TODO название так себе, но лучше я не придумал
-  Future<List<AppUpdate>> _findAppUpdatesFromConfig({
+  Future<List<AppUpdate>> _findUpdatesFromConfig({
+
     required bool isFindUpdateFromOneSource,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
