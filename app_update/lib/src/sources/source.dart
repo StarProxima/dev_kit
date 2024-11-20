@@ -7,6 +7,7 @@ import '../parser/models/update_text_config_container.dart';
 import '../shared/update_platform.dart';
 import 'sources.dart';
 
+// TODO объединить модели сурсов
 @immutable
 class Source {
   final Sources type;
