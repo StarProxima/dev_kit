@@ -57,6 +57,7 @@ class UpdateFinder {
     required Map<ReleaseSource, Release> availableReleasesBySources,
     required List<ReleaseSource> sources,
     String? prioritySourceName,
+    String? defaultSourceName,
   }) async {
     final sourcesWithReleases = availableReleasesBySources.keys.toList();
 
@@ -79,6 +80,14 @@ class UpdateFinder {
         }
 
         return availableReleasesBySources[checkedSource];
+      }
+    }
+
+    //либо пытаемся взять из дефолтного
+    if (defaultSourceName != null) {
+      final defaultSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == defaultSourceName);
+      if (defaultSource != null) {
+        return availableReleasesBySources[defaultSource];
       }
     }
 

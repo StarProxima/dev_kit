@@ -53,6 +53,7 @@ class UpdateController extends UpdateControllerBase {
 
   final UpdatePlatform _platform;
   final String? _targetSourceName;
+  final String? _defaultSourceName;
 
   Completer<UpdateConfigModel?>? _updateConfigModelCompleter;
   Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
@@ -74,6 +75,7 @@ class UpdateController extends UpdateControllerBase {
     List<Source>? globalSources,
     UpdatePlatform? targetPlatform,
     String? targetSourceName,
+    String? defaultSourceName,
   })  : _updateConfigFetcher = updateConfigFetcher,
         _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
@@ -81,6 +83,7 @@ class UpdateController extends UpdateControllerBase {
         _updateStorage = storage,
         _globalSources = globalSources,
         _targetSourceName = targetSourceName,
+        _defaultSourceName = defaultSourceName,
         _platform = targetPlatform ?? UpdatePlatform.current();
 
   @override
@@ -242,6 +245,7 @@ class UpdateController extends UpdateControllerBase {
         sources: updateConfig.sources,
         // TODO: Завести типизацию, без стингов
         prioritySourceName: _targetSourceName,
+        defaultSourceName: _defaultSourceName,
       );
 
       if (availableRelease == null) throw const UpdateNotFoundException();
