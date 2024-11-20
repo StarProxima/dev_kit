@@ -1,5 +1,8 @@
 // ignore_for_file: avoid-recursive-calls, avoid-non-null-assertion, avoid-similar-names
 
+import 'package:collection/collection.dart';
+
+import '../finder/update_finder.dart';
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
@@ -100,13 +103,15 @@ class UpdateConfigLinker {
     //   }
     // }
 
-    final sources = <ReleaseSource>[];
+    // убираем сурсы с одинаковыми именами
+    final sources = <ReleaseSource>{};
     for (final sourceConfig in sourcesConfig) {
       final name = sourceConfig.name;
       final url = sourceConfig.url;
-      final platforms = sourceConfig.platforms;
+      final platforms = sourceConfig.platforms?.map((p) => p.platform).toList();
 
-      // См. выше
+      if (name == null || url == null) continue;
+
       sources.add(ReleaseSource(
         name: name,
         url: url,
@@ -115,6 +120,6 @@ class UpdateConfigLinker {
       ));
     }
 
-    return sources;
+    return sources.toList();
   }
 }
