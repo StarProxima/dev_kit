@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 
 import '../parser/models/platform_config.dart';
 import '../parser/models/source_config.dart';
+import '../parser/models/update_settings_config_container.dart';
+import '../parser/models/update_text_config_container.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_settings_container.dart';
-import '../shared/update_text_container.dart';
 import 'sources.dart';
 
 @immutable
