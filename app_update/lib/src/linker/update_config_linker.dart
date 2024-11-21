@@ -1,82 +1,111 @@
-// ignore_for_file: avoid-recursive-calls, avoid-non-null-assertion, avoid-similar-names
+// ignore_for_file: avoid-non-null-assertion, prefer-moving-to-variable
 
-import 'package:collection/collection.dart';
-
-import '../finder/update_finder.dart';
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
+import '../parser/models/update_text_config_container.dart';
+import '../shared/update_platform.dart';
 import '../sources/release_source.dart';
 import 'models/release_data.dart';
+import 'models/update_container_storage.dart';
 import 'models/update_settings_data_container.dart';
+import 'models/update_text_data_container.dart';
 
-// TODO: (iamgirya)
-// По идее, линкер должен получать ещё сурс и платформу, чтобы всё слинковать и выдавать конкретные ReleaseData.
-// Для линкера нужны тесты.
 class UpdateConfigLinker {
   const UpdateConfigLinker();
 
   List<ReleaseData> linkConfigs({
     required UpdateSettingsConfigContainer? globalSettingsConfig,
+    required UpdateTextConfigContainer? globalTextConfig,
     required List<ReleaseConfig> releasesConfig,
     required List<GlobalSourceConfig>? globalSourcesConfig,
+    required UpdatePlatform platform,
   }) {
-    UpdateSettingsDataContainer inheritedSettings = UpdateSettingsDataContainer.fromConfig(globalSettingsConfig);
-
+    final globalSettings = UpdateSettingsDataContainer.fromConfig(globalSettingsConfig);
+    final globalTexts = UpdateTextDataContainer.fromConfig(globalTextConfig);
     final globalSources = <GlobalSourceConfig?>[...?globalSourcesConfig];
     final releases = <ReleaseData>[];
 
     for (final releaseConfig in releasesConfig) {
-      // мержим настройки релиза с глобальными настройками
-      final updateSettings = releaseConfig.settings;
-      if (updateSettings != null) {
-        inheritedSettings = inheritedSettings.merge(UpdateSettingsDataContainer.fromConfig(updateSettings));
-      }
+      final releaseSettings = UpdateSettingsDataContainer.fromConfig(releaseConfig.settings);
+      final releaseTexts = UpdateTextDataContainer.fromConfig(releaseConfig.text);
 
-      final sourcesConfig = releaseConfig.sources;
+      final releaseSources = releaseConfig.sources;
       // здесь мы уже переходим к понятию поставки. Если в релизе нет ни одного указанного стора - значит релиз никуда не поставлялся
-      if (sourcesConfig == null) continue;
-      for (final releaseSourceConfig in sourcesConfig) {
-        final name = releaseSourceConfig.name;
-        final url = releaseSourceConfig.url;
-        final platforms = releaseSourceConfig.platforms;
-        final sourceReleaseConfig = releaseSourceConfig.release;
-        final customData = releaseSourceConfig.customData;
+      if (releaseSources == null) continue;
 
-        final globalSource = globalSources.firstWhere(
-          (source) => source?.name == name,
-          orElse: () => null,
-        );
+      for (final releaseSource in releaseSources) {
+        final name = releaseSource.name;
+        if (name == null) continue;
+
+        final globalSource = globalSources.firstWhere((source) => source?.name == name, orElse: () => null);
+        final globalSourceSettings = UpdateSettingsDataContainer.fromConfig(globalSource?.settings);
+        final globalSourceTexts = UpdateTextDataContainer.fromConfig(globalSource?.text);
+
+        final url = releaseSource.url;
         final sourceUrl = url ?? globalSource?.url;
         if (sourceUrl == null) continue;
 
-        // мержим настройки сурса с релизными настройками
-        final sourceSettings = globalSource?.settings ?? sourceReleaseConfig?.settings;
-        if (sourceSettings != null) {
-          inheritedSettings = inheritedSettings.merge(UpdateSettingsDataContainer.fromConfig(sourceSettings));
-        }
+        final releaseSourceRelease = releaseSource.release;
+        final releaseSourceReleaseSettings = UpdateSettingsDataContainer.fromConfig(
+          releaseSourceRelease?.settings,
+        );
+        final releaseSourceReleaseTexts = UpdateTextDataContainer.fromConfig(
+          releaseSourceRelease?.text,
+        );
 
-        // TODO: Сурсы теперь содержать nullable поля (которые, по идее, должны быть обязательными),
-        // т.к. им можно переопределять (а для этого нужна фулл nullable модель).
-        // См. TODO №10
+        final releaseSourcePlatforms = releaseSource.platforms;
+        final releaseSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
+          releaseSourcePlatforms?.where((e) => e.platform == platform).firstOrNull?.source?.release?.settings,
+        );
+        final releaseSourcePlatformTexts = UpdateTextDataContainer.fromConfig(
+          releaseSourcePlatforms?.where((e) => e.platform == platform).firstOrNull?.source?.release?.text,
+        );
+
+        final globalSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
+          globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.source?.settings,
+        );
+        final globalSourcePlatformTexts = UpdateTextDataContainer.fromConfig(
+          globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.source?.text,
+        );
+
         final targetSource = ReleaseSource(
           name: name,
           url: sourceUrl,
-          platforms: platforms ?? globalSource?.platforms,
-          customData: customData ?? globalSource?.customData,
+          platforms: releaseSourcePlatforms?.map((e) => e.platform).toList() ??
+              globalSource?.platforms?.map((e) => e.platform).toList(),
+          customData: releaseSource.customData ?? globalSource?.customData,
         );
 
         // применяем релиз конкретного магазина, если есть. Уверены, что версия не нулл, так как парсер не пропустит релиз с null версией
-        final version = sourceReleaseConfig?.version ?? releaseConfig.version!;
-        final date = sourceReleaseConfig?.date ?? releaseConfig.date;
-        final releaseCustomData = sourceReleaseConfig?.customData ?? releaseConfig.customData;
+        final version = releaseSourceRelease?.version ?? releaseConfig.version!;
+        final date = releaseSourceRelease?.date ?? releaseConfig.date;
+        final releaseCustomData = releaseSourceRelease?.customData ?? releaseConfig.customData;
+
+        final settingsContainers = UpdateContainerStorage<UpdateSettingsDataContainer>(
+          global: globalSettings,
+          globalSource: globalSourceSettings,
+          globalSourcePlatform: globalSourcePlatformSettings,
+          release: releaseSettings,
+          releaseSource: releaseSourceReleaseSettings,
+          releaseSourcePlatform: releaseSourcePlatformSettings,
+        );
+        final textContainers = UpdateContainerStorage<UpdateTextDataContainer>(
+          global: globalTexts,
+          globalSource: globalSourceTexts,
+          globalSourcePlatform: globalSourcePlatformTexts,
+          release: releaseTexts,
+          releaseSource: releaseSourceReleaseTexts,
+          releaseSourcePlatform: releaseSourcePlatformTexts,
+        );
 
         // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг), настройки которого смержены со всеми и находятся в settings
         releases.add(ReleaseData(
           version: version,
           source: targetSource,
           date: date,
-          settingsContainers: inheritedSettings,
+          textContainers: textContainers,
+          settingsContainers: settingsContainers,
           customData: releaseCustomData,
         ));
       }
@@ -88,21 +117,6 @@ class UpdateConfigLinker {
   List<ReleaseSource> parseSources({
     required List<GlobalSourceConfig> sourcesConfig,
   }) {
-    // // в случае, если мы находим несколько сурсов с одинаковыми именами, то берём только сурс с самой последней версии
-    // final versionBySource = <Source, Version>{};
-    // for (final release in releasesData) {
-    //   final source = release.targetSource;
-    //   final releaseVersion = release.version;
-    //   if (versionBySource.containsKey(source)) {
-    //     final addedSourceVersion = versionBySource[source]!;
-    //     if (addedSourceVersion < releaseVersion) {
-    //       versionBySource[source] = releaseVersion;
-    //     }
-    //   } else {
-    //     versionBySource[source] = releaseVersion;
-    //   }
-    // }
-
     // убираем сурсы с одинаковыми именами
     final sources = <ReleaseSource>{};
     for (final sourceConfig in sourcesConfig) {
