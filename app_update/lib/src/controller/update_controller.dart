@@ -41,7 +41,6 @@ class UpdateController extends UpdateControllerBase {
   final UpdateTextDataContainer? _updateText;
   final _linker = const UpdateConfigLinker();
 
-  UpdateVersionController? _versionController;
   UpdateFinalizer? _finalizer;
   final SourceReleaseFetcherCoordinator _sourceFetcherCoordinator;
   UpdateFinder? _finder;
@@ -218,9 +217,6 @@ class UpdateController extends UpdateControllerBase {
     );
     final sources = _linker.parseSources(sourcesConfig: globalSourcesConfig);
 
-    _versionController = UpdateVersionController(configModel?.versionSettings);
-    final availableReleasesData = _versionController!.filterAvailableReleaseData(releasesData);
-
     _finalizer ??= UpdateFinalizer(
       appName: appName,
       appVersion: appVersion,
@@ -228,19 +224,16 @@ class UpdateController extends UpdateControllerBase {
       settingsContainer: _updateSettings,
     );
 
-    final releases = _finalizer!.fializeReleases(availableReleasesData);
+    final releases = _finalizer!.finalizeReleases(releasesData);
 
-    final updateConfig = UpdateConfig(
-      sources: sources,
-      releases: releases,
-      customData: configModel?.customData,
-    );
+    final updateConfig = UpdateConfig(sources: sources, releases: releases, customData: configModel?.customData);
 
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
-    Map<ReleaseSource, Release> availableReleasesBySources =
-        _finder!.findAvailableReleasesBySource(releases: updateConfig.releases);
-
-    final currentReleaseStatus = _versionController!.setStatusByVersion(appVersion);
+    Map<ReleaseSource, Release> availableReleasesBySources = _finder!.findAvailableReleasesBySource(
+      releases: updateConfig.releases,
+      globalSourcesConfig: globalSourcesConfig,
+      versionSettings: configModel?.versionSettings,
+    );
 
     if (isFindUpdateFromOneSource) {
       final availableRelease = await _finder!.findAvailableRelease(
@@ -261,6 +254,13 @@ class UpdateController extends UpdateControllerBase {
     final appUpdateList = <AppUpdate>[];
     for (final availableReleaseAndSource in availableReleasesBySources.entries) {
       final availableRelease = availableReleaseAndSource.value;
+      final source = availableReleaseAndSource.key;
+
+      // TODO Может быть versionSettings держать в самой модели ReleaseSource?
+      final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
+      final releaseVersionSettings = globalSource?.versionSettings ?? configModel?.versionSettings;
+      final currentReleaseStatus = UpdateVersionController(releaseVersionSettings).setStatusByVersion(appVersion);
+
       final appUpdate = AppUpdate(
         appName: appName,
         appVersion: appVersion,

@@ -9,7 +9,7 @@ class UpdateVersionController {
   const UpdateVersionController(this.versionSettings);
 
   List<ReleaseData> filterAvailableReleaseData(List<ReleaseData> releases) {
-    return releases.where((release) => setStatusByVersion(release.version) == VersionStatus.updatable).toList();
+    return releases.where((release) => setStatusByVersion(release.version).isUpdatable).toList();
   }
 
   VersionStatus setStatusByVersion(Version version) {

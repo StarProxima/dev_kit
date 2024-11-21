@@ -3,9 +3,12 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../controller/exceptions.dart';
 import '../finalizer/models/release.dart';
+import '../parser/models/source_config.dart';
+import '../parser/models/versions_settings_config.dart';
 import '../shared/update_platform.dart';
 import '../sources/release_source.dart';
 import '../sources/sources.dart';
+import '../version_controller/update_version_controller.dart';
 
 class UpdateFinder {
   final Version appVersion;
@@ -20,6 +23,8 @@ class UpdateFinder {
   // Т.е. если для аппстора есть версии 1.0.0 и 1.1.0, то аппстору будет соответствовать только 1.1.0
   Map<ReleaseSource, Release> findAvailableReleasesBySource({
     required List<Release> releases,
+    required List<GlobalSourceConfig> globalSourcesConfig,
+    required VersionSettingsConfig? versionSettings,
   }) {
     // в Source определено сравнение по Url
     final availableReleasesFromAllSources = <ReleaseSource, Release>{};
@@ -31,6 +36,16 @@ class UpdateFinder {
 
       // обновляемся только на версии, которые строго выше нынешней
       if (release.version <= appVersion) continue;
+
+      // проверяем, актуальная ли версия приложения по VersionSettingsConfig
+      final globalSource = globalSourcesConfig.where((e) => e.name == releaseSource.name).firstOrNull;
+      final releaseVersionSettings = globalSource?.versionSettings ?? versionSettings;
+      if (releaseVersionSettings != null) {
+        final updateVersionController = UpdateVersionController(releaseVersionSettings);
+        final releaseVersionStatus = updateVersionController.setStatusByVersion(release.version);
+
+        if (!releaseVersionStatus.isUpdatable) continue;
+      }
 
       final availableRelease = availableReleasesFromAllSources[releaseSource];
       if (availableRelease == null) {
