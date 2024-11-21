@@ -1,9 +1,12 @@
 // ignore_for_file: avoid-recursive-calls, avoid-non-null-assertion, avoid-similar-names
 
+import 'package:collection/collection.dart';
+
+import '../finder/update_finder.dart';
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
-import '../sources/source.dart';
+import '../sources/release_source.dart';
 import 'models/release_data.dart';
 import 'models/update_settings_data_container.dart';
 
@@ -56,7 +59,7 @@ class UpdateConfigLinker {
         // TODO: Сурсы теперь содержать nullable поля (которые, по идее, должны быть обязательными),
         // т.к. им можно переопределять (а для этого нужна фулл nullable модель).
         // См. TODO №10
-        final targetSource = Source(
+        final targetSource = ReleaseSource(
           name: name,
           url: sourceUrl,
           platforms: platforms ?? globalSource?.platforms,
@@ -82,7 +85,7 @@ class UpdateConfigLinker {
     return releases;
   }
 
-  List<Source> parseSources({
+  List<ReleaseSource> parseSources({
     required List<GlobalSourceConfig> sourcesConfig,
   }) {
     // // в случае, если мы находим несколько сурсов с одинаковыми именами, то берём только сурс с самой последней версии
@@ -100,14 +103,16 @@ class UpdateConfigLinker {
     //   }
     // }
 
-    final sources = <Source>[];
+    // убираем сурсы с одинаковыми именами
+    final sources = <ReleaseSource>{};
     for (final sourceConfig in sourcesConfig) {
       final name = sourceConfig.name;
       final url = sourceConfig.url;
-      final platforms = sourceConfig.platforms;
+      final platforms = sourceConfig.platforms?.map((p) => p.platform).toList();
 
-      // См. выше
-      sources.add(Source(
+      if (name == null || url == null) continue;
+
+      sources.add(ReleaseSource(
         name: name,
         url: url,
         platforms: platforms,
@@ -115,6 +120,6 @@ class UpdateConfigLinker {
       ));
     }
 
-    return sources;
+    return sources.toList();
   }
 }

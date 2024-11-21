@@ -28,6 +28,7 @@ abstract class UpdateControllerBase {
   /// Finds an update from fetched UpdateConfig and global sources releases data.
   /// If update founded add data to [availableUpdateStream] and [updateConfigStream]
   ///
+  /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
   Future<AppUpdate> findUpdate({
     Locale locale,

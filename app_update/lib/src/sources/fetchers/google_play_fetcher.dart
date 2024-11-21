@@ -12,10 +12,10 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
-import '../../parser/models/update_settings_config_container.dart';
 import '../../parser/models/update_text_config.dart';
 import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
+import '../sources.dart';
 import 'source_fetcher.dart';
 //TODO http.Client и clientHeaders надо бы сделать изменяемыми из вне. Или переписать всё на нативные дартовые клиенты
 
@@ -29,7 +29,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
 
   @override
   Future<ReleaseConfig?> fetch({
-    required Source source,
+    required Source? source,
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
@@ -53,9 +53,12 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     return ReleaseConfig(
       version: sourceVersion,
       text: UpdateTextConfigContainer.fromBase(updateTextConfig),
-      settings: const UpdateSettingsConfigContainer({}),
-      sources: [const ReleaseSourceConfig(name: 'googlePlay')],
-      customData: {},
+      sources: [
+        ReleaseSourceConfig(
+          name: source?.name ?? Sources.googlePlay.name,
+          url: source?.url ?? url,
+        ),
+      ],
     );
   }
 

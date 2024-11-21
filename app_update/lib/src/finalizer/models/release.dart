@@ -1,12 +1,12 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../sources/source.dart';
+import '../../sources/release_source.dart';
 import 'update_settings_container.dart';
 import 'update_text_container.dart';
 
 class Release {
   final Version version;
-  final Source source;
+  final ReleaseSource source;
   final DateTime? date;
   final UpdateTextContainer text;
   final UpdateSettingsContainer settings;
