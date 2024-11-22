@@ -26,7 +26,6 @@ class UpdateFinder {
     required List<GlobalSourceConfig> globalSourcesConfig,
     required VersionSettingsConfig? versionSettings,
   }) {
-    // в Source определено сравнение по Url
     final availableReleasesFromAllSources = <ReleaseSource, Release>{};
 
     for (final release in releases) {
@@ -34,17 +33,18 @@ class UpdateFinder {
 
       if (!releaseSource.platforms.contains(platform)) continue;
 
-      // обновляемся только на версии, которые строго выше нынешней
+      // Обновляемся только на версии, которые строго выше нынешней
       if (release.version <= appVersion) continue;
 
-      // проверяем, актуальная ли версия приложения по VersionSettingsConfig
       final globalSource = globalSourcesConfig.where((e) => e.name == releaseSource.name).firstOrNull;
-      final updateVersionController = UpdateVersionController(versionSettings);
+
+      final versionSettingss = versionSettings?.merge(globalSource?.versionSettings);
+      final updateVersionController = UpdateVersionController(versionSettingss);
+
       final releaseVersionStatus = updateVersionController.setStatusByVersion(
         version: release.version,
-        sourceVersionSettings: globalSource?.versionSettings,
       );
-
+      // Проверяем, актуальная ли версия релиза, если нет - пропускаем
       if (!releaseVersionStatus.isUpdatable) continue;
 
       final availableRelease = availableReleasesFromAllSources[releaseSource];
@@ -62,10 +62,13 @@ class UpdateFinder {
 
   /// Если [Sources.checkAppSource] определил, откуда пришло обновление и в [availableReleasesBySources] для этого
   /// источника есть доступный релиз, то пользователь увидет обновление.
+  ///
   /// Если [Sources.checkAppSource] определил, откуда пришло обновление и в [availableReleasesBySources] для этого
   /// источника не доступного релиза, то функция завершится ошибкой [UpdateNotFoundException] и обновление не будет показано.
+  ///
   /// Если [Sources.checkAppSource] не определил, откуда пришло обновление, метод вернёт null, то пользователь увидет
   /// экран со списком всех источников с доступными обновлениями.
+  ///
   /// Если требуется для кастомных сторов поддержать возможность обновления с одного и того же источника, то
   /// можно воспользоваться [prioritySourceName].
   Future<Release?> findAvailableRelease({
@@ -76,7 +79,7 @@ class UpdateFinder {
   }) async {
     final sourcesWithReleases = availableReleasesBySources.keys.toList();
 
-    // используем приоритетный стор
+    // Используем приоритетный стор
     if (prioritySourceName != null) {
       final prioritySource = sourcesWithReleases.firstWhereOrNull((source) => source.name == prioritySourceName);
       if (prioritySource != null) {
@@ -84,12 +87,12 @@ class UpdateFinder {
       }
     }
 
-    // либо определяем сами откуда установлено приложение
+    // Либо определяем сами откуда установлено приложение
     final sourceCheckerType = await Sources.checkAppSource();
     if (sourceCheckerType != null) {
       final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.type == sourceCheckerType);
       if (checkedSource != null) {
-        // если сурс существует в конфиге, но для него нет обновления
+        // Если сурс существует в конфиге, но для него нет обновления
         if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {
           return null;
         }
@@ -98,7 +101,7 @@ class UpdateFinder {
       }
     }
 
-    //либо пытаемся взять из дефолтного
+    // Либо пытаемся взять из дефолтного
     if (defaultSourceName != null) {
       final defaultSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == defaultSourceName);
       if (defaultSource != null) {
@@ -106,7 +109,7 @@ class UpdateFinder {
       }
     }
 
-    // либо мы ни в чём не уверены и потому точно возращаем null
+    // Либо мы ни в чём не уверены и потому точно возращаем null
     return null;
   }
 

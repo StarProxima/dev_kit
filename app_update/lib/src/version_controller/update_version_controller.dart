@@ -7,12 +7,10 @@ class UpdateVersionController {
   final VersionSettingsConfig? configVersionSettings;
   const UpdateVersionController(this.configVersionSettings);
 
-  VersionStatus setStatusByVersion({required Version version, VersionSettingsConfig? sourceVersionSettings}) {
-    if (configVersionSettings == null && sourceVersionSettings == null) return VersionStatus.updatable;
-    final unsupportedVersions =
-        sourceVersionSettings?.unsupportedVersions ?? configVersionSettings?.unsupportedVersions ?? [];
-    final deprecatedVersions =
-        sourceVersionSettings?.deprecatedVersions ?? configVersionSettings?.deprecatedVersions ?? [];
+  VersionStatus setStatusByVersion({required Version version}) {
+    if (configVersionSettings == null) return VersionStatus.updatable;
+    final unsupportedVersions = configVersionSettings?.unsupportedVersions ?? [];
+    final deprecatedVersions = configVersionSettings?.deprecatedVersions ?? [];
 
     if (unsupportedVersions.any((constrant) => constrant.allows(version))) {
       return VersionStatus.unsupported;

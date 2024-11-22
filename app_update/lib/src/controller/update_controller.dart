@@ -247,16 +247,16 @@ class UpdateController extends UpdateControllerBase {
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
-    final updateVersionController = UpdateVersionController(configModel?.versionSettings);
 
     final appUpdateList = <AppUpdate>[];
     for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
-
-      // TODO Может быть versionSettings держать в самой модели ReleaseSource?
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
+
+      final versionSettings = configModel?.versionSettings?.merge(globalSource?.versionSettings);
+      final updateVersionController = UpdateVersionController(versionSettings);
+
       final currentReleaseStatus = updateVersionController.setStatusByVersion(
         version: appVersion,
-        sourceVersionSettings: globalSource?.versionSettings,
       );
 
       final appUpdate = AppUpdate(
