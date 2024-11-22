@@ -13,4 +13,11 @@ class VersionSettingsConfig {
     required this.unsupportedVersions,
     required this.deprecatedVersions,
   });
+
+  VersionSettingsConfig merge(VersionSettingsConfig? versionSettings) {
+    return VersionSettingsConfig(
+      unsupportedVersions: versionSettings?.unsupportedVersions ?? unsupportedVersions,
+      deprecatedVersions: versionSettings?.deprecatedVersions ?? deprecatedVersions,
+    );
+  }
 }

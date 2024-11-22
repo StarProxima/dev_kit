@@ -29,7 +29,7 @@ class UpdateFinalizer {
     required this.settingsContainer,
   });
 
-  List<Release> fializeReleases(List<ReleaseData> releases) {
+  List<Release> finalizeReleases(List<ReleaseData> releases) {
     return releases.map(finalizeRelease).toList();
   }
 
