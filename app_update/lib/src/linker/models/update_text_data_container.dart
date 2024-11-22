@@ -1,5 +1,8 @@
+// ignore_for_file: avoid-missing-enum-constant-in-map
+
 import 'dart:ui';
 
+import '../../parser/models/update_text_config_container.dart';
 import '../../shared/update_alert_type.dart';
 import '../../shared/version_status.dart';
 import 'update_text_data.dart';
@@ -9,38 +12,27 @@ class UpdateTextDataContainer {
 
   const UpdateTextDataContainer(this.value);
 
-  UpdateTextDataContainer merge(UpdateTextDataContainer child) {
-    final mergedValue = {...child.value};
+  static UpdateTextDataContainer? fromConfig(UpdateTextConfigContainer? config) {
+    if (config == null) return null;
 
-    for (final byLocale in value.entries) {
-      final childByLocale = mergedValue[byLocale.key];
-
-      if (childByLocale == null) {
-        mergedValue[byLocale.key] = byLocale.value;
-        continue;
-      }
-
-      for (final byType in byLocale.value.entries) {
-        final childByType = childByLocale[byType.key];
-        if (childByType == null) {
-          childByLocale[byType.key] = byType.value;
-          continue;
-        }
-
-        for (final byStatus in byType.value.entries) {
-          final childByStatus = childByType[byStatus.key];
-          if (childByStatus == null) {
-            childByType[byStatus.key] = byStatus.value;
-            continue;
-          }
-
-          final childText = childByStatus;
-          childByType[byStatus.key] = byStatus.value.merge(childText);
-        }
-      }
-    }
-
-    return UpdateTextDataContainer(mergedValue);
+    return UpdateTextDataContainer(
+      config.value.map(
+        (key, value) => MapEntry(
+          key,
+          value.map(
+            (key, value) => MapEntry(
+              key,
+              value.map(
+                (key, value) => MapEntry(
+                  key,
+                  UpdateTextData.fromConfig(value),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   UpdateTextData? getBy({

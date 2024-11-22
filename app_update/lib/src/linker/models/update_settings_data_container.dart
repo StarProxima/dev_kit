@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-collection-mutating-methods
+// ignore_for_file: avoid-missing-enum-constant-in-map
 
 import '../../parser/models/update_settings_config_container.dart';
 import '../../shared/update_alert_type.dart';
@@ -10,48 +10,22 @@ class UpdateSettingsDataContainer {
 
   const UpdateSettingsDataContainer(this.value);
 
-  factory UpdateSettingsDataContainer.fromConfig(UpdateSettingsConfigContainer? config) {
+  static UpdateSettingsDataContainer? fromConfig(UpdateSettingsConfigContainer? config) {
+    if (config == null) return null;
+
     return UpdateSettingsDataContainer(
-      // ignore: avoid-missing-enum-constant-in-map
-      config?.value.map(
+      config.value.map(
+        (key, value) => MapEntry(
+          key,
+          value.map(
             (key, value) => MapEntry(
               key,
-              value.map(
-                (key, value) => MapEntry(
-                  key,
-                  UpdateSettingsData.fromConfig(value),
-                ),
-              ),
+              UpdateSettingsData.fromConfig(value),
             ),
-          ) ??
-          {
-            // ignore: avoid-missing-enum-constant-in-map
-            UpdateAlertTypeBase.base: {
-              VersionStatusBase.base: UpdateSettingsData.fromConfig(null),
-            },
-          },
+          ),
+        ),
+      ),
     );
-  }
-
-  UpdateSettingsDataContainer merge(UpdateSettingsDataContainer child) {
-    final mergedValue = {...child.value};
-
-    for (final type in value.entries) {
-      if (mergedValue.containsKey(type.key)) {
-        for (final status in type.value.entries) {
-          if (mergedValue[type.key]!.containsKey(status.key)) {
-            final childSettings = mergedValue[type.key]![status.key]!;
-            mergedValue[type.key]?[status.key] = status.value.merge(childSettings);
-          } else {
-            mergedValue[type.key]?[status.key] = status.value;
-          }
-        }
-      } else {
-        mergedValue[type.key] = type.value;
-      }
-    }
-
-    return UpdateSettingsDataContainer(mergedValue);
   }
 
   UpdateSettingsData? getByBase({

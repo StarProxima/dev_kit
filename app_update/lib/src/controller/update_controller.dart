@@ -207,11 +207,14 @@ class UpdateController extends UpdateControllerBase {
       ...?configModel?.sources,
       ...?_globalSources?.map((e) => e.toGlobalSourceConfig()),
     ];
+    final releasesConfig = [...?configModel?.releases, ...releasesFromSources];
 
     final releasesData = _linker.linkConfigs(
       globalSettingsConfig: configModel?.settings,
-      releasesConfig: [...?configModel?.releases, ...releasesFromSources],
+      globalTextConfig: configModel?.text,
+      releasesConfig: releasesConfig,
       globalSourcesConfig: globalSourcesConfig,
+      platform: _platform,
     );
     final sources = _linker.parseSources(sourcesConfig: globalSourcesConfig);
 
