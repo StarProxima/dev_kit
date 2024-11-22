@@ -252,9 +252,7 @@ class UpdateController extends UpdateControllerBase {
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
 
     final appUpdateList = <AppUpdate>[];
-    for (final availableReleaseAndSource in availableReleasesBySources.entries) {
-      final availableRelease = availableReleaseAndSource.value;
-      final source = availableReleaseAndSource.key;
+    for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
 
       // TODO Может быть versionSettings держать в самой модели ReleaseSource?
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
