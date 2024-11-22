@@ -1,21 +1,18 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../linker/models/release_data.dart';
 import '../parser/models/versions_settings_config.dart';
 import '../shared/version_status.dart';
 
 class UpdateVersionController {
-  final VersionSettingsConfig? versionSettings;
-  const UpdateVersionController(this.versionSettings);
+  final VersionSettingsConfig? configVersionSettings;
+  const UpdateVersionController(this.configVersionSettings);
 
-  List<ReleaseData> filterAvailableReleaseData(List<ReleaseData> releases) {
-    return releases.where((release) => setStatusByVersion(release.version).isUpdatable).toList();
-  }
-
-  VersionStatus setStatusByVersion(Version version) {
-    if (versionSettings == null) return VersionStatus.updatable;
-    final unsupportedVersions = versionSettings?.unsupportedVersions ?? [];
-    final deprecatedVersions = versionSettings?.deprecatedVersions ?? [];
+  VersionStatus setStatusByVersion({required Version version, VersionSettingsConfig? sourceVersionSettings}) {
+    if (configVersionSettings == null && sourceVersionSettings == null) return VersionStatus.updatable;
+    final unsupportedVersions =
+        sourceVersionSettings?.unsupportedVersions ?? configVersionSettings?.unsupportedVersions ?? [];
+    final deprecatedVersions =
+        sourceVersionSettings?.deprecatedVersions ?? configVersionSettings?.deprecatedVersions ?? [];
 
     if (unsupportedVersions.any((constrant) => constrant.allows(version))) {
       return VersionStatus.unsupported;

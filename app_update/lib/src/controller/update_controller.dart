@@ -202,10 +202,7 @@ class UpdateController extends UpdateControllerBase {
     }
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
-    final globalSourcesConfig = [
-      ...?configModel?.sources,
-      ...?_globalSources?.map((e) => e.toGlobalSourceConfig()),
-    ];
+    final globalSourcesConfig = [...?configModel?.sources, ...?_globalSources?.map((e) => e.toGlobalSourceConfig())];
     final releasesConfig = [...?configModel?.releases, ...releasesFromSources];
 
     final releasesData = _linker.linkConfigs(
@@ -250,6 +247,7 @@ class UpdateController extends UpdateControllerBase {
 
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
+    final updateVersionController = UpdateVersionController(configModel?.versionSettings);
 
     final appUpdateList = <AppUpdate>[];
     for (final availableReleaseAndSource in availableReleasesBySources.entries) {
@@ -258,8 +256,10 @@ class UpdateController extends UpdateControllerBase {
 
       // TODO Может быть versionSettings держать в самой модели ReleaseSource?
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
-      final releaseVersionSettings = globalSource?.versionSettings ?? configModel?.versionSettings;
-      final currentReleaseStatus = UpdateVersionController(releaseVersionSettings).setStatusByVersion(appVersion);
+      final currentReleaseStatus = updateVersionController.setStatusByVersion(
+        version: appVersion,
+        sourceVersionSettings: globalSource?.versionSettings,
+      );
 
       final appUpdate = AppUpdate(
         appName: appName,
