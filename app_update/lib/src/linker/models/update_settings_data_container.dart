@@ -10,22 +10,21 @@ class UpdateSettingsDataContainer {
 
   const UpdateSettingsDataContainer(this.value);
 
-  factory UpdateSettingsDataContainer.fromConfig(UpdateSettingsConfigContainer? config) {
+  static UpdateSettingsDataContainer? fromConfig(UpdateSettingsConfigContainer? config) {
+    if (config == null) return null;
+
     return UpdateSettingsDataContainer(
-      config?.value.map(
+      config.value.map(
+        (key, value) => MapEntry(
+          key,
+          value.map(
             (key, value) => MapEntry(
               key,
-              value.map(
-                (key, value) => MapEntry(
-                  key,
-                  UpdateSettingsData.fromConfig(value),
-                ),
-              ),
+              UpdateSettingsData.fromConfig(value),
             ),
-          ) ??
-          {
-            UpdateAlertTypeBase.base: {VersionStatusBase.base: UpdateSettingsData.fromConfig(null)},
-          },
+          ),
+        ),
+      ),
     );
   }
 

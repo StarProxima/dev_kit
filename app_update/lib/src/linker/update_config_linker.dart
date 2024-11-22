@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-non-null-assertion, prefer-moving-to-variable
+// ignore_for_file: avoid-non-null-assertion
 
 import '../parser/models/release_config.dart';
 import '../parser/models/source_config.dart';
@@ -32,7 +32,7 @@ class UpdateConfigLinker {
 
       final releaseSources = releaseConfig.sources;
       // здесь мы уже переходим к понятию поставки. Если в релизе нет ни одного указанного стора - значит релиз никуда не поставлялся
-      if (releaseSources == null) continue;
+      if (releaseSources == null || releaseSources.isEmpty) continue;
 
       for (final releaseSource in releaseSources) {
         final name = releaseSource.name;
@@ -54,25 +54,27 @@ class UpdateConfigLinker {
           releaseSourceRelease?.text,
         );
 
-        final releaseSourcePlatforms = releaseSource.platforms;
+        final releaseSourcePlatforms =
+            releaseSource.platforms?.where((e) => e.platform == platform).firstOrNull?.source?.release;
         final releaseSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
-          releaseSourcePlatforms?.where((e) => e.platform == platform).firstOrNull?.source?.release?.settings,
+          releaseSourcePlatforms?.settings,
         );
         final releaseSourcePlatformTexts = UpdateTextDataContainer.fromConfig(
-          releaseSourcePlatforms?.where((e) => e.platform == platform).firstOrNull?.source?.release?.text,
+          releaseSourcePlatforms?.text,
         );
 
+        final globalSourcePlatform = globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.source;
         final globalSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
-          globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.source?.settings,
+          globalSourcePlatform?.settings,
         );
         final globalSourcePlatformTexts = UpdateTextDataContainer.fromConfig(
-          globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.source?.text,
+          globalSourcePlatform?.text,
         );
 
         final targetSource = ReleaseSource(
           name: name,
           url: sourceUrl,
-          platforms: releaseSourcePlatforms?.map((e) => e.platform).toList() ??
+          platforms: releaseSource.platforms?.map((e) => e.platform).toList() ??
               globalSource?.platforms?.map((e) => e.platform).toList(),
           customData: releaseSource.customData ?? globalSource?.customData,
         );
@@ -99,7 +101,7 @@ class UpdateConfigLinker {
           releaseSourcePlatform: releaseSourcePlatformTexts,
         );
 
-        // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг), настройки которого смержены со всеми и находятся в settings
+        // итого имеем ReleaseData для каждой конкретной поставки (пары релизКонфин-СурсКонфиг) с контейнерами для настроек и текстов
         releases.add(ReleaseData(
           version: version,
           source: targetSource,

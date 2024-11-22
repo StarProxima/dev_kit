@@ -12,29 +12,26 @@ class UpdateTextDataContainer {
 
   const UpdateTextDataContainer(this.value);
 
-  factory UpdateTextDataContainer.fromConfig(UpdateTextConfigContainer? config) {
+  static UpdateTextDataContainer? fromConfig(UpdateTextConfigContainer? config) {
+    if (config == null) return null;
+
     return UpdateTextDataContainer(
-      config?.value.map(
+      config.value.map(
+        (key, value) => MapEntry(
+          key,
+          value.map(
             (key, value) => MapEntry(
               key,
               value.map(
                 (key, value) => MapEntry(
                   key,
-                  value.map(
-                    (key, value) => MapEntry(
-                      key,
-                      UpdateTextData.fromConfig(value),
-                    ),
-                  ),
+                  UpdateTextData.fromConfig(value),
                 ),
               ),
             ),
-          ) ??
-          {
-            const Locale('base'): {
-              UpdateAlertTypeBase.base: {VersionStatusBase.base: UpdateTextData.fromConfig(null)},
-            },
-          },
+          ),
+        ),
+      ),
     );
   }
 
