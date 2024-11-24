@@ -31,7 +31,7 @@ void main() {
       },
     });
 
-    test('returns specific data for type and status', () {
+    test('returns data for specific alert type and version status', () {
       final result = container.getByBase(
         type: UpdateAlertTypeBase.dialog,
         status: VersionStatusBase.unsupported,
@@ -44,7 +44,7 @@ void main() {
       expect(result?.customData, {'key1': 'value2'});
     });
 
-    test('merges base and type-specific data', () {
+    test('merges data from base and specific alert type', () {
       final result = container.getByBase(
         type: UpdateAlertTypeBase.dialog,
         status: VersionStatusBase.base,
@@ -57,7 +57,7 @@ void main() {
       expect(result?.customData, {'key1': 'value1'});
     });
 
-    test('returns base data when no type-specific data available', () {
+    test('returns base data when specific status is not defined', () {
       final result = container.getByBase(
         type: UpdateAlertTypeBase.dialog,
         status: VersionStatusBase.updatable,
@@ -70,7 +70,7 @@ void main() {
       expect(result?.customData, {'key1': 'value1'});
     });
 
-    test('returns null when no data available for type and status', () {
+    test('falls back to base data when no specific data exists for type and status', () {
       final result = container.getByBase(
         type: UpdateAlertTypeBase.card,
         status: VersionStatusBase.updatable,
@@ -83,7 +83,7 @@ void main() {
       expect(result?.customData, {'key1': 'value1'});
     });
 
-    test('correctly merges customData from all levels', () {
+    test('correctly merges customData from base and specific levels', () {
       final result = container.getByBase(
         type: UpdateAlertTypeBase.card,
         status: VersionStatusBase.deprecated,
