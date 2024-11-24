@@ -35,17 +35,6 @@ class UpdateTextDataContainer {
     );
   }
 
-  UpdateTextData? getBy({
-    required Locale locale,
-    required UpdateAlertType type,
-    required VersionStatus status,
-  }) =>
-      getByBase(
-        locale: locale,
-        type: type.toBase(),
-        status: status.toBase(),
-      );
-
   UpdateTextData? getByBase({
     required Locale locale,
     required UpdateAlertTypeBase type,
