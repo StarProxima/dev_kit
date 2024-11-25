@@ -153,6 +153,53 @@ void main() {
       );
     });
 
+    test('returns defaults text data without null fields', () {
+      final container = UpdateTextContainer(
+        defaultContainer: UpdateTextDataContainer({
+          const Locale('base'): {
+            UpdateAlertTypeBase.base: {
+              VersionStatusBase.base: const UpdateTextData.byRequired(
+                title: '',
+                description: '',
+                releaseNotesTitle: '',
+                releaseNotes: '',
+                skipButton: '',
+                laterButton: '',
+                updateButton: '',
+                customData: null,
+              ),
+            },
+          },
+        }),
+        controllerContainer: null,
+        containerStorage: const UpdateContainerStorage(
+          global: null,
+          globalSource: null,
+          globalSourcePlatform: null,
+          release: null,
+          releaseSource: null,
+          releaseSourcePlatform: null,
+        ),
+        interpolate: (text) => text,
+      );
+
+      final result = container.getByBase(
+        // Random locale, type and status
+        locale: const Locale('es'),
+        type: UpdateAlertTypeBase.materialDialog,
+        status: VersionStatusBase.deprecated,
+      );
+
+      expect(result.title, '');
+      expect(result.description, '');
+      expect(result.releaseNotesTitle, '');
+      expect(result.releaseNotes, '');
+      expect(result.skipButton, '');
+      expect(result.laterButton, '');
+      expect(result.updateButton, '');
+      expect(result.customData, null);
+    });
+
     test('merges data correctly from multiple containers', () {
       final result = textContainer.getByBase(
         locale: const Locale('en'),

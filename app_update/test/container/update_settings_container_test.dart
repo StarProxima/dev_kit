@@ -70,7 +70,7 @@ void main() {
     test(
       'returns merged data from all containers for specific type and status',
       () {
-        final result = settingsContainer.getByRaw(
+        final result = settingsContainer.getByBase(
           type: UpdateAlertTypeBase.dialog,
           status: VersionStatusBase.unsupported,
         );
@@ -90,7 +90,7 @@ void main() {
     test(
       'falls back to default container when no specific data is available',
       () {
-        final result = settingsContainer.getByRaw(
+        final result = settingsContainer.getByBase(
           type: UpdateAlertTypeBase.card,
           status: VersionStatusBase.base,
         );
@@ -105,7 +105,7 @@ void main() {
     );
 
     test('merges data from controller and default containers', () {
-      final result = settingsContainer.getByRaw(
+      final result = settingsContainer.getByBase(
         type: UpdateAlertTypeBase.dialog,
         status: VersionStatusBase.base,
       );
@@ -119,7 +119,7 @@ void main() {
     });
 
     test('merges customData across containers', () {
-      final result = settingsContainer.getByRaw(
+      final result = settingsContainer.getByBase(
         type: UpdateAlertTypeBase.dialog,
         status: VersionStatusBase.deprecated,
       );
@@ -152,7 +152,7 @@ void main() {
       );
 
       expect(
-        () => invalidContainer.getByRaw(
+        () => invalidContainer.getByBase(
           type: UpdateAlertTypeBase.base,
           status: VersionStatusBase.base,
         ),
@@ -160,8 +160,47 @@ void main() {
       );
     });
 
+    test('returns defaults settings data without null fields', () {
+      const container = UpdateSettingsContainer(
+        defaultContainer: UpdateSettingsDataContainer({
+          UpdateAlertTypeBase.base: {
+            VersionStatusBase.base: UpdateSettingsData.byRequired(
+              canSkipRelease: false,
+              canPostponeRelease: false,
+              reminderPeriod: Duration.zero,
+              releaseDelay: Duration.zero,
+              progressiveRolloutDuration: Duration.zero,
+              customData: null,
+            ),
+          },
+        }),
+        controllerContainer: null,
+        containerStorage: UpdateContainerStorage(
+          global: null,
+          globalSource: null,
+          globalSourcePlatform: null,
+          release: null,
+          releaseSource: null,
+          releaseSourcePlatform: null,
+        ),
+      );
+
+      final result = container.getByBase(
+        // Random type and status
+        type: UpdateAlertTypeBase.materialDialog,
+        status: VersionStatusBase.deprecated,
+      );
+
+      expect(result.canSkipRelease, false);
+      expect(result.canPostponeRelease, false);
+      expect(result.progressiveRolloutDuration, Duration.zero);
+      expect(result.releaseDelay, Duration.zero);
+      expect(result.reminderPeriod, Duration.zero);
+      expect(result.customData, null);
+    });
+
     test('returns release-specific data when available', () {
-      final result = settingsContainer.getByRaw(
+      final result = settingsContainer.getByBase(
         type: UpdateAlertTypeBase.base,
         status: VersionStatusBase.base,
       );
