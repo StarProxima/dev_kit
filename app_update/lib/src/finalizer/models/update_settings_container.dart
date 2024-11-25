@@ -22,12 +22,12 @@ class UpdateSettingsContainer {
     required UpdateAlertType type,
     required VersionStatus status,
   }) =>
-      getByRaw(
+      getByBase(
         type: type.toBase(),
         status: status.toBase(),
       );
 
-  UpdateSettings getByRaw({
+  UpdateSettings getByBase({
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
