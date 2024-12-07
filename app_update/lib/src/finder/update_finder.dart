@@ -36,14 +36,17 @@ class UpdateFinder {
       // Обновляемся только на версии, которые строго выше нынешней
       if (release.version <= appVersion) continue;
 
+      // TODO ну и фигня
       final globalSource = globalSourcesConfig.where((e) => e.name == releaseSource.name).firstOrNull;
+      final platformGlobalSource = globalSource?.platforms?.firstWhereOrNull((e) => e.platform == platform);
+      final platformGlobalSourceVersionSettings = platformGlobalSource?.source?.versionSettings;
+      final mergedVersionSettings =
+          versionSettings?.merge(globalSource?.versionSettings) ?? globalSource?.versionSettings;
+      final mergedVersionSettingss =
+          platformGlobalSourceVersionSettings?.merge(mergedVersionSettings) ?? mergedVersionSettings;
+      final updateVersionController = UpdateVersionController(mergedVersionSettingss);
 
-      final versionSettingss = versionSettings?.merge(globalSource?.versionSettings);
-      final updateVersionController = UpdateVersionController(versionSettingss);
-
-      final releaseVersionStatus = updateVersionController.setStatusByVersion(
-        version: release.version,
-      );
+      final releaseVersionStatus = updateVersionController.setStatusByVersion(version: release.version);
       // Проверяем, актуальная ли версия релиза, если нет - пропускаем
       if (!releaseVersionStatus.isUpdatable) continue;
 
