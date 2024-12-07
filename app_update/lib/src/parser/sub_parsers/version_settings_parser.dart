@@ -24,7 +24,7 @@ class VersionSettingsParser {
     // unsupportedVersions
     final unsupportedVersionsValue = value.remove('unsupported_versions');
 
-    if (unsupportedVersionsValue is! List<String>?) {
+    if (unsupportedVersionsValue is! List?) {
       throw const UpdateConfigException();
     }
 
@@ -39,7 +39,7 @@ class VersionSettingsParser {
     // deprecatedVersions
     final deprecatedVersionsValue = value.remove('deprecated_versions');
 
-    if (deprecatedVersionsValue is! List<String>?) {
+    if (deprecatedVersionsValue is! List?) {
       throw const UpdateConfigException();
     }
 
