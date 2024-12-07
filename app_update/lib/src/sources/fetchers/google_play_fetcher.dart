@@ -20,7 +20,8 @@ import 'source_fetcher.dart';
 //TODO http.Client и clientHeaders надо бы сделать изменяемыми из вне. Или переписать всё на нативные дартовые клиенты
 
 class GooglePlayFetcher extends SourceReleaseFetcher {
-  static const playStorePrefixURL = 'play.google.com/store/apps/details';
+  static const playStorePrefixUrl = 'play.google.com';
+  static const playStoreUrlPath = 'store/apps/details';
 
   /// Provide an HTTP Client that can be replaced for mock testing.
   http.Client get client => http.Client();
@@ -36,7 +37,12 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     final name = packageInfo.appName;
     final url = _lookupURLById(name: name, locale: locale);
 
-    final response = await client.get(url);
+    http.Response response;
+    try {
+      response = await client.get(url);
+    } catch (_) {
+      return null;
+    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       return null;
     }
@@ -77,7 +83,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
       parameters['hl'] = languageCode;
     }
 
-    return Uri.https(playStorePrefixURL, '', parameters);
+    return Uri.https(playStorePrefixUrl, playStoreUrlPath, parameters);
   }
 
   String? _releaseNotes(Document pageBody) {
