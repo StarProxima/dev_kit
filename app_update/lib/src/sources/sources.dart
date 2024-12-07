@@ -21,7 +21,9 @@ enum Sources {
   final String? title;
 
   factory Sources.parse(String name) => values.firstWhere(
-        (e) => e.name == name,
+        (e) =>
+            e.name.toLowerCase() == name.toLowerCase() ||
+            e.title?.replaceAll(' ', '').toLowerCase() == name.toLowerCase(),
         orElse: () => custom,
       );
 
