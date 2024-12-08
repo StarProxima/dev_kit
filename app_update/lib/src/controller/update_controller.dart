@@ -117,9 +117,12 @@ class UpdateController extends UpdateControllerBase {
     final packageInfo = await _asyncPackageInfo;
     final releases = <ReleaseConfig>[];
     for (final source in _globalSources ?? <Source?>[null]) {
-      final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
-      final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
-      if (releaseFromSource != null) releases.add(releaseFromSource);
+      try {
+        final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
+        final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
+        if (releaseFromSource != null) releases.add(releaseFromSource);
+        // ignore: avoid_catching_errors
+      } on UnimplementedError catch (_) {}
     }
 
     _sourceReleasesConfigFromFetchersCompleter!.complete(releases);

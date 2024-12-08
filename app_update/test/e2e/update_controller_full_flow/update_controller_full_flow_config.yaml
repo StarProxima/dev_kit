@@ -32,7 +32,6 @@ sources:
       # Short syntax
       - windows
       - macos
-      - linux
 
 releases:
   - version: 1.0.1
@@ -48,7 +47,7 @@ releases:
     sources:
       - appStore
       - appGallery
-      - name: github
+      - name: gitHub
         url: https://github.com/
         release:
           date: "2024-08-24 15:55:00"

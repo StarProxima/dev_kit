@@ -45,5 +45,53 @@ void main() {
         expect(result.lastOrNull?.release.version, Version(1, 0, 4));
       },
     );
+
+    test(
+      'Get all releases for Windows',
+      () async {
+        final controller = UpdateController(
+          updateConfigFetcher: updateConfigFetcher,
+          targetPlatform: UpdatePlatform.windows,
+        );
+
+        final result = await controller.findAllAvailableUpdates();
+
+        expect(result.length, 1);
+        expect(result.firstOrNull?.release.source.name, 'gitHub');
+        expect(result.firstOrNull?.release.version, Version(1, 0, 5));
+      },
+    );
+
+    test(
+      'Get all releases for Ios',
+      () async {
+        final controller = UpdateController(
+          updateConfigFetcher: updateConfigFetcher,
+          targetPlatform: UpdatePlatform.ios,
+        );
+
+        final result = await controller.findAllAvailableUpdates();
+
+        expect(result.length, 1);
+        expect(result.firstOrNull?.release.source.type, Sources.appStore);
+        expect(result.firstOrNull?.release.version, Version(1, 0, 4));
+      },
+    );
+
+    test(
+      'Get all releases for Linux',
+      () async {
+        final controller = UpdateController(
+          updateConfigFetcher: updateConfigFetcher,
+          targetPlatform: UpdatePlatform.linux,
+        );
+
+        final result = await controller.findAllAvailableUpdates();
+
+        expect(result.length, 1);
+        expect(result.firstOrNull?.release.source.name, 'gitHub');
+        expect(result.firstOrNull?.release.version, Version(1, 0, 1));
+      },
+    );
   });
 }
