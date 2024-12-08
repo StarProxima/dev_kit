@@ -56,7 +56,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
       text: UpdateTextConfigContainer.fromBase(updateTextConfig),
       sources: [
         ReleaseSourceConfig(
-          name: source?.name ?? Sources.googlePlay.name,
+          name: source?.name ?? Sources.appStore.name,
           url: source?.url ?? Uri.tryParse(_appStoreUrl(decodedResults, locale) ?? ''),
         ),
       ],

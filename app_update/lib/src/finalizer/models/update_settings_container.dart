@@ -18,6 +18,11 @@ class UpdateSettingsContainer {
     required this.containerStorage,
   });
 
+  UpdateSettings getDefault() => getByBase(
+        type: UpdateAlertTypeBase.base,
+        status: VersionStatusBase.base,
+      );
+
   UpdateSettings getBy({
     required UpdateAlertType type,
     required VersionStatus status,

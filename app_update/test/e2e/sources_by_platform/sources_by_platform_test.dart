@@ -12,7 +12,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  group('Full UpdateController flow', () {
+  group('Sources by platform', () {
     final updateConfigFetcher = UpdateConfigFetcher.byFile(
       file: File(
         '${Directory.current.path}\\test\\e2e\\update_controller_full_flow\\update_controller_full_flow_config.yaml',
@@ -38,6 +38,7 @@ void main() {
 
         final result = await controller.findAllAvailableUpdates();
 
+        // TODO тесты на release.appUpdateStatus и на updateConfig
         expect(result.length, 2);
         expect(result.firstOrNull?.release.source.type, Sources.huaweiAppGallery);
         expect(result.lastOrNull?.release.source.name, 'gitHub');

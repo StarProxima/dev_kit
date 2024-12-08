@@ -91,7 +91,7 @@ class UpdateFinder {
     }
 
     // Либо определяем сами откуда установлено приложение
-    final sourceCheckerType = await Sources.checkAppSource();
+    final sourceCheckerType = await Sources.checkAppSource().onError((_, __) => null);
     if (sourceCheckerType != null) {
       final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.type == sourceCheckerType);
       if (checkedSource != null) {
