@@ -21,24 +21,28 @@ void main() {
     );
     SharedPreferences.setMockInitialValues({});
 
-    // test(
-    //   'Fetch test app for Android',
-    //   () async {
-    //     final controller = UpdateController(
-    //       targetPlatform: UpdatePlatform.android,
-    //       targetSourceName: Sources.googlePlay.name,
-    //     );
+    test(
+      'Fetch test app for Android',
+      () async {
+        final controller = UpdateController(
+          targetPlatform: UpdatePlatform.android,
+          targetSourceName: Sources.googlePlay.name,
+        );
 
-    //     final result = await controller.findUpdate();
+        final result = await controller.findUpdate();
 
-    //     expect(result.release.source.type, Sources.googlePlay);
-    //     expect(result.release.version, Version(1, 2, 1));
-    //     expect(
-    //       result.release.text.getDefault().releaseNotes,
-    //       'Исправлено отображение расписания, когда оно становится доступным',
-    //     );
-    //   },
-    // );
+        expect(result.release.source.type, Sources.googlePlay);
+        expect(result.release.version, Version(1, 2, 1));
+        expect(
+          result.release.text.getDefault().releaseNotes,
+          'Исправлено отображение расписания, когда оно становится доступным',
+        );
+        expect(
+          result.release.source.url.toString(),
+          'https://play.google.com/store/apps/details?id=com.nullexp.cube_system',
+        );
+      },
+    );
 
     test(
       'Fetch test app for Ios',
