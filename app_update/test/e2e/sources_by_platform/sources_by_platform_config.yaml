@@ -29,8 +29,14 @@ sources:
             title: Title
           version_settings:
             deprecated_versions: ["1.0.5"]
+      - name: windows
+        source:
+          url: https://example.com/windows
+          text:
+            title: Title
+          version_settings:
+            deprecated_versions: ["1.0.0"]
       # Short syntax
-      - windows
       - macos
 
 releases:
@@ -118,3 +124,5 @@ releases:
       release_delay_hours: 330
     sources:
       - gitHub
+
+testName: e2e
