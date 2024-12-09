@@ -80,4 +80,9 @@ class UpdateStorage {
       await _prefs.setStringList(_kSkippedReleaseVersions, skippedReleases);
     }
   }
+
+  void clearStorage() {
+    _prefs.remove(_kSkippedReleaseVersions);
+    _prefs.remove(_kPostponedReleaseVersions);
+  }
 }

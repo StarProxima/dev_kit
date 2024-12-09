@@ -40,7 +40,7 @@ void main() {
 
     setUp(() {
       storage.nowDateTime = DateTime.now();
-      SharedPreferences.setMockInitialValues({});
+      storage.clearStorage();
     });
 
     test(
