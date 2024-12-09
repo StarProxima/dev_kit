@@ -254,10 +254,11 @@ class UpdateController extends UpdateControllerBase {
     final appUpdateList = <AppUpdate>[];
     for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
-
-      final versionSettings =
-          configModel?.versionSettings?.merge(globalSource?.versionSettings) ?? globalSource?.versionSettings;
-      final updateVersionController = UpdateVersionController(versionSettings);
+      final updateVersionController = UpdateVersionController.fromGlobalSource(
+        versionSettingsConfig: configModel?.versionSettings,
+        globalSource: globalSource,
+        platform: _platform,
+      );
 
       final currentReleaseStatus = updateVersionController.setStatusByVersion(
         version: appVersion,

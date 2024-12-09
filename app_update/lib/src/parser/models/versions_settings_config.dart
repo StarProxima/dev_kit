@@ -13,11 +13,13 @@ class VersionSettingsConfig {
     required this.unsupportedVersions,
     required this.deprecatedVersions,
   });
+}
 
+extension MergeExt on VersionSettingsConfig? {
   VersionSettingsConfig merge(VersionSettingsConfig? versionSettings) {
     return VersionSettingsConfig(
-      unsupportedVersions: versionSettings?.unsupportedVersions ?? unsupportedVersions,
-      deprecatedVersions: versionSettings?.deprecatedVersions ?? deprecatedVersions,
+      unsupportedVersions: versionSettings?.unsupportedVersions ?? this?.unsupportedVersions,
+      deprecatedVersions: versionSettings?.deprecatedVersions ?? this?.deprecatedVersions,
     );
   }
 }
