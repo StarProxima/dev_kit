@@ -9,6 +9,8 @@ const _kPostponedReleaseVersions = 'updateChecker_kPostponedReleaseVersions';
 class UpdateStorage {
   final SharedPreferences _prefs;
 
+  DateTime get nowDateTime => DateTime.now();
+
   const UpdateStorage(this._prefs);
 
   Future<void> saveLastSource(String sourceName) async {
@@ -29,7 +31,7 @@ class UpdateStorage {
     required Version releaseVersion,
     required Duration postponeDuration,
   }) async {
-    final postponedDate = DateTime.now().add(postponeDuration).toIso8601String();
+    final postponedDate = nowDateTime.add(postponeDuration).toIso8601String();
     final releaseData = json.encode({'version': releaseVersion.toString(), 'date': postponedDate});
     final postponedReleases = _prefs.getStringList(_kPostponedReleaseVersions) ?? [];
     postponedReleases.add(releaseData);
@@ -49,7 +51,7 @@ class UpdateStorage {
   }
 
   Future<void> clearOldReleases() async {
-    final now = DateTime.now();
+    final now = nowDateTime;
     final postponedReleases = [...?_prefs.getStringList(_kPostponedReleaseVersions)];
     final filteredReleases = postponedReleases.where((release) {
       final data = json.decode(release) as Map<String, dynamic>;

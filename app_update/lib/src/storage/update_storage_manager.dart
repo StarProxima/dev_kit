@@ -15,7 +15,7 @@ class UpdateStorageManager {
 
   bool isPostponedRelease(Version releaseVersion) {
     final postponedReleases = _storage.getPostponedReleases();
-    final now = DateTime.now();
+    final now = _storage.nowDateTime;
 
     for (final release in postponedReleases) {
       final version = Version.parse(release['version']);
