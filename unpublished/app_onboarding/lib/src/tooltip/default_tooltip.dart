@@ -225,7 +225,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                 else
                   Row(
                     children: [
-                      if (settings.skipText != null)
+                      if (settings.skipText != null) ...[
                         Expanded(
                           child: settings.skipButtonSettings.buttonBuilder ==
                                   null
@@ -245,7 +245,8 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                                   _onSkipTap,
                                 ),
                         ),
-                      const SizedBox(width: 4),
+                        const SizedBox(width: 4),
+                      ],
                       if (settings.nextText != null)
                         Expanded(
                           child: settings.nextButtonSettings.buttonBuilder ==
