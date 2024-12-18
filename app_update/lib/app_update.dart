@@ -7,8 +7,8 @@ library app_update;
 // 3) [x] UpdateConfigFetcher - получение и парсинг с remote url (для тестов можно оставить файл)
 // 4) [x] SourceReleaseFetcher для Google Play и AppStore
 // 5) [ ] Реализация UpdateAlertHandler.primaryDialog
-// 6) [ ] Тесты на Parser
-// 7) [ ] Интеграционные тесты нескольких компонентов
+// 6) [x] Тесты на Parser
+// 7) [x] Интеграционные тесты нескольких компонентов
 // 8) [ ] Обновить спеку и README
 // 9) [x] Переименовать date_utc -> date. Чекать таймзону пожно по постфиксу Z.
  
