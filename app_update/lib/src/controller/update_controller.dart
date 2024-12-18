@@ -119,7 +119,13 @@ class UpdateController extends UpdateControllerBase {
     for (final source in _globalSources ?? <Source?>[null]) {
       try {
         final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
-        final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
+        final releaseFromSource = await fetcher
+            .fetch(
+              source: source,
+              locale: locale,
+              packageInfo: packageInfo,
+            )
+            .onError((_, __) => null);
         if (releaseFromSource != null) releases.add(releaseFromSource);
         // ignore: avoid_catching_errors
       } on UnimplementedError catch (_) {}

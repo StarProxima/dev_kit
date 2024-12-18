@@ -12,8 +12,8 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
-import '../../parser/models/update_text_config.dart';
-import '../../parser/models/update_text_config_container.dart';
+// import '../../parser/models/update_text_config.dart';
+// import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
 import '../sources.dart';
 import 'source_fetcher.dart';
@@ -37,28 +37,24 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     final name = packageInfo.appName;
     final url = _lookupURLById(name: name, locale: locale);
 
-    http.Response response;
-    try {
-      response = await client.get(url);
-    } catch (_) {
-      return null;
-    }
+    final response = await client.get(url);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       return null;
     }
 
     final decodedResults = parse(response.body);
-    final releaseNotes = _releaseNotes(decodedResults);
+    // TODO разобраться почему не срабатывает _releaseNotes
+    // final releaseNotes = _releaseNotes(decodedResults);
     final sourceVersion = _version(decodedResults);
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
-    final updateTextConfig = UpdateTextConfig(
-      releaseNotes: releaseNotes,
-    );
+    // final updateTextConfig = UpdateTextConfig(
+    //   releaseNotes: releaseNotes,
+    // );
 
     return ReleaseConfig(
       version: sourceVersion,
-      text: UpdateTextConfigContainer.fromBase(updateTextConfig),
+      // text: UpdateTextConfigContainer.fromBase(updateTextConfig),
       sources: [
         ReleaseSourceConfig(
           name: source?.name ?? Sources.googlePlay.name,

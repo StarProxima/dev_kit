@@ -9,6 +9,7 @@ import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/sources/sources.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +17,7 @@ void main() {
   group('Sources by platform', () {
     final updateConfigFetcher = UpdateConfigFetcher.byFile(
       file: File(
-        '${Directory.current.path}\\test\\e2e\\sources_by_platform\\sources_by_platform_config.yaml',
+        p.join(Directory.current.path, 'test', 'e2e', 'sources_by_platform', 'sources_by_platform_config.yaml'),
       ),
     );
 

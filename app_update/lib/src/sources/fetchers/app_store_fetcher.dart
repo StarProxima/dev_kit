@@ -34,12 +34,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     final bundleId = packageInfo.packageName;
     final url = _lookupURL(bundleId, locale);
 
-    http.Response response;
-    try {
-      response = await client.get(url);
-    } catch (_) {
-      return null;
-    }
+    final response = await client.get(url);
     final decodedResults = _decodeResults(response);
     if (decodedResults == null) return null;
 

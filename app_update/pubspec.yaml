@@ -32,4 +32,5 @@ dev_dependencies:
   project_kit:
     path: ../unpublished/project_kit
   clock: ^1.1.1
+  path: ^1.8.0
 

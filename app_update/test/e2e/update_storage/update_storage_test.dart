@@ -9,6 +9,7 @@ import 'package:app_update/src/shared/update_platform.dart';
 import 'package:app_update/src/sources/sources.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +19,7 @@ void main() {
   group('Update storage', () {
     final updateConfigFetcher = UpdateConfigFetcher.byFile(
       file: File(
-        '${Directory.current.path}\\test\\e2e\\update_storage\\update_storage_config.yaml',
+        p.join(Directory.current.path, 'test', 'e2e', 'update_storage', 'update_storage_config.yaml'),
       ),
     );
     const targetPlatform = UpdatePlatform.android;
