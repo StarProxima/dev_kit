@@ -28,7 +28,7 @@ enum Sources {
       );
 
   static Future<Sources?> checkAppSource() async {
-    final installationSource = await checker.StoreChecker.getSource;
+    final installationSource = await checker.StoreChecker.getSource.onError((_, __) => checker.Source.UNKNOWN);
     final sourceCheckerName = switch (installationSource) {
       checker.Source.IS_INSTALLED_FROM_PLAY_STORE => Sources.googlePlay,
       checker.Source.IS_INSTALLED_FROM_PLAY_PACKAGE_INSTALLER => Sources.googlePlayPackageInstaller,
