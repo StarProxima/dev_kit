@@ -19,7 +19,7 @@ import '../sources.dart';
 import 'source_fetcher.dart';
 
 class AppStoreFetcher extends SourceReleaseFetcher {
-  static const lookupPrefixURL = 'https://itunes.apple.com/lookup';
+  static const lookupPrefixURL = 'itunes.apple.com';
 
   http.Client get client => http.Client();
 
@@ -51,7 +51,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
       text: UpdateTextConfigContainer.fromBase(updateTextConfig),
       sources: [
         ReleaseSourceConfig(
-          name: source?.name ?? Sources.googlePlay.name,
+          name: source?.name ?? Sources.appStore.name,
           url: source?.url ?? Uri.tryParse(_appStoreUrl(decodedResults, locale) ?? ''),
         ),
       ],
@@ -65,7 +65,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
       qsp.addAll({'_cb': DateTime.now().microsecondsSinceEpoch.toString()});
     }
 
-    return Uri.https(lookupPrefixURL, '', qsp);
+    return Uri.https(lookupPrefixURL, 'lookup', qsp);
   }
 
   Map? _decodeResults(http.Response response) {

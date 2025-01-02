@@ -1,11 +1,20 @@
+import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../parser/models/source_config.dart';
 import '../parser/models/versions_settings_config.dart';
+import '../shared/update_platform.dart';
 import '../shared/version_status.dart';
 
 class UpdateVersionController {
   final VersionSettingsConfig? configVersionSettings;
-  const UpdateVersionController(this.configVersionSettings);
+  UpdateVersionController.fromGlobalSource({
+    VersionSettingsConfig? versionSettingsConfig,
+    GlobalSourceConfig? globalSource,
+    UpdatePlatform? platform,
+  }) : configVersionSettings = versionSettingsConfig
+            .merge(globalSource?.versionSettings)
+            .merge(globalSource?.platforms?.firstWhereOrNull((e) => e.platform == platform)?.source?.versionSettings);
 
   VersionStatus setStatusByVersion({required Version version}) {
     if (configVersionSettings == null) return VersionStatus.updatable;

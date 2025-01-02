@@ -23,6 +23,12 @@ class UpdateTextContainer {
     required this.interpolate,
   });
 
+  UpdateText getDefault() => getByBase(
+        locale: const Locale('base'),
+        type: UpdateAlertTypeBase.base,
+        status: VersionStatusBase.base,
+      );
+
   UpdateText getBy({
     required Locale locale,
     required UpdateAlertType type,

@@ -31,6 +31,36 @@ class ReleaseSource {
       case Sources.appStore:
         return ReleaseSource.appStore(url: url, platforms: platforms, customData: customData);
 
+      case Sources.googlePlayPackageInstaller:
+        return ReleaseSource.googlePlayPackageInstaller(url: url, platforms: platforms, customData: customData);
+
+      case Sources.amazonAppStore:
+        return ReleaseSource.amazonAppStore(url: url, platforms: platforms, customData: customData);
+
+      case Sources.huaweiAppGallery:
+        return ReleaseSource.huaweiAppGallery(url: url, platforms: platforms, customData: customData);
+
+      case Sources.samsungGalaxyStore:
+        return ReleaseSource.samsungGalaxyStore(url: url, platforms: platforms, customData: customData);
+
+      case Sources.samsungSmartSwitchMobile:
+        return ReleaseSource.samsungSmartSwitchMobile(url: url, platforms: platforms, customData: customData);
+
+      case Sources.xiaomiGetApps:
+        return ReleaseSource.xiaomiGetApps(url: url, platforms: platforms, customData: customData);
+
+      case Sources.oppoAppMarket:
+        return ReleaseSource.oppoAppMarket(url: url, platforms: platforms, customData: customData);
+
+      case Sources.vivoAppStore:
+        return ReleaseSource.vivoAppStore(url: url, platforms: platforms, customData: customData);
+
+      case Sources.ruStore:
+        return ReleaseSource.ruStore(url: url, platforms: platforms, customData: customData);
+
+      case Sources.testFlight:
+        return ReleaseSource.testFlight(url: url, platforms: platforms, customData: customData);
+
       default:
         return ReleaseSource.custom(
           name: name,
