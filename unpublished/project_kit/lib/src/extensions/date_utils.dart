@@ -29,4 +29,30 @@ extension DateUtilsX on DateTime {
 
   bool isSameDay(DateTime? other) =>
       year == other?.year && month == other?.month && day == other?.day;
+
+  /// Returns week number of current week in a year
+  int get weekOfYear {
+    var w = _weekNumber;
+    final numOfWeeksInCurrentYear = _numOfWeeks(year);
+    if (w < 1) {
+      w = _numOfWeeks(year - 1);
+    } else if (w > numOfWeeksInCurrentYear) {
+      w = 1;
+    }
+    return w;
+  }
+
+  /// Calculates week number from a date as per https://en.wikipedia.org/wiki/ISO_week_date#Calculation
+  int get _weekNumber {
+    final startDate = DateTime(year);
+    final dayOfYear = difference(startDate).inDays + 1;
+    return ((dayOfYear - weekday + 10) / 7).floor();
+  }
+
+  /// Returns number of weeks in a year
+  /// [year] - year to calculate number of weeks
+  static int _numOfWeeks(int year) {
+    final dec28 = DateTime(year, 12, 28);
+    return dec28._weekNumber;
+  }
 }
