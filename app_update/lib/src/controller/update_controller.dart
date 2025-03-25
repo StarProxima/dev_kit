@@ -117,9 +117,18 @@ class UpdateController extends UpdateControllerBase {
     final packageInfo = await _asyncPackageInfo;
     final releases = <ReleaseConfig>[];
     for (final source in _globalSources ?? <Source?>[null]) {
-      final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
-      final releaseFromSource = await fetcher.fetch(source: source, locale: locale, packageInfo: packageInfo);
-      if (releaseFromSource != null) releases.add(releaseFromSource);
+      try {
+        final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
+        final releaseFromSource = await fetcher
+            .fetch(
+              source: source,
+              locale: locale,
+              packageInfo: packageInfo,
+            )
+            .onError((_, __) => null);
+        if (releaseFromSource != null) releases.add(releaseFromSource);
+        // ignore: avoid_catching_errors
+      } on UnimplementedError catch (_) {}
     }
 
     _sourceReleasesConfigFromFetchersCompleter!.complete(releases);
@@ -251,9 +260,11 @@ class UpdateController extends UpdateControllerBase {
     final appUpdateList = <AppUpdate>[];
     for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
-
-      final versionSettings = configModel?.versionSettings?.merge(globalSource?.versionSettings);
-      final updateVersionController = UpdateVersionController(versionSettings);
+      final updateVersionController = UpdateVersionController.fromGlobalSource(
+        versionSettingsConfig: configModel?.versionSettings,
+        globalSource: globalSource,
+        platform: _platform,
+      );
 
       final currentReleaseStatus = updateVersionController.setStatusByVersion(
         version: appVersion,

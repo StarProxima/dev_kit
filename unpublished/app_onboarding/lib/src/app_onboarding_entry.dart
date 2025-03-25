@@ -23,13 +23,13 @@ class ButtonSettings {
 }
 
 class TooltipSettings {
-  /// Complete button`s text
+  /// Complete button`s text. Must be set if need button
   final String? completeText;
 
-  /// Skip button`s text
-  final String skipText;
+  /// Skip button`s text. Must be set if need button
+  final String? skipText;
 
-  /// Next button`s text
+  /// Next button`s text. Must be set if need button
   final String Function(
     int currentIndex,
     int stepsLength,
@@ -74,7 +74,7 @@ class TooltipSettings {
 
   const TooltipSettings({
     this.tooltipText = 'Text in tooltip',
-    this.skipText = 'Skip',
+    this.skipText,
     this.nextText,
     this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
     this.tooltipDirection = AppOnboardingTooltipDirection.top,

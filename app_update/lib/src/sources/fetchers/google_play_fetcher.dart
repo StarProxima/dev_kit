@@ -12,15 +12,16 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
-import '../../parser/models/update_text_config.dart';
-import '../../parser/models/update_text_config_container.dart';
+// import '../../parser/models/update_text_config.dart';
+// import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
 import '../sources.dart';
 import 'source_fetcher.dart';
 //TODO http.Client и clientHeaders надо бы сделать изменяемыми из вне. Или переписать всё на нативные дартовые клиенты
 
 class GooglePlayFetcher extends SourceReleaseFetcher {
-  static const playStorePrefixURL = 'play.google.com/store/apps/details';
+  static const playStorePrefixUrl = 'play.google.com';
+  static const playStoreUrlPath = 'store/apps/details';
 
   /// Provide an HTTP Client that can be replaced for mock testing.
   http.Client get client => http.Client();
@@ -42,17 +43,18 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     }
 
     final decodedResults = parse(response.body);
-    final releaseNotes = _releaseNotes(decodedResults);
+    // TODO разобраться почему не срабатывает _releaseNotes
+    // final releaseNotes = _releaseNotes(decodedResults);
     final sourceVersion = _version(decodedResults);
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
-    final updateTextConfig = UpdateTextConfig(
-      releaseNotes: releaseNotes,
-    );
+    // final updateTextConfig = UpdateTextConfig(
+    //   releaseNotes: releaseNotes,
+    // );
 
     return ReleaseConfig(
       version: sourceVersion,
-      text: UpdateTextConfigContainer.fromBase(updateTextConfig),
+      // text: UpdateTextConfigContainer.fromBase(updateTextConfig),
       sources: [
         ReleaseSourceConfig(
           name: source?.name ?? Sources.googlePlay.name,
@@ -77,7 +79,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
       parameters['hl'] = languageCode;
     }
 
-    return Uri.https(playStorePrefixURL, '', parameters);
+    return Uri.https(playStorePrefixUrl, playStoreUrlPath, parameters);
   }
 
   String? _releaseNotes(Document pageBody) {

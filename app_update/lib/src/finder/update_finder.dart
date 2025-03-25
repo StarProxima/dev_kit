@@ -37,13 +37,13 @@ class UpdateFinder {
       if (release.version <= appVersion) continue;
 
       final globalSource = globalSourcesConfig.where((e) => e.name == releaseSource.name).firstOrNull;
-
-      final versionSettingss = versionSettings?.merge(globalSource?.versionSettings);
-      final updateVersionController = UpdateVersionController(versionSettingss);
-
-      final releaseVersionStatus = updateVersionController.setStatusByVersion(
-        version: release.version,
+      final updateVersionController = UpdateVersionController.fromGlobalSource(
+        versionSettingsConfig: versionSettings,
+        globalSource: globalSource,
+        platform: platform,
       );
+
+      final releaseVersionStatus = updateVersionController.setStatusByVersion(version: release.version);
       // Проверяем, актуальная ли версия релиза, если нет - пропускаем
       if (!releaseVersionStatus.isUpdatable) continue;
 

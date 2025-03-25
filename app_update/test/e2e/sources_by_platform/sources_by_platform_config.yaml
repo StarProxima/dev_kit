@@ -1,0 +1,128 @@
+settings:
+  base:
+    can_skip_release: true
+  card:
+    can_skip_release: false
+
+version_settings:
+  unsupported_versions: ["1.0.3"]
+
+sources:
+  - name: appGallery
+    url: https://example.com
+  - name: appStore
+    url: https://example.com
+    platforms:
+      - macos
+      - name: ios
+        source:
+          version_settings:
+            deprecated_versions: ["1.0.2"]
+  - name: gitHub
+    url: https://example.com
+    platforms:
+      # Full syntax
+      - name: android
+        source:
+          url: https://example.com/android
+          text:
+            title: Title
+          version_settings:
+            deprecated_versions: ["1.0.5"]
+      - name: windows
+        source:
+          url: https://example.com/windows
+          text:
+            title: Title
+          version_settings:
+            deprecated_versions: ["1.0.0"]
+      # Short syntax
+      - macos
+
+releases:
+  - version: 1.0.1
+    date: "2024-08-24 15:35:00"
+    text:
+      release_notes: |-
+        - Added bugs
+        - Fixed features
+    settings:
+      can_skip_release: true
+      reminder_period_hours: 48
+      release_delay_hours: 48
+    sources:
+      - appStore
+      - appGallery
+      - name: gitHub
+        url: https://github.com/
+        release:
+          date: "2024-08-24 15:55:00"
+        platforms:
+          - macos
+          - linux
+          - name: windows
+            source:
+              url: https://example.com/android
+              release:
+                text:
+                  ru:
+                    release_notes: Windows Github release notes
+                settings:
+                  can_skip_release: false
+
+  - version: 1.0.2
+    date: "2024-08-24 16:35:00"
+    text:
+      release_notes: Minor Improvements
+    is_super_ultra_mega_release: true
+    settings:
+      can_skip_release: false
+      reminder_period_hours: 333
+      release_delay_hours: 333
+    sources:
+      - appStore
+      - appGallery
+      - gitHub
+
+  - version: 1.0.3
+    date: "2024-08-24 17:35:00"
+    text:
+      release_notes: Minor Improvements
+    is_super_ultra_mega_release: true
+    settings:
+      can_skip_release: false
+      reminder_period_hours: 332
+      release_delay_hours: 332
+    sources:
+      - appStore
+      - appGallery
+      - gitHub
+    
+  - version: 1.0.4
+    date: "2024-08-24 18:35:00"
+    text:
+      release_notes: Minor Improvements
+    is_super_ultra_mega_release: true
+    settings:
+      can_skip_release: false
+      reminder_period_hours: 331
+      release_delay_hours: 331
+    sources:
+      - appStore
+      - appGallery
+      - gitHub
+    
+      
+  - version: 1.0.5
+    date: "2024-08-24 19:35:00"
+    text:
+      release_notes: Minor Improvements
+    is_super_ultra_mega_release: true
+    settings:
+      can_skip_release: false
+      reminder_period_hours: 330
+      release_delay_hours: 330
+    sources:
+      - gitHub
+
+testName: e2e
