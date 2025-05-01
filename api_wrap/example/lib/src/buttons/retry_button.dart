@@ -38,18 +38,18 @@ class _RetryButtonState extends State<RetryButton> {
               },
               retry: Retry(
                 maxAttempts: 6,
-                retryIf: (_) => true,
-                onFail: (e, delayBeforeNextAttemt) {
+                retryIf: (_, __) => true,
+                onFail: (e, stats) {
                   toastification.show(
                     type: ToastificationType.error,
                     title: Row(
                       children: [
                         const Text('Failed attempt, retry after '),
-                        TimeText(delayBeforeNextAttemt),
+                        TimeText(stats.delayBeforeNextAttempt),
                       ],
                     ),
                     description: Text(e.toShortString()),
-                    autoCloseDuration: delayBeforeNextAttemt,
+                    autoCloseDuration: stats.delayBeforeNextAttempt,
                     pauseOnHover: false,
                   );
                 },

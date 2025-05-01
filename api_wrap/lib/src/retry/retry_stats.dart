@@ -6,7 +6,8 @@ class RetryStats {
   RetryStats({
     required this.options,
     required this.attempt,
-    required this.delay,
+    required this.delayBeforePreviosAttempt,
+    required this.delayBeforeNextAttempt,
     required this.startTime,
     required this.elapsedTime,
     bool? willRetry,
@@ -18,8 +19,11 @@ class RetryStats {
   /// Текущая попытка (начиная с 1).
   final int attempt;
 
+  /// Задержка перед этой попыткой.
+  final Duration? delayBeforePreviosAttempt;
+
   /// Задержка перед следующей попыткой.
-  final Duration delay;
+  final Duration delayBeforeNextAttempt;
 
   /// Время начала выполнения ретрая.
   final DateTime startTime;
@@ -38,13 +42,13 @@ class RetryStats {
 
   bool get hasTime =>
       remainingTime == null ||
-      remainingTime!.inMicroseconds > delay.inMicroseconds;
+      remainingTime!.inMicroseconds > delayBeforeNextAttempt.inMicroseconds;
 
   /// Количество оставшихся попыток.
   int get attemptsLeft => options.maxAttempts - attempt;
 
   // Есть ли оставшиеся попытки.
-  bool get hasAttempts => attemptsLeft <= 0;
+  bool get hasAttempts => attemptsLeft > 0;
 
   /// Возможна ли еще одна попытка.
   bool get canRetry => hasTime && hasAttempts;
@@ -60,7 +64,8 @@ class RetryStats {
   RetryStats copyWith({
     RetryOptions? options,
     int? attempt,
-    Duration? delay,
+    Duration? delayBeforePreviosAttempt,
+    Duration? delayBeforeNextAttempt,
     DateTime? startTime,
     Duration? elapsedTime,
     bool? willRetry,
@@ -68,7 +73,10 @@ class RetryStats {
     return RetryStats(
       options: options ?? this.options,
       attempt: attempt ?? this.attempt,
-      delay: delay ?? this.delay,
+      delayBeforePreviosAttempt:
+          delayBeforePreviosAttempt ?? this.delayBeforePreviosAttempt,
+      delayBeforeNextAttempt:
+          delayBeforeNextAttempt ?? this.delayBeforeNextAttempt,
       startTime: startTime ?? this.startTime,
       elapsedTime: elapsedTime ?? this.elapsedTime,
       willRetry: willRetry ?? _willRetry,

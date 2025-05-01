@@ -76,7 +76,9 @@ class Retry<ErrorType> {
     var attempt = 0;
     final startTime = DateTime.now();
     final stopwatch = Stopwatch()..start();
+
     late ApiError<ErrorType> lastError;
+    Duration? lastDelay;
 
     while (attempt < options.maxAttempts) {
       attempt++;
@@ -91,10 +93,13 @@ class Retry<ErrorType> {
         final stats = RetryStats(
           options: options,
           attempt: attempt,
-          delay: delay,
+          delayBeforePreviosAttempt: lastDelay,
+          delayBeforeNextAttempt: delay,
           startTime: startTime,
           elapsedTime: stopwatch.elapsed,
         );
+
+        lastDelay = delay;
 
         final willRetry = stats.canRetry && await retryIf(lastError, stats);
 
