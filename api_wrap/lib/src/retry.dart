@@ -76,8 +76,8 @@ class RetryOptions {
     this.minDelay = Duration.zero,
     this.maxDelay = const Duration(seconds: 10),
     this.randomizationFactor = 0.25,
-    this.maxTotalDuration,
-    this.stopOnNoDurationLeft = true,
+    this.maxTotalTime,
+    this.stopOnTotalTimeLimit = true,
   })  : assert(maxAttempts > 0, 'maxAttempts must be greater than 0'),
         assert(randomizationFactor >= 0 && randomizationFactor <= 1,
             'randomizationFactor must be between 0 and 1');
@@ -99,11 +99,11 @@ class RetryOptions {
 
   /// Максимальное общее время выполнения всех попыток.
   /// Если null, ограничение по времени не применяется.
-  final Duration? maxTotalDuration;
+  final Duration? maxTotalTime;
 
   /// Если true, прекращает повторные попытки, когда времени не осталось.
   /// Если false, всегда делает хотя бы одну попытку, даже если времени уже нет.
-  final bool stopOnNoDurationLeft;
+  final bool stopOnTotalTimeLimit;
 
   /// Создает копию опций с новыми значениями.
   RetryOptions copyWith({
@@ -112,8 +112,8 @@ class RetryOptions {
     Duration? minDelay,
     Duration? maxDelay,
     double? randomizationFactor,
-    Duration? maxTotalDuration,
-    bool? stopOnNoDurationLeft,
+    Duration? maxTotalTime,
+    bool? stopOnTotalTimeLimit,
   }) {
     return RetryOptions(
       maxAttempts: maxAttempts ?? this.maxAttempts,
@@ -121,8 +121,7 @@ class RetryOptions {
       minDelay: minDelay ?? this.minDelay,
       maxDelay: maxDelay ?? this.maxDelay,
       randomizationFactor: randomizationFactor ?? this.randomizationFactor,
-      maxTotalDuration: maxTotalDuration ?? this.maxTotalDuration,
-      stopOnNoDurationLeft: stopOnNoDurationLeft ?? this.stopOnNoDurationLeft,
+      maxTotalTime: maxTotalTime ?? this.maxTotalTime,
     );
   }
 }
@@ -134,35 +133,34 @@ class Retry<ErrorType> {
   /// Для обратной совместимости параметры указываются напрямую,
   /// они будут преобразованы в RetryOptions.
   Retry({
-    int maxAttempts = 3,
+    required int maxAttempts,
     Duration delayFactor = const Duration(milliseconds: 500),
     Duration minDelay = Duration.zero,
     Duration maxDelay = const Duration(seconds: 10),
     double randomizationFactor = 0.25,
-    Duration? maxTotalDuration,
+    Duration? maxTotalTime,
+    this.delayStrategy = exponentialBackoff,
     this.retryIf = _alwaysRetryIf,
     this.onError,
-    DelayStrategy? delayStrategy,
-  })  : options = RetryOptions(
+  }) : options = RetryOptions(
           maxAttempts: maxAttempts,
           delayFactor: delayFactor,
           minDelay: minDelay,
           maxDelay: maxDelay,
           randomizationFactor: randomizationFactor,
-          maxTotalDuration: maxTotalDuration,
-        ),
-        delayStrategy = delayStrategy ?? exponentialBackoff;
+          maxTotalTime: maxTotalTime,
+        );
 
   /// Создает экземпляр ретрая из готовых опций.
   const Retry.byOptions({
     required this.options,
-    required this.retryIf,
-    required this.delayStrategy,
+    this.delayStrategy = exponentialBackoff,
+    this.retryIf = _alwaysRetryIf,
     this.onError,
   });
 
   /// Создает экземпляр ретрая без повторных попыток.
-  factory Retry.no() {
+  factory Retry.none() {
     return Retry<ErrorType>(
       maxAttempts: 1,
       retryIf: (_) => false,
@@ -199,29 +197,17 @@ class Retry<ErrorType> {
   }) async {
     var attempt = 0;
     final stopwatch = Stopwatch()..start();
-    ApiError<ErrorType>? lastError;
+    late ApiError<ErrorType> lastError;
 
     Duration? remainingTime() {
-      if (options.maxTotalDuration == null) return null;
+      if (options.maxTotalTime == null) return null;
 
       final elapsed = stopwatch.elapsed;
-      if (elapsed >= options.maxTotalDuration!) return Duration.zero;
-      return options.maxTotalDuration! - elapsed;
+      if (elapsed >= options.maxTotalTime!) return Duration.zero;
+      return options.maxTotalTime! - elapsed;
     }
 
     while (attempt < options.maxAttempts) {
-      // Проверяем ограничение по времени
-      final remaining = remainingTime();
-      if (remaining != null &&
-          remaining.inMicroseconds <= 0 &&
-          options.stopOnNoDurationLeft) {
-        // Если время вышло и есть предыдущая ошибка, используем её
-        if (lastError != null) {
-          throw lastError;
-        }
-        // Иначе пробуем выполнить функцию хотя бы раз
-      }
-
       attempt++;
       try {
         return await function();
@@ -235,22 +221,25 @@ class Retry<ErrorType> {
           throw lastError;
         }
 
+        // Проверяем ограничение по времени
+        final remaining = remainingTime();
+
         // Проверяем, останется ли время после задержки
         final delay = delayStrategy(attempt, options);
+
+        onError?.call(lastError, delay);
+
         if (remaining != null &&
-            remaining.inMicroseconds < delay.inMicroseconds &&
-            options.stopOnNoDurationLeft) {
+            remaining.inMicroseconds < delay.inMicroseconds) {
           // Если время на ретрай закончилось, выбрасываем последнюю ошибку
           throw lastError;
         }
 
-        onError?.call(lastError, delay);
         await Future.delayed(delay);
       }
     }
 
-    // Если дошли до этого места, значит все попытки исчерпаны
-    // и у нас должна быть последняя ошибка
-    throw lastError!;
+    // По идее, мы не достигнем этого никогда, т.к. ошибка выбросится раньше, но на всякий
+    throw lastError;
   }
 }

@@ -29,7 +29,7 @@ void main() {
 
     void internalApiWrap() {
       InternalApiWrap<DateTime>(
-        retry: Retry.no(),
+        retry: Retry.none(),
         container: RateOperationsContainer(),
       );
     }
