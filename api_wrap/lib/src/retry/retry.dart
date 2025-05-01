@@ -78,14 +78,6 @@ class Retry<ErrorType> {
     final stopwatch = Stopwatch()..start();
     late ApiError<ErrorType> lastError;
 
-    Duration? remainingTime() {
-      if (options.maxTotalTime == null) return null;
-
-      final elapsed = stopwatch.elapsed;
-      if (elapsed >= options.maxTotalTime!) return Duration.zero;
-      return options.maxTotalTime! - elapsed;
-    }
-
     while (attempt < options.maxAttempts) {
       attempt++;
       try {
@@ -93,35 +85,22 @@ class Retry<ErrorType> {
       } catch (e, stackTrace) {
         lastError = wrapError(e, stackTrace);
 
-        // Проверяем ограничение по времени
-        final remaining = remainingTime();
-
         // Рассчитываем задержку для следующей попытки
         final delay = delayStrategy(attempt, options);
 
-        // Создаем объект статистики для текущей попытки
         final stats = RetryStats(
-          currentAttempt: attempt,
           options: options,
-          delayBeforeNextAttempt: delay,
+          attempt: attempt,
+          delay: delay,
           startTime: startTime,
-          elapsed: stopwatch.elapsed,
-          remainingTime: remaining,
+          elapsedTime: stopwatch.elapsed,
         );
 
-        // Проверяем, нужно ли повторять попытку
-        final canRetry =
-            attempt < options.maxAttempts && await retryIf(lastError, stats);
-        if (!canRetry) {
-          throw lastError;
-        }
+        final willRetry = stats.canRetry && await retryIf(lastError, stats);
 
-        // Вызываем обработчик ошибки, если задан
-        onFail?.call(lastError, stats);
+        onFail?.call(lastError, stats.copyWith(willRetry: willRetry));
 
-        if (remaining != null &&
-            remaining.inMicroseconds < delay.inMicroseconds) {
-          // Если время на ретрай закончилось, выбрасываем последнюю ошибку
+        if (!willRetry) {
           throw lastError;
         }
 
