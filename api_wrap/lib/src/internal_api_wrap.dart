@@ -19,6 +19,33 @@ class InternalApiWrap<ErrorType> {
   /// Контейнер операций, хранящий throttle и debounce операции по тегу.
   final RateOperationsContainer _operationsContainer;
 
+  /// Преобразует исключение в специализированный [ApiError<ErrorType>].
+  /// Обрабатывает различные типы ошибок, включая DioException.
+  ApiError<ErrorType> wrapError(Object error, StackTrace stackTrace) {
+    // Если ошибка уже ApiError с правильным типом, возвращаем как есть
+    if (error is ApiError<ErrorType>) {
+      return error;
+    }
+
+    // Обработка ошибок Dio
+    if (error is DioException) {
+      final res = error.response;
+      if (res != null) {
+        return ErrorResponse<ErrorType>(
+          error: _parseError?.call(res.data) ?? res.data,
+          stackTrace: stackTrace,
+          data: error.requestOptions.data,
+          statusCode: res.statusCode ?? 0,
+          method: res.requestOptions.method,
+          url: res.requestOptions.uri,
+        );
+      }
+    }
+
+    // Для всех остальных типов ошибок
+    return InternalError<ErrorType>(error: error, stackTrace: stackTrace);
+  }
+
   @visibleForTesting
   Future<D?> execute<T, D>(
     FutureOr<T> Function() function, {
@@ -31,72 +58,43 @@ class InternalApiWrap<ErrorType> {
   }) async {
     final finalRetry = retry ?? _retry;
 
-    ApiError<ErrorType> error;
-
     // Обрабатываем начальную задержку запроса.
     if (delay != null) await Future.delayed(delay);
 
-    Future<D?> fn() async {
-      var attempt = 0;
-      var isMinExecutionTimeUsed = false;
-      while (true) {
-        attempt++;
-        try {
-          final T response;
+    // Функция для выполнения запроса с учетом минимального времени выполнения
+    Future<T> executeWithMinTime() async {
+      // Обработка минимального времени выполнения запроса.
+      if (minExecutionTime == null) {
+        return await function();
+      }
 
-          // Обработка минимального времени выполнения запроса.
-          if (minExecutionTime == null || isMinExecutionTimeUsed) {
-            response = await function();
-          } else {
-            isMinExecutionTimeUsed = true;
+      final futureOr = function();
+      final future = switch (futureOr) {
+        Future() => futureOr,
+        _ => Future.value(futureOr),
+      };
 
-            final futureOr = function();
-            final future = switch (futureOr) {
-              Future() => futureOr,
-              _ => Future.value(futureOr),
-            };
-            final rec = await Future.wait(
-              [future, Future.delayed(minExecutionTime)],
-            );
-            response = rec.first as T;
-          }
+      final rec = await Future.wait(
+        [future, Future.delayed(minExecutionTime)],
+      );
 
-          // Возвращаем успешный результат или непосредственно сам ответ.
-          return (await onSuccess?.call(response)) ??
-              (response is D ? response as D : null);
-        } on DioException catch (e) {
-          // Обработка ошибок Dio, включая парсинг ответа.
-          final res = e.response;
-          if (res != null) {
-            error = ErrorResponse(
-              error: _parseError?.call(res.data) ?? res.data,
-              stackTrace: e.stackTrace,
-              data: e.requestOptions.data,
-              statusCode: res.statusCode ?? 0,
-              method: res.requestOptions.method,
-              url: res.requestOptions.uri,
-            );
-          } else {
-            error = InternalError(error: e, stackTrace: e.stackTrace);
-          }
-        } on ApiError<ErrorType> catch (e) {
-          error = e;
-        } catch (e, s) {
-          // Обработка неопределенных ошибок.
-          error = InternalError(error: e, stackTrace: s);
-        }
+      return rec.first as T;
+    }
 
-        // Попытка повтора запроса в соответствии с заданными параметрами.
-        if (attempt < finalRetry.maxAttempts &&
-            await finalRetry.retryIf(error)) {
-          final delay = finalRetry.calculateDelay(attempt);
-          finalRetry.onError?.call(error, delay);
-          await Future.delayed(delay);
-          continue;
-        }
+    // Функция-обертка для выполнения запроса и обработки ответа
+    Future<D?> executeRequest() async {
+      try {
+        final T response = await finalRetry.retry<T>(
+          executeWithMinTime,
+          wrapError: wrapError,
+        );
 
-        // Возвращаем результат вызова функции обработки ошибок, если она задана.
-        return onError?.call(error);
+        // Возвращаем успешный результат или непосредственно сам ответ.
+        return (await onSuccess?.call(response)) ??
+            (response is D ? response as D : null);
+      } on ApiError<ErrorType> catch (e) {
+        // Обработка ошибок из ретрая или возникших вне его
+        return onError?.call(e);
       }
     }
 
@@ -104,7 +102,7 @@ class InternalApiWrap<ErrorType> {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         container: _operationsContainer,
-        function: fn,
+        function: executeRequest,
         defaultTag: '$hashCode${StackTrace.current}',
       );
 
@@ -117,7 +115,7 @@ class InternalApiWrap<ErrorType> {
             :final timings
           ):
           return onError?.call(
-            RateCancelError(
+            RateCancelError<ErrorType>(
               rateLimiter: rateLimiter,
               tag: tag,
               timings: timings,
@@ -126,6 +124,6 @@ class InternalApiWrap<ErrorType> {
       }
     }
 
-    return fn();
+    return executeRequest();
   }
 }

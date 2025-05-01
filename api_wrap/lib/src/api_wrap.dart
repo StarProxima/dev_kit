@@ -30,6 +30,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// [retry] - настройки повторных попыток выполнения запроса.
   /// Если не указано, то повторных попыток не будет.
   ///
+  /// [maxExecutionTime] - максимальное общее время выполнения запроса, включая все повторные попытки.
+  ///
   /// Возвращает Future<D?> с преобразованным значением, полученным либо от [onSuccess] либо от [onError].
   Future<D?> apiWrap<T, D>(
     FutureOr<T> Function() function, {
@@ -39,6 +41,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
+    Duration? maxExecutionTime,
   }) =>
       _internalApiWrap<T, D>(
         function,
@@ -68,6 +71,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
+    Duration? maxExecutionTime,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -99,6 +103,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     Duration? delay,
     Retry<ErrorType>? retry,
     RateLimiter? rateLimiter,
+    Duration? maxExecutionTime,
   }) =>
       _internalApiWrap<T, T>(
         function,

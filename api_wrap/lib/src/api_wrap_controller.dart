@@ -14,7 +14,7 @@ class ApiWrapController<ErrorType> {
 
     container = RateOperationsContainer();
     internalApiWrap = InternalApiWrap(
-      retry: retry ?? const Retry(maxAttempts: 1),
+      retry: retry ?? Retry<ErrorType>.no(),
       parseError: parseError,
       container: container,
     );
