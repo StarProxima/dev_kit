@@ -1,4 +1,5 @@
 import 'package:api_wrap/api_wrap.dart';
+import 'package:api_wrap/src/retry/retry.dart';
 import 'package:dio/dio.dart';
 import 'package:test/test.dart' hide Retry;
 
