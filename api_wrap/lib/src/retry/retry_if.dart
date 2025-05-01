@@ -4,15 +4,17 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 import '../../api_wrap.dart';
+import 'retry_stats.dart';
 
-typedef RetryIfFn<ErrorType> = FutureOr<bool> Function(ApiError<ErrorType> e);
+typedef RetryIfFn<ErrorType> = FutureOr<bool> Function(
+    ApiError<ErrorType> e, RetryStats stats);
 
 abstract class RetryIf {
-  static bool always(ApiError e) => true;
+  static bool always(ApiError e, RetryStats stats) => true;
 
-  static bool never(ApiError e) => false;
+  static bool never(ApiError e, RetryStats stats) => false;
 
-  static bool badConnection(ApiError e) {
+  static bool badConnection(ApiError e, RetryStats stats) {
     if (e is! InternalError) return false;
     final error = e.error;
     return switch (error) {

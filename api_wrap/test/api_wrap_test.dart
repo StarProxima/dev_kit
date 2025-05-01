@@ -316,7 +316,7 @@ void main() {
       final r1 = await retryFn(
         Retry(
           maxAttempts: 3,
-          retryIf: (error) {
+          retryIf: (error, _) {
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -330,7 +330,7 @@ void main() {
       final r2 = await retryFn(
         Retry(
           maxAttempts: 2,
-          retryIf: (error) {
+          retryIf: (error, _) {
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -344,7 +344,7 @@ void main() {
       final r3 = await retryFn(
         Retry(
           maxAttempts: 3,
-          retryIf: (error) => false,
+          retryIf: (error, _) => false,
         ),
       );
 

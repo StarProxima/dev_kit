@@ -4,6 +4,7 @@ import '../api_wrap.dart';
 import 'delay_stategy.dart';
 import 'retry_if.dart';
 import 'retry_options.dart';
+import 'retry_stats.dart';
 
 /// Класс для управления повторными попытками выполнения функций при ошибках.
 class Retry<ErrorType> {
@@ -20,7 +21,7 @@ class Retry<ErrorType> {
     Duration? maxTotalTime,
     this.delayStrategy = DelayStrategy.exponential,
     this.retryIf = RetryIf.always,
-    this.onError,
+    this.onFail,
   }) : options = RetryOptions(
           maxAttempts: maxAttempts,
           delayFactor: delayFactor,
@@ -34,8 +35,8 @@ class Retry<ErrorType> {
   const Retry.byOptions({
     required this.options,
     this.delayStrategy = DelayStrategy.exponential,
-    this.retryIf = RetryIf.always,
-    this.onError,
+    required this.retryIf,
+    this.onFail,
   });
 
   /// Создает экземпляр ретрая без повторных попыток.
@@ -55,11 +56,9 @@ class Retry<ErrorType> {
   /// Стратегия расчета задержки между попытками.
   final DelayStrategyFn delayStrategy;
 
-  /// Функция, вызываемая при ошибке, с указанием задержки до следующей попытки.
-  final FutureOr<void> Function(
-    ApiError<ErrorType> e,
-    Duration delayBeforeNextAttemt,
-  )? onError;
+  /// Функция, вызываемая при ошибке, с указанием статистики попытки.
+  final FutureOr<void> Function(ApiError<ErrorType> e, RetryStats stats)?
+      onFail;
 
   /// Выполняет функцию [function] с логикой повторных попыток
   /// в случае возникновения ошибок, согласно настройкам ретрая.
@@ -75,6 +74,7 @@ class Retry<ErrorType> {
         wrapError,
   }) async {
     var attempt = 0;
+    final startTime = DateTime.now();
     final stopwatch = Stopwatch()..start();
     late ApiError<ErrorType> lastError;
 
@@ -93,20 +93,31 @@ class Retry<ErrorType> {
       } catch (e, stackTrace) {
         lastError = wrapError(e, stackTrace);
 
+        // Проверяем ограничение по времени
+        final remaining = remainingTime();
+
+        // Рассчитываем задержку для следующей попытки
+        final delay = delayStrategy(attempt, options);
+
+        // Создаем объект статистики для текущей попытки
+        final stats = RetryStats(
+          currentAttempt: attempt,
+          options: options,
+          delayBeforeNextAttempt: delay,
+          startTime: startTime,
+          elapsed: stopwatch.elapsed,
+          remainingTime: remaining,
+        );
+
         // Проверяем, нужно ли повторять попытку
         final canRetry =
-            attempt < options.maxAttempts && await retryIf(lastError);
+            attempt < options.maxAttempts && await retryIf(lastError, stats);
         if (!canRetry) {
           throw lastError;
         }
 
-        // Проверяем ограничение по времени
-        final remaining = remainingTime();
-
-        // Проверяем, останется ли время после задержки
-        final delay = delayStrategy(attempt, options);
-
-        onError?.call(lastError, delay);
+        // Вызываем обработчик ошибки, если задан
+        onFail?.call(lastError, stats);
 
         if (remaining != null &&
             remaining.inMicroseconds < delay.inMicroseconds) {

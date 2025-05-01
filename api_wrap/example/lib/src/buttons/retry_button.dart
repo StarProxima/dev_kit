@@ -39,7 +39,7 @@ class _RetryButtonState extends State<RetryButton> {
               retry: Retry(
                 maxAttempts: 6,
                 retryIf: (_) => true,
-                onError: (e, delayBeforeNextAttemt) {
+                onFail: (e, delayBeforeNextAttemt) {
                   toastification.show(
                     type: ToastificationType.error,
                     title: Row(
