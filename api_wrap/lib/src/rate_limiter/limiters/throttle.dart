@@ -119,3 +119,27 @@ class Throttle extends RateLimiter {
     return RateOperationSuccess(data);
   }
 }
+
+class ThrottleOperation<T> extends RateOperation<T> {
+  ThrottleOperation({
+    required super.rateLimiter,
+    required this.onCooldownEnd,
+  });
+
+  final void Function() onCooldownEnd;
+  bool cooldownIsCancel = false;
+  late Timer _timer;
+
+  void startCooldown({
+    required Duration duration,
+  }) {
+    startAt = DateTime.now();
+    _timer = Timer(duration, cancelCooldown);
+  }
+
+  void cancelCooldown() {
+    cooldownIsCancel = true;
+    _timer.cancel();
+    onCooldownEnd();
+  }
+}

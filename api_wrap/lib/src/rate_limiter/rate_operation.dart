@@ -1,5 +1,7 @@
-import 'dart:async';
+import 'package:meta/meta.dart';
 
+import 'limiters/debounce.dart';
+import 'limiters/throttle.dart';
 import 'rate_limiter.dart';
 import 'utils.dart';
 
@@ -31,98 +33,26 @@ class RateOperationsContainer {
   final Map<Object, ThrottleOperation> throttleOperations = {};
 }
 
-sealed class RateOperation<T> {
+abstract class RateOperation<T> {
   RateOperation({
     required this.rateLimiter,
   });
 
   final RateLimiter rateLimiter;
-  DateTime? _startAt;
+  @protected
+  DateTime? startAt;
 
   RateTimings calculateRateTimings({
     Duration? elapsedTime,
     Duration? remainingTime,
   }) {
     elapsedTime = elapsedTime ??
-        (_startAt != null
-            ? DateTime.now().difference(_startAt!)
-            : Duration.zero);
+        (startAt != null ? DateTime.now().difference(startAt!) : Duration.zero);
 
     return RateTimings(
       duration: rateLimiter.duration,
       elapsedTime: elapsedTime,
       remainingTime: remainingTime,
     );
-  }
-}
-
-class DebounceOperation<T> extends RateOperation<T> {
-  DebounceOperation({
-    required super.rateLimiter,
-    required this.timer,
-    required this.completer,
-    required this.function,
-    required this.onDelayEnd,
-  }) {
-    _startAt = DateTime.now();
-  }
-
-  final Timer timer;
-  final Completer<RateOperationResult<T>> completer;
-  final FutureOr<T> Function() function;
-  final void Function() onDelayEnd;
-
-  void cancel({
-    required Object tag,
-  }) {
-    timer.cancel();
-    onDelayEnd();
-
-    if (completer.isCompleted) return;
-    completer.complete(
-      RateOperationCancel<T>(
-        rateLimiter: 'Debounce',
-        tag: tag,
-        timings: calculateRateTimings(),
-      ),
-    );
-  }
-
-  Future<void> complete() async {
-    timer.cancel();
-    onDelayEnd();
-
-    try {
-      final res = await function.call();
-      if (completer.isCompleted) return;
-      completer.complete(RateOperationSuccess(res));
-    } catch (e, s) {
-      if (completer.isCompleted) return;
-      completer.completeError(e, s);
-    }
-  }
-}
-
-class ThrottleOperation<T> extends RateOperation<T> {
-  ThrottleOperation({
-    required super.rateLimiter,
-    required this.onCooldownEnd,
-  });
-
-  final void Function() onCooldownEnd;
-  bool cooldownIsCancel = false;
-  late Timer _timer;
-
-  void startCooldown({
-    required Duration duration,
-  }) {
-    _startAt = DateTime.now();
-    _timer = Timer(duration, cancelCooldown);
-  }
-
-  void cancelCooldown() {
-    cooldownIsCancel = true;
-    _timer.cancel();
-    onCooldownEnd();
   }
 }

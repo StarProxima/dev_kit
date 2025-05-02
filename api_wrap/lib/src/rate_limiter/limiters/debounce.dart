@@ -71,6 +71,9 @@ class Debounce extends RateLimiter {
         onDelayEnd?.call();
       },
     );
+
+    operation.start();
+
     operations[tag] = operation;
 
     onDelayStart?.call();
@@ -99,5 +102,54 @@ class Debounce extends RateLimiter {
     }
 
     return completer.future;
+  }
+}
+
+class DebounceOperation<T> extends RateOperation<T> {
+  DebounceOperation({
+    required super.rateLimiter,
+    required this.timer,
+    required this.completer,
+    required this.function,
+    required this.onDelayEnd,
+  });
+
+  final Timer timer;
+  final Completer<RateOperationResult<T>> completer;
+  final FutureOr<T> Function() function;
+  final void Function() onDelayEnd;
+
+  void start() {
+    startAt = DateTime.now();
+  }
+
+  void cancel({
+    required Object tag,
+  }) {
+    timer.cancel();
+    onDelayEnd();
+
+    if (completer.isCompleted) return;
+    completer.complete(
+      RateOperationCancel<T>(
+        rateLimiter: 'Debounce',
+        tag: tag,
+        timings: calculateRateTimings(),
+      ),
+    );
+  }
+
+  Future<void> complete() async {
+    timer.cancel();
+    onDelayEnd();
+
+    try {
+      final res = await function.call();
+      if (completer.isCompleted) return;
+      completer.complete(RateOperationSuccess(res));
+    } catch (e, s) {
+      if (completer.isCompleted) return;
+      completer.completeError(e, s);
+    }
   }
 }
