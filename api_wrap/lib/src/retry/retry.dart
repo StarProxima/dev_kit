@@ -107,7 +107,7 @@ class Retry {
   /// which contains information about the retry state.
   ///
   /// When [key] is provided, the retry operation is identified by this key,
-  /// which can be used later to cancel the operation via [cancelRetry].
+  /// which can be used later to cancel the operation via [cancelByKey].
   ///
   /// Returns the result of the successful function execution.
   FutureOr<R> execute<R>(
@@ -216,14 +216,14 @@ class Retry {
   /// // Later, cancel this specific operation
   /// retry.cancelRetry(key: 'fetch-operation');
   /// ```
-  bool cancelRetry({Object? key}) {
-    if (key == null) {
-      final isNotEmpty = _activeRetries.isNotEmpty;
-      _activeRetries.clear();
-
-      return isNotEmpty;
-    }
-
+  bool cancelByKey(Object? key) {
     return _activeRetries.remove(key);
+  }
+
+  bool cancellAll() {
+    final isNotEmpty = _activeRetries.isNotEmpty;
+    _activeRetries.clear();
+
+    return isNotEmpty;
   }
 }

@@ -623,12 +623,12 @@ void main() {
       final retry = Retry(maxAttempts: 3);
 
       // Check the current implementation's behavior for empty retry set
-      final wasCancelledEmpty = retry.cancelRetry();
+      final wasCancelledEmpty = retry.cancellAll();
       // Current implementation возвращает false для пустого множества операций
       expect(wasCancelledEmpty, isFalse);
 
       // Try to cancel non-existent operation
-      final wasNonExistentCancelled = retry.cancelRetry(key: 'non-existent');
+      final wasNonExistentCancelled = retry.cancelByKey('non-existent');
       expect(wasNonExistentCancelled, isFalse);
     });
 
@@ -654,7 +654,7 @@ void main() {
       );
 
       // Cancel the operation
-      final wasCancelled = retry.cancelRetry(key: 'operation-to-cancel');
+      final wasCancelled = retry.cancelByKey('operation-to-cancel');
       expect(wasCancelled, isTrue);
 
       // The operation should fail
@@ -691,7 +691,7 @@ void main() {
         key: 'operation-B',
       );
 
-      final wasCancelled = retry.cancelRetry();
+      final wasCancelled = retry.cancellAll();
 
       expect(wasCancelled, isTrue);
 
@@ -728,7 +728,7 @@ void main() {
       );
 
       // Отменяем операцию
-      retry.cancelRetry(key: 'operation-to-check');
+      retry.cancelByKey('operation-to-check');
 
       await expectLater(future, throwsException);
 
@@ -854,11 +854,11 @@ void main() {
       final futureC = runOperationC();
 
       // Cancel only operations A and B
-      final cancelledA = retry.cancelRetry(key: 'key-A');
+      final cancelledA = retry.cancelByKey('key-A');
 
       await Future.delayed(delay * 2.5);
 
-      final cancelledB = retry.cancelRetry(key: 'key-B');
+      final cancelledB = retry.cancelByKey('key-B');
 
       // Wait for all operations to complete
       final results = await Future.wait([futureA, futureB, futureC]);
