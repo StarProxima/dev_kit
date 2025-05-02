@@ -8,9 +8,9 @@ final _rand = Random();
 typedef DelayStrategyFn = Duration Function(int attempt, RetryOptions options);
 
 abstract class DelayStrategy {
-  /// Exponential delay strategy with jitter.
+  /// Exponential delay strategy with jitter (randomization).
   ///
-  /// Base formula: min + factor * (2^attempt) * jitter, not exceeding max.
+  /// Base formula: minDelay + delayFactor * (2^attempt) * jitter, not exceeding maxDelay.
   static Duration exponential(int attempt, RetryOptions options) {
     final jitter =
         1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
@@ -26,9 +26,9 @@ abstract class DelayStrategy {
     return Duration(milliseconds: resultMs.round());
   }
 
-  /// Linear delay strategy with jitter.
+  /// Linear delay strategy with jitter (randomization).
   ///
-  /// Base formula: min + factor * attempt * jitter, not exceeding max.
+  /// Base formula: minDelay + delayFactor * attempt * jitter, not exceeding maxDelay.
   static Duration linear(int attempt, RetryOptions options) {
     final jitter =
         1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
@@ -43,14 +43,22 @@ abstract class DelayStrategy {
     return Duration(milliseconds: resultMs.round());
   }
 
-  /// Fixed delay strategy with small jitter.
+  /// Fixed delay strategy with jitter (randomization).
   ///
-  /// Base formula: baseDuration * jitter, where baseDuration is taken from delayFactor.
+  /// Base formula: delayFactor * jitter.
   static Duration fixed(int attempt, RetryOptions options) {
     final jitter =
         1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
     final delay = options.delayFactor.inMilliseconds * jitter;
     return Duration(milliseconds: delay.round());
+  }
+
+  /// Constant delay strategy without jitter (randomization).
+  ///
+  /// Base formula: delayFactor.
+  static Duration constant(int attempt, RetryOptions options) {
+    final delay = options.delayFactor.inMilliseconds;
+    return Duration(milliseconds: delay);
   }
 }

@@ -56,11 +56,10 @@ class Retry<ErrorType> {
   final DelayStrategyFn delayStrategy;
 
   /// Function called on error, with retry statistics.
-  final FutureOr<void> Function(ApiError<ErrorType> e, RetryStats stats)?
-      onFailAttempt;
+  final void Function(ApiError<ErrorType> e, RetryStats stats)? onFailAttempt;
 
   /// Function called before each attempt, with retry statistics.
-  final FutureOr<void> Function(RetryStats stats)? onAttempt;
+  final void Function(RetryStats stats)? onAttempt;
 
   @internal
   FutureOr<R> execute<R>(
@@ -105,7 +104,7 @@ class Retry<ErrorType> {
 
         if (!willRetry) throw lastError;
 
-        await Future.delayed(delay);
+        if (delay != Duration.zero) await Future.delayed(delay);
       }
     }
   }
