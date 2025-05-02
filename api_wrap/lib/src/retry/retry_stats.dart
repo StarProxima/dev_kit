@@ -1,8 +1,8 @@
 import 'retry_options.dart';
 
-/// Класс, содержащий статистику и информацию о текущем состоянии процесса повторных попыток.
+/// Class containing statistics and information about the current state of the retry process.
 class RetryStats {
-  /// Создает экземпляр статистики повторных попыток.
+  /// Creates an instance of retry statistics.
   RetryStats({
     required this.options,
     required this.attempt,
@@ -13,31 +13,31 @@ class RetryStats {
     bool? willRetry,
   }) : _willRetry = willRetry;
 
-  /// Настройки ретрая.
+  /// Retry configuration options.
   final RetryOptions options;
 
-  /// Текущая попытка (начиная с 1).
+  /// Current attempt (starting from 1).
   final int attempt;
 
-  /// Задержка перед этой попыткой.
+  /// Delay before the current attempt.
   final Duration? delayBeforePreviosAttempt;
 
-  /// Задержка перед следующей попыткой.
+  /// Delay before the next attempt.
   final Duration delayBeforeNextAttempt;
 
-  /// Время начала выполнения ретрая.
+  /// Start time of the retry process.
   final DateTime startTime;
 
-  /// Прошедшее время с начала выполнения.
+  /// Elapsed time since the beginning of execution.
   final Duration elapsedTime;
 
   final bool? _willRetry;
 
-  /// Будет ли выполнена еще одна попытка.
+  /// Whether another attempt will be made.
   bool? get willRetry => _willRetry ?? canRetry;
 
-  /// Оставшееся время до достижения maxTotalTime, если оно задано.
-  /// Null, если maxTotalTime не задан.
+  /// Remaining time until reaching maxTotalTime, if specified.
+  /// Null if maxTotalTime is not set.
   Duration? get remainingTime {
     if (options.maxTotalTime == null) return null;
 
@@ -45,20 +45,23 @@ class RetryStats {
     return options.maxTotalTime! - elapsedTime;
   }
 
+  /// Whether there is enough time left for another attempt based on maxTotalTime.
+  /// Returns true if either no time limit is set, or there is sufficient time
+  /// for the next delay.
   bool get hasTime =>
       remainingTime == null ||
       remainingTime!.inMicroseconds > delayBeforeNextAttempt.inMicroseconds;
 
-  /// Количество оставшихся попыток.
+  /// Number of remaining attempts.
   int get attemptsLeft => options.maxAttempts - attempt;
 
-  // Есть ли оставшиеся попытки.
+  /// Whether there are remaining attempts.
   bool get hasAttempts => attemptsLeft > 0;
 
-  /// Возможна ли еще одна попытка.
+  /// Whether another attempt is possible.
   bool get canRetry => hasTime && hasAttempts;
 
-  /// Создает копию объекта с возможностью переопределения полей.
+  /// Creates a copy of the object with optional field overrides.
   RetryStats copyWith({
     RetryOptions? options,
     int? attempt,

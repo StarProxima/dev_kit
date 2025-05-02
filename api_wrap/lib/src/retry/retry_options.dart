@@ -1,4 +1,4 @@
-/// Настройки ретрая, используемые для расчета задержек и условий повторных попыток.
+/// Retry configuration options used for calculating delays and retry conditions.
 class RetryOptions {
   const RetryOptions({
     required this.maxAttempts,
@@ -9,26 +9,26 @@ class RetryOptions {
     this.maxTotalTime,
   }) : assert(maxAttempts > 0, 'maxAttempts must be greater than 0');
 
-  /// Максимальное количество попыток.
+  /// Maximum number of retry attempts.
   final int maxAttempts;
 
-  /// Базовый коэффициент задержки между попытками.
+  /// Base delay factor between retry attempts.
   final Duration delayFactor;
 
-  /// Минимальная задержка между попытками.
+  /// Minimum delay between retry attempts.
   final Duration minDelay;
 
-  /// Максимальная задержка между попытками.
+  /// Maximum delay between retry attempts.
   final Duration maxDelay;
 
-  /// Фактор случайности для джиттера.
+  /// Randomization factor for jitter.
   final double randomizationFactor;
 
-  /// Максимальное общее время выполнения всех попыток.
-  /// Если null, ограничение по времени не применяется.
+  /// Maximum total execution time for all retry attempts.
+  /// If null, no time limit is applied.
   final Duration? maxTotalTime;
 
-  /// Создает копию опций с новыми значениями.
+  /// Creates a copy of the options with new values.
   RetryOptions copyWith({
     int? maxAttempts,
     Duration? delayFactor,

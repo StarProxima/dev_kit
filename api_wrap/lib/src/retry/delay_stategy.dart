@@ -4,18 +4,18 @@ import 'retry_options.dart';
 
 final _rand = Random();
 
-/// Функциональный тип для стратегии расчета задержки между попытками.
+/// Function type for delay calculation strategy between retry attempts.
 typedef DelayStrategyFn = Duration Function(int attempt, RetryOptions options);
 
 abstract class DelayStrategy {
-  /// Экспоненциальная стратегия задержки с джиттером.
+  /// Exponential delay strategy with jitter.
   ///
-  /// Базовая формула: min + factor * (2^attempt) * jitter, не превышая max.
+  /// Base formula: min + factor * (2^attempt) * jitter, not exceeding max.
   static Duration exponential(int attempt, RetryOptions options) {
     final jitter =
         1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
-    final exp = min(attempt, 31); // Предотвращаем переполнение
+    final exp = min(attempt, 31); // Prevent overflow
     final delay = options.minDelay.inMilliseconds +
         options.delayFactor.inMilliseconds * pow(2.0, exp) * jitter;
 
@@ -26,9 +26,9 @@ abstract class DelayStrategy {
     return Duration(milliseconds: resultMs.round());
   }
 
-  /// Линейная стратегия задержки с джиттером.
+  /// Linear delay strategy with jitter.
   ///
-  /// Базовая формула: min + factor * attempt * jitter, не превышая max.
+  /// Base formula: min + factor * attempt * jitter, not exceeding max.
   static Duration linear(int attempt, RetryOptions options) {
     final jitter =
         1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
@@ -43,14 +43,12 @@ abstract class DelayStrategy {
     return Duration(milliseconds: resultMs.round());
   }
 
-  /// Стратегия с фиксированной задержкой и небольшим джиттером.
+  /// Fixed delay strategy with small jitter.
   ///
-  /// Базовая формула: baseDuration * jitter, где baseDuration берется из delayFactor.
+  /// Base formula: baseDuration * jitter, where baseDuration is taken from delayFactor.
   static Duration fixed(int attempt, RetryOptions options) {
-    final jitter = 1.0 +
-        options.randomizationFactor *
-            (_rand.nextDouble() * 2 - 1) /
-            2; // Меньший джиттер для фиксированной задержки
+    final jitter =
+        1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
     final delay = options.delayFactor.inMilliseconds * jitter;
     return Duration(milliseconds: delay.round());

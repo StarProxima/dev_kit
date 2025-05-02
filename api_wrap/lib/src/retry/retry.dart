@@ -6,12 +6,9 @@ import 'retry_if.dart';
 import 'retry_options.dart';
 import 'retry_stats.dart';
 
-/// Класс для управления повторными попытками выполнения функций при ошибках.
+/// Class for managing retry attempts when functions encounter errors.
 class Retry<ErrorType> {
-  /// Создает экземпляр ретрая с заданными параметрами.
-  ///
-  /// Для обратной совместимости параметры указываются напрямую,
-  /// они будут преобразованы в RetryOptions.
+  /// Creates a retry instance with specified parameters.
   Retry({
     required int maxAttempts,
     Duration delayFactor = const Duration(milliseconds: 500),
@@ -32,7 +29,7 @@ class Retry<ErrorType> {
           maxTotalTime: maxTotalTime,
         );
 
-  /// Создает экземпляр ретрая из готовых опций.
+  /// Creates a retry instance from prepared options.
   const Retry.byOptions({
     required this.options,
     this.delayStrategy = DelayStrategy.exponential,
@@ -41,35 +38,36 @@ class Retry<ErrorType> {
     this.onFailAttempt,
   });
 
-  /// Создает экземпляр ретрая без повторных попыток.
+  /// Creates a retry instance with no retry attempts.
   factory Retry.none() => Retry<ErrorType>(
         maxAttempts: 1,
         retryIf: RetryIf.never,
       );
 
-  /// Настройки ретрая.
+  /// Retry configuration options.
   final RetryOptions options;
 
-  /// Функция для определения необходимости повторной попытки.
+  /// Function to determine if a retry attempt should be made.
   final RetryIfFn<ErrorType> retryIf;
 
-  /// Стратегия расчета задержки между попытками.
+  /// Strategy for calculating delay between retry attempts.
   final DelayStrategyFn delayStrategy;
 
-  /// Функция, вызываемая при ошибке, с указанием статистики попытки.
+  /// Function called on error, with retry statistics.
   final FutureOr<void> Function(ApiError<ErrorType> e, RetryStats stats)?
       onFailAttempt;
 
+  /// Function called before each attempt, with retry statistics.
   final FutureOr<void> Function(RetryStats stats)? onAttempt;
 
-  /// Выполняет функцию [function] с логикой повторных попыток
-  /// в случае возникновения ошибок, согласно настройкам ретрая.
+  /// Executes the [function] with retry logic in case of errors,
+  /// according to the retry settings.
   ///
-  /// [function] - функция для выполнения, которая может выбросить исключение.
-  /// [wrapError] - функция для обертывания ошибок в [ApiError<ErrorType>].
+  /// [function] - function to execute that may throw an exception.
+  /// [wrapError] - function to wrap errors in [ApiError<ErrorType>].
   ///
-  /// Возвращает результат выполнения функции или выбрасывает
-  /// последнюю возникшую ошибку, если все попытки не увенчались успехом.
+  /// Returns the result of the function or throws the last error
+  /// if all attempts were unsuccessful.
   Future<R> retry<R>(
     Future<R> Function() function, {
     required ApiError<ErrorType> Function(Object error, StackTrace stackTrace)
@@ -85,7 +83,7 @@ class Retry<ErrorType> {
     while (true) {
       attempt++;
 
-      // Рассчитываем задержку для следующей попытки
+      // Calculate delay for the next attempt
       final delay = delayStrategy(attempt, options);
 
       final stats = RetryStats(
