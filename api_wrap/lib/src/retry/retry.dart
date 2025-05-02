@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-import '../api_wrap.dart';
 import 'delay_stategy.dart';
 import 'retry_if.dart';
 import 'retry_options.dart';
 import 'retry_stats.dart';
 
 /// Class for managing retry attempts when functions encounter errors.
-class Retry<ErrorType> {
+class Retry {
   /// Creates a retry instance with specified parameters.
   Retry({
     required int maxAttempts,
@@ -41,7 +40,7 @@ class Retry<ErrorType> {
   });
 
   /// Creates a retry instance with no retry attempts.
-  factory Retry.none() => Retry<ErrorType>(
+  factory Retry.none() => Retry(
         maxAttempts: 1,
         retryIf: RetryIf.never,
       );
@@ -50,28 +49,25 @@ class Retry<ErrorType> {
   final RetryOptions options;
 
   /// Function to determine if a retry attempt should be made.
-  final RetryIfFn<ErrorType> retryIf;
+  final RetryIfFn retryIf;
 
   /// Strategy for calculating delay between retry attempts.
   final DelayStrategyFn delayStrategy;
 
   /// Function called on error, with retry statistics.
-  final void Function(ApiError<ErrorType> e, RetryStats stats)? onFailAttempt;
+  final void Function(Object e, StackTrace s, RetryStats stats)? onFailAttempt;
 
   /// Function called before each attempt, with retry statistics.
   final void Function(RetryStats stats)? onAttempt;
 
   @internal
   FutureOr<R> execute<R>(
-    FutureOr<R> Function(RetryStats stats) function, {
-    required ApiError<ErrorType> Function(Object error, StackTrace stackTrace)
-        wrapError,
-  }) async {
+    FutureOr<R> Function(RetryStats stats) function,
+  ) async {
     var attempt = 0;
     final startTime = DateTime.now();
     final stopwatch = Stopwatch()..start();
 
-    late ApiError<ErrorType> lastError;
     Duration? lastDelay;
 
     while (true) {
@@ -92,17 +88,21 @@ class Retry<ErrorType> {
       try {
         onAttempt?.call(stats);
 
-        return function(stats);
-      } catch (e, stackTrace) {
-        lastError = wrapError(e, stackTrace);
+        final res = await function(stats);
 
+        stopwatch.stop();
+        return res;
+      } catch (e, s) {
         lastDelay = delay;
 
-        final willRetry = stats.canRetry && await retryIf(lastError, stats);
+        final willRetry = stats.canRetry && await retryIf(e, s, stats);
 
-        onFailAttempt?.call(lastError, stats.copyWith(willRetry: willRetry));
+        onFailAttempt?.call(e, s, stats.copyWith(willRetry: willRetry));
 
-        if (!willRetry) throw lastError;
+        if (!willRetry) {
+          stopwatch.stop();
+          rethrow;
+        }
 
         if (delay != Duration.zero) await Future.delayed(delay);
       }

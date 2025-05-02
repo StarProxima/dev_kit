@@ -37,9 +37,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     OnError<ErrorType, D?>? onError,
     Duration? minExecutionTime,
     Duration? delay,
-    Retry<ErrorType>? retry,
+    Retry? retry,
     RateLimiter? rateLimiter,
-    Duration? maxExecutionTime,
   }) =>
       _internalApiWrap<T, D>(
         function,
@@ -67,9 +66,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     OnError<ErrorType, D>? onError,
     Duration? minExecutionTime,
     Duration? delay,
-    Retry<ErrorType>? retry,
+    Retry? retry,
     RateLimiter? rateLimiter,
-    Duration? maxExecutionTime,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -99,9 +97,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     OnError<ErrorType, T?>? onError,
     Duration? minExecutionTime,
     Duration? delay,
-    Retry<ErrorType>? retry,
+    Retry? retry,
     RateLimiter? rateLimiter,
-    Duration? maxExecutionTime,
   }) =>
       _internalApiWrap<T, T>(
         function,
@@ -129,7 +126,7 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
     OnError<ErrorType, T>? onError,
     Duration? minExecutionTime,
     Duration? delay,
-    Retry<ErrorType>? retry,
+    Retry? retry,
     RateLimiter? rateLimiter,
   }) async =>
       (await _internalApiWrap<T, T>(
@@ -143,13 +140,16 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         shouldThrowError: true,
       )) as T;
 
+  ApiError<ErrorType> parseError(Object e, StackTrace s) =>
+      wrapController.internalApiWrap.parseError(e, s);
+
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
     required FutureOr<D?> Function(T res)? onSuccess,
     required OnError<ErrorType, D?>? onError,
     required Duration? minExecutionTime,
     required Duration? delay,
-    required Retry<ErrorType>? retry,
+    required Retry? retry,
     required RateLimiter? rateLimiter,
     required bool shouldThrowError,
   }) =>

@@ -38,11 +38,12 @@ class _RetryButtonState extends State<RetryButton> {
               },
               retry: Retry(
                 maxAttempts: 6,
-                retryIf: (_, __) => true,
                 onAttempt: (stats) {
                   if (mounted) setState(() => retryStats = stats);
                 },
-                onFailAttempt: (e, stats) {
+                onFailAttempt: (e, s, stats) {
+                  final error = apiWrapper.parseError(e, s);
+
                   toastification.show(
                     type: ToastificationType.error,
                     title: Row(
@@ -51,7 +52,7 @@ class _RetryButtonState extends State<RetryButton> {
                         TimeText(stats.delayBeforeNextAttempt),
                       ],
                     ),
-                    description: Text(e.toShortString()),
+                    description: Text(error.toShortString()),
                     autoCloseDuration: stats.delayBeforeNextAttempt,
                     pauseOnHover: false,
                   );

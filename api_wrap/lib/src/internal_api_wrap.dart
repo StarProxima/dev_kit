@@ -6,14 +6,14 @@ typedef ParseError<ErrorType> = ErrorType Function(Object? error);
 /// ограничением частоты операций и обработкой ошибок.
 class InternalApiWrap<ErrorType> {
   InternalApiWrap({
-    required Retry<ErrorType> retry,
+    required Retry retry,
     required RateOperationsContainer container,
     ParseError<ErrorType>? parseError,
   })  : _retry = retry,
         _parseError = parseError,
         _operationsContainer = container;
 
-  final Retry<ErrorType> _retry;
+  final Retry _retry;
   final ParseError<ErrorType>? _parseError;
 
   /// Контейнер операций, хранящий throttle и debounce операции по тегу.
@@ -21,7 +21,7 @@ class InternalApiWrap<ErrorType> {
 
   /// Преобразует исключение в специализированный [ApiError<ErrorType>].
   /// Обрабатывает различные типы ошибок, включая DioException.
-  ApiError<ErrorType> wrapError(Object error, StackTrace stackTrace) {
+  ApiError<ErrorType> parseError(Object error, StackTrace stackTrace) {
     // Если ошибка уже ApiError с правильным типом, возвращаем как есть
     if (error is ApiError<ErrorType>) {
       return error;
@@ -46,7 +46,6 @@ class InternalApiWrap<ErrorType> {
     return InternalError<ErrorType>(error: error, stackTrace: stackTrace);
   }
 
-  @visibleForTesting
   Future<D?> execute<T, D>(
     FutureOr<T> Function() function, {
     FutureOr<D?> Function(T)? onSuccess,
@@ -54,50 +53,112 @@ class InternalApiWrap<ErrorType> {
     Duration? minExecutionTime,
     Duration? delay,
     RateLimiter? rateLimiter,
-    Retry<ErrorType>? retry,
+    Retry? retry,
   }) async {
-    // Функция-обертка для выполнения запроса и обработки ответа
-    FutureOr<D?> executeRequest() async {
-      try {
-        // Обрабатываем начальную задержку запроса.
-        if (delay != null) await Future.delayed(delay);
+    final fn = _wrapWithRateLimiter(
+      rateLimiter: rateLimiter,
+      onError: onError,
+      function: () => _wrapWithCallbacks(
+        onSuccess: onSuccess,
+        onError: onError,
+        function: () => _wrapWithDelays(
+          delay: delay,
+          minExecutionTime: minExecutionTime,
+          function: () => _wrapWithRetry(
+            function: function,
+            retry: retry,
+          ),
+        ),
+      ),
+    );
 
-        final finalRetry = retry ?? this._retry;
-        final FutureOr<T> futureOr = finalRetry.execute<T>(
-          (_) => function(),
-          wrapError: wrapError,
-        );
+    return fn;
+  }
 
-        final response = switch (minExecutionTime) {
-          null || Duration.zero => switch (futureOr) {
-              Future() => await futureOr,
-              _ => futureOr
-            },
-          Duration() => (await (
-              Future(() => futureOr),
-              Future.delayed(minExecutionTime)
-            ).wait)
-                .$1,
-        };
+  // Функция-обертка для выполнения запроса и обработки ответа
+  FutureOr<D?> _wrapWithCallbacks<T, D>({
+    required FutureOr<T> Function() function,
+    required FutureOr<D?> Function(T)? onSuccess,
+    required OnError<ErrorType, D?>? onError,
+  }) async {
+    try {
+      final T response = await function();
 
-        // Возвращаем успешный результат или непосредственно сам ответ.
-        final successResult = (await onSuccess?.call(response)) ??
-            (response is D ? response as D : null);
+      // Возвращаем успешный результат или непосредственно сам ответ.
+      final successResult = (await onSuccess?.call(response)) ??
+          (response is D ? response as D : null);
 
-        return successResult;
-      } on ApiError<ErrorType> catch (e) {
-        // Обработка ошибок из ретрая или возникших вне его
-        final errorResult = onError?.call(e);
+      return successResult;
+    } catch (e, s) {
+      final err = parseError(e, s);
 
-        return errorResult;
-      }
+      final errorResult = onError?.call(err);
+
+      return errorResult;
+    }
+  }
+
+  FutureOr<T> _wrapWithDelays<T>({
+    required FutureOr<T> Function() function,
+    required Duration? delay,
+    required Duration? minExecutionTime,
+  }) async {
+    // Обрабатываем начальную задержку запроса.
+    if (delay != null) await Future.delayed(delay);
+
+    final FutureOr<T> futureOr = function();
+
+    final T response;
+
+    switch (minExecutionTime) {
+      case null || Duration.zero:
+        response =
+            switch (futureOr) { Future() => await futureOr, _ => futureOr };
+      case Duration():
+        try {
+          final res = await (
+            Future(() => futureOr),
+            Future.delayed(minExecutionTime)
+          ).wait;
+
+          response = res.$1;
+        } catch (e) {
+          switch (e) {
+            case ParallelWaitError(
+                errors: (AsyncError(error: final e, stackTrace: final s), _)
+              ):
+              throw Error.throwWithStackTrace(e, s);
+          }
+
+          rethrow;
+        }
     }
 
-    // Обёртываем запрос через RateLimiter, если задан.
+    return response;
+  }
+
+  FutureOr<T> _wrapWithRetry<T>({
+    required FutureOr<T> Function() function,
+    required Retry? retry,
+  }) async {
+    final finalRetry = retry ?? this._retry;
+    final futureOr = finalRetry.execute<T>(
+      (_) => function(),
+    );
+
+    return futureOr;
+  }
+
+  // Обёртываем запрос через RateLimiter, если задан.
+  FutureOr<D?> _wrapWithRateLimiter<D>({
+    required FutureOr<D?> Function() function,
+    required RateLimiter? rateLimiter,
+    required OnError<ErrorType, D?>? onError,
+  }) async {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         container: _operationsContainer,
-        function: executeRequest,
+        function: function,
         defaultTag: '$hashCode${StackTrace.current}',
       );
 
@@ -119,6 +180,6 @@ class InternalApiWrap<ErrorType> {
       }
     }
 
-    return executeRequest();
+    return function();
   }
 }
