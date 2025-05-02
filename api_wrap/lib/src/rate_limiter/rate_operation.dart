@@ -20,15 +20,15 @@ class RateOperationCancel<T> implements RateOperationResult<T> {
   });
 
   final String rateLimiter;
-  final String tag;
+  final Object tag;
   final RateTimings timings;
 }
 
 class RateOperationsContainer {
   RateOperationsContainer();
 
-  final Map<String, DebounceOperation> debounceOperations = {};
-  final Map<String, ThrottleOperation> throttleOperations = {};
+  final Map<Object, DebounceOperation> debounceOperations = {};
+  final Map<Object, ThrottleOperation> throttleOperations = {};
 }
 
 sealed class RateOperation<T> {
@@ -73,7 +73,7 @@ class DebounceOperation<T> extends RateOperation<T> {
   final void Function() onDelayEnd;
 
   void cancel({
-    required String tag,
+    required Object tag,
   }) {
     timer.cancel();
     onDelayEnd();

@@ -387,14 +387,16 @@ void main() {
       const tag = 'Throttle cancel';
       final r1 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Throttle(duration: const Duration(seconds: 1)),
       );
 
       expect(r1, equals('Success'));
 
       final r2 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag),
+        tag: tag,
+        rateLimiter: Throttle(),
       );
 
       expect(r2, null);
@@ -403,7 +405,8 @@ void main() {
 
       final r3 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag),
+        tag: tag,
+        rateLimiter: Throttle(),
       );
 
       expect(r3, equals('Success'));
@@ -413,14 +416,16 @@ void main() {
       const tag = 'Throttle cancel in Strict';
       final r1 = await apiWrapper.apiWrapStrictSingle<String>(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Throttle(duration: const Duration(seconds: 1)),
       );
 
       expect(r1, equals('Success'));
 
       final r2 = apiWrapper.apiWrapStrictSingle<String>(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag),
+        tag: tag,
+        rateLimiter: Throttle(),
       );
 
       await expectLater(r2, throwsA(isA<RateLimiterError>()));
@@ -429,7 +434,8 @@ void main() {
 
       final r3 = await apiWrapper.apiWrapStrictSingle<String>(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag),
+        tag: tag,
+        rateLimiter: Throttle(),
       );
 
       expect(r3, equals('Success'));
@@ -439,14 +445,16 @@ void main() {
       const tag = 'Debounce cancel';
       final r1Future = apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(seconds: 1)),
       );
 
       await Future.delayed(const Duration(milliseconds: 500));
 
       final r2 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(seconds: 1)),
       );
 
       final r1 = await r1Future;
@@ -458,7 +466,8 @@ void main() {
 
       final r3 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(seconds: 1)),
       );
 
       expect(r3, equals('Success'));
@@ -469,7 +478,8 @@ void main() {
 
       final r1 = apiWrapper.apiWrapStrictSingle(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(seconds: 1)),
       );
 
       // ignore: unawaited_futures
@@ -479,15 +489,16 @@ void main() {
 
       final r2 = await apiWrapper.apiWrapStrictSingle(
         () => 'Success',
-        rateLimiter:
-            Debounce(tag: tag, duration: const Duration(milliseconds: 200)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(milliseconds: 200)),
       );
 
       expect(r2, equals('Success'));
 
       final r3 = await apiWrapper.apiWrapStrictSingle(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(seconds: 1)),
       );
 
       expect(r3, equals('Success'));
@@ -498,7 +509,8 @@ void main() {
           RateLimiterError(:final tag) => tag,
           _ => throw e,
         },
-        rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(seconds: 1)),
       );
 
       // ignore: unawaited_futures
@@ -508,8 +520,8 @@ void main() {
 
       final r5 = await apiWrapper.apiWrapStrictSingle(
         () => 'Success',
-        rateLimiter:
-            Debounce(tag: tag, duration: const Duration(milliseconds: 200)),
+        tag: tag,
+        rateLimiter: Debounce(duration: const Duration(milliseconds: 200)),
       );
 
       expect(r5, equals('Success'));
@@ -526,8 +538,8 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 400));
           return 'Success';
         },
+        tag: tag,
         rateLimiter: Throttle(
-          tag: tag,
           duration: cooldownDuration,
           cooldownTickInterval: const Duration(milliseconds: 200),
           onCooldownStart: () => cooldownList.add('Start'),
@@ -543,6 +555,8 @@ void main() {
 
       final r2 = await apiWrapper.apiWrap(
         () => 'Success',
+        tag: tag,
+        rateLimiter: Throttle(),
         onError: (error) {
           switch (error) {
             case RateLimiterError():
@@ -551,9 +565,6 @@ void main() {
               return null;
           }
         },
-        rateLimiter: Throttle(
-          tag: tag,
-        ),
       );
 
       expect(r2, isNotNull);
@@ -578,7 +589,8 @@ void main() {
 
       final r3 = await apiWrapper.apiWrapSingle(
         () => 'Success',
-        rateLimiter: Throttle(tag: tag),
+        tag: tag,
+        rateLimiter: Throttle(),
       );
 
       expect(r3, equals('Success'));
@@ -600,8 +612,8 @@ void main() {
               return null;
           }
         },
+        tag: tag,
         rateLimiter: Debounce(
-          tag: tag,
           duration: delayDuration,
           delayTickInterval: const Duration(milliseconds: 200),
           onDelayStart: () => delayList.add('Start'),
@@ -615,7 +627,8 @@ void main() {
 
       final r2 = await apiWrapper.apiWrapSingle(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag),
+        tag: tag,
+        rateLimiter: Debounce(),
       );
 
       expect(r2, 'Success');
@@ -657,7 +670,8 @@ void main() {
 
       final r3 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',
-        rateLimiter: Debounce(tag: tag),
+        tag: tag,
+        rateLimiter: Debounce(),
       );
 
       expect(r3, equals('Success'));

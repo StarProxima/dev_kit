@@ -40,15 +40,17 @@ class InternalApiWrap<ErrorType> {
 
   Future<D?> execute<T, D>(
     FutureOr<T> Function() function, {
+    Object? tag,
+    Duration? delay,
+    Duration? minExecutionTime,
+    Retry? retry,
+    RateLimiter? rateLimiter,
     FutureOr<D?> Function(T)? onSuccess,
     OnError<ErrorType, D?>? onError,
-    Duration? minExecutionTime,
-    Duration? delay,
-    RateLimiter? rateLimiter,
-    Retry? retry,
   }) async {
     final fn = _wrapWithRateLimiter(
       rateLimiter: rateLimiter,
+      tag: tag,
       onError: onError,
       function: () => _wrapWithCallbacks(
         onSuccess: onSuccess,
@@ -145,13 +147,14 @@ class InternalApiWrap<ErrorType> {
   FutureOr<D?> _wrapWithRateLimiter<D>({
     required FutureOr<D?> Function() function,
     required RateLimiter? rateLimiter,
+    required Object? tag,
     required OnError<ErrorType, D?>? onError,
   }) async {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
+        function,
+        tag: tag ?? '$hashCode${StackTrace.current}',
         container: _operationsContainer,
-        function: function,
-        defaultTag: '$hashCode${StackTrace.current}',
       );
 
       switch (res) {

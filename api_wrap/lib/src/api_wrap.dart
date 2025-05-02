@@ -35,15 +35,17 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// Возвращает Future<D?> с преобразованным значением, полученным либо от [onSuccess] либо от [onError].
   Future<D?> apiWrap<T, D>(
     FutureOr<T> Function() function, {
-    FutureOr<D?> Function(T res)? onSuccess,
-    OnError<ErrorType, D?>? onError,
-    Duration? minExecutionTime,
+    Object? tag,
     Duration? delay,
+    Duration? minExecutionTime,
     Retry? retry,
     RateLimiter? rateLimiter,
+    FutureOr<D?> Function(T res)? onSuccess,
+    OnError<ErrorType, D?>? onError,
   }) =>
       _internalApiWrap<T, D>(
         function,
+        tag: tag,
         onSuccess: onSuccess,
         onError: onError,
         minExecutionTime: minExecutionTime,
@@ -64,15 +66,17 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// Возвращает Future с ненулевым результатом типа [D].
   Future<D> apiWrapStrict<T, D>(
     FutureOr<T> Function() function, {
-    required FutureOr<D> Function(T res) onSuccess,
-    OnError<ErrorType, D>? onError,
-    Duration? minExecutionTime,
+    Object? tag,
     Duration? delay,
+    Duration? minExecutionTime,
     Retry? retry,
     RateLimiter? rateLimiter,
+    required FutureOr<D> Function(T res) onSuccess,
+    OnError<ErrorType, D>? onError,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
+        tag: tag,
         onSuccess: onSuccess,
         onError: onError,
         minExecutionTime: minExecutionTime,
@@ -95,15 +99,17 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// либо от [onSuccess], если он задан, либо от [onError] при ошибке.
   Future<T?> apiWrapSingle<T>(
     FutureOr<T> Function() function, {
-    FutureOr<T?> Function(T res)? onSuccess,
-    OnError<ErrorType, T?>? onError,
-    Duration? minExecutionTime,
+    Object? tag,
     Duration? delay,
+    Duration? minExecutionTime,
     Retry? retry,
     RateLimiter? rateLimiter,
+    FutureOr<T?> Function(T res)? onSuccess,
+    OnError<ErrorType, T?>? onError,
   }) =>
       _internalApiWrap<T, T>(
         function,
+        tag: tag,
         onSuccess: onSuccess,
         onError: onError,
         minExecutionTime: minExecutionTime,
@@ -124,15 +130,17 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// Возвращает Future с ненулевым результатом типа [T].
   Future<T> apiWrapStrictSingle<T>(
     FutureOr<T> Function() function, {
-    FutureOr<T> Function(T res)? onSuccess,
-    OnError<ErrorType, T>? onError,
-    Duration? minExecutionTime,
+    Object? tag,
     Duration? delay,
+    Duration? minExecutionTime,
     Retry? retry,
     RateLimiter? rateLimiter,
+    FutureOr<T> Function(T res)? onSuccess,
+    OnError<ErrorType, T>? onError,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
+        tag: tag,
         onSuccess: onSuccess,
         onError: onError,
         minExecutionTime: minExecutionTime,
@@ -147,16 +155,22 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
 
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
+    Object? tag,
+    Duration? delay,
+    Duration? minExecutionTime,
+    Retry? retry,
+    RateLimiter? rateLimiter,
+    required bool shouldThrowError,
     required FutureOr<D?> Function(T res)? onSuccess,
     required OnError<ErrorType, D?>? onError,
-    required Duration? minExecutionTime,
-    required Duration? delay,
-    required Retry? retry,
-    required RateLimiter? rateLimiter,
-    required bool shouldThrowError,
   }) =>
       wrapController.internalApiWrap.execute<T, D>(
         function,
+        tag: tag,
+        delay: delay,
+        minExecutionTime: minExecutionTime,
+        retry: retry,
+        rateLimiter: rateLimiter,
         onSuccess: onSuccess,
         onError: onError ??
             (e) {
@@ -164,9 +178,5 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
               if (shouldThrowError) throw e;
               return null;
             },
-        minExecutionTime: minExecutionTime,
-        delay: delay,
-        retry: retry,
-        rateLimiter: rateLimiter,
       );
 }

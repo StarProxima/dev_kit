@@ -12,7 +12,6 @@ class Debounce extends RateLimiter {
   ///
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Debounce({
-    super.tag,
     super.duration,
     this.shouldCancelRunningOperations = true,
     this.delayTickInterval = const Duration(seconds: 1),
@@ -29,12 +28,11 @@ class Debounce extends RateLimiter {
   final void Function()? onDelayEnd;
 
   @override
-  Future<RateOperationResult<D>> process<D>({
+  Future<RateOperationResult<D>> process<D>(
+    FutureOr<D> Function() function, {
+    required Object tag,
     required RateOperationsContainer container,
-    required String defaultTag,
-    required FutureOr<D> Function() function,
   }) async {
-    final tag = this.tag ?? defaultTag;
     final completer = Completer<RateOperationResult<D>>();
 
     final operations = container.debounceOperations;

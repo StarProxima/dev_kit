@@ -55,7 +55,7 @@ class RateLimiterError<ErrorType> implements ApiError<ErrorType> {
   });
 
   final String rateLimiter;
-  final String tag;
+  final Object tag;
   final RateTimings timings;
 
   @override

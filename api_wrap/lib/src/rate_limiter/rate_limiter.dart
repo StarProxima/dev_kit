@@ -11,12 +11,10 @@ import 'limiters/throttle.dart';
 /// Базовый класс для [Debounce] и [Throttle].
 abstract class RateLimiter {
   RateLimiter({
-    this.tag,
     this.duration = Duration.zero,
   });
 
   factory RateLimiter.debounce({
-    String? tag,
     Duration duration,
     bool shouldCancelRunningOperations,
     Duration delayTickInterval,
@@ -26,7 +24,6 @@ abstract class RateLimiter {
   }) = Debounce;
 
   factory RateLimiter.throttle({
-    String? tag,
     Duration duration,
     CooldownLaunch cooldownLaunch,
     Duration cooldownTickInterval,
@@ -35,12 +32,11 @@ abstract class RateLimiter {
     void Function()? onCooldownEnd,
   }) = Throttle;
 
-  final String? tag;
   final Duration duration;
 
-  Future<RateOperationResult<D>> process<D>({
+  Future<RateOperationResult<D>> process<D>(
+    FutureOr<D> Function() function, {
+    required Object tag,
     required RateOperationsContainer container,
-    required String defaultTag,
-    required FutureOr<D> Function() function,
   });
 }
