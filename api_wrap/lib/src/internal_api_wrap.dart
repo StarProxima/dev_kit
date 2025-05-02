@@ -56,45 +56,40 @@ class InternalApiWrap<ErrorType> {
     RateLimiter? rateLimiter,
     Retry<ErrorType>? retry,
   }) async {
-    final finalRetry = retry ?? _retry;
-
-    // Обрабатываем начальную задержку запроса.
-    if (delay != null) await Future.delayed(delay);
-
-    // Функция для выполнения запроса с учетом минимального времени выполнения
-    Future<T> executeWithMinTime() async {
-      // Обработка минимального времени выполнения запроса.
-      if (minExecutionTime == null) {
-        return await function();
-      }
-
-      final futureOr = function();
-      final future = switch (futureOr) {
-        Future() => futureOr,
-        _ => Future.value(futureOr),
-      };
-
-      final rec = await Future.wait(
-        [future, Future.delayed(minExecutionTime)],
-      );
-
-      return rec.first as T;
-    }
-
     // Функция-обертка для выполнения запроса и обработки ответа
-    Future<D?> executeRequest() async {
+    FutureOr<D?> executeRequest() async {
       try {
-        final T response = await finalRetry.retry<T>(
-          executeWithMinTime,
+        // Обрабатываем начальную задержку запроса.
+        if (delay != null) await Future.delayed(delay);
+
+        final finalRetry = retry ?? this._retry;
+        final FutureOr<T> futureOr = finalRetry.execute<T>(
+          (_) => function(),
           wrapError: wrapError,
         );
 
+        final response = switch (minExecutionTime) {
+          null || Duration.zero => switch (futureOr) {
+              Future() => await futureOr,
+              _ => futureOr
+            },
+          Duration() => (await (
+              Future(() => futureOr),
+              Future.delayed(minExecutionTime)
+            ).wait)
+                .$1,
+        };
+
         // Возвращаем успешный результат или непосредственно сам ответ.
-        return (await onSuccess?.call(response)) ??
+        final successResult = (await onSuccess?.call(response)) ??
             (response is D ? response as D : null);
+
+        return successResult;
       } on ApiError<ErrorType> catch (e) {
         // Обработка ошибок из ретрая или возникших вне его
-        return onError?.call(e);
+        final errorResult = onError?.call(e);
+
+        return errorResult;
       }
     }
 

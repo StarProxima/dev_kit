@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import '../api_wrap.dart';
 import 'delay_stategy.dart';
 import 'retry_if.dart';
@@ -60,16 +62,9 @@ class Retry<ErrorType> {
   /// Function called before each attempt, with retry statistics.
   final FutureOr<void> Function(RetryStats stats)? onAttempt;
 
-  /// Executes the [function] with retry logic in case of errors,
-  /// according to the retry settings.
-  ///
-  /// [function] - function to execute that may throw an exception.
-  /// [wrapError] - function to wrap errors in [ApiError<ErrorType>].
-  ///
-  /// Returns the result of the function or throws the last error
-  /// if all attempts were unsuccessful.
-  Future<R> retry<R>(
-    Future<R> Function() function, {
+  @internal
+  FutureOr<R> execute<R>(
+    FutureOr<R> Function(RetryStats stats) function, {
     required ApiError<ErrorType> Function(Object error, StackTrace stackTrace)
         wrapError,
   }) async {
@@ -97,7 +92,8 @@ class Retry<ErrorType> {
 
       try {
         onAttempt?.call(stats);
-        return await function();
+
+        return function(stats);
       } catch (e, stackTrace) {
         lastError = wrapError(e, stackTrace);
 

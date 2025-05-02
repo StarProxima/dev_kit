@@ -55,6 +55,9 @@ class RetryStats {
   /// Number of remaining attempts.
   int get attemptsLeft => options.maxAttempts - attempt;
 
+  /// Is first attempt
+  bool get isFirstAttempt => attempt == 1;
+
   /// Whether there are remaining attempts.
   bool get hasAttempts => attemptsLeft > 0;
 
