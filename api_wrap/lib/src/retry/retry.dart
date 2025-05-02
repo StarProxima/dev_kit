@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-
 import 'delay_stategy.dart';
 import 'retry_if.dart';
 import 'retry_options.dart';
@@ -102,7 +100,16 @@ class Retry {
 
   final Set<Object?> _activeRetries = {};
 
-  @internal
+  /// Executes a function with retry capability based on the configured retry policy.
+  ///
+  /// The [function] is executed and, if it throws an exception, will be retried
+  /// according to the retry configuration. The function receives the current [RetryStats]
+  /// which contains information about the retry state.
+  ///
+  /// When [key] is provided, the retry operation is identified by this key,
+  /// which can be used later to cancel the operation via [cancelRetry].
+  ///
+  /// Returns the result of the successful function execution.
   FutureOr<R> execute<R>(
     FutureOr<R> Function(RetryStats stats) function, {
     Object? key,
@@ -186,5 +193,37 @@ class Retry {
     }
   }
 
-  void cancelRetry({Object? key}) => _activeRetries.remove(key);
+  /// Cancels active retry operations.
+  ///
+  /// When [key] is provided, only cancels the specific retry operation
+  /// with that key. When [key] is null, cancels all active retry operations.
+  ///
+  /// Canceled operations will not be re-executed even if they encounter an error,
+  /// but they the current attempt will still continue.
+  ///
+  /// Returns true if at least one operation was cancelled, false otherwise.
+  ///
+  /// Example:
+  /// ```dart
+  /// final retry = Retry(maxAttempts: 3);
+  ///
+  /// // Start a retry operation with a specific key
+  /// retry.execute(
+  ///   (stats) => fetchData(),
+  ///   key: 'fetch-operation',
+  /// );
+  ///
+  /// // Later, cancel this specific operation
+  /// retry.cancelRetry(key: 'fetch-operation');
+  /// ```
+  bool cancelRetry({Object? key}) {
+    if (key == null) {
+      final isNotEmpty = _activeRetries.isNotEmpty;
+      _activeRetries.clear();
+
+      return isNotEmpty;
+    }
+
+    return _activeRetries.remove(key);
+  }
 }

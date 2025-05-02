@@ -201,13 +201,13 @@ void main() {
       final retry = Retry(
         maxAttempts: 100, // Large number to focus on time limit
         delayFactor: Duration.zero,
-        maxTotalTime: Duration(milliseconds: 500),
+        maxTotalTime: Duration(milliseconds: 700),
       );
 
       await expectLater(
         () => retry.execute((stats) async {
           attempts++;
-          await Future.delayed(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 300));
           throw Exception('Test error');
         }),
         throwsA(isA<Exception>()),
@@ -217,8 +217,8 @@ void main() {
       // Should stop after time limit, not make all attempts
       expect(attempts, 3);
       // Should be close to maxTotalTime but could exceed a bit due to async overhead
-      expect(stopwatch.elapsed, lessThan(Duration(milliseconds: 650)));
-      expect(stopwatch.elapsed, greaterThan(Duration(milliseconds: 600)));
+      expect(stopwatch.elapsed, lessThan(Duration(milliseconds: 950)));
+      expect(stopwatch.elapsed, greaterThan(Duration(milliseconds: 900)));
     });
 
     test('last attempt can exceed maxTotalTime', () async {
@@ -615,6 +615,265 @@ void main() {
 
       // The new elapsed time should be small, not including time since last call
       expect(newResult.inMilliseconds, lessThan(20));
+    });
+  });
+
+  group('Cancel Retry Operations', () {
+    test('cancel semantics with and without key', () async {
+      final retry = Retry(maxAttempts: 3);
+
+      // Check the current implementation's behavior for empty retry set
+      final wasCancelledEmpty = retry.cancelRetry();
+      // Current implementation возвращает false для пустого множества операций
+      expect(wasCancelledEmpty, isFalse);
+
+      // Try to cancel non-existent operation
+      final wasNonExistentCancelled = retry.cancelRetry(key: 'non-existent');
+      expect(wasNonExistentCancelled, isFalse);
+    });
+
+    test('cancelRetry prevents further retry attempts', () async {
+      var attempts = 0;
+      final retry = Retry(
+        maxAttempts: 10, // High number to ensure we'd continue without cancel
+        delayFactor: Duration.zero,
+      );
+
+      // Launch the retry operation with a key
+      final future = retry.execute(
+        (stats) async {
+          attempts++;
+
+          // Wait a bit to give time for cancellation to take effect
+          await Future.delayed(Duration(milliseconds: 50));
+
+          // Always throw to trigger retry
+          throw Exception('Test error $attempts');
+        },
+        key: 'operation-to-cancel',
+      );
+
+      // Cancel the operation
+      final wasCancelled = retry.cancelRetry(key: 'operation-to-cancel');
+      expect(wasCancelled, isTrue);
+
+      // The operation should fail
+      await expectLater(future, throwsA(isA<Exception>()));
+
+      expect(attempts, 1);
+    });
+
+    test('cancelRetry with null key cancels all operations', () async {
+      var attemptsA = 0;
+      var attemptsB = 0;
+      final retry = Retry(
+        maxAttempts: 10,
+        delayFactor: Duration.zero,
+      );
+
+      final futureA = retry.execute(
+        (stats) async {
+          attemptsA++;
+
+          await Future.delayed(Duration(milliseconds: 50));
+          throw Exception('Test error A $attemptsA');
+        },
+        key: 'operation-A',
+      );
+
+      final futureB = retry.execute(
+        (stats) async {
+          attemptsB++;
+
+          await Future.delayed(Duration(milliseconds: 50));
+          throw Exception('Test error B $attemptsB');
+        },
+        key: 'operation-B',
+      );
+
+      final wasCancelled = retry.cancelRetry();
+
+      expect(wasCancelled, isTrue);
+
+      // Both operations should fail
+      await expectLater(futureA, throwsA(isA<Exception>()));
+      await expectLater(futureB, throwsA(isA<Exception>()));
+
+      // Both should have limited attempts due to cancellation
+      // С учетом асинхронности и того, что текущая попытка еще выполняется
+      expect(attemptsA, 1);
+      expect(attemptsB, 1);
+    });
+
+    test('retryIsCanceled flag is set in stats after cancellation', () async {
+      bool? canceledFlagSeen;
+
+      final retry = Retry(
+        maxAttempts: 5,
+        delayFactor: Duration.zero,
+        onFailAttempt: (e, s, stats) {
+          canceledFlagSeen ??= stats.retryIsCancaled;
+        },
+      );
+
+      // Launch operation that will check retryIsCancaled flag
+      final future = retry.execute(
+        (_) async {
+          await Future.delayed(Duration(milliseconds: 20));
+
+          // Имитируем работу
+          throw Exception('Test error');
+        },
+        key: 'operation-to-check',
+      );
+
+      // Отменяем операцию
+      retry.cancelRetry(key: 'operation-to-check');
+
+      await expectLater(future, throwsException);
+
+      expect(canceledFlagSeen, isTrue);
+    });
+
+    test('multiple retry operations', () async {
+      // Test that multiple operations can run independently
+      final retry = Retry(
+        maxAttempts: 2,
+        delayFactor: Duration.zero,
+      );
+
+      var attemptsA = 0;
+      var attemptsB = 0;
+
+      // Helper functions to run operations
+      Future<String> runOpA() async {
+        try {
+          return await retry.execute<String>(
+            (stats) {
+              attemptsA++;
+              throw Exception('Test error A');
+            },
+          );
+        } catch (e) {
+          return 'Error A';
+        }
+      }
+
+      Future<String> runOpB() async {
+        try {
+          return await retry.execute<String>(
+            (stats) {
+              attemptsB++;
+              if (attemptsB < 2) {
+                throw Exception('Test error B - first attempt');
+              }
+              return 'Success B';
+            },
+          );
+        } catch (e) {
+          return 'Error B';
+        }
+      }
+
+      // Run operations
+      final results = await Future.wait([runOpA(), runOpB()]);
+
+      // Operation A should fail after max attempts
+      expect(results[0], equals('Error A'));
+      expect(attemptsA, equals(2));
+
+      // Operation B should succeed on second attempt
+      expect(results[1], equals('Success B'));
+      expect(attemptsB, equals(2));
+    });
+
+    test('cancelRetry stops specific operations by key while others continue',
+        () async {
+      // Test multiple operations with selective cancellation
+      final retry = Retry(
+        maxAttempts:
+            10, // Large value to ensure operations would continue without cancellation
+        delayFactor: Duration.zero,
+      );
+
+      var attemptsA = 0;
+      var attemptsB = 0;
+      var attemptsC = 0;
+
+      final delay = Duration(milliseconds: 20);
+
+      // Helper functions to create futures with proper error handling
+      Future<String> runOperationA() async {
+        try {
+          return await retry.execute(
+            (stats) async {
+              attemptsA++;
+              await Future.delayed(delay);
+              throw Exception('Operation A error');
+            },
+            key: 'key-A',
+          );
+        } catch (e) {
+          return 'A failed with $attemptsA attempts';
+        }
+      }
+
+      Future<String> runOperationB() async {
+        try {
+          return await retry.execute(
+            (stats) async {
+              attemptsB++;
+              await Future.delayed(delay);
+              throw Exception('Operation B error');
+            },
+            key: 'key-B',
+          );
+        } catch (e) {
+          return 'B failed with $attemptsB attempts';
+        }
+      }
+
+      Future<String> runOperationC() async {
+        try {
+          return await retry.execute(
+            (stats) async {
+              attemptsC++;
+              await Future.delayed(delay);
+              throw Exception('Operation C error');
+            },
+            key: 'key-C',
+          );
+        } catch (e) {
+          return 'C failed with $attemptsC attempts';
+        }
+      }
+
+      // Run three operations simultaneously with different keys
+      final futureA = runOperationA();
+      final futureB = runOperationB();
+      final futureC = runOperationC();
+
+      // Cancel only operations A and B
+      final cancelledA = retry.cancelRetry(key: 'key-A');
+
+      await Future.delayed(delay * 2.5);
+
+      final cancelledB = retry.cancelRetry(key: 'key-B');
+
+      // Wait for all operations to complete
+      final results = await Future.wait([futureA, futureB, futureC]);
+
+      // Verify cancellation results
+      expect(cancelledA, isTrue);
+      expect(cancelledB, isTrue);
+
+      expect(attemptsA, 1);
+      expect(attemptsB, 3);
+      expect(attemptsC, 10); // Should run to max attempts
+
+      expect(results[0].contains('A failed with'), isTrue);
+      expect(results[1].contains('B failed with'), isTrue);
+      expect(results[2].contains('C failed with'), isTrue);
     });
   });
 }
