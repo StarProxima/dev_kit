@@ -4,13 +4,15 @@ import 'package:api_wrap/src/retry/retry.dart';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
+import 'rate_limiter/rate_limiter.dart';
+import 'rate_limiter/rate_operation.dart';
+import 'rate_limiter/utils.dart';
+
 part 'utils.dart';
 part 'api_error.dart';
 part 'api_wrapper.dart';
 part 'api_wrap_controller.dart';
 part 'internal_api_wrap.dart';
-part 'rate_limiter.dart';
-part 'rate_operation.dart';
 
 extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
   /// Обёртывает HTTP запрос через [Dio] или обычную функцию, позволяя преобразовывать тип данных.

@@ -163,7 +163,7 @@ class InternalApiWrap<ErrorType> {
             :final timings
           ):
           return onError?.call(
-            RateCancelError<ErrorType>(
+            RateLimiterError<ErrorType>(
               rateLimiter: rateLimiter,
               tag: tag,
               timings: timings,

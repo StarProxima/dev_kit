@@ -47,8 +47,8 @@ class InternalError<ErrorType> extends ApiError<ErrorType> {
   String toString() => 'InternalError:\n\n$error\n\n$stackTrace';
 }
 
-class RateCancelError<ErrorType> implements ApiError<ErrorType> {
-  const RateCancelError({
+class RateLimiterError<ErrorType> implements ApiError<ErrorType> {
+  const RateLimiterError({
     required this.rateLimiter,
     required this.tag,
     required this.timings,

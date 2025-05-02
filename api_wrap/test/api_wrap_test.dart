@@ -423,7 +423,7 @@ void main() {
         rateLimiter: Throttle(tag: tag),
       );
 
-      await expectLater(r2, throwsA(isA<RateCancelError>()));
+      await expectLater(r2, throwsA(isA<RateLimiterError>()));
 
       await Future.delayed(const Duration(seconds: 1));
 
@@ -473,7 +473,7 @@ void main() {
       );
 
       // ignore: unawaited_futures
-      expectLater(r1, throwsA(isA<RateCancelError>()));
+      expectLater(r1, throwsA(isA<RateLimiterError>()));
 
       await Future.delayed(const Duration(milliseconds: 200));
 
@@ -495,7 +495,7 @@ void main() {
       final r4 = apiWrapper.apiWrapStrictSingle(
         () => 'Success',
         onError: (e) => switch (e) {
-          RateCancelError(:final tag) => tag,
+          RateLimiterError(:final tag) => tag,
           _ => throw e,
         },
         rateLimiter: Debounce(tag: tag, duration: const Duration(seconds: 1)),
@@ -545,7 +545,7 @@ void main() {
         () => 'Success',
         onError: (error) {
           switch (error) {
-            case RateCancelError():
+            case RateLimiterError():
               return error;
             case _:
               return null;
@@ -594,7 +594,7 @@ void main() {
         () {},
         onError: (error) {
           switch (error) {
-            case RateCancelError():
+            case RateLimiterError():
               return error;
             case _:
               return null;

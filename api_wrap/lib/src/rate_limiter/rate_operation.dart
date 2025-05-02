@@ -1,4 +1,7 @@
-part of 'api_wrap.dart';
+import 'dart:async';
+
+import 'rate_limiter.dart';
+import 'utils.dart';
 
 sealed class RateOperationResult<T> {
   const RateOperationResult();

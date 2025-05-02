@@ -1,0 +1,121 @@
+import 'dart:async';
+
+import '../rate_limiter.dart';
+import '../rate_operation.dart';
+import '../utils.dart';
+
+/// Варианты запуска cooldown.
+enum CooldownLaunch {
+  /// Cooldown начнётся сразу после начала выполнения запроса.
+  immediately,
+
+  /// Cooldown начнётся сразу после выполнения запроса.
+  afterOperaion,
+}
+
+class Throttle extends RateLimiter {
+  /// Сразу вызывает функцию.
+  ///
+  /// Если в течении заданного времени метод будет вызван ещё раз с тем же [tag], то новый запрос не выполнится.
+  ///
+  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
+  Throttle({
+    super.tag,
+    super.duration,
+    this.cooldownLaunch = CooldownLaunch.afterOperaion,
+    this.cooldownTickInterval = const Duration(seconds: 1),
+    this.onCooldownStart,
+    this.onCooldownTick,
+    this.onCooldownEnd,
+  });
+
+  final CooldownLaunch cooldownLaunch;
+
+  final Duration cooldownTickInterval;
+  final void Function()? onCooldownStart;
+  final void Function(RateTimings timings)? onCooldownTick;
+  final void Function()? onCooldownEnd;
+
+  @override
+  Future<RateOperationResult<D>> process<D>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<D> Function() function,
+  }) async {
+    final tag = this.tag ?? defaultTag;
+
+    final operations = container.throttleOperations;
+    final existingOperation = operations[tag];
+
+    if (existingOperation != null) {
+      return RateOperationCancel<D>(
+        rateLimiter: 'Throttle',
+        tag: tag,
+        timings: existingOperation.calculateRateTimings(),
+      );
+    }
+
+    Timer? cooldownTickTimer;
+
+    final operation = ThrottleOperation<D>(
+      rateLimiter: this,
+      onCooldownEnd: () {
+        final operation = operations.remove(tag);
+        cooldownTickTimer?.cancel();
+
+        if (operation == null) return;
+
+        onCooldownTick?.call(
+          operation.calculateRateTimings(
+            elapsedTime: operation.rateLimiter.duration,
+          ),
+        );
+        onCooldownEnd?.call();
+      },
+    );
+    operations[tag] = operation;
+
+    final FutureOr<D> futureOr;
+
+    try {
+      futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
+          ? await function()
+          : function();
+    } catch (_) {
+      rethrow;
+    } finally {
+      if (!operation.cooldownIsCancel) {
+        operation.startCooldown(duration: duration);
+
+        onCooldownStart?.call();
+
+        final onTick = onCooldownTick;
+
+        if (onTick != null) {
+          final timings = RateTimings(
+            duration: duration,
+            elapsedTime: Duration.zero,
+            remainingTime: null,
+          );
+
+          onTick(timings);
+          cooldownTickTimer = Timer.periodic(
+            cooldownTickInterval,
+            (timer) {
+              final timings = operation.calculateRateTimings(
+                elapsedTime: Duration(
+                  milliseconds:
+                      timer.tick * cooldownTickInterval.inMilliseconds,
+                ),
+              );
+              onTick(timings);
+            },
+          );
+        }
+      }
+    }
+
+    final data = await futureOr;
+    return RateOperationSuccess(data);
+  }
+}

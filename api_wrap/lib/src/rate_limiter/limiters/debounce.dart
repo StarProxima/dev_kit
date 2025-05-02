@@ -1,0 +1,103 @@
+import 'dart:async';
+
+import '../rate_limiter.dart';
+import '../rate_operation.dart';
+import '../utils.dart';
+
+class Debounce extends RateLimiter {
+  /// Задержит выполнение на заданное время.
+  ///
+  /// Если метод будет вызван ещё раз с тем же [tag],
+  /// то предыдущий запрос будет отменён, а новый выполнится через заданное время.
+  ///
+  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
+  Debounce({
+    super.tag,
+    super.duration,
+    this.shouldCancelRunningOperations = true,
+    this.delayTickInterval = const Duration(seconds: 1),
+    this.onDelayStart,
+    this.onDelayTick,
+    this.onDelayEnd,
+  });
+
+  final bool shouldCancelRunningOperations;
+
+  final Duration delayTickInterval;
+  final void Function()? onDelayStart;
+  final void Function(RateTimings timings)? onDelayTick;
+  final void Function()? onDelayEnd;
+
+  @override
+  Future<RateOperationResult<D>> process<D>({
+    required RateOperationsContainer container,
+    required String defaultTag,
+    required FutureOr<D> Function() function,
+  }) async {
+    final tag = this.tag ?? defaultTag;
+    final completer = Completer<RateOperationResult<D>>();
+
+    final operations = container.debounceOperations;
+
+    final existingOperation = operations[tag];
+    existingOperation?.cancel(tag: tag);
+
+    Timer? delayTickTimer;
+
+    final operation = DebounceOperation<D>(
+      rateLimiter: this,
+      timer: Timer(duration, () async {
+        final operation = operations[tag];
+        final future = operation?.complete();
+        try {
+          if (shouldCancelRunningOperations) await future;
+        } catch (_) {
+          rethrow;
+        } finally {
+          if (operations.containsValue(operation)) operations.remove(tag);
+        }
+      }),
+      completer: completer,
+      function: function,
+      onDelayEnd: () {
+        final operation = operations[tag];
+        delayTickTimer?.cancel();
+
+        final timings = operation!.calculateRateTimings(
+          remainingTime: Duration.zero,
+        );
+
+        onDelayTick?.call(timings);
+        onDelayEnd?.call();
+      },
+    );
+    operations[tag] = operation;
+
+    onDelayStart?.call();
+
+    final onTick = onDelayTick;
+
+    if (onTick != null) {
+      final timings = RateTimings(
+        duration: duration,
+        elapsedTime: Duration.zero,
+        remainingTime: null,
+      );
+      onTick(timings);
+
+      delayTickTimer = Timer.periodic(
+        delayTickInterval,
+        (timer) {
+          final timings = operation.calculateRateTimings(
+            elapsedTime: Duration(
+              milliseconds: timer.tick * delayTickInterval.inMilliseconds,
+            ),
+          );
+          onTick(timings);
+        },
+      );
+    }
+
+    return completer.future;
+  }
+}
