@@ -43,6 +43,16 @@ abstract class DelayStrategy {
     return Duration(milliseconds: resultMs.round());
   }
 
+  // Random delay stategy.
+  //
+  // Base formula: minDelay + maxDelay * randromDouble.
+  static Duration random(int attempt, RetryOptions options) {
+    final delay = options.minDelay.inMilliseconds +
+        options.maxDelay.inMilliseconds * _rand.nextDouble();
+
+    return Duration(milliseconds: delay.round());
+  }
+
   /// Fixed delay strategy with jitter (randomization).
   ///
   /// Base formula: delayFactor * jitter.
@@ -61,4 +71,7 @@ abstract class DelayStrategy {
     final delay = options.delayFactor.inMilliseconds;
     return Duration(milliseconds: delay);
   }
+
+  /// Without delay strategy. Always zero duration.
+  static Duration zero(int attempt, RetryOptions options) => Duration.zero;
 }

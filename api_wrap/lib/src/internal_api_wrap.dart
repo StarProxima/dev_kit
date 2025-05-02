@@ -21,29 +21,21 @@ class InternalApiWrap<ErrorType> {
 
   /// Преобразует исключение в специализированный [ApiError<ErrorType>].
   /// Обрабатывает различные типы ошибок, включая DioException.
-  ApiError<ErrorType> parseError(Object error, StackTrace stackTrace) {
-    // Если ошибка уже ApiError с правильным типом, возвращаем как есть
-    if (error is ApiError<ErrorType>) {
-      return error;
-    }
-
-    // Обработка ошибок Dio
-    if (error is DioException) {
-      final res = error.response;
-      if (res != null) {
-        return ErrorResponse<ErrorType>(
+  ApiError<ErrorType> parseError(Object e, StackTrace s) {
+    final apiError = switch (e) {
+      ApiError<ErrorType>() => e,
+      DioException(response: Response res) => ErrorResponse<ErrorType>(
           error: _parseError?.call(res.data) ?? res.data,
-          stackTrace: stackTrace,
-          data: error.requestOptions.data,
+          stackTrace: s,
+          data: e.requestOptions.data,
           statusCode: res.statusCode ?? 0,
           method: res.requestOptions.method,
           url: res.requestOptions.uri,
-        );
-      }
-    }
+        ),
+      _ => InternalError<ErrorType>(error: e, stackTrace: s),
+    };
 
-    // Для всех остальных типов ошибок
-    return InternalError<ErrorType>(error: error, stackTrace: stackTrace);
+    return apiError;
   }
 
   Future<D?> execute<T, D>(
@@ -65,8 +57,8 @@ class InternalApiWrap<ErrorType> {
           delay: delay,
           minExecutionTime: minExecutionTime,
           function: () => _wrapWithRetry(
-            function: function,
             retry: retry,
+            function: function,
           ),
         ),
       ),

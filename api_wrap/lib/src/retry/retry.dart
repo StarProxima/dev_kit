@@ -7,17 +7,57 @@ import 'retry_if.dart';
 import 'retry_options.dart';
 import 'retry_stats.dart';
 
-/// Class for managing retry attempts when functions encounter errors.
+/// A class that manages retry attempts for operations that may fail.
+///
+/// The retry mechanism is controlled by several key components:
+/// - Delay strategy: Determines the timing between retry attempts
+/// - Retry conditions: Custom logic to decide if a retry should be attempted
+/// - Event handlers: Callbacks for monitoring retry progress
+///
+/// Note: [maxTotalTime] does not include the last attempt's execution time,
+/// so the total time might exceed this limit by the duration of the final attempt.
+///
+/// For custom retry logic with delays, use [DelayStrategy.zero] or set [maxDelay] to [Duration.zero]
+/// in combination with [retryIf] to implement your own retry logic.
+///
+/// Example:
+/// ```dart
+/// final retry = Retry(
+///   maxAttempts: 3,
+///   delayFactor: const Duration(seconds: 1),
+///   retryIf: (error, stackTrace, stats) {
+///     // Retry only on network errors
+///     return error is NetworkError;
+///   },
+///   onFailAttempt: (error, stackTrace, stats) {
+///     print('Attempt ${stats.attempt} failed: ${error.toString()}');
+///   },
+/// );
+///
+/// final result = await retry.execute((stats) => api.getData());
+/// ```
 class Retry {
   /// Creates a retry instance with specified parameters.
+  ///
+  /// The retry behavior is determined by the following parameters:
+  /// [maxAttempts] - Total number of attempts (including initial)
+  /// [delayFactor] - Base duration for delay calculations
+  /// [minDelay] - Lower bound for delay duration
+  /// [maxDelay] - Upper bound for delay duration
+  /// [randomizationFactor] - Adds jitter to delays
+  /// [maxTotalTime] - Overall time limit for all attempts (excluding last attempt)
+  /// [delayStrategy] - Algorithm for calculating delays
+  /// [retryIf] - Custom logic for retry decisions
+  /// [onAttempt] - Called before each attempt
+  /// [onFailAttempt] - Called after failed attempts
   Retry({
     required int maxAttempts,
     Duration delayFactor = const Duration(milliseconds: 500),
     Duration minDelay = Duration.zero,
-    Duration maxDelay = const Duration(seconds: 10),
+    Duration maxDelay = const Duration(seconds: 60),
     double randomizationFactor = 0.25,
     Duration? maxTotalTime,
-    this.delayStrategy = DelayStrategy.exponential,
+    this.delayStrategy = DelayStrategy.linear,
     this.retryIf = RetryIf.always,
     this.onAttempt,
     this.onFailAttempt,
@@ -33,7 +73,7 @@ class Retry {
   /// Creates a retry instance from prepared options.
   const Retry.byOptions({
     required this.options,
-    this.delayStrategy = DelayStrategy.exponential,
+    this.delayStrategy = DelayStrategy.linear,
     this.retryIf = RetryIf.always,
     this.onAttempt,
     this.onFailAttempt,
