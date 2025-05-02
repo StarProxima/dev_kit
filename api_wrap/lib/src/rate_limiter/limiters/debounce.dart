@@ -21,21 +21,23 @@ class Debounce extends RateLimiter {
   });
 
   final bool shouldCancelRunningOperations;
-
   final Duration delayTickInterval;
   final void Function()? onDelayStart;
   final void Function(RateTimings timings)? onDelayTick;
   final void Function()? onDelayEnd;
 
+  final container = RateOperationsContainer();
+
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
-    required Object tag,
-    required RateOperationsContainer container,
+    Object? tag,
+    RateOperationsContainer? container,
   }) async {
-    final completer = Completer<RateOperationResult<D>>();
+    tag ??= '${StackTrace.current}';
+    final operations = (container ?? this.container).debounceOperations;
 
-    final operations = container.debounceOperations;
+    final completer = Completer<RateOperationResult<D>>();
 
     final existingOperation = operations[tag];
     existingOperation?.cancel(tag: tag);

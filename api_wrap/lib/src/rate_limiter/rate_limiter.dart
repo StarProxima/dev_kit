@@ -36,7 +36,7 @@ abstract class RateLimiter {
 
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
-    required Object tag,
-    required RateOperationsContainer container,
+    Object? tag,
+    RateOperationsContainer? container,
   });
 }

@@ -35,13 +35,16 @@ class Throttle extends RateLimiter {
   final void Function(RateTimings timings)? onCooldownTick;
   final void Function()? onCooldownEnd;
 
+  final container = RateOperationsContainer();
+
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
-    required Object tag,
-    required RateOperationsContainer container,
+    Object? tag,
+    RateOperationsContainer? container,
   }) async {
-    final operations = container.throttleOperations;
+    tag ??= '${StackTrace.current}';
+    final operations = (container ?? this.container).throttleOperations;
     final existingOperation = operations[tag];
 
     if (existingOperation != null) {
