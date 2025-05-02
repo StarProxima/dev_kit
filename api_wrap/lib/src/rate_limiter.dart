@@ -3,14 +3,17 @@ part of 'api_wrap.dart';
 
 @immutable
 class RateTimings {
-  const RateTimings(
-    this.duration,
-    this.elapsedTime,
-  );
+  const RateTimings({
+    required this.duration,
+    required this.elapsedTime,
+    required Duration? remainingTime,
+  }) : _remainingTime = remainingTime;
 
   final Duration duration;
   final Duration elapsedTime;
-  Duration get remainingTime => duration - elapsedTime;
+  final Duration? _remainingTime;
+
+  Duration get remainingTime => _remainingTime ?? duration - elapsedTime;
 
   @override
   bool operator ==(covariant RateTimings other) {
@@ -122,18 +125,29 @@ class Debounce extends RateLimiter {
       onDelayEnd: () {
         final operation = operations[tag];
         delayTickTimer?.cancel();
+
+        final timings = operation!.calculateRateTimings(
+          remainingTime: Duration.zero,
+        );
+
+        onDelayTick?.call(timings);
         onDelayEnd?.call();
-        onDelayTick?.call(operation!.calculateRateTimings(
-          elapsedTime: operation.rateLimiter.duration,
-        ));
       },
     );
     operations[tag] = operation;
 
     onDelayStart?.call();
 
-    if (onDelayTick != null) {
-      onDelayTick!(RateTimings(duration, Duration.zero));
+    final onTick = onDelayTick;
+
+    if (onTick != null) {
+      final timings = RateTimings(
+        duration: duration,
+        elapsedTime: Duration.zero,
+        remainingTime: null,
+      );
+      onTick(timings);
+
       delayTickTimer = Timer.periodic(
         delayTickInterval,
         (timer) {
@@ -142,7 +156,7 @@ class Debounce extends RateLimiter {
               milliseconds: timer.tick * delayTickInterval.inMilliseconds,
             ),
           );
-          onDelayTick!(timings);
+          onTick(timings);
         },
       );
     }
@@ -236,8 +250,16 @@ class Throttle extends RateLimiter {
 
         onCooldownStart?.call();
 
-        if (onCooldownTick != null) {
-          onCooldownTick!(RateTimings(duration, Duration.zero));
+        final onTick = onCooldownTick;
+
+        if (onTick != null) {
+          final timings = RateTimings(
+            duration: duration,
+            elapsedTime: Duration.zero,
+            remainingTime: null,
+          );
+
+          onTick(timings);
           cooldownTickTimer = Timer.periodic(
             cooldownTickInterval,
             (timer) {
@@ -247,7 +269,7 @@ class Throttle extends RateLimiter {
                       timer.tick * cooldownTickInterval.inMilliseconds,
                 ),
               );
-              onCooldownTick!(timings);
+              onTick(timings);
             },
           );
         }
