@@ -71,7 +71,7 @@ class Retry {
         );
 
   /// Creates a retry instance from prepared options.
-  const Retry.byOptions({
+  Retry.byOptions({
     required this.options,
     this.delayStrategy = DelayStrategy.linear,
     this.retryIf = RetryIf.always,
@@ -100,71 +100,91 @@ class Retry {
   /// Function called before each attempt, with retry statistics.
   final void Function(RetryStats stats)? onAttempt;
 
+  final Set<Object?> _activeRetries = {};
+
   @internal
   FutureOr<R> execute<R>(
-    FutureOr<R> Function(RetryStats stats) function,
-  ) async {
+    FutureOr<R> Function(RetryStats stats) function, {
+    Object? key,
+  }) async {
     var attempt = 0;
     final startTime = DateTime.now();
     final stopwatch = Stopwatch()..start();
 
     Duration? lastDelay;
 
-    while (true) {
-      attempt++;
+    _activeRetries.add(key);
 
-      // Calculate delay for the next attempt
-      final delay = delayStrategy(attempt, options);
+    try {
+      while (true) {
+        attempt++;
 
-      var stats = RetryStats(
-        options: options,
-        attempt: attempt,
-        delayBeforePreviosAttempt: lastDelay,
-        delayBeforeNextAttempt: delay,
-        startTime: startTime,
-        elapsedTime: stopwatch.elapsed,
-      );
+        // Calculate delay for the next attempt
+        final delay = delayStrategy(attempt, options);
 
-      lastDelay = delay;
-
-      try {
-        onAttempt?.call(stats);
-
-        final futureOr = function(stats);
-
-        final res = switch (futureOr) {
-          Future() => await futureOr,
-          _ => futureOr,
-        };
-
-        stopwatch.stop();
-        return res;
-      } on Object catch (e, s) {
-        stats = stats.copyWith(elapsedTime: stopwatch.elapsed);
-
-        final retryIfFutureOr = retryIf(e, s, stats);
-
-        final retryIfRes = switch (retryIfFutureOr) {
-          Future() => await retryIfFutureOr,
-          _ => retryIfFutureOr,
-        };
-
-        final willRetry = stats.canRetry && retryIfRes;
-
-        stats = stats.copyWith(
+        var stats = RetryStats(
+          key: key,
+          options: options,
+          attempt: attempt,
+          delayBeforePreviosAttempt: lastDelay,
+          delayBeforeNextAttempt: delay,
+          startTime: startTime,
           elapsedTime: stopwatch.elapsed,
-          willRetry: willRetry,
+          willRetry: null,
+          retryIsCancaled: !_activeRetries.contains(key),
         );
 
-        onFailAttempt?.call(e, s, stats);
+        lastDelay = delay;
 
-        if (!willRetry) {
-          stopwatch.stop();
-          rethrow;
+        try {
+          onAttempt?.call(stats);
+
+          final futureOr = function(stats);
+
+          final res = switch (futureOr) {
+            Future() => await futureOr,
+            _ => futureOr,
+          };
+
+          return res;
+        } on Object catch (e, s) {
+          stats = stats.copyWith(
+            elapsedTime: stopwatch.elapsed,
+            retryIsCancaled: !_activeRetries.contains(key),
+          );
+
+          final retryIfFutureOr = retryIf(e, s, stats);
+
+          final retryIfRes = switch (retryIfFutureOr) {
+            Future() => await retryIfFutureOr,
+            _ => retryIfFutureOr,
+          };
+
+          stats = stats.copyWith(
+            elapsedTime: stopwatch.elapsed,
+            retryIsCancaled: !_activeRetries.contains(key),
+          );
+
+          final willRetry = stats.canRetry && retryIfRes;
+
+          stats = stats.copyWith(
+            willRetry: willRetry,
+          );
+
+          onFailAttempt?.call(e, s, stats);
+
+          if (!willRetry) {
+            rethrow;
+          }
+
+          if (delay != Duration.zero) await Future.delayed(delay);
         }
-
-        if (delay != Duration.zero) await Future.delayed(delay);
       }
+    } finally {
+      stopwatch.stop();
+      if (key != null) _activeRetries.remove(key);
     }
   }
+
+  void cancelRetry({Object? key}) => _activeRetries.remove(key);
 }

@@ -4,14 +4,18 @@ import 'retry_options.dart';
 class RetryStats {
   /// Creates an instance of retry statistics.
   RetryStats({
+    required this.key,
     required this.options,
     required this.attempt,
     required this.delayBeforePreviosAttempt,
     required this.delayBeforeNextAttempt,
     required this.startTime,
     required this.elapsedTime,
-    bool? willRetry,
+    required bool? willRetry,
+    required this.retryIsCancaled,
   }) : _willRetry = willRetry;
+
+  final Object? key;
 
   /// Retry configuration options.
   final RetryOptions options;
@@ -32,6 +36,11 @@ class RetryStats {
   final Duration elapsedTime;
 
   final bool? _willRetry;
+
+  final bool retryIsCancaled;
+
+  /// Whether another attempt is possible.
+  bool get canRetry => hasTime && hasAttempts && !retryIsCancaled;
 
   /// Whether another attempt will be made.
   bool? get willRetry => _willRetry ?? canRetry;
@@ -61,11 +70,9 @@ class RetryStats {
   /// Whether there are remaining attempts.
   bool get hasAttempts => attemptsLeft > 0;
 
-  /// Whether another attempt is possible.
-  bool get canRetry => hasTime && hasAttempts;
-
   /// Creates a copy of the object with optional field overrides.
   RetryStats copyWith({
+    Object? key,
     RetryOptions? options,
     int? attempt,
     Duration? delayBeforePreviosAttempt,
@@ -73,8 +80,10 @@ class RetryStats {
     DateTime? startTime,
     Duration? elapsedTime,
     bool? willRetry,
+    bool? retryIsCancaled,
   }) {
     return RetryStats(
+      key: key ?? this.key,
       options: options ?? this.options,
       attempt: attempt ?? this.attempt,
       delayBeforePreviosAttempt:
@@ -84,6 +93,7 @@ class RetryStats {
       startTime: startTime ?? this.startTime,
       elapsedTime: elapsedTime ?? this.elapsedTime,
       willRetry: willRetry ?? _willRetry,
+      retryIsCancaled: retryIsCancaled ?? this.retryIsCancaled,
     );
   }
 }
