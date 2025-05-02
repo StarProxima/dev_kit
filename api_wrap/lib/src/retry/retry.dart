@@ -116,7 +116,7 @@ class Retry {
       // Calculate delay for the next attempt
       final delay = delayStrategy(attempt, options);
 
-      final stats = RetryStats(
+      var stats = RetryStats(
         options: options,
         attempt: attempt,
         delayBeforePreviosAttempt: lastDelay,
@@ -125,19 +125,38 @@ class Retry {
         elapsedTime: stopwatch.elapsed,
       );
 
+      lastDelay = delay;
+
       try {
         onAttempt?.call(stats);
 
-        final res = await function(stats);
+        final futureOr = function(stats);
+
+        final res = switch (futureOr) {
+          Future() => await futureOr,
+          _ => futureOr,
+        };
 
         stopwatch.stop();
         return res;
-      } catch (e, s) {
-        lastDelay = delay;
+      } on Object catch (e, s) {
+        stats = stats.copyWith(elapsedTime: stopwatch.elapsed);
 
-        final willRetry = stats.canRetry && await retryIf(e, s, stats);
+        final retryIfFutureOr = retryIf(e, s, stats);
 
-        onFailAttempt?.call(e, s, stats.copyWith(willRetry: willRetry));
+        final retryIfRes = switch (retryIfFutureOr) {
+          Future() => await retryIfFutureOr,
+          _ => retryIfFutureOr,
+        };
+
+        final willRetry = stats.canRetry && retryIfRes;
+
+        stats = stats.copyWith(
+          elapsedTime: stopwatch.elapsed,
+          willRetry: willRetry,
+        );
+
+        onFailAttempt?.call(e, s, stats);
 
         if (!willRetry) {
           stopwatch.stop();

@@ -64,14 +64,6 @@ abstract class DelayStrategy {
     return Duration(milliseconds: delay.round());
   }
 
-  /// Constant delay strategy without jitter (randomization).
-  ///
-  /// Base formula: delayFactor.
-  static Duration constant(int attempt, RetryOptions options) {
-    final delay = options.delayFactor.inMilliseconds;
-    return Duration(milliseconds: delay);
-  }
-
   /// Without delay strategy. Always zero duration.
   static Duration zero(int attempt, RetryOptions options) => Duration.zero;
 }
