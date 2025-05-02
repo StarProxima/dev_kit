@@ -21,7 +21,8 @@ class Retry<ErrorType> {
     Duration? maxTotalTime,
     this.delayStrategy = DelayStrategy.exponential,
     this.retryIf = RetryIf.always,
-    this.onFail,
+    this.onAttempt,
+    this.onFailAttempt,
   }) : options = RetryOptions(
           maxAttempts: maxAttempts,
           delayFactor: delayFactor,
@@ -35,17 +36,16 @@ class Retry<ErrorType> {
   const Retry.byOptions({
     required this.options,
     this.delayStrategy = DelayStrategy.exponential,
-    required this.retryIf,
-    this.onFail,
+    this.retryIf = RetryIf.always,
+    this.onAttempt,
+    this.onFailAttempt,
   });
 
   /// Создает экземпляр ретрая без повторных попыток.
-  factory Retry.none() {
-    return Retry<ErrorType>(
-      maxAttempts: 1,
-      retryIf: RetryIf.never,
-    );
-  }
+  factory Retry.none() => Retry<ErrorType>(
+        maxAttempts: 1,
+        retryIf: RetryIf.never,
+      );
 
   /// Настройки ретрая.
   final RetryOptions options;
@@ -58,7 +58,9 @@ class Retry<ErrorType> {
 
   /// Функция, вызываемая при ошибке, с указанием статистики попытки.
   final FutureOr<void> Function(ApiError<ErrorType> e, RetryStats stats)?
-      onFail;
+      onFailAttempt;
+
+  final FutureOr<void> Function(RetryStats stats)? onAttempt;
 
   /// Выполняет функцию [function] с логикой повторных попыток
   /// в случае возникновения ошибок, согласно настройкам ретрая.
@@ -80,40 +82,37 @@ class Retry<ErrorType> {
     late ApiError<ErrorType> lastError;
     Duration? lastDelay;
 
-    while (attempt < options.maxAttempts) {
+    while (true) {
       attempt++;
+
+      // Рассчитываем задержку для следующей попытки
+      final delay = delayStrategy(attempt, options);
+
+      final stats = RetryStats(
+        options: options,
+        attempt: attempt,
+        delayBeforePreviosAttempt: lastDelay,
+        delayBeforeNextAttempt: delay,
+        startTime: startTime,
+        elapsedTime: stopwatch.elapsed,
+      );
+
       try {
+        onAttempt?.call(stats);
         return await function();
       } catch (e, stackTrace) {
         lastError = wrapError(e, stackTrace);
-
-        // Рассчитываем задержку для следующей попытки
-        final delay = delayStrategy(attempt, options);
-
-        final stats = RetryStats(
-          options: options,
-          attempt: attempt,
-          delayBeforePreviosAttempt: lastDelay,
-          delayBeforeNextAttempt: delay,
-          startTime: startTime,
-          elapsedTime: stopwatch.elapsed,
-        );
 
         lastDelay = delay;
 
         final willRetry = stats.canRetry && await retryIf(lastError, stats);
 
-        onFail?.call(lastError, stats.copyWith(willRetry: willRetry));
+        onFailAttempt?.call(lastError, stats.copyWith(willRetry: willRetry));
 
-        if (!willRetry) {
-          throw lastError;
-        }
+        if (!willRetry) throw lastError;
 
         await Future.delayed(delay);
       }
     }
-
-    // По идее, мы не достигнем этого никогда, т.к. ошибка выбросится раньше, но на всякий
-    throw lastError;
   }
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
-import '../../api_wrap.dart';
+import '../api_wrap.dart';
 import 'retry_stats.dart';
 
 typedef RetryIfFn<ErrorType> = FutureOr<bool> Function(
@@ -24,4 +24,13 @@ abstract class RetryIf {
       _ => false,
     };
   }
+}
+
+class ShouldRetry implements Exception {
+  final String? message;
+
+  ShouldRetry(this.message);
+
+  @override
+  String toString() => 'ShouldRetry${message != null ? ':$message' : ''}';
 }

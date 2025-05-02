@@ -38,7 +38,12 @@ class RetryStats {
 
   /// Оставшееся время до достижения maxTotalTime, если оно задано.
   /// Null, если maxTotalTime не задан.
-  Duration? get remainingTime => _calculateRemainingTime();
+  Duration? get remainingTime {
+    if (options.maxTotalTime == null) return null;
+
+    if (elapsedTime >= options.maxTotalTime!) return Duration.zero;
+    return options.maxTotalTime! - elapsedTime;
+  }
 
   bool get hasTime =>
       remainingTime == null ||
@@ -52,13 +57,6 @@ class RetryStats {
 
   /// Возможна ли еще одна попытка.
   bool get canRetry => hasTime && hasAttempts;
-
-  Duration? _calculateRemainingTime() {
-    if (options.maxTotalTime == null) return null;
-
-    if (elapsedTime >= options.maxTotalTime!) return Duration.zero;
-    return options.maxTotalTime! - elapsedTime;
-  }
 
   /// Создает копию объекта с возможностью переопределения полей.
   RetryStats copyWith({
