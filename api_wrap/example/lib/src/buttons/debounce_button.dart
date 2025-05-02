@@ -34,7 +34,7 @@ class _DebounceButtonState extends State<DebounceButton> {
               ),
               rateLimiter: Debounce(
                 duration: const Duration(seconds: 2),
-                delayTickInterval: const Duration(milliseconds: 5),
+                tickInterval: const Duration(milliseconds: 5),
                 onDelayTick: (time) =>
                     setState(() => duration = time.elapsedTime),
                 onDelayEnd: () => setState(() => isLoading = true),

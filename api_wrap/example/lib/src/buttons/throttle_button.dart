@@ -30,7 +30,7 @@ class _ThrottleButtonState extends State<ThrottleButton> {
               ),
               rateLimiter: Throttle(
                 duration: const Duration(seconds: 4),
-                cooldownTickInterval: const Duration(milliseconds: 5),
+                tickInterval: const Duration(milliseconds: 5),
                 onCooldownTick: (time) =>
                     setState(() => duration = time.remainingTime),
               ),

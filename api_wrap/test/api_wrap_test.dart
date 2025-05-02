@@ -541,7 +541,7 @@ void main() {
         tag: tag,
         rateLimiter: Throttle(
           duration: cooldownDuration,
-          cooldownTickInterval: const Duration(milliseconds: 200),
+          tickInterval: const Duration(milliseconds: 200),
           onCooldownStart: () => cooldownList.add('Start'),
           onCooldownEnd: () => cooldownList.add('End'),
           onCooldownTick: cooldownList.add,
@@ -615,7 +615,7 @@ void main() {
         tag: tag,
         rateLimiter: Debounce(
           duration: delayDuration,
-          delayTickInterval: const Duration(milliseconds: 200),
+          tickInterval: const Duration(milliseconds: 200),
           onDelayStart: () => delayList.add('Start'),
           onDelayTick: delayList.add,
           onDelayEnd: () => delayList.add('End'),

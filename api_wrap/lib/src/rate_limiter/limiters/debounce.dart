@@ -13,15 +13,15 @@ class Debounce extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Debounce({
     super.duration,
-    this.shouldCancelRunningOperations = true,
-    this.delayTickInterval = const Duration(seconds: 1),
+    this.canCancelRunningOperations = true,
+    this.tickInterval = const Duration(seconds: 1),
     this.onDelayStart,
     this.onDelayTick,
     this.onDelayEnd,
   });
 
-  final bool shouldCancelRunningOperations;
-  final Duration delayTickInterval;
+  final bool canCancelRunningOperations;
+  final Duration tickInterval;
   final void Function()? onDelayStart;
   final void Function(RateTimings timings)? onDelayTick;
   final void Function()? onDelayEnd;
@@ -50,7 +50,7 @@ class Debounce extends RateLimiter {
         final operation = operations[tag];
         final future = operation?.complete();
         try {
-          if (shouldCancelRunningOperations) await future;
+          if (canCancelRunningOperations) await future;
         } catch (_) {
           rethrow;
         } finally {
@@ -89,11 +89,11 @@ class Debounce extends RateLimiter {
       onTick(timings);
 
       delayTickTimer = Timer.periodic(
-        delayTickInterval,
+        tickInterval,
         (timer) {
           final timings = operation.calculateRateTimings(
             elapsedTime: Duration(
-              milliseconds: timer.tick * delayTickInterval.inMilliseconds,
+              milliseconds: timer.tick * tickInterval.inMilliseconds,
             ),
           );
           onTick(timings);

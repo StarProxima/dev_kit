@@ -22,7 +22,7 @@ class Throttle extends RateLimiter {
   Throttle({
     super.duration,
     this.cooldownLaunch = CooldownLaunch.afterOperaion,
-    this.cooldownTickInterval = const Duration(seconds: 1),
+    this.tickInterval = const Duration(seconds: 1),
     this.onCooldownStart,
     this.onCooldownTick,
     this.onCooldownEnd,
@@ -30,7 +30,7 @@ class Throttle extends RateLimiter {
 
   final CooldownLaunch cooldownLaunch;
 
-  final Duration cooldownTickInterval;
+  final Duration tickInterval;
   final void Function()? onCooldownStart;
   final void Function(RateTimings timings)? onCooldownTick;
   final void Function()? onCooldownEnd;
@@ -100,12 +100,11 @@ class Throttle extends RateLimiter {
 
           onTick(timings);
           cooldownTickTimer = Timer.periodic(
-            cooldownTickInterval,
+            tickInterval,
             (timer) {
               final timings = operation.calculateRateTimings(
                 elapsedTime: Duration(
-                  milliseconds:
-                      timer.tick * cooldownTickInterval.inMilliseconds,
+                  milliseconds: timer.tick * tickInterval.inMilliseconds,
                 ),
               );
               onTick(timings);

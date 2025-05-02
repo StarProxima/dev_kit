@@ -15,22 +15,38 @@ abstract class RateLimiter {
   });
 
   factory RateLimiter.debounce({
-    Duration duration,
-    bool shouldCancelRunningOperations,
-    Duration delayTickInterval,
+    Duration duration = Duration.zero,
+    bool canCancelRunningOperations = true,
+    Duration tickInterval = const Duration(seconds: 1),
     void Function()? onDelayStart,
     void Function(RateTimings timings)? onDelayTick,
     void Function()? onDelayEnd,
-  }) = Debounce;
+  }) =>
+      Debounce(
+        duration: duration,
+        canCancelRunningOperations: false,
+        tickInterval: tickInterval,
+        onDelayStart: onDelayStart,
+        onDelayTick: onDelayTick,
+        onDelayEnd: onDelayEnd,
+      );
 
   factory RateLimiter.throttle({
-    Duration duration,
-    CooldownLaunch cooldownLaunch,
-    Duration cooldownTickInterval,
+    Duration duration = Duration.zero,
+    CooldownLaunch cooldownLaunch = CooldownLaunch.afterOperaion,
+    Duration tickInterval = const Duration(seconds: 1),
     void Function()? onCooldownStart,
     void Function(RateTimings timings)? onCooldownTick,
     void Function()? onCooldownEnd,
-  }) = Throttle;
+  }) =>
+      Throttle(
+        duration: duration,
+        cooldownLaunch: cooldownLaunch,
+        tickInterval: tickInterval,
+        onCooldownStart: onCooldownStart,
+        onCooldownTick: onCooldownTick,
+        onCooldownEnd: onCooldownEnd,
+      );
 
   final Duration duration;
 
