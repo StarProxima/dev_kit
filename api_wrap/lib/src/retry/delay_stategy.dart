@@ -19,9 +19,7 @@ abstract class DelayStrategy {
     final delay = options.minDelay.inMilliseconds +
         options.delayFactor.inMilliseconds * pow(2.0, exp) * jitter;
 
-    final resultMs = delay < options.maxDelay.inMilliseconds
-        ? delay
-        : options.maxDelay.inMilliseconds;
+    final resultMs = min(delay, options.maxDelay.inMilliseconds);
 
     return Duration(milliseconds: resultMs.round());
   }
