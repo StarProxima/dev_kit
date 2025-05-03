@@ -10,7 +10,7 @@ enum CooldownLaunch {
   immediately,
 
   /// Cooldown начнётся сразу после выполнения запроса.
-  afterOperaion,
+  afterFunction,
 }
 
 class Throttle extends RateLimiter {
@@ -21,7 +21,7 @@ class Throttle extends RateLimiter {
   /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Throttle({
     super.duration,
-    this.cooldownLaunch = CooldownLaunch.afterOperaion,
+    this.cooldownLaunch = CooldownLaunch.afterFunction,
     this.tickInterval = const Duration(seconds: 1),
     this.onCooldownStart,
     this.onCooldownTick,
@@ -78,7 +78,7 @@ class Throttle extends RateLimiter {
     final FutureOr<D> futureOr;
 
     try {
-      futureOr = cooldownLaunch == CooldownLaunch.afterOperaion
+      futureOr = cooldownLaunch == CooldownLaunch.afterFunction
           ? await function()
           : function();
     } catch (_) {

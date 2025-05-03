@@ -33,7 +33,7 @@ abstract class RateLimiter {
 
   factory RateLimiter.throttle({
     Duration duration = Duration.zero,
-    CooldownLaunch cooldownLaunch = CooldownLaunch.afterOperaion,
+    CooldownLaunch cooldownLaunch = CooldownLaunch.afterFunction,
     Duration tickInterval = const Duration(seconds: 1),
     void Function()? onCooldownStart,
     void Function(RateTimings timings)? onCooldownTick,

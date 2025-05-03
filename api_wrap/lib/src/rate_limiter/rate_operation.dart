@@ -1,3 +1,4 @@
+import 'package:api_wrap/api_wrap.dart';
 import 'package:meta/meta.dart';
 
 import 'limiters/debounce.dart';
@@ -31,6 +32,7 @@ class RateOperationsContainer {
 
   final Map<Object, DebounceOperation> debounceOperations = {};
   final Map<Object, ThrottleOperation> throttleOperations = {};
+  final Map<Object, QueueOperation> queueOperations = {};
 }
 
 abstract class RateOperation<T> {
