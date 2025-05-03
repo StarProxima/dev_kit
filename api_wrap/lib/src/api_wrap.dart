@@ -140,8 +140,8 @@ extension ApiWrapX<ErrorType> on IApiWrap<ErrorType> {
         shouldThrowError: true,
       )) as T;
 
-  ApiError<ErrorType> parseError(Object e, StackTrace s) =>
-      wrapController.internalApiWrap.parseError(e, s);
+  ApiError<ErrorType> wrapError(Object e, StackTrace s) =>
+      wrapController.internalApiWrap.wrapError(e, s);
 
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {

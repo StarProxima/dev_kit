@@ -21,7 +21,7 @@ class InternalApiWrap<ErrorType> {
 
   /// Преобразует исключение в специализированный [ApiError<ErrorType>].
   /// Обрабатывает различные типы ошибок, включая DioException.
-  ApiError<ErrorType> parseError(Object e, StackTrace s) {
+  ApiError<ErrorType> wrapError(Object e, StackTrace s) {
     final apiError = switch (e) {
       ApiError<ErrorType>() => e,
       DioException(response: Response res) => ErrorResponse<ErrorType>(
@@ -74,16 +74,28 @@ class InternalApiWrap<ErrorType> {
     required OnError<ErrorType, D?>? onError,
   }) async {
     try {
-      final T response = await function();
+      final futureOr = function();
+      final T response = switch (futureOr) {
+        Future() => await futureOr,
+        _ => futureOr,
+      };
 
-      // Возвращаем успешный результат или непосредственно сам ответ.
-      final successResult = (await onSuccess?.call(response)) ??
-          (response is D ? response as D : null);
+      final onSuccessFutureOr = onSuccess?.call(response);
 
-      return successResult;
+      final D? onSuccessResponse = switch (onSuccessFutureOr) {
+        Future() => await onSuccessFutureOr,
+        _ => onSuccessFutureOr,
+      };
+
+      final result =
+          onSuccessResponse ?? (response is D ? response as D : null);
+
+      return result;
     } catch (e, s) {
-      final err = parseError(e, s);
+      final err = wrapError(e, s);
 
+      // Не эвейтим, т.к. не хотим для onError ловить исключения,
+      // они поймаются при следующем эвейте
       final errorResult = onError?.call(err);
 
       return errorResult;
@@ -103,9 +115,12 @@ class InternalApiWrap<ErrorType> {
     final T response;
 
     switch (minExecutionTime) {
-      case null || Duration.zero:
-        response =
-            switch (futureOr) { Future() => await futureOr, _ => futureOr };
+      case null:
+        response = switch (futureOr) {
+          Future() => await futureOr,
+          _ => futureOr,
+        };
+
       case Duration():
         try {
           final res = await (
@@ -149,8 +164,8 @@ class InternalApiWrap<ErrorType> {
   }) async {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
-        container: _operationsContainer,
         function: function,
+        container: _operationsContainer,
         defaultTag: '$hashCode${StackTrace.current}',
       );
 

@@ -308,7 +308,7 @@ void main() {
         Retry(
           maxAttempts: 3,
           retryIf: (e, s, __) {
-            final error = apiWrapper.parseError(e, s);
+            final error = apiWrapper.wrapError(e, s);
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -323,7 +323,7 @@ void main() {
         Retry(
           maxAttempts: 2,
           retryIf: (e, s, _) {
-            final error = apiWrapper.parseError(e, s);
+            final error = apiWrapper.wrapError(e, s);
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
