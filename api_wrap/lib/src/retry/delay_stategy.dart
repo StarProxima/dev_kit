@@ -46,7 +46,7 @@ abstract class DelayStrategy {
   // Base formula: minDelay + maxDelay * randromDouble.
   static Duration random(int attempt, RetryOptions options) {
     final delay = options.minDelay.inMilliseconds +
-        options.maxDelay.inMilliseconds * _rand.nextDouble();
+        (options.maxDelay.inMilliseconds - options.minDelay.inMilliseconds) * _rand.nextDouble();
 
     return Duration(milliseconds: delay.round());
   }
