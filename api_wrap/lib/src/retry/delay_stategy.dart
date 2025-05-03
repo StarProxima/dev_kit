@@ -19,9 +19,7 @@ abstract class DelayStrategy {
     final delay = options.minDelay.inMilliseconds +
         options.delayFactor.inMilliseconds * pow(2.0, exp) * jitter;
 
-    final resultMs = delay < options.maxDelay.inMilliseconds
-        ? delay
-        : options.maxDelay.inMilliseconds;
+    final resultMs = min(delay, options.maxDelay.inMilliseconds);
 
     return Duration(milliseconds: resultMs.round());
   }
@@ -48,7 +46,7 @@ abstract class DelayStrategy {
   // Base formula: minDelay + maxDelay * randromDouble.
   static Duration random(int attempt, RetryOptions options) {
     final delay = options.minDelay.inMilliseconds +
-        options.maxDelay.inMilliseconds * _rand.nextDouble();
+        (options.maxDelay.inMilliseconds - options.minDelay.inMilliseconds) * _rand.nextDouble();
 
     return Duration(milliseconds: delay.round());
   }
