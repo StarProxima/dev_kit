@@ -126,22 +126,24 @@ class Retry {
       while (true) {
         attempt++;
 
-        // Calculate delay for the next attempt
-        final delay = delayStrategy(attempt, options);
-
         var stats = RetryStats(
           key: key,
           options: options,
           attempt: attempt,
           delayBeforePreviosAttempt: lastDelay,
-          delayBeforeNextAttempt: delay,
+          delayBeforeNextAttempt: Duration.zero,
           startTime: startTime,
-          elapsedTime: stopwatch.elapsed,
+          elapsedTotalTime: stopwatch.elapsed,
           willRetry: null,
           retryIsCancaled: !_activeRetries.contains(key),
         );
 
+        final delay = delayStrategy(stats);
         lastDelay = delay;
+
+        stats = stats.copyWith(
+          delayBeforeNextAttempt: delay,
+        );
 
         try {
           onAttempt?.call(stats);
@@ -156,7 +158,7 @@ class Retry {
           return res;
         } on Object catch (e, s) {
           stats = stats.copyWith(
-            elapsedTime: stopwatch.elapsed,
+            elapsedTotalTime: stopwatch.elapsed,
             retryIsCancaled: !_activeRetries.contains(key),
           );
 
@@ -168,7 +170,7 @@ class Retry {
           };
 
           stats = stats.copyWith(
-            elapsedTime: stopwatch.elapsed,
+            elapsedTotalTime: stopwatch.elapsed,
             retryIsCancaled: !_activeRetries.contains(key),
           );
 
