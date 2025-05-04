@@ -716,7 +716,7 @@ void main() {
         maxAttempts: 5,
         delayFactor: Duration.zero,
         onFailAttempt: (e, s, stats) {
-          canceledFlagSeen ??= stats.retryIsCancaled;
+          canceledFlagSeen ??= stats.isRetryCanceled;
         },
       );
 

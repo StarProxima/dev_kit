@@ -29,11 +29,11 @@ abstract class RetryIf {
 }
 
 /// Exception that can be thrown to explicitly request a retry attempt.
-class RequestRetry implements Exception {
+class RequestRetryException implements Exception {
   /// Optional message explaining why a retry is needed.
   final String? message;
 
-  RequestRetry(this.message);
+  RequestRetryException(this.message);
 
   @override
   String toString() => 'ShouldRetry${message != null ? ':$message' : ''}';

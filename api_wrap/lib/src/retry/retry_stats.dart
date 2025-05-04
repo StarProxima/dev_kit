@@ -12,7 +12,7 @@ class RetryStats {
     required this.startTime,
     required this.elapsedTotalTime,
     required bool? willRetry,
-    required this.retryIsCancaled,
+    required this.isRetryCanceled,
   }) : _willRetry = willRetry;
 
   // Retry operation identifier.
@@ -36,12 +36,12 @@ class RetryStats {
   /// Elapsed time since the beginning of execution.
   final Duration elapsedTotalTime;
 
-  /// Whether Retry was stopped externally.
-  final bool retryIsCancaled;
+  /// Whether retry was stopped externally.
+  final bool isRetryCanceled;
 
   /// Whether another attempt is possible.
   bool get canRetry =>
-      hasTotalTimeForNextAttempt && hasAttempts && !retryIsCancaled;
+      hasTotalTimeForNextAttempt && hasAttempts && !isRetryCanceled;
 
   final bool? _willRetry;
 
@@ -98,7 +98,7 @@ class RetryStats {
       startTime: startTime ?? this.startTime,
       elapsedTotalTime: elapsedTotalTime ?? this.elapsedTotalTime,
       willRetry: willRetry ?? _willRetry,
-      retryIsCancaled: retryIsCancaled ?? this.retryIsCancaled,
+      isRetryCanceled: retryIsCancaled ?? this.isRetryCanceled,
     );
   }
 }

@@ -7,6 +7,7 @@ final _rand = Random();
 /// Function type for delay calculation strategy between retry attempts.
 typedef DelayStrategyFn = Duration Function(RetryStats stats);
 
+/// Class providing predefined retry delay calculation strategies.
 abstract class DelayStrategy {
   /// Exponential delay strategy with jitter (randomization).
   ///

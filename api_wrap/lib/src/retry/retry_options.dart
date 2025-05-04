@@ -4,7 +4,7 @@ class RetryOptions {
     required this.maxAttempts,
     this.delayFactor = const Duration(milliseconds: 500),
     this.minDelay = Duration.zero,
-    this.maxDelay = const Duration(seconds: 10),
+    this.maxDelay = const Duration(seconds: 60),
     this.randomizationFactor = 0.25,
     this.maxTotalTime,
   }) : assert(maxAttempts > 0, 'maxAttempts must be greater than 0');

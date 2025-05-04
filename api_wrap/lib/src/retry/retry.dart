@@ -135,7 +135,7 @@ class Retry {
           startTime: startTime,
           elapsedTotalTime: stopwatch.elapsed,
           willRetry: null,
-          retryIsCancaled: !_activeRetries.contains(key),
+          isRetryCanceled: !_activeRetries.contains(key),
         );
 
         final delay = delayStrategy(stats);
