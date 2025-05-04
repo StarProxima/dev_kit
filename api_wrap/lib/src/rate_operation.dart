@@ -38,12 +38,18 @@ sealed class RateOperation<T> {
 
   RateTimings calculateRateTimings({
     Duration? elapsedTime,
+    Duration? remainingTime,
   }) {
     elapsedTime = elapsedTime ??
         (_startAt != null
             ? DateTime.now().difference(_startAt!)
             : Duration.zero);
-    return RateTimings(rateLimiter.duration, elapsedTime);
+
+    return RateTimings(
+      duration: rateLimiter.duration,
+      elapsedTime: elapsedTime,
+      remainingTime: remainingTime,
+    );
   }
 }
 

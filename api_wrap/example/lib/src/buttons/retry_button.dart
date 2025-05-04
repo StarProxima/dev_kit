@@ -13,7 +13,9 @@ class RetryButton extends StatefulWidget {
 }
 
 class _RetryButtonState extends State<RetryButton> {
-  int attemtsCount = 0;
+  RetryStats? retryStats;
+
+  int get attempt => retryStats?.attempt ?? 0;
 
   bool isLoading = false;
 
@@ -22,34 +24,36 @@ class _RetryButtonState extends State<RetryButton> {
     return Column(
       children: [
         const SizedBox(height: 16),
-        Text('Attemts: $attemtsCount'),
+        Text('Attemt: ${retryStats?.attempt ?? 0}'),
         AppButton(
           onTap: () async {
-            setState(() => attemtsCount = 0);
             await apiWrapper.apiWrap(
               () {
-                setState(() => attemtsCount++);
                 return Future.delayed(
                   const Duration(milliseconds: 1000),
-                  () => attemtsCount < 5
+                  () => attempt < 5
                       ? throw Exception('Retry Error')
-                      : 'Success response after $attemtsCount attempts',
+                      : 'Success response after $attempt attempts',
                 );
               },
               retry: Retry(
                 maxAttempts: 6,
-                retryIf: (_) => true,
-                onError: (e, delayBeforeNextAttemt) {
+                onAttempt: (stats) {
+                  if (mounted) setState(() => retryStats = stats);
+                },
+                onFailAttempt: (e, s, stats) {
+                  final error = apiWrapper.wrapError(e, s);
+
                   toastification.show(
                     type: ToastificationType.error,
                     title: Row(
                       children: [
                         const Text('Failed attempt, retry after '),
-                        TimeText(delayBeforeNextAttemt),
+                        TimeText(stats.delayBeforeNextAttempt),
                       ],
                     ),
-                    description: Text(e.toShortString()),
-                    autoCloseDuration: delayBeforeNextAttemt,
+                    description: Text(error.toShortString()),
+                    autoCloseDuration: stats.delayBeforeNextAttempt,
                     pauseOnHover: false,
                   );
                 },

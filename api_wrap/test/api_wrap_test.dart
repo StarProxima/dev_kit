@@ -27,15 +27,7 @@ void main() {
       );
     }
 
-    void internalApiWrap() {
-      InternalApiWrap<DateTime>(
-        retry: Retry.no(),
-        container: RateOperationsContainer(),
-      );
-    }
-
     expect(apiWrapper, throwsArgumentError);
-    expect(internalApiWrap, throwsArgumentError);
   });
 
   group('Retry', () {
@@ -301,7 +293,7 @@ void main() {
     test('Retry', () async {
       var attempt = 0;
 
-      Future<String?> retryFn(Retry<int> retry) async {
+      Future<String?> retryFn(Retry retry) async {
         return apiWrapper.apiWrap(
           () {
             attempt++;
@@ -315,7 +307,8 @@ void main() {
       final r1 = await retryFn(
         Retry(
           maxAttempts: 3,
-          retryIf: (error) {
+          retryIf: (e, s, __) {
+            final error = apiWrapper.wrapError(e, s);
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -329,7 +322,8 @@ void main() {
       final r2 = await retryFn(
         Retry(
           maxAttempts: 2,
-          retryIf: (error) {
+          retryIf: (e, s, _) {
+            final error = apiWrapper.wrapError(e, s);
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -343,7 +337,7 @@ void main() {
       final r3 = await retryFn(
         Retry(
           maxAttempts: 3,
-          retryIf: (error) => false,
+          retryIf: (_, __, ___) => false,
         ),
       );
 
@@ -573,7 +567,11 @@ void main() {
         equals([
           'Start',
           for (int i = 0; i <= 5; i++)
-            RateTimings(cooldownDuration, Duration(milliseconds: 200 * i)),
+            RateTimings(
+              duration: cooldownDuration,
+              elapsedTime: Duration(milliseconds: 200 * i),
+              remainingTime: null,
+            ),
           'End',
         ]),
       );
@@ -630,15 +628,32 @@ void main() {
 
       await Future.delayed(const Duration(seconds: 1));
 
+      expect(delayList.length, 5);
+
+      expect(delayList[0], 'Start');
       expect(
-        delayList,
-        equals([
-          'Start',
-          for (int i = 0; i <= 1; i++)
-            RateTimings(delayDuration, Duration(milliseconds: 200 * i)),
-          'End',
-        ]),
+        delayList[1],
+        RateTimings(
+          duration: delayDuration,
+          elapsedTime: Duration.zero,
+          remainingTime: null,
+        ),
       );
+      expect(
+        delayList[2],
+        RateTimings(
+          duration: delayDuration,
+          elapsedTime: Duration(milliseconds: 200),
+          remainingTime: null,
+        ),
+      );
+
+      final time3 = delayList[3] as RateTimings;
+      expect(time3.remainingTime, Duration.zero);
+
+      expect(time3.elapsedTime, greaterThan(delay));
+      expect(time3.elapsedTime, lessThan(delay + Duration(milliseconds: 50)));
+      expect(delayList[4], 'End');
 
       final r3 = await apiWrapper.apiWrapSingle<String>(
         () => 'Success',

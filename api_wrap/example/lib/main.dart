@@ -61,10 +61,8 @@ class MyHomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: buttons.length,
               itemBuilder: (_, index) {
-                final gap = MediaQuery.sizeOf(context).height / 2;
-
                 return Padding(
-                  padding: EdgeInsets.symmetric(vertical: gap),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   child: buttons[index],
                 );
               },
