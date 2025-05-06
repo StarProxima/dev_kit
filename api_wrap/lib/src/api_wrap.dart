@@ -14,7 +14,7 @@ part 'api_wrapper.dart';
 part 'api_wrap_controller.dart';
 part 'internal_api_wrap.dart';
 
-extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
+extension ApiWrapX<BaseResponseError> on IApiWrap<BaseResponseError> {
   /// Обёртывает HTTP запрос через [Dio] или обычную функцию, позволяя преобразовывать тип данных.
   /// Предоставляет возможность использования последовательных вложенных запросов и
   /// автоматической или ручной обработки ошибок.
@@ -41,7 +41,7 @@ extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
     Retry? retry,
     RateLimiter? rateLimiter,
     FutureOr<D?> Function(T res)? onSuccess,
-    OnError<BaseHttpErrorType, D?>? onError,
+    OnError<BaseResponseError, D?>? onError,
   }) =>
       _internalApiWrap<T, D>(
         function,
@@ -72,7 +72,7 @@ extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
     Retry? retry,
     RateLimiter? rateLimiter,
     required FutureOr<D> Function(T res) onSuccess,
-    OnError<BaseHttpErrorType, D>? onError,
+    OnError<BaseResponseError, D>? onError,
   }) async =>
       (await _internalApiWrap<T, D>(
         function,
@@ -105,7 +105,7 @@ extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
     Retry? retry,
     RateLimiter? rateLimiter,
     FutureOr<T?> Function(T res)? onSuccess,
-    OnError<BaseHttpErrorType, T?>? onError,
+    OnError<BaseResponseError, T?>? onError,
   }) =>
       _internalApiWrap<T, T>(
         function,
@@ -136,7 +136,7 @@ extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
     Retry? retry,
     RateLimiter? rateLimiter,
     FutureOr<T> Function(T res)? onSuccess,
-    OnError<BaseHttpErrorType, T>? onError,
+    OnError<BaseResponseError, T>? onError,
   }) async =>
       (await _internalApiWrap<T, T>(
         function,
@@ -150,7 +150,7 @@ extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
         shouldThrowError: true,
       )) as T;
 
-  ApiError<BaseHttpErrorType> wrapError(Object e, StackTrace s) => wrapController.internalApiWrap.wrapError(e, s);
+  HandledError<BaseResponseError> wrapError(Object e, StackTrace s) => wrapController.internalApiWrap.wrapError(e, s);
 
   Future<D?> _internalApiWrap<T, D>(
     FutureOr<T> Function() function, {
@@ -161,7 +161,7 @@ extension ApiWrapX<BaseHttpErrorType> on IApiWrap<BaseHttpErrorType> {
     RateLimiter? rateLimiter,
     required bool shouldThrowError,
     required FutureOr<D?> Function(T res)? onSuccess,
-    required OnError<BaseHttpErrorType, D?>? onError,
+    required OnError<BaseResponseError, D?>? onError,
   }) =>
       wrapController.internalApiWrap.execute<T, D>(
         function,

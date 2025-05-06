@@ -1,16 +1,16 @@
 part of 'api_wrap.dart';
 
-abstract class IApiWrap<BaseHttpErrorType> {
-  FutureOr<void> onError(ApiError<BaseHttpErrorType> error);
+abstract class IApiWrap<BaseResponseError> {
+  FutureOr<void> onError(HandledError<BaseResponseError> error);
 
   @protected
-  abstract final ApiWrapController<BaseHttpErrorType> wrapController;
+  abstract final ApiWrapController<BaseResponseError> wrapController;
 }
 
 /// Тип колбека, используемый для обработки ошибок API.
-typedef OnError<BaseHttpErrorType, Result> = FutureOr<Result> Function(ApiError<BaseHttpErrorType> error);
+typedef OnError<BaseResponseError, Result> = FutureOr<Result> Function(HandledError<BaseResponseError> error);
 // Колбэк, задаваемый в контроллере, который по умолчанию обрабатывает все ошибки.
-typedef GlobalOnError<BaseHttpErrorType> = FutureOr<void> Function(ApiError<BaseHttpErrorType> error);
+typedef GlobalOnError<BaseResponseError> = FutureOr<void> Function(HandledError<BaseResponseError> error);
 
 /// {@template [ApiWrapper]}
 /// Предоставляет утилиты и обёртки для [Dio] запросов и обычных функций.
@@ -18,20 +18,20 @@ typedef GlobalOnError<BaseHttpErrorType> = FutureOr<void> Function(ApiError<Base
 /// Даёт возможность реализовать автоматическую обработку ошибок (логгирование и показ тостов) с возможность отлючения.
 /// Предоставляет методы для обработки успешного и ошибочного ответа API.
 /// {@endtemplate}
-class ApiWrapper<BaseHttpErrorType> implements IApiWrap<BaseHttpErrorType> {
+class ApiWrapper<BaseResponseError> implements IApiWrap<BaseResponseError> {
   /// {@macro [ApiWrapper]}
   ApiWrapper({
-    required GlobalOnError<BaseHttpErrorType> onError,
-    ApiWrapController<BaseHttpErrorType>? options,
+    required GlobalOnError<BaseResponseError> onError,
+    ApiWrapController<BaseResponseError>? options,
   })  : _onError = onError,
-        wrapController = options ?? ApiWrapController<BaseHttpErrorType>();
+        wrapController = options ?? ApiWrapController<BaseResponseError>();
 
   @override
   @protected
-  final ApiWrapController<BaseHttpErrorType> wrapController;
+  final ApiWrapController<BaseResponseError> wrapController;
 
-  final GlobalOnError<BaseHttpErrorType> _onError;
+  final GlobalOnError<BaseResponseError> _onError;
 
   @override
-  FutureOr<void> onError(ApiError<BaseHttpErrorType> error) => _onError(error);
+  FutureOr<void> onError(HandledError<BaseResponseError> error) => _onError(error);
 }

@@ -1,27 +1,26 @@
 part of 'api_wrap.dart';
 
-sealed class ApiError<BaseHttpErrorType> implements Exception {
-  const ApiError();
+sealed class HandledError<BaseResponseError> implements Exception {
+  const HandledError();
 
   String toStringWithStackTrace();
 }
 
-class ErrorResponse<BaseHttpErrorType> extends ApiError<BaseHttpErrorType> {
+class ErrorResponse<BaseResponseError> extends HandledError<BaseResponseError> {
   const ErrorResponse({
     required this.error,
     required this.stackTrace,
-    required this.data,
-    required this.statusCode,
-    required this.method,
-    required this.url,
+    required this.dioException,
   });
 
-  final BaseHttpErrorType error;
+  final BaseResponseError error;
   final StackTrace stackTrace;
-  final int statusCode;
-  final dynamic data;
-  final String method;
-  final Uri url;
+  final DioException dioException;
+
+  int? get statusCode => dioException.response?.statusCode;
+  dynamic get requestData => dioException.requestOptions.data;
+  String get method => dioException.requestOptions.method;
+  String get url => dioException.requestOptions.uri.toString();
 
   @override
   String toString() => 'ErrorResponse: $statusCode $method $url\n$error';
@@ -30,7 +29,7 @@ class ErrorResponse<BaseHttpErrorType> extends ApiError<BaseHttpErrorType> {
   String toStringWithStackTrace() => 'ErrorResponse:\n$statusCode $method $url\n$error\n$stackTrace';
 }
 
-class InternalError<BaseHttpErrorType> extends ApiError<BaseHttpErrorType> {
+class InternalError<BaseResponseError> extends HandledError<BaseResponseError> {
   InternalError({
     required this.error,
     required this.stackTrace,
@@ -46,7 +45,7 @@ class InternalError<BaseHttpErrorType> extends ApiError<BaseHttpErrorType> {
   String toStringWithStackTrace() => 'InternalError:\n$error\n$stackTrace';
 }
 
-class RateLimiterError<BaseHttpErrorType> implements ApiError<BaseHttpErrorType> {
+class RateLimiterError<BaseResponseError> implements HandledError<BaseResponseError> {
   const RateLimiterError({
     required this.rateLimiter,
     required this.key,

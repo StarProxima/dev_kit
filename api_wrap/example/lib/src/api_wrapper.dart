@@ -13,12 +13,12 @@ typedef BaseApiError = dynamic;
 
 /// Метод для обработки ошибок API c логгированием и показом тостов при необходимости.
 void onError(
-  ApiError<BaseApiError> error, {
+  HandledError<BaseApiError> error, {
   bool showToast = true,
   bool isDebug = false,
   bool shouldReport = true,
 }) {
-  void showError(ApiError<BaseApiError> error) {
+  void showError(HandledError<BaseApiError> error) {
     // You can use any other package or custom solution for display errors
     toastification.show(
       type: ToastificationType.error,
