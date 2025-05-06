@@ -1,12 +1,12 @@
 part of 'api_wrap.dart';
 
-class ApiWrapController<ErrorType> {
+class ApiWrapController<BaseHttpErrorType> {
   ApiWrapController({
     this.retry,
     this.parseError,
   }) {
     if (parseError == null) {
-      if (ErrorType.toString() case 'dynamic' || 'Object?') {
+      if (BaseHttpErrorType.toString() case 'dynamic' || 'Object?') {
       } else {
         throw ParseErrorMissingError();
       }
@@ -21,10 +21,10 @@ class ApiWrapController<ErrorType> {
   }
 
   final Retry? retry;
-  final ParseError<ErrorType>? parseError;
+  final ParseError<BaseHttpErrorType>? parseError;
 
   late final RateOperationsContainer container;
-  late final InternalApiWrap<ErrorType> internalApiWrap;
+  late final InternalApiWrap<BaseHttpErrorType> internalApiWrap;
 
   Future<void> fireDebounceOperation(String tag) async {
     await container.debounceOperations.remove(tag)?.complete();
@@ -52,8 +52,7 @@ class ApiWrapController<ErrorType> {
   }
 
   void cancelAllOperations() {
-    for (final MapEntry(key: tag, value: operation)
-        in container.debounceOperations.entries) {
+    for (final MapEntry(key: tag, value: operation) in container.debounceOperations.entries) {
       operation.cancel(tag: tag);
     }
 

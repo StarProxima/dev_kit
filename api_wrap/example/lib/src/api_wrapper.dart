@@ -27,7 +27,7 @@ void onError(
         InternalError() => 'Internal Error',
         RateLimiterError() => 'RateLimiterError',
       }),
-      description: Text(error.toShortString()),
+      description: Text(error.toString()),
       autoCloseDuration: const Duration(seconds: 5),
     );
   }

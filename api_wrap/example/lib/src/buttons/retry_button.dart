@@ -31,9 +31,7 @@ class _RetryButtonState extends State<RetryButton> {
               () {
                 return Future.delayed(
                   const Duration(milliseconds: 1000),
-                  () => attempt < 5
-                      ? throw Exception('Retry Error')
-                      : 'Success response after $attempt attempts',
+                  () => attempt < 5 ? throw Exception('Retry Error') : 'Success response after $attempt attempts',
                 );
               },
               retry: Retry(
@@ -52,7 +50,7 @@ class _RetryButtonState extends State<RetryButton> {
                         TimeText(stats.delayBeforeNextAttempt),
                       ],
                     ),
-                    description: Text(error.toShortString()),
+                    description: Text(error.toString()),
                     autoCloseDuration: stats.delayBeforeNextAttempt,
                     pauseOnHover: false,
                   );

@@ -1,12 +1,12 @@
 part of 'api_wrap.dart';
 
-sealed class ApiError<ErrorType> implements Exception {
+sealed class ApiError<BaseHttpErrorType> implements Exception {
   const ApiError();
 
-  String toShortString();
+  String toStringWithStackTrace();
 }
 
-class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
+class ErrorResponse<BaseHttpErrorType> extends ApiError<BaseHttpErrorType> {
   const ErrorResponse({
     required this.error,
     required this.stackTrace,
@@ -16,7 +16,7 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
     required this.url,
   });
 
-  final ErrorType error;
+  final BaseHttpErrorType error;
   final StackTrace stackTrace;
   final int statusCode;
   final dynamic data;
@@ -24,13 +24,13 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
   final Uri url;
 
   @override
-  String toShortString() => '$statusCode $method $url\n\n$error';
+  String toString() => 'ErrorResponse: $statusCode $method $url\n$error';
 
   @override
-  String toString() => 'ErrorResponse:\n$statusCode $method $url\n\n$error\n\n$stackTrace';
+  String toStringWithStackTrace() => 'ErrorResponse:\n$statusCode $method $url\n$error\n$stackTrace';
 }
 
-class InternalError<ErrorType> extends ApiError<ErrorType> {
+class InternalError<BaseHttpErrorType> extends ApiError<BaseHttpErrorType> {
   InternalError({
     required this.error,
     required this.stackTrace,
@@ -40,13 +40,13 @@ class InternalError<ErrorType> extends ApiError<ErrorType> {
   final StackTrace stackTrace;
 
   @override
-  String toShortString() => '$error';
+  String toString() => 'InternalError: $error';
 
   @override
-  String toString() => 'InternalError:\n\n$error\n\n$stackTrace';
+  String toStringWithStackTrace() => 'InternalError:\n$error\n$stackTrace';
 }
 
-class RateLimiterError<ErrorType> implements ApiError<ErrorType> {
+class RateLimiterError<BaseHttpErrorType> implements ApiError<BaseHttpErrorType> {
   const RateLimiterError({
     required this.rateLimiter,
     required this.key,
@@ -58,10 +58,10 @@ class RateLimiterError<ErrorType> implements ApiError<ErrorType> {
   final RateTimings timings;
 
   @override
-  String toShortString() =>
-      'Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
+  String toString() =>
+      'RateLimiterError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
 
   @override
-  String toString() =>
-      'RateCancelError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
+  String toStringWithStackTrace() =>
+      'RateLimiterError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
 }
