@@ -431,8 +431,12 @@ void main() {
       expect(attemptStats[2].attempt, equals(3));
 
       // Check that time is increasing
-      expect(attemptStats[0].elapsedTime < attemptStats[1].elapsedTime, isTrue);
-      expect(attemptStats[1].elapsedTime < attemptStats[2].elapsedTime, isTrue);
+      expect(
+          attemptStats[0].elapsedTotalTime < attemptStats[1].elapsedTotalTime,
+          isTrue);
+      expect(
+          attemptStats[1].elapsedTotalTime < attemptStats[2].elapsedTotalTime,
+          isTrue);
     });
 
     test('onFailAttempt handler receives correct error and stats', () async {
@@ -598,7 +602,7 @@ void main() {
       final result = await retry.execute((stats) {
         attempts++;
         if (attempts < 3) throw Exception('Test error');
-        return stats.elapsedTime; // Return the elapsed time
+        return stats.elapsedTotalTime; // Return the elapsed time
       });
 
       // The returned elapsed time should be non-zero
@@ -610,7 +614,7 @@ void main() {
 
       // Make a new call to verify stopwatch was reset
       final newResult = await retry.execute((stats) {
-        return stats.elapsedTime;
+        return stats.elapsedTotalTime;
       });
 
       // The new elapsed time should be small, not including time since last call
@@ -712,7 +716,7 @@ void main() {
         maxAttempts: 5,
         delayFactor: Duration.zero,
         onFailAttempt: (e, s, stats) {
-          canceledFlagSeen ??= stats.retryIsCancaled;
+          canceledFlagSeen ??= stats.isRetryCanceled;
         },
       );
 

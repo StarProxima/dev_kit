@@ -21,7 +21,7 @@ class InternalApiWrap<ErrorType> {
 
   /// Преобразует исключение в специализированный [ApiError<ErrorType>].
   /// Обрабатывает различные типы ошибок, включая DioException.
-  ApiError<ErrorType> parseError(Object e, StackTrace s) {
+  ApiError<ErrorType> wrapError(Object e, StackTrace s) {
     final apiError = switch (e) {
       ApiError<ErrorType>() => e,
       DioException(response: Response res) => ErrorResponse<ErrorType>(
@@ -76,16 +76,27 @@ class InternalApiWrap<ErrorType> {
     required OnError<ErrorType, D?>? onError,
   }) async {
     try {
-      final T response = await function();
+      final futureOr = function();
+      final T response = switch (futureOr) {
+        Future() => await futureOr,
+        _ => futureOr,
+      };
 
-      // Возвращаем успешный результат или непосредственно сам ответ.
-      final successResult = (await onSuccess?.call(response)) ??
-          (response is D ? response as D : null);
+      final onSuccessFutureOr = onSuccess?.call(response);
 
-      return successResult;
+      final D? onSuccessResponse = switch (onSuccessFutureOr) {
+        Future() => await onSuccessFutureOr,
+        _ => onSuccessFutureOr,
+      };
+
+      final result = onSuccessResponse ?? (response is D ? response as D : null);
+
+      return result;
     } catch (e, s) {
-      final err = parseError(e, s);
+      final err = wrapError(e, s);
 
+      // Не эвейтим, т.к. не хотим для onError ловить исключения,
+      // они поймаются при следующем эвейте
       final errorResult = onError?.call(err);
 
       return errorResult;
@@ -105,22 +116,20 @@ class InternalApiWrap<ErrorType> {
     final T response;
 
     switch (minExecutionTime) {
-      case null || Duration.zero:
-        response =
-            switch (futureOr) { Future() => await futureOr, _ => futureOr };
+      case null:
+        response = switch (futureOr) {
+          Future() => await futureOr,
+          _ => futureOr,
+        };
+
       case Duration():
         try {
-          final res = await (
-            Future(() => futureOr),
-            Future.delayed(minExecutionTime)
-          ).wait;
+          final res = await (Future(() => futureOr), Future.delayed(minExecutionTime)).wait;
 
           response = res.$1;
         } catch (e) {
           switch (e) {
-            case ParallelWaitError(
-                errors: (AsyncError(error: final e, stackTrace: final s), _)
-              ):
+            case ParallelWaitError(errors: (AsyncError(error: final e, stackTrace: final s), _)):
               throw Error.throwWithStackTrace(e, s);
           }
 
@@ -160,11 +169,7 @@ class InternalApiWrap<ErrorType> {
       switch (res) {
         case RateOperationSuccess<D?>():
           return res.data;
-        case RateOperationCancel<D?>(
-            :final rateLimiter,
-            :final tag,
-            :final timings
-          ):
+        case RateOperationCancel<D?>(:final rateLimiter, :final tag, :final timings):
           return onError?.call(
             RateLimiterError<ErrorType>(
               rateLimiter: rateLimiter,

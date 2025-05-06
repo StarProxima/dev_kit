@@ -1,27 +1,26 @@
 import 'dart:math';
 
-import 'retry_options.dart';
+import 'retry_stats.dart';
 
 final _rand = Random();
 
 /// Function type for delay calculation strategy between retry attempts.
-typedef DelayStrategyFn = Duration Function(int attempt, RetryOptions options);
+typedef DelayStrategyFn = Duration Function(RetryStats stats);
 
+/// Class providing predefined retry delay calculation strategies.
 abstract class DelayStrategy {
   /// Exponential delay strategy with jitter (randomization).
   ///
   /// Base formula: minDelay + delayFactor * (2^attempt) * jitter, not exceeding maxDelay.
-  static Duration exponential(int attempt, RetryOptions options) {
+  static Duration exponential(RetryStats stats) {
     final jitter =
-        1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
+        1.0 + stats.options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
-    final exp = min(attempt, 31); // Prevent overflow
-    final delay = options.minDelay.inMilliseconds +
-        options.delayFactor.inMilliseconds * pow(2.0, exp) * jitter;
+    final exp = min(stats.attempt, 31); // Prevent overflow
+    final delayMs = stats.options.minDelay.inMilliseconds +
+        stats.options.delayFactor.inMilliseconds * pow(2.0, exp) * jitter;
 
-    final resultMs = delay < options.maxDelay.inMilliseconds
-        ? delay
-        : options.maxDelay.inMilliseconds;
+    final resultMs = min(delayMs, stats.options.maxDelay.inMilliseconds);
 
     return Duration(milliseconds: resultMs.round());
   }
@@ -29,16 +28,14 @@ abstract class DelayStrategy {
   /// Linear delay strategy with jitter (randomization).
   ///
   /// Base formula: minDelay + delayFactor * attempt * jitter, not exceeding maxDelay.
-  static Duration linear(int attempt, RetryOptions options) {
+  static Duration linear(RetryStats stats) {
     final jitter =
-        1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
+        1.0 + stats.options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
-    final delay = options.minDelay.inMilliseconds +
-        options.delayFactor.inMilliseconds * attempt * jitter;
+    final delayMs = stats.options.minDelay.inMilliseconds +
+        stats.options.delayFactor.inMilliseconds * stats.attempt * jitter;
 
-    final resultMs = delay < options.maxDelay.inMilliseconds
-        ? delay
-        : options.maxDelay.inMilliseconds;
+    final resultMs = min(delayMs, stats.options.maxDelay.inMilliseconds);
 
     return Duration(milliseconds: resultMs.round());
   }
@@ -46,24 +43,26 @@ abstract class DelayStrategy {
   // Random delay stategy.
   //
   // Base formula: minDelay + maxDelay * randromDouble.
-  static Duration random(int attempt, RetryOptions options) {
-    final delay = options.minDelay.inMilliseconds +
-        options.maxDelay.inMilliseconds * _rand.nextDouble();
+  static Duration random(RetryStats stats) {
+    final delayMs = stats.options.minDelay.inMilliseconds +
+        (stats.options.maxDelay.inMilliseconds -
+                stats.options.minDelay.inMilliseconds) *
+            _rand.nextDouble();
 
-    return Duration(milliseconds: delay.round());
+    return Duration(milliseconds: delayMs.round());
   }
 
   /// Fixed delay strategy with jitter (randomization).
   ///
   /// Base formula: delayFactor * jitter.
-  static Duration fixed(int attempt, RetryOptions options) {
+  static Duration fixed(RetryStats stats) {
     final jitter =
-        1.0 + options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
+        1.0 + stats.options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
-    final delay = options.delayFactor.inMilliseconds * jitter;
-    return Duration(milliseconds: delay.round());
+    final delayMs = stats.options.delayFactor.inMilliseconds * jitter;
+    return Duration(milliseconds: delayMs.round());
   }
 
   /// Without delay strategy. Always zero duration.
-  static Duration zero(int attempt, RetryOptions options) => Duration.zero;
+  static Duration zero(RetryStats stats) => Duration.zero;
 }

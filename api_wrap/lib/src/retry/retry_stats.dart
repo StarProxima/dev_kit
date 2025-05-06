@@ -10,11 +10,12 @@ class RetryStats {
     required this.delayBeforePreviosAttempt,
     required this.delayBeforeNextAttempt,
     required this.startTime,
-    required this.elapsedTime,
+    required this.elapsedTotalTime,
     required bool? willRetry,
-    required this.retryIsCancaled,
+    required this.isRetryCanceled,
   }) : _willRetry = willRetry;
 
+  // Retry operation identifier.
   final Object? key;
 
   /// Retry configuration options.
@@ -33,33 +34,37 @@ class RetryStats {
   final DateTime startTime;
 
   /// Elapsed time since the beginning of execution.
-  final Duration elapsedTime;
+  final Duration elapsedTotalTime;
+
+  /// Whether retry was stopped externally.
+  final bool isRetryCanceled;
+
+  /// Whether another attempt is possible.
+  bool get canRetry =>
+      hasTotalTimeForNextAttempt && hasAttempts && !isRetryCanceled;
 
   final bool? _willRetry;
 
-  final bool retryIsCancaled;
-
-  /// Whether another attempt is possible.
-  bool get canRetry => hasTime && hasAttempts && !retryIsCancaled;
-
   /// Whether another attempt will be made.
-  bool? get willRetry => _willRetry ?? canRetry;
+  bool get willRetry => _willRetry ?? canRetry;
 
   /// Remaining time until reaching maxTotalTime, if specified.
   /// Null if maxTotalTime is not set.
-  Duration? get remainingTime {
-    if (options.maxTotalTime == null) return null;
+  Duration? get remainingTotalTime {
+    final maxTotalTime = options.maxTotalTime;
+    if (maxTotalTime == null) return null;
 
-    if (elapsedTime >= options.maxTotalTime!) return Duration.zero;
-    return options.maxTotalTime! - elapsedTime;
+    if (elapsedTotalTime >= maxTotalTime) return Duration.zero;
+    return maxTotalTime - elapsedTotalTime;
   }
 
   /// Whether there is enough time left for another attempt based on maxTotalTime.
   /// Returns true if either no time limit is set, or there is sufficient time
   /// for the next delay.
-  bool get hasTime =>
-      remainingTime == null ||
-      remainingTime!.inMicroseconds > delayBeforeNextAttempt.inMicroseconds;
+  bool get hasTotalTimeForNextAttempt =>
+      remainingTotalTime == null ||
+      remainingTotalTime!.inMicroseconds >
+          delayBeforeNextAttempt.inMicroseconds;
 
   /// Number of remaining attempts.
   int get attemptsLeft => options.maxAttempts - attempt;
@@ -72,18 +77,18 @@ class RetryStats {
 
   /// Creates a copy of the object with optional field overrides.
   RetryStats copyWith({
-    Object? key,
+    Object? id,
     RetryOptions? options,
     int? attempt,
     Duration? delayBeforePreviosAttempt,
     Duration? delayBeforeNextAttempt,
     DateTime? startTime,
-    Duration? elapsedTime,
+    Duration? elapsedTotalTime,
     bool? willRetry,
     bool? retryIsCancaled,
   }) {
     return RetryStats(
-      key: key ?? this.key,
+      key: id ?? this.key,
       options: options ?? this.options,
       attempt: attempt ?? this.attempt,
       delayBeforePreviosAttempt:
@@ -91,9 +96,9 @@ class RetryStats {
       delayBeforeNextAttempt:
           delayBeforeNextAttempt ?? this.delayBeforeNextAttempt,
       startTime: startTime ?? this.startTime,
-      elapsedTime: elapsedTime ?? this.elapsedTime,
+      elapsedTotalTime: elapsedTotalTime ?? this.elapsedTotalTime,
       willRetry: willRetry ?? _willRetry,
-      retryIsCancaled: retryIsCancaled ?? this.retryIsCancaled,
+      isRetryCanceled: retryIsCancaled ?? this.isRetryCanceled,
     );
   }
 }
