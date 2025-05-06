@@ -9,18 +9,16 @@ class Debounce extends RateLimiter {
   ///
   /// Если метод будет вызван ещё раз с тем же [tag],
   /// то предыдущий запрос будет отменён, а новый выполнится через заданное время.
-  ///
-  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Debounce({
     super.duration,
-    this.canCancelRunningOperations = true,
+    this.canCancelRunningFunction = true,
     this.tickInterval = const Duration(seconds: 1),
     this.onDelayStart,
     this.onDelayTick,
     this.onDelayEnd,
   });
 
-  final bool canCancelRunningOperations;
+  final bool canCancelRunningFunction;
   final Duration tickInterval;
   final void Function()? onDelayStart;
   final void Function(RateTimings timings)? onDelayTick;
@@ -28,6 +26,7 @@ class Debounce extends RateLimiter {
 
   final container = RateOperationsContainer();
 
+  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
@@ -50,7 +49,7 @@ class Debounce extends RateLimiter {
         final operation = operations[tag];
         final future = operation?.complete();
         try {
-          if (canCancelRunningOperations) await future;
+          if (canCancelRunningFunction) await future;
         } catch (_) {
           rethrow;
         } finally {
@@ -133,7 +132,7 @@ class DebounceOperation<T> extends RateOperation<T> {
     completer.complete(
       RateOperationCancel<T>(
         rateLimiter: 'Debounce',
-        tag: tag,
+        key: tag,
         timings: calculateRateTimings(),
       ),
     );

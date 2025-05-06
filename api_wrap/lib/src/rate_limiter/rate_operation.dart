@@ -1,4 +1,3 @@
-import 'package:api_wrap/api_wrap.dart';
 import 'package:meta/meta.dart';
 
 import 'limiters/debounce.dart';
@@ -18,12 +17,12 @@ class RateOperationSuccess<T> extends RateOperationResult<T> {
 class RateOperationCancel<T> implements RateOperationResult<T> {
   RateOperationCancel({
     required this.rateLimiter,
-    required this.tag,
+    required this.key,
     required this.timings,
   });
 
   final String rateLimiter;
-  final Object tag;
+  final Object key;
   final RateTimings timings;
 }
 
@@ -32,7 +31,6 @@ class RateOperationsContainer {
 
   final Map<Object, DebounceOperation> debounceOperations = {};
   final Map<Object, ThrottleOperation> throttleOperations = {};
-  final Map<Object, QueueOperation> queueOperations = {};
 }
 
 abstract class RateOperation<T> {
@@ -48,8 +46,7 @@ abstract class RateOperation<T> {
     Duration? elapsedTime,
     Duration? remainingTime,
   }) {
-    elapsedTime = elapsedTime ??
-        (startAt != null ? DateTime.now().difference(startAt!) : Duration.zero);
+    elapsedTime = elapsedTime ?? (startAt != null ? DateTime.now().difference(startAt!) : Duration.zero);
 
     return RateTimings(
       duration: rateLimiter.duration,

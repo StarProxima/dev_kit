@@ -15,4 +15,3 @@ export 'src/rate_limiter/rate_operation.dart';
 export 'src/rate_limiter/utils.dart';
 export 'src/rate_limiter/limiters/debounce.dart';
 export 'src/rate_limiter/limiters/throttle.dart';
-export 'src/rate_limiter/limiters/queue.dart';

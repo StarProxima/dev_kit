@@ -27,8 +27,7 @@ class ErrorResponse<ErrorType> extends ApiError<ErrorType> {
   String toShortString() => '$statusCode $method $url\n\n$error';
 
   @override
-  String toString() =>
-      'ErrorResponse:\n$statusCode $method $url\n\n$error\n\n$stackTrace';
+  String toString() => 'ErrorResponse:\n$statusCode $method $url\n\n$error\n\n$stackTrace';
 }
 
 class InternalError<ErrorType> extends ApiError<ErrorType> {
@@ -50,19 +49,19 @@ class InternalError<ErrorType> extends ApiError<ErrorType> {
 class RateLimiterError<ErrorType> implements ApiError<ErrorType> {
   const RateLimiterError({
     required this.rateLimiter,
-    required this.tag,
+    required this.key,
     required this.timings,
   });
 
   final String rateLimiter;
-  final Object tag;
+  final Object key;
   final RateTimings timings;
 
   @override
   String toShortString() =>
-      'Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation tag:\n$tag';
+      'Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
 
   @override
   String toString() =>
-      'RateCancelError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation tag:\n$tag';
+      'RateCancelError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
 }

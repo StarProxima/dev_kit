@@ -73,8 +73,7 @@ void main() {
         () => throw const FormatException('Err123'),
         onSuccess: (res) => 'Processed $res',
         onError: (error) {
-          if (error
-              case InternalError(error: FormatException(:final message))) {
+          if (error case InternalError(error: FormatException(:final message))) {
             return 'Error handled: $message';
           }
         },
@@ -116,8 +115,7 @@ void main() {
       final r1 = await apiWrapper.apiWrap(
         () => throw const FormatException('InternalErrorMessage'),
         onError: (error) {
-          if (error
-              case InternalError(error: FormatException(:final message))) {
+          if (error case InternalError(error: FormatException(:final message))) {
             return 'Error handled: $message';
           }
         },
@@ -151,8 +149,7 @@ void main() {
           ),
         ),
         onError: (error) {
-          if (error
-              case InternalError(error: FormatException(:final message))) {
+          if (error case InternalError(error: FormatException(:final message))) {
             return 'Error handled: $message';
           }
         },
@@ -506,7 +503,7 @@ void main() {
       final r4 = apiWrapper.apiWrapStrictSingle(
         () => 'Success',
         onError: (e) => switch (e) {
-          RateLimiterError(:final tag) => tag,
+          RateLimiterError(key: final tag) => tag,
           _ => throw e,
         },
         tag: tag,

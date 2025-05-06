@@ -17,8 +17,6 @@ class Throttle extends RateLimiter {
   /// Сразу вызывает функцию.
   ///
   /// Если в течении заданного времени метод будет вызван ещё раз с тем же [tag], то новый запрос не выполнится.
-  ///
-  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   Throttle({
     super.duration,
     this.cooldownLaunch = CooldownLaunch.afterFunction,
@@ -37,6 +35,7 @@ class Throttle extends RateLimiter {
 
   final container = RateOperationsContainer();
 
+  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
@@ -50,7 +49,7 @@ class Throttle extends RateLimiter {
     if (existingOperation != null) {
       return RateOperationCancel<D>(
         rateLimiter: 'Throttle',
-        tag: tag,
+        key: tag,
         timings: existingOperation.calculateRateTimings(),
       );
     }
@@ -78,9 +77,7 @@ class Throttle extends RateLimiter {
     final FutureOr<D> futureOr;
 
     try {
-      futureOr = cooldownLaunch == CooldownLaunch.afterFunction
-          ? await function()
-          : function();
+      futureOr = cooldownLaunch == CooldownLaunch.afterFunction ? await function() : function();
     } catch (_) {
       rethrow;
     } finally {

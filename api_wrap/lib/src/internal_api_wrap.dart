@@ -169,11 +169,11 @@ class InternalApiWrap<ErrorType> {
       switch (res) {
         case RateOperationSuccess<D?>():
           return res.data;
-        case RateOperationCancel<D?>(:final rateLimiter, :final tag, :final timings):
+        case RateOperationCancel<D?>(:final rateLimiter, key: final tag, :final timings):
           return onError?.call(
             RateLimiterError<ErrorType>(
               rateLimiter: rateLimiter,
-              tag: tag,
+              key: tag,
               timings: timings,
             ),
           );

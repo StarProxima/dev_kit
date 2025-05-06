@@ -24,7 +24,7 @@ abstract class RateLimiter {
   }) =>
       Debounce(
         duration: duration,
-        canCancelRunningOperations: false,
+        canCancelRunningFunction: false,
         tickInterval: tickInterval,
         onDelayStart: onDelayStart,
         onDelayTick: onDelayTick,
