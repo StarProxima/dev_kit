@@ -20,6 +20,19 @@ void main() {
     );
   }
 
+  test('ParseError missing error', () async {
+    void createHandler1() {
+      Handler<int>();
+    }
+
+    void createHandler2() {
+      Handler();
+    }
+
+    expect(createHandler1, throwsArgumentError);
+    createHandler2();
+  });
+
   group('Retry', () {
     test('maxAttempts', () async {
       Retry positiveAttemts() => Retry(maxAttempts: 1);

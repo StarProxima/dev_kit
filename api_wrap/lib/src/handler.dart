@@ -7,6 +7,7 @@ import 'handler_executor.dart';
 import 'rate_limiter/rate_limiter.dart';
 import 'rate_limiter/rate_operation.dart';
 import 'retry/retry.dart';
+import 'utils.dart';
 
 /// Предоставляет утилиты и обёртки для [Dio] запросов и обычных функций.
 ///
@@ -19,11 +20,21 @@ class Handler<BaseResponseError> {
     RateOperationsContainer? container,
     GlobalOnError<BaseResponseError>? onError,
   })  : _parseBaseResponseError = parseBaseResponseError,
+        _retry = retry,
         _onError = onError,
         _container = container ?? RateOperationsContainer(),
-        _executor = HandlerExecutor<BaseResponseError>();
+        _executor = HandlerExecutor<BaseResponseError>() {
+    if (parseBaseResponseError == null) {
+      final typeStr = BaseResponseError.toString();
+
+      if (typeStr != 'dynamic' && typeStr != 'Object?') {
+        throw ParseBaseResponseErrorMissingError();
+      }
+    }
+  }
 
   final ParseBaseResponseError<BaseResponseError>? _parseBaseResponseError;
+  final Retry? _retry;
   final HandlerExecutor<BaseResponseError> _executor;
   final GlobalOnError<BaseResponseError>? _onError;
   final RateOperationsContainer _container;
@@ -63,7 +74,7 @@ class Handler<BaseResponseError> {
         key: key,
         minExecutionTime: minExecutionTime,
         delay: delay,
-        retry: retry,
+        retry: retry ?? _retry,
         rateLimiter: rateLimiter,
         onSuccess: onSuccess,
         onError: onError ??
@@ -101,7 +112,7 @@ class Handler<BaseResponseError> {
       key: key,
       minExecutionTime: minExecutionTime,
       delay: delay,
-      retry: retry,
+      retry: retry ?? _retry,
       rateLimiter: rateLimiter,
       onSuccess: onSuccess,
       onError: onError ??
@@ -126,7 +137,7 @@ class Handler<BaseResponseError> {
     final apiError = switch (e) {
       HandledError<BaseResponseError>() => e,
       DioException(response: Response res) => ErrorResponse<BaseResponseError>(
-          error: _parseBaseResponseError?.call(res.data) ?? _defaultResponseToBaseResponseError(res),
+          error: _parseBaseResponseError?.call(res.data) ?? res.data as BaseResponseError,
           stackTrace: s,
           dioException: e,
         ),
@@ -171,18 +182,6 @@ class Handler<BaseResponseError> {
     for (final operation in _container.throttleOperations.values) {
       operation.cancelCooldown();
     }
-  }
-
-  BaseResponseError _defaultResponseToBaseResponseError(Response<dynamic> res) {
-    final data = res.data;
-
-    if (data is BaseResponseError) {
-      return data;
-    }
-
-    throw StateError(
-      'If BaseResponseError is specified, the parseBaseResponseError parameter must be passed to the Handler.',
-    );
   }
 }
 
