@@ -9,7 +9,7 @@ class ErrorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppButton(
-      onTap: () => apiWrapper.apiWrap(
+      onTap: () => apiWrapper.handle(
         () => Future<String>.delayed(
           const Duration(milliseconds: 600),
           () => throw Exception('Oh no, error'),

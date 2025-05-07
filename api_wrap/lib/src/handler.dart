@@ -14,7 +14,7 @@ import 'retry/retry.dart';
 /// Предоставляет методы для обработки успешного и ошибочного ответа API.
 class Handler<BaseResponseError> {
   Handler({
-    required ParseBaseResponseError<BaseResponseError>? parseBaseResponseError,
+    ParseBaseResponseError<BaseResponseError>? parseBaseResponseError,
     Retry? retry,
     RateOperationsContainer? container,
     GlobalOnError<BaseResponseError>? onError,
@@ -28,6 +28,7 @@ class Handler<BaseResponseError> {
   final GlobalOnError<BaseResponseError>? _onError;
   final RateOperationsContainer _container;
 
+  /// {@template Handler.handle}
   /// Обёртывает HTTP запрос через [Dio] или обычную функцию, позволяя преобразовывать тип данных.
   /// Предоставляет возможность использования последовательных вложенных запросов и
   /// автоматической или ручной обработки ошибок.
@@ -44,9 +45,10 @@ class Handler<BaseResponseError> {
   /// Если не указано, то повторных попыток не будет.
   ///
   /// Возвращает Future<D?> с преобразованным значением, полученным либо от [onSuccess] либо от [onError].
-  FutureOr<D?> apiWrap<T, D>(
+  /// {@endtemplate}
+  FutureOr<D?> handle<T, D>(
     FutureOr<T> Function() function, {
-    Object? tag,
+    Object? key,
     Duration? delay,
     Duration? minExecutionTime,
     Retry? retry,
@@ -58,7 +60,7 @@ class Handler<BaseResponseError> {
         function: function,
         container: _container,
         wrapError: wrapError,
-        tag: tag,
+        key: key,
         minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry,
@@ -71,7 +73,8 @@ class Handler<BaseResponseError> {
             },
       );
 
-  /// Строгая версия [apiWrap], требующая обязательного определения [onSuccess].
+  /// {@template Handler.handleStrict}
+  /// Строгая версия [handle], требующая обязательного определения [onSuccess].
   /// Если [onError] не задан, будет вызвано исключение при возникновении ошибки.
   /// Это позволяет возвращать ненулевой тип.
   ///
@@ -80,9 +83,10 @@ class Handler<BaseResponseError> {
   /// [onError] - необязательная функция для обработки ошибок, возвращающая [T].
   ///
   /// Возвращает Future с ненулевым результатом типа [D].
-  Future<D> apiWrapStrict<T, D>(
+  /// {@endtemplate}
+  Future<D> handleStrict<T, D>(
     FutureOr<T> Function() function, {
-    Object? tag,
+    Object? key,
     Duration? delay,
     Duration? minExecutionTime,
     Retry? retry,
@@ -94,7 +98,7 @@ class Handler<BaseResponseError> {
       function: function,
       container: _container,
       wrapError: wrapError,
-      tag: tag,
+      key: key,
       minExecutionTime: minExecutionTime,
       delay: delay,
       retry: retry,
@@ -122,7 +126,7 @@ class Handler<BaseResponseError> {
     final apiError = switch (e) {
       HandledError<BaseResponseError>() => e,
       DioException(response: Response res) => ErrorResponse<BaseResponseError>(
-          error: _parseBaseResponseError?.call(res.data) ?? res.data,
+          error: _parseBaseResponseError?.call(res.data) ?? _defaultResponseToBaseResponseError(res),
           stackTrace: s,
           dioException: e,
         ),
@@ -167,6 +171,18 @@ class Handler<BaseResponseError> {
     for (final operation in _container.throttleOperations.values) {
       operation.cancelCooldown();
     }
+  }
+
+  BaseResponseError _defaultResponseToBaseResponseError(Response<dynamic> res) {
+    final data = res.data;
+
+    if (data is BaseResponseError) {
+      return data;
+    }
+
+    throw StateError(
+      'If BaseResponseError is specified, the parseBaseResponseError parameter must be passed to the Handler.',
+    );
   }
 }
 

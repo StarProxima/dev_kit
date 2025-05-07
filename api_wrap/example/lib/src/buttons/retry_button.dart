@@ -27,7 +27,7 @@ class _RetryButtonState extends State<RetryButton> {
         Text('Attemt: ${retryStats?.attempt ?? 0}'),
         AppButton(
           onTap: () async {
-            await apiWrapper.apiWrap(
+            await apiWrapper.handle(
               () {
                 return Future.delayed(
                   const Duration(milliseconds: 1000),

@@ -9,7 +9,7 @@ class SuccessButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppButton(
-      onTap: () => apiWrapper.apiWrap(
+      onTap: () => apiWrapper.handle(
         () => Future.delayed(
           const Duration(milliseconds: 300),
           () => 'Success Response',

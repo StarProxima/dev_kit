@@ -21,7 +21,7 @@ class HandlerExecutor<BaseResponseError> {
   @internal
   FutureOr<D?> execute<T, D>({
     required FutureOr<T> Function() function,
-    required Object? tag,
+    required Object? key,
     required Duration? delay,
     required Duration? minExecutionTime,
     required Retry? retry,
@@ -34,7 +34,7 @@ class HandlerExecutor<BaseResponseError> {
     final fn = _wrapWithRateLimiter(
       container: container,
       rateLimiter: rateLimiter,
-      tag: tag,
+      tag: key,
       onError: onError,
       function: () => _wrapWithCallbacks(
         wrapError: wrapError,

@@ -1,6 +1,6 @@
-/// Метод может выбросить исключения и должен быть обработан в одном из apiWrap методов.
-const useInApiWrap = _UseInApiWrap();
+/// Метод может выбросить исключения и должен быть обработан в одном из handle методов.
+const shouldHandle = _ShoudleHandle();
 
-class _UseInApiWrap {
-  const _UseInApiWrap();
+class _ShoudleHandle {
+  const _ShoudleHandle();
 }

@@ -23,7 +23,7 @@ class _ThrottleButtonState extends State<ThrottleButton> {
         AppButton(
           isDisabled: duration > Duration.zero,
           onTap: () {
-            return apiWrapper.apiWrap(
+            return apiWrapper.handle(
               () => Future.delayed(
                 const Duration(milliseconds: 1000),
                 () => 'Throttle Response',
@@ -31,8 +31,7 @@ class _ThrottleButtonState extends State<ThrottleButton> {
               rateLimiter: Throttle(
                 duration: const Duration(seconds: 4),
                 tickInterval: const Duration(milliseconds: 5),
-                onCooldownTick: (time) =>
-                    setState(() => duration = time.remainingTime),
+                onCooldownTick: (time) => setState(() => duration = time.remainingTime),
               ),
               onSuccess: (res) {
                 toastification.show(

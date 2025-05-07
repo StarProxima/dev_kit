@@ -27,7 +27,7 @@ class _DebounceButtonState extends State<DebounceButton> {
           isLoading: isLoading,
           allowTapDuringLoading: true,
           onTap: () async {
-            await apiWrapper.apiWrap(
+            await apiWrapper.handle(
               () => Future.delayed(
                 const Duration(milliseconds: 1000),
                 () => 'Debounce Response',
@@ -35,8 +35,7 @@ class _DebounceButtonState extends State<DebounceButton> {
               rateLimiter: Debounce(
                 duration: const Duration(seconds: 2),
                 tickInterval: const Duration(milliseconds: 5),
-                onDelayTick: (time) =>
-                    setState(() => duration = time.elapsedTime),
+                onDelayTick: (time) => setState(() => duration = time.elapsedTime),
                 onDelayEnd: () => setState(() => isLoading = true),
               ),
               onSuccess: (res) {
