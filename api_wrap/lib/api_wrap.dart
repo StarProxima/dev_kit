@@ -1,6 +1,10 @@
 library;
 
-export 'src/api_wrap.dart';
+// Handler
+export 'src/handler.dart';
+export 'src/handled_error.dart';
+export 'src/handler_facade.dart';
+export 'src/utils.dart';
 
 // Retry
 export 'src/retry/retry.dart';

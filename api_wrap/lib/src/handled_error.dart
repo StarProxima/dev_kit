@@ -1,4 +1,6 @@
-part of 'api_wrap.dart';
+import 'package:dio/dio.dart';
+
+import 'rate_limiter/utils.dart';
 
 sealed class HandledError<BaseResponseError> implements Exception {
   const HandledError();
@@ -50,11 +52,13 @@ class RateLimiterError<BaseResponseError> implements HandledError<BaseResponseEr
     required this.rateLimiter,
     required this.key,
     required this.timings,
+    required this.stackTrace,
   });
 
   final String rateLimiter;
   final Object key;
   final RateTimings timings;
+  final StackTrace stackTrace;
 
   @override
   String toString() =>
@@ -62,5 +66,5 @@ class RateLimiterError<BaseResponseError> implements HandledError<BaseResponseEr
 
   @override
   String toStringWithStackTrace() =>
-      'RateLimiterError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
+      'RateLimiterError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key\n$stackTrace';
 }

@@ -1,4 +1,3 @@
-import 'package:api_wrap/api_wrap.dart';
 import 'package:example/src/api_wrapper.dart';
 import 'package:example/src/app_button.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +9,8 @@ class ErrorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppButton(
-      onTap: () => apiWrapper.apiWrapSingle<String>(
-        () => Future.delayed(
+      onTap: () => apiWrapper.apiWrap(
+        () => Future<String>.delayed(
           const Duration(milliseconds: 600),
           () => throw Exception('Oh no, error'),
         ),

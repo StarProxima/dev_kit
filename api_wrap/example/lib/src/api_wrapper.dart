@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
-final apiWrapper = ApiWrapper(
+final apiWrapper = Handler(
+  parseBaseResponseError: (e) => e,
   onError: onError,
 );
 

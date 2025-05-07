@@ -1,55 +1,43 @@
-part of 'api_wrap.dart';
+import 'dart:async';
 
-typedef ParseError<ErrorType> = ErrorType Function(Object? error);
+import 'package:meta/meta.dart';
+
+import 'handled_error.dart';
+import 'rate_limiter/rate_limiter.dart';
+import 'rate_limiter/rate_operation.dart';
+import 'retry/retry.dart';
+
+/// Тип колбека, используемый для обработки ошибок API.
+typedef OnError<BaseResponseError, Result> = FutureOr<Result> Function(HandledError<BaseResponseError> e);
+
+typedef WrapError<BaseResponseError> = HandledError<BaseResponseError> Function(Object e, StackTrace s);
 
 /// Оболочка API для внутреннего использования, управляет повторными попытками,
 /// ограничением частоты операций и обработкой ошибок.
-class InternalApiWrap<BaseResponseError> {
-  InternalApiWrap({
-    required Retry retry,
+@internal
+class HandlerExecutor<BaseResponseError> {
+  HandlerExecutor();
+
+  @internal
+  FutureOr<D?> execute<T, D>({
+    required FutureOr<T> Function() function,
+    required Object? tag,
+    required Duration? delay,
+    required Duration? minExecutionTime,
+    required Retry? retry,
+    required RateLimiter? rateLimiter,
+    required FutureOr<D?> Function(T)? onSuccess,
+    required OnError<BaseResponseError, D?>? onError,
     required RateOperationsContainer container,
-    ParseError<BaseResponseError>? parseError,
-  })  : _retry = retry,
-        _parseError = parseError,
-        _operationsContainer = container;
-
-  final Retry _retry;
-  final ParseError<BaseResponseError>? _parseError;
-
-  /// Контейнер операций, хранящий throttle и debounce операции по тегу.
-  final RateOperationsContainer _operationsContainer;
-
-  /// Преобразует исключение в специализированный [ApiError<ErrorType>].
-  /// Обрабатывает различные типы ошибок, включая DioException.
-  HandledError<BaseResponseError> wrapError(Object e, StackTrace s) {
-    final apiError = switch (e) {
-      HandledError<BaseResponseError>() => e,
-      DioException(response: Response res) => ErrorResponse<BaseResponseError>(
-          error: _parseError?.call(res.data) ?? res.data,
-          stackTrace: s,
-          dioException: e,
-        ),
-      _ => InternalError<BaseResponseError>(error: e, stackTrace: s),
-    };
-
-    return apiError;
-  }
-
-  Future<D?> execute<T, D>(
-    FutureOr<T> Function() function, {
-    Object? tag,
-    Duration? delay,
-    Duration? minExecutionTime,
-    Retry? retry,
-    RateLimiter? rateLimiter,
-    FutureOr<D?> Function(T)? onSuccess,
-    OnError<BaseResponseError, D?>? onError,
+    required WrapError<BaseResponseError> wrapError,
   }) async {
     final fn = _wrapWithRateLimiter(
+      container: container,
       rateLimiter: rateLimiter,
       tag: tag,
       onError: onError,
       function: () => _wrapWithCallbacks(
+        wrapError: wrapError,
         onSuccess: onSuccess,
         onError: onError,
         function: () => _wrapWithDelays(
@@ -68,9 +56,10 @@ class InternalApiWrap<BaseResponseError> {
 
   // Функция-обертка для выполнения запроса и обработки ответа
   FutureOr<D?> _wrapWithCallbacks<T, D>({
-    required FutureOr<T> Function() function,
+    required WrapError<BaseResponseError> wrapError,
     required FutureOr<D?> Function(T)? onSuccess,
     required OnError<BaseResponseError, D?>? onError,
+    required FutureOr<T> Function() function,
   }) async {
     try {
       final futureOr = function();
@@ -101,9 +90,9 @@ class InternalApiWrap<BaseResponseError> {
   }
 
   FutureOr<T> _wrapWithDelays<T>({
-    required FutureOr<T> Function() function,
     required Duration? delay,
     required Duration? minExecutionTime,
+    required FutureOr<T> Function() function,
   }) async {
     // Обрабатываем начальную задержку запроса.
     if (delay != null) await Future.delayed(delay);
@@ -138,10 +127,10 @@ class InternalApiWrap<BaseResponseError> {
   }
 
   FutureOr<T> _wrapWithRetry<T>({
-    required FutureOr<T> Function() function,
     required Retry? retry,
+    required FutureOr<T> Function() function,
   }) async {
-    final finalRetry = retry ?? this._retry;
+    final finalRetry = retry ?? Retry.none();
     final futureOr = finalRetry.execute<T>(
       (_) => function(),
     );
@@ -151,27 +140,29 @@ class InternalApiWrap<BaseResponseError> {
 
   // Обёртываем запрос через RateLimiter, если задан.
   FutureOr<D?> _wrapWithRateLimiter<D>({
-    required FutureOr<D?> Function() function,
+    required RateOperationsContainer container,
     required RateLimiter? rateLimiter,
     required Object? tag,
     required OnError<BaseResponseError, D?>? onError,
+    required FutureOr<D?> Function() function,
   }) async {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         function,
         tag: tag ?? '$hashCode${StackTrace.current}',
-        container: _operationsContainer,
+        container: container,
       );
 
       switch (res) {
         case RateOperationSuccess<D?>():
           return res.data;
-        case RateOperationCancel<D?>(:final rateLimiter, key: final tag, :final timings):
+        case RateOperationCancel<D?>(:final rateLimiter, key: final key, :final timings):
           return onError?.call(
             RateLimiterError<BaseResponseError>(
               rateLimiter: rateLimiter,
-              key: tag,
+              key: key,
               timings: timings,
+              stackTrace: StackTrace.current,
             ),
           );
       }
