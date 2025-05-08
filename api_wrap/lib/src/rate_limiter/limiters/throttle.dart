@@ -35,20 +35,20 @@ class Throttle extends RateLimiter {
 
   final container = RateOperationsContainer();
 
-  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
+  /// [key] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
-    Object? tag,
+    Object? key,
     RateOperationsContainer? container,
   }) async {
-    tag ??= '${StackTrace.current}';
+    key ??= '${StackTrace.current}';
     final operations = (container ?? this.container).throttleOperations;
-    final existingOperation = operations[tag];
+    final existingOperation = operations[key];
 
     if (existingOperation != null) {
       return RateOperationCancel<D>(
-        key: tag,
+        key: key,
         timings: existingOperation.calculateRateTimings(),
       );
     }
@@ -58,7 +58,7 @@ class Throttle extends RateLimiter {
     final operation = ThrottleOperation<D>(
       rateLimiter: this,
       onCooldownEnd: () {
-        final operation = operations.remove(tag);
+        final operation = operations.remove(key);
         cooldownTickTimer?.cancel();
 
         if (operation == null) return;
@@ -71,7 +71,7 @@ class Throttle extends RateLimiter {
         onCooldownEnd?.call();
       },
     );
-    operations[tag] = operation;
+    operations[key] = operation;
 
     final FutureOr<D> futureOr;
 

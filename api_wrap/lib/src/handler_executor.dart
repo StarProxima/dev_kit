@@ -151,7 +151,7 @@ class HandlerExecutor<BaseResponseError> {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         function,
-        tag: tag ?? '$hashCode${StackTrace.current}',
+        key: tag ?? '$hashCode${StackTrace.current}',
         container: container,
       );
 

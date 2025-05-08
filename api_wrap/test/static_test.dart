@@ -29,7 +29,12 @@ mixin ControllerMixin implements HandlerFacade {
 
 class Controller with HandlerFacade {
   void test() {
-    handle(() => null);
+    handle(
+      () => null,
+      onError: (e) {
+        handler.onError(e);
+      },
+    );
   }
 
   @override

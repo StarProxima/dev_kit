@@ -69,9 +69,9 @@ class Handler<BaseResponseError> {
   }) =>
       _executor.execute<T, D>(
         function: function,
+        key: key,
         container: _container,
         wrapError: wrapError,
-        key: key,
         minExecutionTime: minExecutionTime,
         delay: delay,
         retry: retry ?? _retry,
@@ -107,9 +107,9 @@ class Handler<BaseResponseError> {
   }) async {
     final futureOr = _executor.execute<T, D>(
       function: function,
+      key: key,
       container: _container,
       wrapError: wrapError,
-      key: key,
       minExecutionTime: minExecutionTime,
       delay: delay,
       retry: retry ?? _retry,
@@ -151,35 +151,36 @@ class Handler<BaseResponseError> {
   FutureOr<void> onError(HandledError<BaseResponseError> error) =>
       _onError?.call(error);
 
-  Future<void> fireDebounceOperation(String tag) async {
-    await _container.debounceOperations.remove(tag)?.complete();
+  Future<void> fire(String key) async {
+    final throttle = _container.throttleOperations[key];
+    throttle?.cancelCooldown();
+
+    final debounce = _container.debounceOperations[key];
+    await debounce?.complete();
   }
 
-  Future<void> fireAllDebounceOperations() async {
-    final futures = [
-      ..._container.debounceOperations.values.map(
-        (operation) => operation.complete(),
-      ),
-    ];
+  Future<void> fireAll() async {
+    final futures = _container.debounceOperations.values.map(
+      (operation) => operation.complete(),
+    );
 
-    _container.debounceOperations.clear();
+    for (final operation in _container.throttleOperations.values) {
+      operation.cancelCooldown();
+    }
 
     await futures.wait;
   }
 
-  void cancelDebounceOperation(String tag) {
-    final operation = _container.debounceOperations.remove(tag);
-    operation?.cancel(tag: tag);
+  void cancel(String key) {
+    final debounce = _container.debounceOperations[key];
+    debounce?.cancel();
+    final throttle = _container.throttleOperations[key];
+    throttle?.cancelCooldown();
   }
 
-  void cancelThrottleCooldown(String tag) {
-    _container.throttleOperations.remove(tag)?.cancelCooldown();
-  }
-
-  void cancelAllOperations() {
-    for (final MapEntry(key: tag, value: operation)
-        in _container.debounceOperations.entries) {
-      operation.cancel(tag: tag);
+  void cancellAll() {
+    for (final operation in _container.debounceOperations.values) {
+      operation.cancel();
     }
 
     for (final operation in _container.throttleOperations.values) {

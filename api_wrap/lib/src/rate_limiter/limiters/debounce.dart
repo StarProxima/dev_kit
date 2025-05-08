@@ -26,40 +26,41 @@ class Debounce extends RateLimiter {
 
   final container = RateOperationsContainer();
 
-  /// [tag] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
+  /// [key] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
-    Object? tag,
+    Object? key,
     RateOperationsContainer? container,
   }) async {
-    tag ??= '${StackTrace.current}';
+    key ??= '${StackTrace.current}';
     final operations = (container ?? this.container).debounceOperations;
 
     final completer = Completer<RateOperationResult<D>>();
 
-    final existingOperation = operations[tag];
-    existingOperation?.cancel(tag: tag);
+    final existingOperation = operations[key];
+    existingOperation?.cancel();
 
     Timer? delayTickTimer;
 
     final operation = DebounceOperation<D>(
       rateLimiter: this,
+      key: key,
       timer: Timer(duration, () async {
-        final operation = operations[tag];
+        final operation = operations[key];
         final future = operation?.complete();
         try {
           if (canCancelRunningFunction) await future;
         } catch (_) {
           rethrow;
         } finally {
-          if (operations.containsValue(operation)) operations.remove(tag);
+          if (operations.containsValue(operation)) operations.remove(key);
         }
       }),
       completer: completer,
       function: function,
       onDelayEnd: () {
-        final operation = operations[tag];
+        final operation = operations.remove(key);
         delayTickTimer?.cancel();
 
         final timings = operation!.calculateRateTimings(
@@ -73,7 +74,7 @@ class Debounce extends RateLimiter {
 
     operation.start();
 
-    operations[tag] = operation;
+    operations[key] = operation;
 
     onDelayStart?.call();
 
@@ -107,12 +108,14 @@ class Debounce extends RateLimiter {
 class DebounceOperation<T> extends RateOperation<T> {
   DebounceOperation({
     required super.rateLimiter,
+    required this.key,
     required this.timer,
     required this.completer,
     required this.function,
     required this.onDelayEnd,
   });
 
+  final Object key;
   final Timer timer;
   final Completer<RateOperationResult<T>> completer;
   final FutureOr<T> Function() function;
@@ -122,16 +125,14 @@ class DebounceOperation<T> extends RateOperation<T> {
     startAt = DateTime.now();
   }
 
-  void cancel({
-    required Object tag,
-  }) {
+  void cancel() {
     timer.cancel();
     onDelayEnd();
 
     if (completer.isCompleted) return;
     completer.complete(
       RateOperationCancel<T>(
-        key: tag,
+        key: key,
         timings: calculateRateTimings(),
       ),
     );
