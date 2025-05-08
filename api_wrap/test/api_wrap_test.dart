@@ -1,4 +1,4 @@
-import 'package:api_wrap/api_wrap.dart';
+import 'package:handler/handler.dart';
 
 import 'package:dio/dio.dart';
 import 'package:test/test.dart' hide Retry;
@@ -46,17 +46,17 @@ void main() {
   });
 
   group('ApiWrap Common Tests', () {
-    late Handler<int> apiWrapper;
+    late Handler<int> handler;
 
     setUp(() {
-      apiWrapper = Handler<int>(
+      handler = Handler<int>(
         parseBaseResponseError: (e) => 0,
         onError: (error) {},
       );
     });
 
     test('Success function call', () async {
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () => 'Success',
         onSuccess: (res) => 'Processed $res',
       );
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('onError call', () async {
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () => throw const FormatException('Err123'),
         onSuccess: (res) => 'Processed $res',
         onError: (error) {
@@ -79,14 +79,14 @@ void main() {
     });
 
     test('null onError call', () async {
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () => throw Exception(),
         onSuccess: (res) => 'Processed $res',
       );
 
       expect(r1, equals(null));
 
-      final r2 = apiWrapper.handleStrict(
+      final r2 = handler.handleStrict(
         () => throw Exception(),
         onSuccess: (res) => 'Processed $res',
       );
@@ -95,7 +95,7 @@ void main() {
     });
 
     test('ErrorResponse', () async {
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () => badResponse(statusCode: 404),
         onError: (error) {
           if (error case ErrorResponse(:final statusCode)) {
@@ -108,7 +108,7 @@ void main() {
     });
 
     test('InternalError', () async {
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () => throw const FormatException('InternalErrorMessage'),
         onError: (error) {
           if (error case InternalError(error: FormatException(:final message))) {
@@ -121,10 +121,10 @@ void main() {
     });
 
     test('Nested ErrorResponse', () async {
-      final r1 = await apiWrapper.handle(
-        () => apiWrapper.handleStrict(
+      final r1 = await handler.handle(
+        () => handler.handleStrict(
           onSuccess: (res) => res,
-          () => apiWrapper.handleStrict(
+          () => handler.handleStrict(
             onSuccess: (res) => res,
             () => badResponse(statusCode: 409),
           ),
@@ -140,10 +140,10 @@ void main() {
     });
 
     test('Nested InternalError', () async {
-      final r1 = await apiWrapper.handle(
-        () => apiWrapper.handleStrict(
+      final r1 = await handler.handle(
+        () => handler.handleStrict(
           onSuccess: (res) => res,
-          () => apiWrapper.handleStrict(
+          () => handler.handleStrict(
             onSuccess: (res) => res,
             () => throw const FormatException('InternalErrorMessage'),
           ),
@@ -162,7 +162,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       Duration? onSuccessElapsed;
-      final result = await apiWrapper.handle(
+      final result = await handler.handle(
         () => Future.delayed(Duration(milliseconds: 500), () => 'RESULT'),
         minExecutionTime: const Duration(milliseconds: 1000),
         onSuccess: (res) async {
@@ -197,7 +197,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
 
       Duration? onSuccessElapsed;
-      final result = await apiWrapper.handle(
+      final result = await handler.handle(
         () => 'RESULT',
         minExecutionTime: const Duration(milliseconds: 1000),
         onSuccess: (res) async {
@@ -231,7 +231,7 @@ void main() {
     test('Min execution time Error', () async {
       final stopwatch = Stopwatch()..start();
       Duration? onErrorElapsed;
-      final result = await apiWrapper.handleStrict(
+      final result = await handler.handleStrict(
         () => Future.delayed(
           Duration(milliseconds: 500),
           () => throw 'TEST ERROR',
@@ -275,7 +275,7 @@ void main() {
 
     test('Delay', () async {
       final stopwatch = Stopwatch()..start();
-      final result = await apiWrapper.handle(
+      final result = await handler.handle(
         () => 'Delayed',
         delay: const Duration(seconds: 1),
       );
@@ -292,7 +292,7 @@ void main() {
       var attempt = 0;
 
       Future<String?> retryFn(Retry retry) async {
-        return apiWrapper.handle(
+        return handler.handle(
           () {
             attempt++;
             if (attempt < 3) badResponse(statusCode: 503);
@@ -306,7 +306,7 @@ void main() {
         Retry(
           maxAttempts: 3,
           retryIf: (e, s, __) {
-            final error = apiWrapper.wrapError(e, s);
+            final error = handler.wrapError(e, s);
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -321,7 +321,7 @@ void main() {
         Retry(
           maxAttempts: 2,
           retryIf: (e, s, _) {
-            final error = apiWrapper.wrapError(e, s);
+            final error = handler.wrapError(e, s);
             if (error case ErrorResponse(statusCode: 503)) return true;
             return false;
           },
@@ -344,28 +344,28 @@ void main() {
     });
 
     test('Strict', () async {
-      final r1 = await apiWrapper.handleStrict(
+      final r1 = await handler.handleStrict(
         () => 'Success',
         onSuccess: (res) => res,
       );
 
       expect(r1, equals('Success'));
 
-      final r2 = await apiWrapper.handleStrict(
+      final r2 = await handler.handleStrict(
         () => 'Success',
         onSuccess: (res) => 'Processed $res',
       );
 
       expect(r2, equals('Processed Success'));
 
-      final r3 = apiWrapper.handleStrict(
+      final r3 = handler.handleStrict(
         () => badResponse(statusCode: 403),
         onSuccess: (res) => 'Processed $res',
       );
 
       await expectLater(r3, throwsA(isA<ErrorResponse>()));
 
-      final r4 = apiWrapper.handleStrict(
+      final r4 = handler.handleStrict(
         () {},
         onSuccess: (_) {
           badResponse(statusCode: 403);
@@ -374,7 +374,7 @@ void main() {
 
       await expectLater(r4, throwsA(isA<ErrorResponse>()));
 
-      final r5 = apiWrapper.handleStrict(
+      final r5 = handler.handleStrict(
         () {},
         onSuccess: (_) {
           badResponse(statusCode: 403);
@@ -386,7 +386,7 @@ void main() {
 
     test('Throttle cancel', () async {
       const tag = 'Throttle cancel';
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -395,7 +395,7 @@ void main() {
 
       expect(r1, equals('Success'));
 
-      final r2 = await apiWrapper.handle(
+      final r2 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -406,7 +406,7 @@ void main() {
 
       await Future.delayed(const Duration(seconds: 1));
 
-      final r3 = await apiWrapper.handle(
+      final r3 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -418,7 +418,7 @@ void main() {
 
     test('Throttle cancel in Strict', () async {
       const tag = 'Throttle cancel in Strict';
-      final r1 = await apiWrapper.handleStrict(
+      final r1 = await handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -427,7 +427,7 @@ void main() {
 
       expect(r1, equals('Success'));
 
-      final r2 = apiWrapper.handleStrict(
+      final r2 = handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -438,7 +438,7 @@ void main() {
 
       await Future.delayed(const Duration(seconds: 1));
 
-      final r3 = await apiWrapper.handleStrict(
+      final r3 = await handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -450,7 +450,7 @@ void main() {
 
     test('Debounce cancel', () async {
       const tag = 'Debounce cancel';
-      final r1Future = apiWrapper.handle(
+      final r1Future = handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -459,7 +459,7 @@ void main() {
 
       await Future.delayed(const Duration(milliseconds: 500));
 
-      final r2 = await apiWrapper.handle(
+      final r2 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -473,7 +473,7 @@ void main() {
 
       await Future.delayed(const Duration(seconds: 1));
 
-      final r3 = await apiWrapper.handle(
+      final r3 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -486,7 +486,7 @@ void main() {
     test('Debounce cancel in Strict', () async {
       const tag = 'Debounce cancel in Strict';
 
-      final r1 = apiWrapper.handleStrict(
+      final r1 = handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -498,7 +498,7 @@ void main() {
 
       await Future.delayed(const Duration(milliseconds: 200));
 
-      final r2 = await apiWrapper.handleStrict(
+      final r2 = await handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -507,7 +507,7 @@ void main() {
 
       expect(r2, equals('Success'));
 
-      final r3 = await apiWrapper.handleStrict(
+      final r3 = await handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -516,7 +516,7 @@ void main() {
 
       expect(r3, equals('Success'));
 
-      final r4 = apiWrapper.handleStrict(
+      final r4 = handler.handleStrict(
         () => 'Success',
         onError: (e) => switch (e) {
           RateLimiterError(key: final tag) => tag,
@@ -532,7 +532,7 @@ void main() {
 
       await Future.delayed(const Duration(milliseconds: 200));
 
-      final r5 = await apiWrapper.handleStrict(
+      final r5 = await handler.handleStrict(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -548,7 +548,7 @@ void main() {
       final cooldownList = [];
 
       const cooldownDuration = Duration(seconds: 1);
-      final r1 = await apiWrapper.handle(
+      final r1 = await handler.handle(
         () async {
           await Future.delayed(const Duration(milliseconds: 400));
           return 'Success';
@@ -569,7 +569,7 @@ void main() {
       const delay = Duration(milliseconds: 300);
       await Future.delayed(delay);
 
-      final r2 = await apiWrapper.handle(
+      final r2 = await handler.handle(
         () => 'Success',
         key: tag,
         rateLimiter: Throttle(),
@@ -603,7 +603,7 @@ void main() {
         ]),
       );
 
-      final r3 = await apiWrapper.handle(
+      final r3 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -619,7 +619,7 @@ void main() {
       final delayList = [];
 
       const delayDuration = Duration(seconds: 1);
-      final r1Future = apiWrapper.handle(
+      final r1Future = handler.handle(
         () {},
         onSuccess: (res) => null,
         onError: (error) {
@@ -643,7 +643,7 @@ void main() {
       const delay = Duration(milliseconds: 300);
       await Future.delayed(delay);
 
-      final r2 = await apiWrapper.handle(
+      final r2 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
@@ -687,7 +687,7 @@ void main() {
       expect(time3.elapsedTime, lessThan(delay + Duration(milliseconds: 50)));
       expect(delayList[4], 'End');
 
-      final r3 = await apiWrapper.handle(
+      final r3 = await handler.handle(
         () => 'Success',
         key: tag,
         onSuccess: (res) => res,
