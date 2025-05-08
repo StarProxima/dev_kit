@@ -1,4 +1,4 @@
-import 'package:example/src/api_wrapper.dart';
+import 'package:example/src/handler.dart';
 import 'package:example/src/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
@@ -9,7 +9,7 @@ class SuccessButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppButton(
-      onTap: () => apiWrapper.handle(
+      onTap: () => handler.handle(
         () => Future.delayed(
           const Duration(milliseconds: 300),
           () => 'Success Response',

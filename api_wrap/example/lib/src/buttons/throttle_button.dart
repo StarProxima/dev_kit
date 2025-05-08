@@ -1,5 +1,5 @@
 import 'package:handler/handler.dart';
-import 'package:example/src/api_wrapper.dart';
+import 'package:example/src/handler.dart';
 import 'package:example/src/app_button.dart';
 import 'package:example/src/buttons/time_text.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _ThrottleButtonState extends State<ThrottleButton> {
         AppButton(
           isDisabled: duration > Duration.zero,
           onTap: () {
-            return apiWrapper.handle(
+            return handler.handle(
               () => Future.delayed(
                 const Duration(milliseconds: 1000),
                 () => 'Throttle Response',
@@ -31,7 +31,8 @@ class _ThrottleButtonState extends State<ThrottleButton> {
               rateLimiter: Throttle(
                 duration: const Duration(seconds: 4),
                 tickInterval: const Duration(milliseconds: 5),
-                onCooldownTick: (time) => setState(() => duration = time.remainingTime),
+                onCooldownTick: (time) =>
+                    setState(() => duration = time.remainingTime),
               ),
               onSuccess: (res) {
                 toastification.show(

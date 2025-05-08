@@ -13,7 +13,7 @@ class _ShoudleHandle {
 class ParseBaseResponseErrorMissingError extends ArgumentError {
   @override
   String get message =>
-      'If ErrorType is specified, the parseError parameter must be passed to the ApiWrapController.';
+      'If ErrorType is specified, the parseError parameter must be passed to the Handler.';
 }
 
 // Колбэк, задаваемый в контроллере, который по умолчанию обрабатывает все ошибки.

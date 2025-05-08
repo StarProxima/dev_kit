@@ -33,19 +33,7 @@ void main() {
     createHandler2();
   });
 
-  group('Retry', () {
-    test('maxAttempts', () async {
-      Retry positiveAttemts() => Retry(maxAttempts: 1);
-      Retry zeroAttemts() => Retry(maxAttempts: 0);
-      Retry negativeAttemts() => Retry(maxAttempts: -1);
-
-      expect(positiveAttemts(), isA<Retry>());
-      expect(zeroAttemts, throwsA(anything));
-      expect(negativeAttemts, throwsA(anything));
-    });
-  });
-
-  group('ApiWrap Common Tests', () {
+  group('Common Tests', () {
     late Handler<int> handler;
 
     setUp(() {
@@ -53,6 +41,16 @@ void main() {
         parseBaseResponseError: (e) => 0,
         onError: (error) {},
       );
+    });
+
+    test('Retry maxAttempts', () async {
+      Retry positiveAttemts() => Retry(maxAttempts: 1);
+      Retry zeroAttemts() => Retry(maxAttempts: 0);
+      Retry negativeAttemts() => Retry(maxAttempts: -1);
+
+      expect(positiveAttemts(), isA<Retry>());
+      expect(zeroAttemts, throwsA(anything));
+      expect(negativeAttemts, throwsA(anything));
     });
 
     test('Success function call', () async {
@@ -69,7 +67,8 @@ void main() {
         () => throw const FormatException('Err123'),
         onSuccess: (res) => 'Processed $res',
         onError: (error) {
-          if (error case InternalError(error: FormatException(:final message))) {
+          if (error
+              case InternalError(error: FormatException(:final message))) {
             return 'Error handled: $message';
           }
         },
@@ -111,7 +110,8 @@ void main() {
       final r1 = await handler.handle(
         () => throw const FormatException('InternalErrorMessage'),
         onError: (error) {
-          if (error case InternalError(error: FormatException(:final message))) {
+          if (error
+              case InternalError(error: FormatException(:final message))) {
             return 'Error handled: $message';
           }
         },
@@ -149,7 +149,8 @@ void main() {
           ),
         ),
         onError: (error) {
-          if (error case InternalError(error: FormatException(:final message))) {
+          if (error
+              case InternalError(error: FormatException(:final message))) {
             return 'Error handled: $message';
           }
         },

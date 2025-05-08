@@ -1,5 +1,5 @@
 import 'package:handler/handler.dart';
-import 'package:example/src/api_wrapper.dart';
+import 'package:example/src/handler.dart';
 import 'package:example/src/app_button.dart';
 import 'package:example/src/buttons/time_text.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +27,13 @@ class _RetryButtonState extends State<RetryButton> {
         Text('Attemt: ${retryStats?.attempt ?? 0}'),
         AppButton(
           onTap: () async {
-            await apiWrapper.handle(
+            await handler.handle(
               () {
                 return Future.delayed(
                   const Duration(milliseconds: 1000),
-                  () => attempt < 5 ? throw Exception('Retry Error') : 'Success response after $attempt attempts',
+                  () => attempt < 5
+                      ? throw Exception('Retry Error')
+                      : 'Success response after $attempt attempts',
                 );
               },
               retry: Retry(
@@ -40,7 +42,7 @@ class _RetryButtonState extends State<RetryButton> {
                   if (mounted) setState(() => retryStats = stats);
                 },
                 onFailAttempt: (e, s, stats) {
-                  final error = apiWrapper.wrapError(e, s);
+                  final error = handler.wrapError(e, s);
 
                   toastification.show(
                     type: ToastificationType.error,

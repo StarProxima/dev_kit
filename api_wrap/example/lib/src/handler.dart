@@ -1,0 +1,77 @@
+import 'dart:developer';
+
+import 'package:handler/handler.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
+
+typedef BaseApiError = dynamic;
+
+final handler = AppHandler();
+
+class AppHandler extends Handler<BaseApiError> {
+  AppHandler()
+      : super(
+          parseBaseResponseError: (e) => e,
+        );
+
+  /// Метод для обработки ошибок API c логгированием и показом тостов при необходимости.
+  @override
+  void onError(
+    HandledError<BaseApiError> error, {
+    bool showToast = true,
+    bool isDebug = false,
+    bool shouldReport = true,
+  }) {
+    void showError(HandledError<BaseApiError> error) {
+      // You can use any other package or custom solution for display errors
+      toastification.show(
+        type: ToastificationType.error,
+        title: Text(switch (error) {
+          ErrorResponse() => 'Backend Error',
+          InternalError() => 'Internal Error',
+          CancelError() => 'Cancel Error',
+        }),
+        description: Text(error.toString()),
+        autoCloseDuration: const Duration(seconds: 5),
+      );
+    }
+
+    if (showToast) {
+      switch (error) {
+        case InternalError<BaseApiError>() ||
+              ErrorResponse<BaseApiError>(
+                statusCode: 401,
+              ):
+          if (kDebugMode) {
+            showError(error);
+          }
+
+        case ErrorResponse<BaseApiError>():
+          showError(error);
+        case CancelError():
+          break;
+      }
+    }
+
+    if (shouldReport) {
+      switch (error) {
+        case InternalError<BaseApiError>(
+                :final stackTrace,
+              ) ||
+              ErrorResponse<BaseApiError>(:final stackTrace):
+
+          // Send to your crashlytics or other service
+          log('Report', stackTrace: stackTrace);
+
+        case CancelError():
+          break;
+      }
+    }
+
+    if (error is InternalError<BaseApiError>) {
+      // Use your logger
+      log(error.toString());
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import 'package:handler/handler.dart';
-import 'package:example/src/api_wrapper.dart';
+import 'package:example/src/handler.dart';
 import 'package:example/src/app_button.dart';
 import 'package:example/src/buttons/time_text.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ class _DebounceButtonState extends State<DebounceButton> {
           isLoading: isLoading,
           allowTapDuringLoading: true,
           onTap: () async {
-            await apiWrapper.handle(
+            await handler.handle(
               () => Future.delayed(
                 const Duration(milliseconds: 1000),
                 () => 'Debounce Response',
@@ -35,7 +35,8 @@ class _DebounceButtonState extends State<DebounceButton> {
               rateLimiter: Debounce(
                 duration: const Duration(seconds: 2),
                 tickInterval: const Duration(milliseconds: 5),
-                onDelayTick: (time) => setState(() => duration = time.elapsedTime),
+                onDelayTick: (time) =>
+                    setState(() => duration = time.elapsedTime),
                 onDelayEnd: () => setState(() => isLoading = true),
               ),
               onSuccess: (res) {
