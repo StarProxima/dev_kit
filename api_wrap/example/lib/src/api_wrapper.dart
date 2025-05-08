@@ -26,7 +26,7 @@ void onError(
       title: Text(switch (error) {
         ErrorResponse() => 'Backend Error',
         InternalError() => 'Internal Error',
-        RateLimiterError() => 'RateLimiterError',
+        CancelError() => 'RateLimiterError',
       }),
       description: Text(error.toString()),
       autoCloseDuration: const Duration(seconds: 5),
@@ -45,7 +45,7 @@ void onError(
 
       case ErrorResponse<BaseApiError>():
         showError(error);
-      case RateLimiterError():
+      case CancelError():
         break;
     }
   }
@@ -60,7 +60,7 @@ void onError(
         // Send to your crashlytics or other service
         log('Report', stackTrace: stackTrace);
 
-      case RateLimiterError():
+      case CancelError():
         break;
     }
   }

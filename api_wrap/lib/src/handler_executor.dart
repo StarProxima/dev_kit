@@ -156,13 +156,13 @@ class HandlerExecutor<BaseResponseError> {
       switch (res) {
         case RateOperationSuccess<D?>():
           return res.data;
-        case RateOperationCancel<D?>(:final rateLimiter, key: final key, :final timings):
+        case RateOperationCancel<D?>(key: final key, :final timings):
           return onError?.call(
-            RateLimiterError<BaseResponseError>(
-              rateLimiter: rateLimiter,
+            CancelError<BaseResponseError>(
               key: key,
-              timings: timings,
               stackTrace: StackTrace.current,
+              rateLimiter: rateLimiter,
+              timings: timings,
             ),
           );
       }

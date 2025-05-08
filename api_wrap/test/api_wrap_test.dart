@@ -434,7 +434,7 @@ void main() {
         rateLimiter: Throttle(),
       );
 
-      await expectLater(r2, throwsA(isA<RateLimiterError>()));
+      await expectLater(r2, throwsA(isA<CancelError>()));
 
       await Future.delayed(const Duration(seconds: 1));
 
@@ -494,7 +494,7 @@ void main() {
       );
 
       // ignore: unawaited_futures
-      expectLater(r1, throwsA(isA<RateLimiterError>()));
+      expectLater(r1, throwsA(isA<CancelError>()));
 
       await Future.delayed(const Duration(milliseconds: 200));
 
@@ -519,7 +519,7 @@ void main() {
       final r4 = handler.handleStrict(
         () => 'Success',
         onError: (e) => switch (e) {
-          RateLimiterError(key: final tag) => tag,
+          CancelError(key: final tag) => tag,
           _ => throw e,
         },
         key: tag,
@@ -575,7 +575,7 @@ void main() {
         rateLimiter: Throttle(),
         onError: (error) {
           switch (error) {
-            case RateLimiterError():
+            case CancelError():
               return error;
             case _:
               return null;
@@ -584,8 +584,8 @@ void main() {
       );
 
       expect(r2, isNotNull);
-      expect(r2!.timings.duration, cooldownDuration);
-      expect(r2.timings.elapsedTime, greaterThan(delay));
+      expect(r2!.timings?.duration, cooldownDuration);
+      expect(r2.timings?.elapsedTime, greaterThan(delay));
 
       await Future.delayed(const Duration(seconds: 1));
 
@@ -624,7 +624,7 @@ void main() {
         onSuccess: (res) => null,
         onError: (error) {
           switch (error) {
-            case RateLimiterError():
+            case CancelError():
               return error;
             case _:
               return null;
@@ -655,8 +655,8 @@ void main() {
       final r1 = await r1Future;
 
       expect(r1, isNotNull);
-      expect(r1!.timings.duration, delayDuration);
-      expect(r1.timings.elapsedTime, greaterThan(delay));
+      expect(r1!.timings?.duration, delayDuration);
+      expect(r1.timings?.elapsedTime, greaterThan(delay));
 
       await Future.delayed(const Duration(seconds: 1));
 

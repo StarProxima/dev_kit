@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
-
-import 'rate_limiter/utils.dart';
+import 'package:handler/handler.dart';
 
 sealed class HandledError<BaseResponseError> implements Exception {
   const HandledError();
@@ -28,7 +27,7 @@ class ErrorResponse<BaseResponseError> extends HandledError<BaseResponseError> {
   String toString() => 'ErrorResponse: $statusCode $method $url\n$error';
 
   @override
-  String toStringWithStackTrace() => 'ErrorResponse:\n$statusCode $method $url\n$error\n$stackTrace';
+  String toStringWithStackTrace() => '${toString()}\n\n$stackTrace';
 }
 
 class InternalError<BaseResponseError> extends HandledError<BaseResponseError> {
@@ -44,27 +43,27 @@ class InternalError<BaseResponseError> extends HandledError<BaseResponseError> {
   String toString() => 'InternalError: $error';
 
   @override
-  String toStringWithStackTrace() => 'InternalError:\n$error\n$stackTrace';
+  String toStringWithStackTrace() => '${toString()}\n\n$stackTrace';
 }
 
-class RateLimiterError<BaseResponseError> implements HandledError<BaseResponseError> {
-  const RateLimiterError({
-    required this.rateLimiter,
+class CancelError<BaseResponseError> implements HandledError<BaseResponseError> {
+  const CancelError({
     required this.key,
-    required this.timings,
     required this.stackTrace,
+    required this.rateLimiter,
+    required this.timings,
   });
 
-  final String rateLimiter;
   final Object key;
-  final RateTimings timings;
   final StackTrace stackTrace;
+  final RateLimiter? rateLimiter;
+  final RateTimings? timings;
+
+  String _toRateLimiterString() => rateLimiter != null ? ' RateLimiter: ${rateLimiter.runtimeType}, $timings.' : '';
 
   @override
-  String toString() =>
-      'RateLimiterError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key';
+  String toString() => 'CancelError: Handle was canceled.${_toRateLimiterString()} Operation key:\n$key';
 
   @override
-  String toStringWithStackTrace() =>
-      'RateLimiterError: Operation was canceled by $rateLimiter. Remaining time: ${timings.remainingTime}. Operation key:\n$key\n$stackTrace';
+  String toStringWithStackTrace() => '${toString()}\n\n$stackTrace';
 }

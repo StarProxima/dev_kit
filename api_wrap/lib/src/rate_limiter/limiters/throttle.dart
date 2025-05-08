@@ -48,7 +48,6 @@ class Throttle extends RateLimiter {
 
     if (existingOperation != null) {
       return RateOperationCancel<D>(
-        rateLimiter: 'Throttle',
         key: tag,
         timings: existingOperation.calculateRateTimings(),
       );

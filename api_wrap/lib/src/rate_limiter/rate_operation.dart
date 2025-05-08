@@ -16,12 +16,10 @@ class RateOperationSuccess<T> extends RateOperationResult<T> {
 
 class RateOperationCancel<T> implements RateOperationResult<T> {
   RateOperationCancel({
-    required this.rateLimiter,
     required this.key,
     required this.timings,
   });
 
-  final String rateLimiter;
   final Object key;
   final RateTimings timings;
 }

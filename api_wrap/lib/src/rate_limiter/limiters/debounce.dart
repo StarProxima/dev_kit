@@ -131,7 +131,6 @@ class DebounceOperation<T> extends RateOperation<T> {
     if (completer.isCompleted) return;
     completer.complete(
       RateOperationCancel<T>(
-        rateLimiter: 'Debounce',
         key: tag,
         timings: calculateRateTimings(),
       ),
