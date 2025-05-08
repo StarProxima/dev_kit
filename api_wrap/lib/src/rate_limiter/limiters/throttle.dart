@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import '../rate_limiter.dart';
-import '../rate_operation.dart';
-import '../utils.dart';
+import '../core/rate_operation.dart';
+import '../core/rate_timings.dart';
 
 /// Варианты запуска cooldown.
 enum CooldownLaunch {
@@ -76,7 +76,9 @@ class Throttle extends RateLimiter {
     final FutureOr<D> futureOr;
 
     try {
-      futureOr = cooldownLaunch == CooldownLaunch.afterFunction ? await function() : function();
+      futureOr = cooldownLaunch == CooldownLaunch.afterFunction
+          ? await function()
+          : function();
     } catch (_) {
       rethrow;
     } finally {

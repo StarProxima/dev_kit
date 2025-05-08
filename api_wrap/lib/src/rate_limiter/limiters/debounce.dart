@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import '../rate_limiter.dart';
-import '../rate_operation.dart';
-import '../utils.dart';
+import '../core/rate_operation.dart';
+import '../core/rate_timings.dart';
 
 class Debounce extends RateLimiter {
   /// Задержит выполнение на заданное время.

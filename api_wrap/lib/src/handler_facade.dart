@@ -1,15 +1,16 @@
 import 'dart:async';
 
 import 'handler.dart';
-import 'handler_executor.dart';
 import 'rate_limiter/rate_limiter.dart';
 import 'retry/retry.dart';
+import 'utils.dart';
 
 abstract mixin class HandlerFacade<BaseResponseError> {
   Handler<BaseResponseError> get handler;
 }
 
-extension HandlerFacadeX<BaseResponseError> on HandlerFacade<BaseResponseError> {
+extension HandlerFacadeX<BaseResponseError>
+    on HandlerFacade<BaseResponseError> {
   /// {@macro Handler.handle}
   FutureOr<D?> handle<T, D>(
     FutureOr<T> Function() function, {

@@ -313,7 +313,8 @@ void main() {
       expect(delays.length, equals(4));
       // Each delay should be significantly larger than the previous
       for (int i = 1; i < delays.length; i++) {
-        expect(delays[i].inMilliseconds > delays[i - 1].inMilliseconds * 1.5, isTrue);
+        expect(delays[i].inMilliseconds > delays[i - 1].inMilliseconds * 1.5,
+            isTrue);
       }
     });
 
@@ -426,8 +427,12 @@ void main() {
       expect(attemptStats[2].attempt, equals(3));
 
       // Check that time is increasing
-      expect(attemptStats[0].elapsedTotalTime < attemptStats[1].elapsedTotalTime, isTrue);
-      expect(attemptStats[1].elapsedTotalTime < attemptStats[2].elapsedTotalTime, isTrue);
+      expect(
+          attemptStats[0].elapsedTotalTime < attemptStats[1].elapsedTotalTime,
+          isTrue);
+      expect(
+          attemptStats[1].elapsedTotalTime < attemptStats[2].elapsedTotalTime,
+          isTrue);
     });
 
     test('onFailAttempt handler receives correct error and stats', () async {
@@ -484,7 +489,8 @@ void main() {
       expect(retryFlags.length, equals(3));
       expect(retryFlags[0], isTrue); // First attempt will retry
       expect(retryFlags[1], isTrue); // Second attempt will retry
-      expect(retryFlags[2], isFalse); // Third attempt won't retry (will be the last)
+      expect(retryFlags[2],
+          isFalse); // Third attempt won't retry (will be the last)
     });
   });
 
@@ -525,7 +531,8 @@ void main() {
       );
 
       expect(attempts, equals(3));
-      expect(retry.options, same(options)); // Should be the exact same options instance
+      expect(retry.options,
+          same(options)); // Should be the exact same options instance
     });
 
     test('handles extremely large maxAttempts', () async {
@@ -780,10 +787,12 @@ void main() {
       expect(attemptsB, equals(2));
     });
 
-    test('cancelRetry stops specific operations by key while others continue', () async {
+    test('cancelRetry stops specific operations by key while others continue',
+        () async {
       // Test multiple operations with selective cancellation
       final retry = Retry(
-        maxAttempts: 10, // Large value to ensure operations would continue without cancellation
+        maxAttempts:
+            10, // Large value to ensure operations would continue without cancellation
         delayFactor: Duration.zero,
       );
 

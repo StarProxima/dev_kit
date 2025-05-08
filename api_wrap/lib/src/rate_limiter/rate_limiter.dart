@@ -2,8 +2,8 @@
 
 import 'dart:async';
 
-import 'rate_operation.dart';
-import 'utils.dart';
+import 'core/rate_operation.dart';
+import 'core/rate_timings.dart';
 
 import 'limiters/debounce.dart';
 import 'limiters/throttle.dart';

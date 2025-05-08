@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 
-import 'limiters/debounce.dart';
-import 'limiters/throttle.dart';
-import 'rate_limiter.dart';
-import 'utils.dart';
+import '../limiters/debounce.dart';
+import '../limiters/throttle.dart';
+import '../rate_limiter.dart';
+import 'rate_timings.dart';
 
 sealed class RateOperationResult<T> {
   const RateOperationResult();
@@ -44,7 +44,8 @@ abstract class RateOperation<T> {
     Duration? elapsedTime,
     Duration? remainingTime,
   }) {
-    elapsedTime = elapsedTime ?? (startAt != null ? DateTime.now().difference(startAt!) : Duration.zero);
+    elapsedTime = elapsedTime ??
+        (startAt != null ? DateTime.now().difference(startAt!) : Duration.zero);
 
     return RateTimings(
       duration: rateLimiter.duration,

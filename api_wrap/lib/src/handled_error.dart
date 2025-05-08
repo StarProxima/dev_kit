@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:handler/handler.dart';
+
+import 'rate_limiter/core/rate_timings.dart';
+import 'rate_limiter/rate_limiter.dart';
 
 sealed class HandledError<BaseResponseError> implements Exception {
   const HandledError();
@@ -46,7 +48,8 @@ class InternalError<BaseResponseError> extends HandledError<BaseResponseError> {
   String toStringWithStackTrace() => '${toString()}\n\n$stackTrace';
 }
 
-class CancelError<BaseResponseError> implements HandledError<BaseResponseError> {
+class CancelError<BaseResponseError>
+    implements HandledError<BaseResponseError> {
   const CancelError({
     required this.key,
     required this.stackTrace,
@@ -59,10 +62,13 @@ class CancelError<BaseResponseError> implements HandledError<BaseResponseError> 
   final RateLimiter? rateLimiter;
   final RateTimings? timings;
 
-  String _toRateLimiterString() => rateLimiter != null ? ' RateLimiter: ${rateLimiter.runtimeType}, $timings.' : '';
+  String _toRateLimiterString() => rateLimiter != null
+      ? ' RateLimiter: ${rateLimiter.runtimeType}, $timings.'
+      : '';
 
   @override
-  String toString() => 'CancelError: Handle was canceled.${_toRateLimiterString()} Operation key:\n$key';
+  String toString() =>
+      'CancelError: Handle was canceled.${_toRateLimiterString()} Operation key:\n$key';
 
   @override
   String toStringWithStackTrace() => '${toString()}\n\n$stackTrace';

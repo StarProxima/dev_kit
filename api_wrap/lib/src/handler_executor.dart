@@ -4,13 +4,9 @@ import 'package:meta/meta.dart';
 
 import 'handled_error.dart';
 import 'rate_limiter/rate_limiter.dart';
-import 'rate_limiter/rate_operation.dart';
+import 'rate_limiter/core/rate_operation.dart';
 import 'retry/retry.dart';
-
-/// Тип колбека, используемый для обработки ошибок API.
-typedef OnError<BaseResponseError, Result> = FutureOr<Result> Function(HandledError<BaseResponseError> e);
-
-typedef WrapError<BaseResponseError> = HandledError<BaseResponseError> Function(Object e, StackTrace s);
+import 'utils.dart';
 
 /// Оболочка API для внутреннего использования, управляет повторными попытками,
 /// ограничением частоты операций и обработкой ошибок.
@@ -75,7 +71,8 @@ class HandlerExecutor<BaseResponseError> {
         _ => onSuccessFutureOr,
       };
 
-      final result = onSuccessResponse ?? (response is D ? response as D : null);
+      final result =
+          onSuccessResponse ?? (response is D ? response as D : null);
 
       return result;
     } catch (e, s) {
@@ -110,12 +107,17 @@ class HandlerExecutor<BaseResponseError> {
 
       case Duration():
         try {
-          final res = await (Future(() => futureOr), Future.delayed(minExecutionTime)).wait;
+          final res = await (
+            Future(() => futureOr),
+            Future.delayed(minExecutionTime)
+          ).wait;
 
           response = res.$1;
         } catch (e) {
           switch (e) {
-            case ParallelWaitError(errors: (AsyncError(error: final e, stackTrace: final s), _)):
+            case ParallelWaitError(
+                errors: (AsyncError(error: final e, stackTrace: final s), _)
+              ):
               throw Error.throwWithStackTrace(e, s);
           }
 

@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'handled_error.dart';
 import 'handler_executor.dart';
 import 'rate_limiter/rate_limiter.dart';
-import 'rate_limiter/rate_operation.dart';
+import 'rate_limiter/core/rate_operation.dart';
 import 'retry/retry.dart';
 import 'utils.dart';
 
@@ -137,7 +137,8 @@ class Handler<BaseResponseError> {
     final apiError = switch (e) {
       HandledError<BaseResponseError>() => e,
       DioException(response: Response res) => ErrorResponse<BaseResponseError>(
-          error: _parseBaseResponseError?.call(res.data) ?? res.data as BaseResponseError,
+          error: _parseBaseResponseError?.call(res.data) ??
+              res.data as BaseResponseError,
           stackTrace: s,
           dioException: e,
         ),
@@ -147,7 +148,8 @@ class Handler<BaseResponseError> {
     return apiError;
   }
 
-  FutureOr<void> onError(HandledError<BaseResponseError> error) => _onError?.call(error);
+  FutureOr<void> onError(HandledError<BaseResponseError> error) =>
+      _onError?.call(error);
 
   Future<void> fireDebounceOperation(String tag) async {
     await _container.debounceOperations.remove(tag)?.complete();
@@ -175,7 +177,8 @@ class Handler<BaseResponseError> {
   }
 
   void cancelAllOperations() {
-    for (final MapEntry(key: tag, value: operation) in _container.debounceOperations.entries) {
+    for (final MapEntry(key: tag, value: operation)
+        in _container.debounceOperations.entries) {
       operation.cancel(tag: tag);
     }
 
@@ -184,7 +187,3 @@ class Handler<BaseResponseError> {
     }
   }
 }
-
-// Колбэк, задаваемый в контроллере, который по умолчанию обрабатывает все ошибки.
-typedef GlobalOnError<BaseResponseError> = FutureOr<void> Function(HandledError<BaseResponseError> e);
-typedef ParseBaseResponseError<BaseResponseError> = BaseResponseError Function(Object? e);
