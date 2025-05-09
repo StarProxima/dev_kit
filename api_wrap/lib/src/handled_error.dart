@@ -51,13 +51,16 @@ class InternalError<BaseResponseError> extends HandledError<BaseResponseError> {
 class CancelError<BaseResponseError>
     implements HandledError<BaseResponseError> {
   const CancelError({
-    required this.key,
     required this.stackTrace,
-    required this.rateLimiter,
-    required this.timings,
+    this.rateLimiter,
+    this.timings,
   });
 
-  final Object key;
+  CancelError.withStackTrace({
+    this.rateLimiter,
+    this.timings,
+  }) : stackTrace = StackTrace.current;
+
   final StackTrace stackTrace;
   final RateLimiter? rateLimiter;
   final RateTimings? timings;
@@ -68,7 +71,7 @@ class CancelError<BaseResponseError>
 
   @override
   String toString() =>
-      'CancelError: Handle was canceled.${_toRateLimiterString()} Operation key:\n$key';
+      'CancelError: Handle was canceled.${_toRateLimiterString()}';
 
   @override
   String toStringWithStackTrace() => '${toString()}\n\n$stackTrace';

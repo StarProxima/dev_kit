@@ -41,3 +41,42 @@ class Controller with HandlerFacade {
   // TODO: implement handler
   Handler get handler => throw UnimplementedError();
 }
+
+class ControllerWithCancel with ControllerMixin {
+  void getData() async {
+    await handle(
+      () {
+        final canlelToken = handler.getCancelToken(key: #getData);
+        // dio api request with canlelToken
+
+        if (canlelToken.isCancelled) {
+          throw CancelError.withStackTrace();
+        }
+
+        // async logic
+
+        if (canlelToken.isCancelled) {
+          throw CancelError.withStackTrace();
+        }
+
+        // another dio api request with canlelToken
+      },
+      key: #getData,
+      onError: (e) {
+        handler.onError(e);
+      },
+    );
+  }
+
+  void cancelGetData() {
+    handler.cancel(key: #getData);
+  }
+
+  void dispose() {
+    handler.cancelAll();
+  }
+
+  @override
+  // TODO: implement handler
+  Handler get handler => throw UnimplementedError();
+}

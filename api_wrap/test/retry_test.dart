@@ -628,7 +628,7 @@ void main() {
       expect(wasCancelledEmpty, isFalse);
 
       // Try to cancel non-existent operation
-      final wasNonExistentCancelled = retry.cancelByKey('non-existent');
+      final wasNonExistentCancelled = retry.cancel(key: 'non-existent');
       expect(wasNonExistentCancelled, isFalse);
     });
 
@@ -654,7 +654,7 @@ void main() {
       );
 
       // Cancel the operation
-      final wasCancelled = retry.cancelByKey('operation-to-cancel');
+      final wasCancelled = retry.cancel(key: 'operation-to-cancel');
       expect(wasCancelled, isTrue);
 
       // The operation should fail
@@ -728,7 +728,7 @@ void main() {
       );
 
       // Отменяем операцию
-      retry.cancelByKey('operation-to-check');
+      retry.cancel(key: 'operation-to-check');
 
       await expectLater(future, throwsException);
 
@@ -854,11 +854,11 @@ void main() {
       final futureC = runOperationC();
 
       // Cancel only operations A and B
-      final cancelledA = retry.cancelByKey('key-A');
+      final cancelledA = retry.cancel(key: 'key-A');
 
       await Future.delayed(delay * 2.5);
 
-      final cancelledB = retry.cancelByKey('key-B');
+      final cancelledB = retry.cancel(key: 'key-B');
 
       // Wait for all operations to complete
       final results = await Future.wait([futureA, futureB, futureC]);

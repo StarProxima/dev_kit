@@ -30,7 +30,7 @@ class HandlerExecutor<BaseResponseError> {
     final fn = _wrapWithRateLimiter(
       container: container,
       rateLimiter: rateLimiter,
-      tag: key,
+      key: key,
       onError: onError,
       function: () => _wrapWithCallbacks(
         wrapError: wrapError,
@@ -144,24 +144,23 @@ class HandlerExecutor<BaseResponseError> {
   FutureOr<D?> _wrapWithRateLimiter<D>({
     required RateOperationsContainer container,
     required RateLimiter? rateLimiter,
-    required Object? tag,
+    required Object? key,
     required OnError<BaseResponseError, D?>? onError,
     required FutureOr<D?> Function() function,
   }) async {
     if (rateLimiter != null) {
       final res = await rateLimiter.process<D?>(
         function,
-        key: tag ?? '$hashCode${StackTrace.current}',
+        key: key ?? '$hashCode${StackTrace.current}',
         container: container,
       );
 
       switch (res) {
         case RateOperationSuccess<D?>():
           return res.data;
-        case RateOperationCancel<D?>(key: final key, :final timings):
+        case RateOperationCancel<D?>(key: final _, :final timings):
           return onError?.call(
             CancelError<BaseResponseError>(
-              key: key,
               stackTrace: StackTrace.current,
               rateLimiter: rateLimiter,
               timings: timings,

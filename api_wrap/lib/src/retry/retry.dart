@@ -107,7 +107,7 @@ class Retry {
   /// which contains information about the retry state.
   ///
   /// When [key] is provided, the retry operation is identified by this key,
-  /// which can be used later to cancel the operation via [cancelByKey].
+  /// which can be used later to cancel the operation via [cancel].
   ///
   /// Returns the result of the successful function execution.
   FutureOr<R> execute<R>(
@@ -195,50 +195,16 @@ class Retry {
     }
   }
 
-  /// Cancels active retry operations.
-  ///
-  /// When [key] is provided, only cancels the specific retry operation
-  /// with that key. When [key] is null, cancels all active retry operations.
-  ///
-  /// Canceled operations will not be re-executed even if they encounter an error,
-  /// but they the current attempt will still continue.
-  ///
-  /// Returns true if at least one operation was cancelled, false otherwise.
-  ///
-  /// Example:
-  /// ```dart
-  /// final retry = Retry(maxAttempts: 3);
-  ///
-  /// // Start a retry operation with a specific key
-  /// retry.execute(
-  ///   (stats) => fetchData(),
-  ///   key: 'fetch-operation',
-  /// );
-  ///
-  /// // Later, cancel this specific operation
-  /// retry.cancelRetry(key: 'fetch-operation');
-  /// ```
-  bool cancelRetry({Object? key}) {
-    if (key == null) {
-      return cancellAll();
-    }
-    return cancelByKey(key);
-  }
-
   /// Cancels a specific retry operation by its key.
   ///
   /// Returns true if the operation was cancelled, false otherwise.
-  ///
-  /// @see [cancelRetry] for more details.
-  bool cancelByKey(Object? key) {
+  bool cancel({required Object? key}) {
     return _activeRetries.remove(key);
   }
 
   /// Cancels all active retry operations.
   ///
   /// Returns true if there were any active operations, false otherwise.
-  ///
-  /// @see [cancelRetry] for more details.
   bool cancellAll() {
     final isNotEmpty = _activeRetries.isNotEmpty;
     _activeRetries.clear();

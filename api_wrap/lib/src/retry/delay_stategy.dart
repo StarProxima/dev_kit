@@ -32,14 +32,14 @@ abstract class DelayStrategy {
   /// Example:
   /// ```dart
   /// final delayStrategy = DelayStrategy.byDelays([
-  ///   Duration(seconds: 1),
-  ///   Duration(seconds: 2),
   ///   Duration(seconds: 5),
+  ///   Duration(seconds: 3),
+  ///   Duration(seconds: 1),
   /// ]);
-  /// // first attempt: 1 second
-  /// // second attempt: 2 seconds
-  /// // third attempt: 5 seconds
-  /// // fourth and subsequent attempts: 5 seconds
+  /// // first attempt: 3 second
+  /// // second attempt: 5 seconds
+  /// // third attempt: 1 seconds
+  /// // fourth and subsequent attempts: 1 seconds
   /// ```
   factory DelayStrategy.byDelays(List<Duration> delays) = DelayListStrategy;
 

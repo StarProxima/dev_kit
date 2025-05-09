@@ -520,7 +520,7 @@ void main() {
       final r4 = handler.handleStrict(
         () => 'Success',
         onError: (e) => switch (e) {
-          CancelError(key: final tag) => tag,
+          CancelError() => tag,
           _ => throw e,
         },
         key: tag,

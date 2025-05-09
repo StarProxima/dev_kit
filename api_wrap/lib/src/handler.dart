@@ -151,7 +151,11 @@ class Handler<BaseResponseError> {
   FutureOr<void> onError(HandledError<BaseResponseError> error) =>
       _onError?.call(error);
 
-  Future<void> fire(String key) async {
+  CancelToken getCancelToken({Object? key}) {
+    throw UnimplementedError();
+  }
+
+  Future<void> fire({required Object key}) async {
     final throttle = _container.throttleOperations[key];
     throttle?.cancelCooldown();
 
@@ -171,14 +175,14 @@ class Handler<BaseResponseError> {
     await futures.wait;
   }
 
-  void cancel(String key) {
+  void cancel({required Object key}) {
     final debounce = _container.debounceOperations[key];
     debounce?.cancel();
     final throttle = _container.throttleOperations[key];
     throttle?.cancelCooldown();
   }
 
-  void cancellAll() {
+  void cancelAll() {
     for (final operation in _container.debounceOperations.values) {
       operation.cancel();
     }
