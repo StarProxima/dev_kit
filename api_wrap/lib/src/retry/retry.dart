@@ -27,7 +27,7 @@ import 'retry_stats.dart';
 ///     // Retry only on network errors
 ///     return error is NetworkError;
 ///   },
-///   onFailAttempt: (error, stackTrace, stats) {
+///   onAttemptFail: (error, stackTrace, stats) {
 ///     print('Attempt ${stats.attempt} failed: ${error.toString()}');
 ///   },
 /// );
@@ -47,7 +47,7 @@ class Retry {
   /// [delayStrategy] - Algorithm for calculating delays
   /// [retryIf] - Custom logic for retry decisions
   /// [onAttempt] - Called before each attempt
-  /// [onFailAttempt] - Called after failed attempts
+  /// [onAttemptFail] - Called after failed attempts
   Retry({
     required int maxAttempts,
     Duration delayFactor = const Duration(milliseconds: 500),
@@ -58,7 +58,7 @@ class Retry {
     this.delayStrategy = DelayStrategy.linear,
     this.retryIf = RetryIf.always,
     this.onAttempt,
-    this.onFailAttempt,
+    this.onAttemptFail,
   }) : options = RetryOptions(
           maxAttempts: maxAttempts,
           delayFactor: delayFactor,
@@ -74,7 +74,7 @@ class Retry {
     this.delayStrategy = DelayStrategy.linear,
     this.retryIf = RetryIf.always,
     this.onAttempt,
-    this.onFailAttempt,
+    this.onAttemptFail,
   });
 
   /// Creates a retry instance with no retry attempts.
@@ -90,10 +90,10 @@ class Retry {
   final RetryIfFn retryIf;
 
   /// Strategy for calculating delay between retry attempts.
-  final DelayStrategyFn delayStrategy;
+  final DelayStrategy delayStrategy;
 
   /// Function called on error, with retry statistics.
-  final void Function(Object e, StackTrace s, RetryStats stats)? onFailAttempt;
+  final void Function(Object e, StackTrace s, RetryStats stats)? onAttemptFail;
 
   /// Function called before each attempt, with retry statistics.
   final void Function(RetryStats stats)? onAttempt;
@@ -138,7 +138,7 @@ class Retry {
           isRetryCanceled: !_activeRetries.contains(key),
         );
 
-        final delay = delayStrategy(stats);
+        final delay = delayStrategy.calculateDelay(stats);
         lastDelay = delay;
 
         stats = stats.copyWith(
@@ -159,7 +159,7 @@ class Retry {
         } on Object catch (e, s) {
           stats = stats.copyWith(
             elapsedTotalTime: stopwatch.elapsed,
-            retryIsCancaled: !_activeRetries.contains(key),
+            isRetryCanceled: !_activeRetries.contains(key),
           );
 
           final retryIfFutureOr = retryIf(e, s, stats);
@@ -171,7 +171,7 @@ class Retry {
 
           stats = stats.copyWith(
             elapsedTotalTime: stopwatch.elapsed,
-            retryIsCancaled: !_activeRetries.contains(key),
+            isRetryCanceled: !_activeRetries.contains(key),
           );
 
           final willRetry = stats.canRetry && retryIfRes;
@@ -180,7 +180,7 @@ class Retry {
             willRetry: willRetry,
           );
 
-          onFailAttempt?.call(e, s, stats);
+          onAttemptFail?.call(e, s, stats);
 
           if (!willRetry) {
             rethrow;
@@ -218,10 +218,27 @@ class Retry {
   /// // Later, cancel this specific operation
   /// retry.cancelRetry(key: 'fetch-operation');
   /// ```
+  bool cancelRetry({Object? key}) {
+    if (key == null) {
+      return cancellAll();
+    }
+    return cancelByKey(key);
+  }
+
+  /// Cancels a specific retry operation by its key.
+  ///
+  /// Returns true if the operation was cancelled, false otherwise.
+  ///
+  /// @see [cancelRetry] for more details.
   bool cancelByKey(Object? key) {
     return _activeRetries.remove(key);
   }
 
+  /// Cancels all active retry operations.
+  ///
+  /// Returns true if there were any active operations, false otherwise.
+  ///
+  /// @see [cancelRetry] for more details.
   bool cancellAll() {
     final isNotEmpty = _activeRetries.isNotEmpty;
     _activeRetries.clear();

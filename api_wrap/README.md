@@ -1,9 +1,6 @@
-## Api Wrap
+## Handler
 
 ![Package Thumbnail](https://github.com/user-attachments/assets/2f549930-5647-4361-a53c-92f2bd94b30c)
-
-> [!IMPORTANT]
-> This package is in the early API design phase.
 
 ---
 

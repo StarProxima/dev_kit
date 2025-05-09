@@ -41,7 +41,7 @@ class _RetryButtonState extends State<RetryButton> {
                 onAttempt: (stats) {
                   if (mounted) setState(() => retryStats = stats);
                 },
-                onFailAttempt: (e, s, stats) {
+                onAttemptFail: (e, s, stats) {
                   final error = handler.wrapError(e, s);
 
                   toastification.show(

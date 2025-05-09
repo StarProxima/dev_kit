@@ -443,7 +443,7 @@ void main() {
       final retry = Retry(
         maxAttempts: 2,
         delayFactor: Duration.zero,
-        onFailAttempt: (error, stackTrace, stats) {
+        onAttemptFail: (error, stackTrace, stats) {
           errors.add(error);
           stackTraces.add(stackTrace);
           failStats.add(stats);
@@ -473,7 +473,7 @@ void main() {
       final retry = Retry(
         maxAttempts: 3,
         delayFactor: Duration.zero,
-        onFailAttempt: (error, stackTrace, stats) {
+        onAttemptFail: (error, stackTrace, stats) {
           retryFlags.add(stats.willRetry);
         },
       );
@@ -711,7 +711,7 @@ void main() {
       final retry = Retry(
         maxAttempts: 5,
         delayFactor: Duration.zero,
-        onFailAttempt: (e, s, stats) {
+        onAttemptFail: (e, s, stats) {
           canceledFlagSeen ??= stats.isRetryCanceled;
         },
       );

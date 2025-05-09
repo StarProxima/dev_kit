@@ -77,7 +77,7 @@ class RetryStats {
 
   /// Creates a copy of the object with optional field overrides.
   RetryStats copyWith({
-    Object? id,
+    Object? key,
     RetryOptions? options,
     int? attempt,
     Duration? delayBeforePreviosAttempt,
@@ -85,10 +85,10 @@ class RetryStats {
     DateTime? startTime,
     Duration? elapsedTotalTime,
     bool? willRetry,
-    bool? retryIsCancaled,
+    bool? isRetryCanceled,
   }) {
     return RetryStats(
-      key: id ?? this.key,
+      key: key ?? this.key,
       options: options ?? this.options,
       attempt: attempt ?? this.attempt,
       delayBeforePreviosAttempt:
@@ -98,7 +98,7 @@ class RetryStats {
       startTime: startTime ?? this.startTime,
       elapsedTotalTime: elapsedTotalTime ?? this.elapsedTotalTime,
       willRetry: willRetry ?? _willRetry,
-      isRetryCanceled: retryIsCancaled ?? this.isRetryCanceled,
+      isRetryCanceled: isRetryCanceled ?? this.isRetryCanceled,
     );
   }
 }
