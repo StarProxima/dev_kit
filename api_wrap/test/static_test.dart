@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:handler/handler.dart';
 
 class AppHandler extends Handler<int> {
@@ -40,6 +41,12 @@ class Controller with HandlerFacade {
   @override
   // TODO: implement handler
   Handler get handler => throw UnimplementedError();
+}
+
+extension CancelTokenX on Handler {
+  CancelToken getCancelToken({Object? key}) {
+    throw UnimplementedError();
+  }
 }
 
 class ControllerWithCancel with ControllerMixin {

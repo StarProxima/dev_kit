@@ -3,12 +3,15 @@ import 'dart:async';
 import '../rate_limiter.dart';
 import '../core/rate_operation.dart';
 import '../core/rate_timings.dart';
+import '../../operations_container.dart';
 
+/// Rate limiter that delays function execution until specified time has passed
+/// since the last call.
 class Debounce extends RateLimiter {
-  /// Задержит выполнение на заданное время.
+  /// Creates a debounce rate limiter.
   ///
-  /// Если метод будет вызван ещё раз с тем же [tag],
-  /// то предыдущий запрос будет отменён, а новый выполнится через заданное время.
+  /// If the method is called again with the same [key],
+  /// the previous request will be canceled, and the new one will execute after the specified time.
   Debounce({
     super.duration,
     this.canCancelRunningFunction = true,
@@ -18,20 +21,32 @@ class Debounce extends RateLimiter {
     this.onDelayEnd,
   });
 
+  /// Whether running functions can be canceled when a new call is made
   final bool canCancelRunningFunction;
+
+  /// Interval for timing update ticks
   final Duration tickInterval;
+
+  /// Callback triggered when delay starts
   final void Function()? onDelayStart;
+
+  /// Callback triggered on each tick during delay with timing information
   final void Function(RateTimings timings)? onDelayTick;
+
+  /// Callback triggered when delay ends
   final void Function()? onDelayEnd;
 
-  final container = RateOperationsContainer();
+  /// Container for operations managed by this rate limiter
+  final container = OperationsContainer();
 
-  /// [key] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
+  /// Processes a function with debounce rate limiting
+  ///
+  /// [key] - Identifier for the request. If not specified, [StackTrace.current] is used.
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
     Object? key,
-    RateOperationsContainer? container,
+    OperationsContainer? container,
   }) async {
     key ??= '${StackTrace.current}';
     final operations = (container ?? this.container).debounceOperations;
@@ -105,6 +120,7 @@ class Debounce extends RateLimiter {
   }
 }
 
+/// Represents a debounced operation
 class DebounceOperation<T> extends RateOperation<T> {
   DebounceOperation({
     required super.rateLimiter,
@@ -115,16 +131,27 @@ class DebounceOperation<T> extends RateOperation<T> {
     required this.onDelayEnd,
   });
 
+  /// Unique key identifying this operation
   final Object key;
+
+  /// Timer controlling the delay
   final Timer timer;
+
+  /// Completer for the operation result
   final Completer<RateOperationResult<T>> completer;
+
+  /// Function to execute after delay
   final FutureOr<T> Function() function;
+
+  /// Callback when delay ends
   final void Function() onDelayEnd;
 
+  /// Starts the operation by recording start time
   void start() {
     startAt = DateTime.now();
   }
 
+  /// Cancels the operation
   void cancel() {
     timer.cancel();
     onDelayEnd();
@@ -138,6 +165,7 @@ class DebounceOperation<T> extends RateOperation<T> {
     );
   }
 
+  /// Completes the operation by executing the function
   Future<void> complete() async {
     timer.cancel();
     onDelayEnd();

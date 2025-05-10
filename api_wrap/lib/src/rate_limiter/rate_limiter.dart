@@ -2,18 +2,23 @@
 
 import 'dart:async';
 
+import '../operations_container.dart';
 import 'core/rate_operation.dart';
 import 'core/rate_timings.dart';
 
 import 'limiters/debounce.dart';
 import 'limiters/throttle.dart';
 
-/// Базовый класс для [Debounce] и [Throttle].
+/// Base class for rate limiters like [Debounce] and [Throttle].
 abstract class RateLimiter {
   RateLimiter({
     this.duration = Duration.zero,
   });
 
+  /// Creates a debounce rate limiter.
+  ///
+  /// Debounce delays function execution until specified time has passed
+  /// since the last call.
   factory RateLimiter.debounce({
     Duration duration = Duration.zero,
     bool canCancelRunningOperations = true,
@@ -31,6 +36,10 @@ abstract class RateLimiter {
         onDelayEnd: onDelayEnd,
       );
 
+  /// Creates a throttle rate limiter.
+  ///
+  /// Throttle limits the execution frequency of a function,
+  /// ensuring a minimum interval between executions.
   factory RateLimiter.throttle({
     Duration duration = Duration.zero,
     CooldownLaunch cooldownLaunch = CooldownLaunch.afterFunction,
@@ -48,11 +57,17 @@ abstract class RateLimiter {
         onCooldownEnd: onCooldownEnd,
       );
 
+  /// Duration for rate limiting (delay or cooldown period)
   final Duration duration;
 
+  /// Process a function with rate limiting applied
+  ///
+  /// [function] The function to execute with rate limiting
+  /// [key] Optional key to identify this operation
+  /// [container] Optional operations container to use
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
     Object? key,
-    RateOperationsContainer? container,
+    OperationsContainer? container,
   });
 }

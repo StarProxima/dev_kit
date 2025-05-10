@@ -3,10 +3,15 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 
 import 'handled_error.dart';
+import 'operations_container.dart';
 import 'rate_limiter/rate_limiter.dart';
 import 'rate_limiter/core/rate_operation.dart';
 import 'retry/retry.dart';
 import 'utils.dart';
+
+/// Функция для преобразования ошибки в стандартизированный тип HandledError
+typedef ProvideError<BaseResponseError> = HandledError<BaseResponseError>
+    Function(Object error, StackTrace stackTrace);
 
 /// Оболочка API для внутреннего использования, управляет повторными попытками,
 /// ограничением частоты операций и обработкой ошибок.
@@ -24,8 +29,8 @@ class HandlerExecutor<BaseResponseError> {
     required RateLimiter? rateLimiter,
     required FutureOr<D?> Function(T)? onSuccess,
     required OnError<BaseResponseError, D?>? onError,
-    required RateOperationsContainer container,
-    required WrapError<BaseResponseError> wrapError,
+    required OperationsContainer container,
+    required ProvideError<BaseResponseError> wrapError,
   }) async {
     final fn = _wrapWithRateLimiter(
       container: container,
@@ -52,7 +57,7 @@ class HandlerExecutor<BaseResponseError> {
 
   // Функция-обертка для выполнения запроса и обработки ответа
   FutureOr<D?> _wrapWithCallbacks<T, D>({
-    required WrapError<BaseResponseError> wrapError,
+    required ProvideError<BaseResponseError> wrapError,
     required FutureOr<D?> Function(T)? onSuccess,
     required OnError<BaseResponseError, D?>? onError,
     required FutureOr<T> Function() function,
@@ -142,7 +147,7 @@ class HandlerExecutor<BaseResponseError> {
 
   // Обёртываем запрос через RateLimiter, если задан.
   FutureOr<D?> _wrapWithRateLimiter<D>({
-    required RateOperationsContainer container,
+    required OperationsContainer container,
     required RateLimiter? rateLimiter,
     required Object? key,
     required OnError<BaseResponseError, D?>? onError,

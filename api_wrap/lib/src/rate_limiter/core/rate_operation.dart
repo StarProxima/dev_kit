@@ -1,19 +1,20 @@
 import 'package:meta/meta.dart';
 
-import '../limiters/debounce.dart';
-import '../limiters/throttle.dart';
 import '../rate_limiter.dart';
 import 'rate_timings.dart';
 
+/// Base class for operation results
 sealed class RateOperationResult<T> {
   const RateOperationResult();
 }
 
+/// Represents a successful operation with its result data
 class RateOperationSuccess<T> extends RateOperationResult<T> {
   const RateOperationSuccess(this.data);
   final T data;
 }
 
+/// Represents a canceled operation with contextual information
 class RateOperationCancel<T> implements RateOperationResult<T> {
   RateOperationCancel({
     required this.key,
@@ -24,13 +25,7 @@ class RateOperationCancel<T> implements RateOperationResult<T> {
   final RateTimings timings;
 }
 
-class RateOperationsContainer {
-  RateOperationsContainer();
-
-  final Map<Object, DebounceOperation> debounceOperations = {};
-  final Map<Object, ThrottleOperation> throttleOperations = {};
-}
-
+/// Abstract base class for rate-limited operations
 abstract class RateOperation<T> {
   RateOperation({
     required this.rateLimiter,
@@ -40,6 +35,7 @@ abstract class RateOperation<T> {
   @protected
   DateTime? startAt;
 
+  /// Calculate timing information for the operation
   RateTimings calculateRateTimings({
     Duration? elapsedTime,
     Duration? remainingTime,

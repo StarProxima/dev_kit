@@ -4,25 +4,25 @@ import 'package:dio/dio.dart';
 
 import 'handled_error.dart';
 import 'handler_executor.dart';
+import 'operations_container.dart';
 import 'rate_limiter/rate_limiter.dart';
-import 'rate_limiter/core/rate_operation.dart';
 import 'retry/retry.dart';
 import 'utils.dart';
 
-/// Предоставляет утилиты и обёртки для [Dio] запросов и обычных функций.
+/// Provides utilities and wrappers for [Dio] requests and regular functions.
 ///
-/// Даёт возможность реализовать автоматическую обработку ошибок (логгирование и показ тостов) с возможность отлючения.
-/// Предоставляет методы для обработки успешного и ошибочного ответа API.
+/// Enables automatic error handling (logging and toast displays) with the ability to disable it.
+/// Provides methods for handling successful and error API responses.
 class Handler<BaseResponseError> {
   Handler({
     ParseBaseResponseError<BaseResponseError>? parseBaseResponseError,
     Retry? retry,
-    RateOperationsContainer? container,
+    OperationsContainer? container,
     GlobalOnError<BaseResponseError>? onError,
   })  : _parseBaseResponseError = parseBaseResponseError,
         _retry = retry,
         _onError = onError,
-        _container = container ?? RateOperationsContainer(),
+        _container = container ?? OperationsContainer(),
         _executor = HandlerExecutor<BaseResponseError>() {
     if (parseBaseResponseError == null) {
       final typeStr = BaseResponseError.toString();
@@ -37,25 +37,25 @@ class Handler<BaseResponseError> {
   final Retry? _retry;
   final HandlerExecutor<BaseResponseError> _executor;
   final GlobalOnError<BaseResponseError>? _onError;
-  final RateOperationsContainer _container;
+  final OperationsContainer _container;
 
   /// {@template Handler.handle}
-  /// Обёртывает HTTP запрос через [Dio] или обычную функцию, позволяя преобразовывать тип данных.
-  /// Предоставляет возможность использования последовательных вложенных запросов и
-  /// автоматической или ручной обработки ошибок.
+  /// Wraps an HTTP request via [Dio] or a regular function, allowing data type transformation.
+  /// Provides the ability to use sequential nested requests and
+  /// automatic or manual error handling.
   ///
-  /// [function] - API запрос или функция, возвращающая значение типа [T].
+  /// [function] - API request or function returning a value of type [T].
   ///
-  /// [onSuccess] - функция, вызываемая при успешном ответе, возможно, преобразующая [T] в [D].
+  /// [onSuccess] - function called on successful response, possibly transforming [T] to [D].
   ///
-  /// [onError] - функция для обработки ошибок, с возможным возвращаемым значением типа [D].
+  /// [onError] - function for error handling, with possible return value of type [D].
   ///
-  /// [delay] - задержка перед выполнением запроса.
+  /// [delay] - delay before executing the request.
   ///
-  /// [retry] - настройки повторных попыток выполнения запроса.
-  /// Если не указано, то повторных попыток не будет.
+  /// [retry] - settings for request retry attempts.
+  /// If not specified, no retries will be performed.
   ///
-  /// Возвращает Future<D?> с преобразованным значением, полученным либо от [onSuccess] либо от [onError].
+  /// Returns Future<D?> with the transformed value obtained either from [onSuccess] or [onError].
   /// {@endtemplate}
   FutureOr<D?> handle<T, D>(
     FutureOr<T> Function() function, {
@@ -85,15 +85,15 @@ class Handler<BaseResponseError> {
       );
 
   /// {@template Handler.handleStrict}
-  /// Строгая версия [handle], требующая обязательного определения [onSuccess].
-  /// Если [onError] не задан, будет вызвано исключение при возникновении ошибки.
-  /// Это позволяет возвращать ненулевой тип.
+  /// Strict version of [handle], requiring mandatory definition of [onSuccess].
+  /// If [onError] is not specified, an exception will be thrown when an error occurs.
+  /// This allows returning a non-null type.
   ///
-  /// [function] - API запрос или функция, возвращающая значение типа [T].
-  /// [onSuccess] - обязательная функция, преобразующая [T] в [D] при успешном ответе.
-  /// [onError] - необязательная функция для обработки ошибок, возвращающая [T].
+  /// [function] - API request or function returning a value of type [T].
+  /// [onSuccess] - mandatory function that transforms [T] to [D] on successful response.
+  /// [onError] - optional function for error handling, returning [D].
   ///
-  /// Возвращает Future с ненулевым результатом типа [D].
+  /// Returns a Future with a non-null result of type [D].
   /// {@endtemplate}
   Future<D> handleStrict<T, D>(
     FutureOr<T> Function() function, {
@@ -131,8 +131,8 @@ class Handler<BaseResponseError> {
     }
   }
 
-  /// Преобразует исключение в специализированный [ApiError<ErrorType>].
-  /// Обрабатывает различные типы ошибок, включая DioException.
+  /// Transforms an exception into a specialized [HandledError<BaseResponseError>].
+  /// Handles various error types, including DioException.
   HandledError<BaseResponseError> wrapError(Object e, StackTrace s) {
     final apiError = switch (e) {
       HandledError<BaseResponseError>() => e,
@@ -148,47 +148,37 @@ class Handler<BaseResponseError> {
     return apiError;
   }
 
+  /// Handles errors using the global error handler if provided
   FutureOr<void> onError(HandledError<BaseResponseError> error) =>
       _onError?.call(error);
 
-  CancelToken getCancelToken({Object? key}) {
-    throw UnimplementedError();
-  }
+  /// Executes an operation with the specified [key].
+  ///
+  /// If an operation exists for the given key:
+  /// - throttle operation - cancels its cooldown period
+  /// - debounce operation - executes it immediately
+  ///
+  /// Returns a [Future] that completes after all operations are started.
+  Future<void> fire({required Object key}) => _container.fire(key: key);
 
-  Future<void> fire({required Object key}) async {
-    final throttle = _container.throttleOperations[key];
-    throttle?.cancelCooldown();
+  /// Executes all registered operations.
+  ///
+  /// Cancels the cooldown period for all throttle operations
+  /// and immediately executes all debounce operations.
+  ///
+  /// Returns a [Future] that completes after all operations are started.
+  Future<void> fireAll() => _container.fireAll();
 
-    final debounce = _container.debounceOperations[key];
-    await debounce?.complete();
-  }
+  /// Cancels operations with the specified [key].
+  ///
+  /// If an operation exists for the given key:
+  /// - debounce operation - cancels its execution
+  /// - throttle operation - cancels its cooldown period
+  void cancel({required Object key}) => _container.cancel(key: key);
 
-  Future<void> fireAll() async {
-    final futures = _container.debounceOperations.values.map(
-      (operation) => operation.complete(),
-    );
-
-    for (final operation in _container.throttleOperations.values) {
-      operation.cancelCooldown();
-    }
-
-    await futures.wait;
-  }
-
-  void cancel({required Object key}) {
-    final debounce = _container.debounceOperations[key];
-    debounce?.cancel();
-    final throttle = _container.throttleOperations[key];
-    throttle?.cancelCooldown();
-  }
-
-  void cancelAll() {
-    for (final operation in _container.debounceOperations.values) {
-      operation.cancel();
-    }
-
-    for (final operation in _container.throttleOperations.values) {
-      operation.cancelCooldown();
-    }
-  }
+  /// Cancels all registered operations.
+  ///
+  /// Cancels execution of all debounce operations and
+  /// cooldown periods for all throttle operations.
+  void cancelAll() => _container.cancelAll();
 }

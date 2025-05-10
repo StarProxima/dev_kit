@@ -3,20 +3,24 @@ import 'dart:async';
 import '../rate_limiter.dart';
 import '../core/rate_operation.dart';
 import '../core/rate_timings.dart';
+import '../../operations_container.dart';
 
-/// Варианты запуска cooldown.
+/// Options for when to start the cooldown period
 enum CooldownLaunch {
-  /// Cooldown начнётся сразу после начала выполнения запроса.
+  /// Cooldown starts immediately when the function execution begins
   immediately,
 
-  /// Cooldown начнётся сразу после выполнения запроса.
+  /// Cooldown starts after the function execution completes
   afterFunction,
 }
 
+/// Rate limiter that limits execution frequency, ensuring a minimum
+/// interval between function calls
 class Throttle extends RateLimiter {
-  /// Сразу вызывает функцию.
+  /// Creates a throttle rate limiter.
   ///
-  /// Если в течении заданного времени метод будет вызван ещё раз с тем же [tag], то новый запрос не выполнится.
+  /// Immediately executes the function. If the method is called again with the
+  /// same [key] within the specified time, the new request will not be executed.
   Throttle({
     super.duration,
     this.cooldownLaunch = CooldownLaunch.afterFunction,
@@ -26,21 +30,32 @@ class Throttle extends RateLimiter {
     this.onCooldownEnd,
   });
 
+  /// When to start the cooldown period
   final CooldownLaunch cooldownLaunch;
 
+  /// Interval for timing update ticks
   final Duration tickInterval;
+
+  /// Callback triggered when cooldown starts
   final void Function()? onCooldownStart;
+
+  /// Callback triggered on each tick during cooldown with timing information
   final void Function(RateTimings timings)? onCooldownTick;
+
+  /// Callback triggered when cooldown ends
   final void Function()? onCooldownEnd;
 
-  final container = RateOperationsContainer();
+  /// Container for operations managed by this rate limiter
+  final container = OperationsContainer();
 
-  /// [key] - тег для идентификации запроса, если не указан, то используется [StackTrace.current].
+  /// Processes a function with throttle rate limiting
+  ///
+  /// [key] - Identifier for the request. If not specified, [StackTrace.current] is used.
   @override
   Future<RateOperationResult<D>> process<D>(
     FutureOr<D> Function() function, {
     Object? key,
-    RateOperationsContainer? container,
+    OperationsContainer? container,
   }) async {
     key ??= '${StackTrace.current}';
     final operations = (container ?? this.container).throttleOperations;
@@ -117,16 +132,23 @@ class Throttle extends RateLimiter {
   }
 }
 
+/// Represents a throttled operation
 class ThrottleOperation<T> extends RateOperation<T> {
   ThrottleOperation({
     required super.rateLimiter,
     required this.onCooldownEnd,
   });
 
+  /// Callback when cooldown period ends
   final void Function() onCooldownEnd;
+
+  /// Whether the cooldown has been canceled
   bool cooldownIsCancel = false;
+
+  /// Timer controlling the cooldown period
   late Timer _timer;
 
+  /// Starts the cooldown period
   void startCooldown({
     required Duration duration,
   }) {
@@ -134,6 +156,7 @@ class ThrottleOperation<T> extends RateOperation<T> {
     _timer = Timer(duration, cancelCooldown);
   }
 
+  /// Cancels the cooldown period
   void cancelCooldown() {
     cooldownIsCancel = true;
     _timer.cancel();
