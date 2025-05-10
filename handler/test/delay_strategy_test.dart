@@ -16,7 +16,8 @@ void main() {
       return RetryStats(
         key: 'test',
         options: options,
-        attempt: attempt,
+        currentAttempt: attempt,
+        failedAttempts: attempt - 1,
         delayBeforePreviosAttempt: Duration.zero,
         delayBeforeNextAttempt: Duration.zero,
         startTime: DateTime.now(),
@@ -184,7 +185,7 @@ void main() {
     test('custom strategy uses provided function', () {
       // Кастомная функция расчета задержки: умножаем номер попытки на 75 мс
       final customStrategy = DelayStrategy.custom((stats) {
-        return Duration(milliseconds: stats.attempt * 75);
+        return Duration(milliseconds: stats.currentAttempt * 75);
       });
 
       final stats1 = createStats(1);
@@ -219,7 +220,8 @@ void main() {
         return RetryStats(
           key: 'test',
           options: optionsWithLowMax,
-          attempt: attempt,
+          currentAttempt: attempt,
+          failedAttempts: attempt - 1,
           delayBeforePreviosAttempt: Duration.zero,
           delayBeforeNextAttempt: Duration.zero,
           startTime: DateTime.now(),

@@ -15,7 +15,7 @@ class RetryButton extends StatefulWidget {
 class _RetryButtonState extends State<RetryButton> {
   RetryStats? retryStats;
 
-  int get attempt => retryStats?.attempt ?? 0;
+  int get attempt => retryStats?.currentAttempt ?? 0;
 
   bool isLoading = false;
 
@@ -24,7 +24,7 @@ class _RetryButtonState extends State<RetryButton> {
     return Column(
       children: [
         const SizedBox(height: 16),
-        Text('Attemt: ${retryStats?.attempt ?? 0}'),
+        Text('Attemt: ${retryStats?.currentAttempt ?? 0}'),
         AppButton(
           onTap: () async {
             await handler.handle(

@@ -6,7 +6,8 @@ class RetryStats {
   RetryStats({
     required this.key,
     required this.options,
-    required this.attempt,
+    required this.currentAttempt,
+    required this.failedAttempts,
     required this.delayBeforePreviosAttempt,
     required this.delayBeforeNextAttempt,
     required this.startTime,
@@ -22,7 +23,10 @@ class RetryStats {
   final RetryOptions options;
 
   /// Current attempt (starting from 1).
-  final int attempt;
+  final int currentAttempt;
+
+  /// Number of failed attempts.
+  final int failedAttempts;
 
   /// Delay before the current attempt.
   final Duration? delayBeforePreviosAttempt;
@@ -67,10 +71,10 @@ class RetryStats {
           delayBeforeNextAttempt.inMicroseconds;
 
   /// Number of remaining attempts.
-  int get attemptsLeft => options.maxAttempts - attempt;
+  int get attemptsLeft => options.maxAttempts - currentAttempt;
 
   /// Is first attempt
-  bool get isFirstAttempt => attempt == 1;
+  bool get isFirstAttempt => currentAttempt == 1;
 
   /// Whether there are remaining attempts.
   bool get hasAttempts => attemptsLeft > 0;
@@ -79,7 +83,8 @@ class RetryStats {
   RetryStats copyWith({
     Object? key,
     RetryOptions? options,
-    int? attempt,
+    int? currentAttempt,
+    int? failedAttempts,
     Duration? delayBeforePreviosAttempt,
     Duration? delayBeforeNextAttempt,
     DateTime? startTime,
@@ -90,7 +95,8 @@ class RetryStats {
     return RetryStats(
       key: key ?? this.key,
       options: options ?? this.options,
-      attempt: attempt ?? this.attempt,
+      currentAttempt: currentAttempt ?? this.currentAttempt,
+      failedAttempts: failedAttempts ?? this.failedAttempts,
       delayBeforePreviosAttempt:
           delayBeforePreviosAttempt ?? this.delayBeforePreviosAttempt,
       delayBeforeNextAttempt:
@@ -100,5 +106,33 @@ class RetryStats {
       willRetry: willRetry ?? _willRetry,
       isRetryCanceled: isRetryCanceled ?? this.isRetryCanceled,
     );
+  }
+
+  @override
+  String toString() =>
+      'RetryStats(key: $key, currentAttempt: $currentAttempt, failedAttempts: $failedAttempts, delayBeforeNextAttempt: $delayBeforeNextAttempt, elapsedTotalTime: $elapsedTotalTime, willRetry: $willRetry)';
+
+  @override
+  int get hashCode => Object.hash(
+        key,
+        options,
+        currentAttempt,
+        failedAttempts,
+        delayBeforeNextAttempt,
+        elapsedTotalTime,
+      );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RetryStats) return false;
+    return key == other.key &&
+        options == other.options &&
+        currentAttempt == other.currentAttempt &&
+        failedAttempts == other.failedAttempts &&
+        delayBeforeNextAttempt == other.delayBeforeNextAttempt &&
+        elapsedTotalTime == other.elapsedTotalTime &&
+        willRetry == other.willRetry &&
+        isRetryCanceled == other.isRetryCanceled;
   }
 }

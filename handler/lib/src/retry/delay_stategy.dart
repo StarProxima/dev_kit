@@ -88,7 +88,7 @@ class ExponentialDelayStrategy extends DelayStrategy {
     final jitter =
         1.0 + stats.options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
-    final exp = min(stats.attempt, 31); // Prevent overflow
+    final exp = min(stats.currentAttempt, 31); // Prevent overflow
     final delayMs = stats.options.minDelay.inMilliseconds +
         stats.options.delayFactor.inMilliseconds * pow(base, exp) * jitter;
 
@@ -118,7 +118,8 @@ class ListDelayStrategy extends DelayStrategy {
   Duration calculateDelay(RetryStats stats) {
     assert(delays.isNotEmpty, 'The delay list must not be empty');
 
-    final index = stats.attempt - 1; // attempt is 1-based, list is 0-based
+    final index =
+        stats.currentAttempt - 1; // attempt is 1-based, list is 0-based
     if (index < delays.length) {
       return delays[index];
     }
@@ -147,7 +148,9 @@ class LinearDelayStrategy extends DelayStrategy {
         1.0 + stats.options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
     final delayMs = stats.options.minDelay.inMilliseconds +
-        stats.options.delayFactor.inMilliseconds * stats.attempt * jitter;
+        stats.options.delayFactor.inMilliseconds *
+            stats.currentAttempt *
+            jitter;
 
     final resultMs = min(delayMs, stats.options.maxDelay.inMilliseconds);
 
@@ -248,7 +251,7 @@ class SqrtDelayStrategy extends DelayStrategy {
     final jitter =
         1.0 + stats.options.randomizationFactor * (_rand.nextDouble() * 2 - 1);
 
-    final rootValue = pow(stats.attempt, 1 / rootDegree);
+    final rootValue = pow(stats.currentAttempt, 1 / rootDegree);
     final delayMs = stats.options.minDelay.inMilliseconds +
         stats.options.delayFactor.inMilliseconds * rootValue * jitter;
 

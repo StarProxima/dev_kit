@@ -1,12 +1,12 @@
 # Handler
 
-![Package Thumbnail](https://github.com/user-attachments/assets/2f549930-5647-4361-a53c-92f2bd94b30c)
+![package_thumbnail](https://github.com/user-attachments/assets/3db4e8c8-8753-4108-862a-ba16fc073511)
 
 > **The ultimate solution for robust, clean, and UX-friendly API operations in Flutter apps**
 
 Handler radically simplifies how you work with HTTP requests and async operations by providing a unified API that elegantly solves common challenges:
 
-- ✅ **Error management** - centralized with type safety
+- ✅ **Error management** - centralized and customizable with type safety
 - ✅ **Auto-retry** - seamless recovery from failures
 - ✅ **Rate-limiting** - optimized frequency control
 - ✅ **Operation control** - cancel or trigger operations on demand

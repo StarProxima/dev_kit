@@ -92,7 +92,7 @@ void main() {
         delayFactor: Duration.zero,
         retryIf: (error, stackTrace, stats) {
           // Only retry on even attempt numbers
-          return stats.attempt < 2;
+          return stats.currentAttempt < 2;
         },
       );
 
@@ -422,9 +422,9 @@ void main() {
       expect(attemptStats.length, equals(3));
 
       // Check attempt counters
-      expect(attemptStats[0].attempt, equals(1));
-      expect(attemptStats[1].attempt, equals(2));
-      expect(attemptStats[2].attempt, equals(3));
+      expect(attemptStats[0].currentAttempt, equals(1));
+      expect(attemptStats[1].currentAttempt, equals(2));
+      expect(attemptStats[2].currentAttempt, equals(3));
 
       // Check that time is increasing
       expect(
@@ -464,7 +464,7 @@ void main() {
       expect(errors[0], same(testError));
       expect(stackTraces.length, equals(2));
       expect(failStats.length, equals(2));
-      expect(failStats[0].attempt, equals(1));
+      expect(failStats[0].currentAttempt, equals(1));
     });
 
     test('willRetry is correctly set in stats', () async {

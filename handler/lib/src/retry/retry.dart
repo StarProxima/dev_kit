@@ -129,7 +129,8 @@ class Retry {
         var stats = RetryStats(
           key: key,
           options: options,
-          attempt: attempt,
+          currentAttempt: attempt,
+          failedAttempts: attempt - 1,
           delayBeforePreviosAttempt: lastDelay,
           delayBeforeNextAttempt: Duration.zero,
           startTime: startTime,
@@ -158,6 +159,7 @@ class Retry {
           return res;
         } on Object catch (e, s) {
           stats = stats.copyWith(
+            failedAttempts: attempt,
             elapsedTotalTime: stopwatch.elapsed,
             isRetryCanceled: !_activeRetries.contains(key),
           );

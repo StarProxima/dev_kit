@@ -33,8 +33,9 @@ class RequestRetryException implements Exception {
   /// Optional message explaining why a retry is needed.
   final String? message;
 
-  RequestRetryException(this.message);
+  const RequestRetryException([this.message]);
 
   @override
-  String toString() => 'ShouldRetry${message != null ? ':$message' : ''}';
+  String toString() =>
+      'RequestRetryException${message != null ? ': $message' : ''}';
 }

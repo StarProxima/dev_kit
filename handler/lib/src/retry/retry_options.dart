@@ -46,4 +46,24 @@ class RetryOptions {
       maxTotalTime: maxTotalTime ?? this.maxTotalTime,
     );
   }
+
+  @override
+  String toString() =>
+      'RetryOptions(maxAttempts: $maxAttempts, delayFactor: $delayFactor, minDelay: $minDelay, maxDelay: $maxDelay, randomizationFactor: $randomizationFactor, maxTotalTime: $maxTotalTime)';
+
+  @override
+  int get hashCode => Object.hash(maxAttempts, delayFactor, minDelay, maxDelay,
+      randomizationFactor, maxTotalTime);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RetryOptions) return false;
+    return maxAttempts == other.maxAttempts &&
+        delayFactor == other.delayFactor &&
+        minDelay == other.minDelay &&
+        maxDelay == other.maxDelay &&
+        randomizationFactor == other.randomizationFactor &&
+        maxTotalTime == other.maxTotalTime;
+  }
 }

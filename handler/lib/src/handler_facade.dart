@@ -5,6 +5,10 @@ import 'rate_limiter/rate_limiter.dart';
 import 'retry/retry.dart';
 import 'utils.dart';
 
+/// Mixin / Interface for adding handler methods to a class.
+///
+/// Provides a unified interface for handling operations with a handler for
+/// simplifying the usage handler methods.
 abstract mixin class HandlerFacade<BaseResponseError> {
   Handler<BaseResponseError> get handler;
 }
