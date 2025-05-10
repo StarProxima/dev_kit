@@ -36,7 +36,9 @@ class Handler<BaseResponseError> {
       final typeStr = BaseResponseError.toString();
 
       if (typeStr != 'dynamic' && typeStr != 'Object?') {
-        throw ParseBaseResponseErrorMissingError();
+        throw ArgumentError(
+          'If ErrorType is specified, the parseError parameter must be passed to the Handler',
+        );
       }
     }
   }

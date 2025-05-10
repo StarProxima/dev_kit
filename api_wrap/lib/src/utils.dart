@@ -31,17 +31,6 @@ typedef OnError<BaseResponseError, D> = FutureOr<D> Function(
 typedef GlobalOnError<BaseResponseError> = FutureOr<void> Function(
     HandledError<BaseResponseError> error);
 
-/// Exception thrown when ParseBaseResponseError function is not provided
-/// but BaseResponseError is not dynamic.
-///
-/// This indicates a configuration error where a specific error type was
-/// specified but the parser needed to create that type wasn't provided.
-class ParseBaseResponseErrorMissingError extends Error {
-  @override
-  String toString() =>
-      'If ErrorType is specified, the parseError parameter must be passed to the Handler';
-}
-
 /// Function for wrapping raw errors into HandledError types.
 ///
 /// Takes an exception and stack trace and produces a properly typed

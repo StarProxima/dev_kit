@@ -31,11 +31,13 @@ class OperationsContainer {
   }
 
   Future<void> fireAll() async {
-    final futures = debounceOperations.values.map(
-      (operation) => operation.complete(),
-    );
+    // Create a copy of operations to avoid concurrent modification
+    final debounceOps = List<DebounceOperation>.from(debounceOperations.values);
+    final futures = debounceOps.map((operation) => operation.complete());
 
-    for (final operation in throttleOperations.values) {
+    // Create a copy of throttle operations
+    final throttleOps = List<ThrottleOperation>.from(throttleOperations.values);
+    for (final operation in throttleOps) {
       operation.cancelCooldown();
     }
 
@@ -51,11 +53,15 @@ class OperationsContainer {
   }
 
   void cancelAll() {
-    for (final operation in debounceOperations.values) {
+    // Create a copy of operations to avoid concurrent modification
+    final debounceOps = List<DebounceOperation>.from(debounceOperations.values);
+    for (final operation in debounceOps) {
       operation.cancel();
     }
 
-    for (final operation in throttleOperations.values) {
+    // Create a copy of throttle operations
+    final throttleOps = List<ThrottleOperation>.from(throttleOperations.values);
+    for (final operation in throttleOps) {
       operation.cancelCooldown();
     }
   }

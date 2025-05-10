@@ -11,7 +11,7 @@ abstract mixin class HandlerFacade<BaseResponseError> {
 
 extension HandlerFacadeX<BaseResponseError>
     on HandlerFacade<BaseResponseError> {
-  /// {@macro handler.handle}
+  /// {@macro Handler.handle}
   FutureOr<D?> handle<T, D>(
     FutureOr<T> Function() function, {
     Object? key,
@@ -33,7 +33,7 @@ extension HandlerFacadeX<BaseResponseError>
         onError: onError,
       );
 
-  /// {@macro handler.handleStrict}
+  /// {@macro Handler.handleStrict}
   Future<D> handleStrict<T, D>(
     FutureOr<T> Function() function, {
     Object? key,

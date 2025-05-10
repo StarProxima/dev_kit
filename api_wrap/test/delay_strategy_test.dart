@@ -1,8 +1,5 @@
+import 'package:handler/handler.dart';
 import 'package:test/test.dart';
-
-import '../lib/src/retry/delay_stategy.dart';
-import '../lib/src/retry/retry_options.dart';
-import '../lib/src/retry/retry_stats.dart';
 
 void main() {
   group('DelayStrategy', () {
