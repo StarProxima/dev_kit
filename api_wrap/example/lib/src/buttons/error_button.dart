@@ -8,22 +8,25 @@ class ErrorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppButton(
-      onTap: () => handler.handle(
-        () => Future<String>.delayed(
-          const Duration(milliseconds: 600),
-          () => throw Exception('Oh no, error'),
+    return Center(
+      child: AppButton(
+        isSmall: true,
+        onTap: () => handler.handle(
+          () => Future<String>.delayed(
+            const Duration(milliseconds: 600),
+            () => throw Exception('Oh no, error'),
+          ),
+          onSuccess: (res) {
+            toastification.show(
+              type: ToastificationType.success,
+              autoCloseDuration: const Duration(seconds: 2),
+              title: Text(res),
+            );
+            return null;
+          },
         ),
-        onSuccess: (res) {
-          toastification.show(
-            type: ToastificationType.success,
-            autoCloseDuration: const Duration(seconds: 2),
-            title: Text(res),
-          );
-          return null;
-        },
+        text: 'Error function',
       ),
-      text: 'Error function',
     );
   }
 }

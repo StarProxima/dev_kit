@@ -8,21 +8,24 @@ class SuccessButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppButton(
-      onTap: () => handler.handle(
-        () => Future.delayed(
-          const Duration(milliseconds: 300),
-          () => 'Success Response',
+    return Center(
+      child: AppButton(
+        isSmall: true,
+        onTap: () => handler.handle(
+          () => Future.delayed(
+            const Duration(milliseconds: 300),
+            () => 'Success Response',
+          ),
+          onSuccess: (res) {
+            toastification.show(
+              type: ToastificationType.success,
+              autoCloseDuration: const Duration(seconds: 2),
+              title: Text(res),
+            );
+          },
         ),
-        onSuccess: (res) {
-          toastification.show(
-            type: ToastificationType.success,
-            autoCloseDuration: const Duration(seconds: 2),
-            title: Text(res),
-          );
-        },
+        text: 'Success function',
       ),
-      text: 'Success function',
     );
   }
 }
