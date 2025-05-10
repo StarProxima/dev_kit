@@ -34,6 +34,14 @@ class Controller with HandlerFacade {
       () => null,
       onError: (e) {
         handler.onError(e);
+
+        switch (e) {
+          case ErrorResponse(statusCode: >= 300):
+            // Handle 404 error
+            break;
+          default:
+          // Let the default handler do its job for other errors
+        }
       },
     );
   }

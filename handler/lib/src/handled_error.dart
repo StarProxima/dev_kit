@@ -37,7 +37,7 @@ class ErrorResponse<BaseResponseError> extends HandledError<BaseResponseError> {
   final DioException dioException;
 
   /// HTTP status code of the response (if available).
-  int? get statusCode => dioException.response?.statusCode;
+  int get statusCode => dioException.response?.statusCode ?? 0;
 
   /// Data sent in the request.
   dynamic get requestData => dioException.requestOptions.data;
