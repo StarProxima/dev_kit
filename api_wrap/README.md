@@ -46,13 +46,13 @@ try {
 ```dart
 // The Handler way:
 final result = await handler.handle(
-  () => dio.get('/endpoint'),
+  () => api.getData(), // Dio request in repository
   minExecutionTime: Duration(milliseconds: 300),   // No UI flicker
   retry: Retry(maxAttempts: 3),                    // Auto-retry on network issues
   rateLimiter: Debounce(duration: Duration(milliseconds: 300)),  // Rate control
-  onSuccess: (response) {
+  onSuccess: (data) {
     // Optionally transform or use part of the response
-    final data = MyData.fromJson(response.data); 
+    final data = data.someData;
     // No need to return anything from onSuccess if the primary goal is side-effects (e.g., UI update)
   },
   onError: (error) => handleSpecificError(error),  // Local error handling if needed
@@ -180,11 +180,40 @@ searchField.onChanged = (query) {
 };
 ```
 
-### `handle` vs `handleStrict`: What's the Difference?
+### `handle` vs `handleStrict`: Choosing the Right Tool
 
-- `FutureOr<D?> handle<T, D>(...)`: Use when the operation can succeed without returning a meaningful value (e.g., a POST request that returns `void` or `null` on success), or when `onError` provides a fallback value, or when `onSuccess` performs side-effects without returning a value. The result type `D?` is nullable.
+Handler offers two primary methods for executing your operations: `handle` and `handleStrict`. Understanding their differences will help you write cleaner and more predictable code.
 
-- `Future<D> handleStrict<T, D>(...)`: Use when a successful operation **must** return a non-null value of type `D`. If `onSuccess` is not provided or returns `null`, and the original function returns `null` or a different type, it will throw. If `onError` is not provided, any error will be re-thrown after global processing. This is useful for ensuring type safety and non-nullability in your data flow.
+**1. `handle<T, D>(...) -> FutureOr<D?>`**
+
+   - **Use Case**: Ideal when the operation might not return a meaningful value upon success, or when `onError` can provide a fallback value. It's also suitable if `onSuccess` is mainly for side-effects (like updating UI) and doesn't need to return a specific value.
+   - **Return Type**: `FutureOr<D?>` (nullable). This means the result `D` can be `null`.
+   - **Behavior**:
+     - If `onSuccess` is provided, it can transform the original result `T` into `D`. If `onSuccess` is not provided or returns `null`, the result will be `null` (or the value from `onError` if it provides one).
+     - If `onError` is provided and returns a value of type `D?`, that value will be the result in case of an error. Otherwise, if `onError` doesn't return a value or isn't provided, the global error handler runs, and `handle` resolves to `null`.
+
+   **When to use `handle`:**
+   - Executing "fire-and-forget" operations (e.g., a POST request that doesn't return data).
+   - When `onSuccess` is used for side-effects and doesn't need to return a value.
+   - When you have a specific fallback value to return from `onError` in certain error scenarios.
+
+**2. `handleStrict<T, D>(...) -> Future<D>`**
+
+   - **Use Case**: Essential when a successful operation **must** produce a non-null value of type `D`. This method enforces stricter type safety.
+   - **Return Type**: `Future<D>` (non-nullable). The result `D` is guaranteed to be non-null if the operation succeeds.
+   - **Behavior**:
+     - `onSuccess` is **required** and *must* return a non-null value of type `D`.
+     - If `onError` is not provided, any error encountered (after global error processing) will be **re-thrown**, halting further execution in the current chain. This ensures that you explicitly handle errors or let them propagate.
+     - If `onError` *is* provided, it *must* return a non-null value of type `D` to satisfy the non-nullable return type of `handleStrict`.
+
+   **When to use `handleStrict`:**
+   - Fetching data that is crucial for subsequent logic and must be non-null.
+   - Chaining operations where each step depends on a non-null result from the previous one.
+   - When you want to ensure that any unhandled error (by a local `onError`) aggressively stops the execution flow by re-throwing.
+
+In summary:
+- Choose `handle` for flexibility, nullable results, and side-effect-driven success handlers.
+- Choose `handleStrict` for robust, non-nullable results and when errors should either be explicitly handled to return a valid `D` or halt execution.
 
 ### 🧩 Elegant Nested Requests
 
