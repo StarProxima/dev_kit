@@ -8,17 +8,16 @@ These include error handling, validation, asynchronous data management, and dela
 
 ![package_thumbnail](https://github.com/user-attachments/assets/e64a441f-6650-4a23-9204-3c61a7a8f2a7)
 
-## Api Wrap
-
-![Package Thumbnail](https://github.com/user-attachments/assets/2f549930-5647-4361-a53c-92f2bd94b30c)
+## Handler
+![package_thumbnail](https://github.com/user-attachments/assets/3db4e8c8-8753-4108-862a-ba16fc073511)
 
 ## Riverpod Async Builder
 
-![Package Thumbnail](https://github.com/user-attachments/assets/7240a6b8-f4e3-4b2c-8665-81b16abf5a6d)
+![package_thumbnail](https://github.com/user-attachments/assets/7240a6b8-f4e3-4b2c-8665-81b16abf5a6d)
 
 ## Riverpod Validator
 
-![Package Thumbnail](https://github.com/user-attachments/assets/f3ed8e15-0428-495e-bbe0-2849a6358ab7)
+![package_thumbnail](https://github.com/user-attachments/assets/f3ed8e15-0428-495e-bbe0-2849a6358ab7)
 
 ## Contributors ✨
 
