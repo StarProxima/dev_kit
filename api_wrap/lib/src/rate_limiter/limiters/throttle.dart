@@ -5,7 +5,9 @@ import '../core/rate_operation.dart';
 import '../core/rate_timings.dart';
 import '../../operations_container.dart';
 
-/// Options for when to start the cooldown period
+/// {@template cooldown_launch}
+/// Options for when to start the cooldown period in throttle operations.
+/// {@endtemplate}
 enum CooldownLaunch {
   /// Cooldown starts immediately when the function execution begins
   immediately,
@@ -14,13 +16,25 @@ enum CooldownLaunch {
   afterFunction,
 }
 
+/// {@template throttle_rate_limiter}
 /// Rate limiter that limits execution frequency, ensuring a minimum
-/// interval between function calls
+/// interval between function calls.
+///
+/// Throttle immediately executes the first function call, then rejects
+/// subsequent calls until the cooldown period has elapsed.
+/// {@endtemplate}
 class Throttle extends RateLimiter {
-  /// Creates a throttle rate limiter.
+  /// {@macro throttle_rate_limiter}
   ///
   /// Immediately executes the function. If the method is called again with the
   /// same [key] within the specified time, the new request will not be executed.
+  ///
+  /// [duration] - The minimum interval between function executions.
+  /// [cooldownLaunch] - When to start the cooldown period.
+  /// [tickInterval] - Interval for timing updates during cooldown.
+  /// [onCooldownStart] - Callback triggered when cooldown starts.
+  /// [onCooldownTick] - Callback triggered on each tick during cooldown.
+  /// [onCooldownEnd] - Callback triggered when cooldown ends.
   Throttle({
     super.duration,
     this.cooldownLaunch = CooldownLaunch.afterFunction,
@@ -48,7 +62,7 @@ class Throttle extends RateLimiter {
   /// Container for operations managed by this rate limiter
   final container = OperationsContainer();
 
-  /// Processes a function with throttle rate limiting
+  /// {@macro rate_limiter.process}
   ///
   /// [key] - Identifier for the request. If not specified, [StackTrace.current] is used.
   @override
@@ -132,8 +146,17 @@ class Throttle extends RateLimiter {
   }
 }
 
-/// Represents a throttled operation
+/// {@template throttle_operation}
+/// Represents a throttled operation with its state and control mechanisms.
+///
+/// Manages the lifecycle of a function execution that has been throttled,
+/// including timing, cooldown period, and cancellation.
+/// {@endtemplate}
 class ThrottleOperation<T> extends RateOperation<T> {
+  /// {@macro throttle_operation}
+  ///
+  /// [rateLimiter] - The rate limiter that created this operation.
+  /// [onCooldownEnd] - Callback when cooldown period ends.
   ThrottleOperation({
     required super.rateLimiter,
     required this.onCooldownEnd,
@@ -148,7 +171,9 @@ class ThrottleOperation<T> extends RateOperation<T> {
   /// Timer controlling the cooldown period
   late Timer _timer;
 
-  /// Starts the cooldown period
+  /// Starts the cooldown period with the specified duration
+  ///
+  /// [duration] - The duration of the cooldown period.
   void startCooldown({
     required Duration duration,
   }) {
@@ -156,7 +181,7 @@ class ThrottleOperation<T> extends RateOperation<T> {
     _timer = Timer(duration, cancelCooldown);
   }
 
-  /// Cancels the cooldown period
+  /// Cancels the cooldown period, stopping the timer and notifying subscribers
   void cancelCooldown() {
     cooldownIsCancel = true;
     _timer.cancel();

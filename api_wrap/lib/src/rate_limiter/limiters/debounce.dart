@@ -5,13 +5,25 @@ import '../core/rate_operation.dart';
 import '../core/rate_timings.dart';
 import '../../operations_container.dart';
 
+/// {@template debounce_rate_limiter}
 /// Rate limiter that delays function execution until specified time has passed
 /// since the last call.
+///
+/// When multiple calls are made in quick succession, only the last one will
+/// execute after the specified delay period has elapsed since the most recent call.
+/// {@endtemplate}
 class Debounce extends RateLimiter {
-  /// Creates a debounce rate limiter.
+  /// {@macro debounce_rate_limiter}
   ///
   /// If the method is called again with the same [key],
   /// the previous request will be canceled, and the new one will execute after the specified time.
+  ///
+  /// [duration] - The delay before executing the function.
+  /// [canCancelRunningFunction] - Whether running functions can be canceled when a new call is made.
+  /// [tickInterval] - Interval for timing update ticks during delay.
+  /// [onDelayStart] - Callback triggered when delay starts.
+  /// [onDelayTick] - Callback triggered on each tick during delay with timing information.
+  /// [onDelayEnd] - Callback triggered when delay ends.
   Debounce({
     super.duration,
     this.canCancelRunningFunction = true,
@@ -39,7 +51,7 @@ class Debounce extends RateLimiter {
   /// Container for operations managed by this rate limiter
   final container = OperationsContainer();
 
-  /// Processes a function with debounce rate limiting
+  /// {@macro rate_limiter.process}
   ///
   /// [key] - Identifier for the request. If not specified, [StackTrace.current] is used.
   @override
@@ -120,8 +132,21 @@ class Debounce extends RateLimiter {
   }
 }
 
-/// Represents a debounced operation
+/// {@template debounce_operation}
+/// Represents a debounced operation with its state and control mechanisms.
+///
+/// Manages the lifecycle of a function execution that has been debounced,
+/// including timing, cancellation, and completion.
+/// {@endtemplate}
 class DebounceOperation<T> extends RateOperation<T> {
+  /// {@macro debounce_operation}
+  ///
+  /// [rateLimiter] - The rate limiter that created this operation.
+  /// [key] - Unique key identifying this operation.
+  /// [timer] - Timer controlling the delay.
+  /// [completer] - Completer for the operation result.
+  /// [function] - Function to execute after delay.
+  /// [onDelayEnd] - Callback when delay ends.
   DebounceOperation({
     required super.rateLimiter,
     required this.key,
@@ -151,7 +176,7 @@ class DebounceOperation<T> extends RateOperation<T> {
     startAt = DateTime.now();
   }
 
-  /// Cancels the operation
+  /// Cancels the operation, stopping the timer and notifying subscribers
   void cancel() {
     timer.cancel();
     onDelayEnd();
@@ -165,7 +190,7 @@ class DebounceOperation<T> extends RateOperation<T> {
     );
   }
 
-  /// Completes the operation by executing the function
+  /// Completes the operation by executing the function and delivering the result
   Future<void> complete() async {
     timer.cancel();
     onDelayEnd();

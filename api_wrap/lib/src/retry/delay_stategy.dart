@@ -15,34 +15,6 @@ abstract class DelayStrategy {
   /// Calculates the delay before the next retry attempt.
   Duration calculateDelay(RetryStats stats);
 
-  /// {@macro custom_delay_strategy}
-  ///
-  /// Example:
-  /// ```dart
-  /// final customStrategy = DelayStrategy.custom((stats) {
-  ///   // Custom logic to calculate delay
-  ///   return Duration(milliseconds: stats.attempt * 100);
-  /// });
-  /// ```
-  factory DelayStrategy.custom(DelayStrategyFn calculateDelay) =
-      CustomDelayStrategy;
-
-  /// {@macro delay_list_strategy}
-  ///
-  /// Example:
-  /// ```dart
-  /// final delayStrategy = DelayStrategy.byDelays([
-  ///   Duration(seconds: 5),
-  ///   Duration(seconds: 3),
-  ///   Duration(seconds: 1),
-  /// ]);
-  /// // first attempt: 3 second
-  /// // second attempt: 5 seconds
-  /// // third attempt: 1 seconds
-  /// // fourth and subsequent attempts: 1 seconds
-  /// ```
-  factory DelayStrategy.byDelays(List<Duration> delays) = DelayListStrategy;
-
   /// {@macro exponential_delay_strategy}
   static const DelayStrategy exponential = ExponentialDelayStrategy();
 
@@ -60,6 +32,34 @@ abstract class DelayStrategy {
 
   /// {@macro zero_delay_strategy}
   static const DelayStrategy zero = ZeroDelayStrategy();
+
+  /// {@macro list_delay_strategy}
+  ///
+  /// Example:
+  /// ```dart
+  /// final delayStrategy = DelayStrategy.byDelays([
+  ///   Duration(seconds: 5),
+  ///   Duration(seconds: 3),
+  ///   Duration(seconds: 1),
+  /// ]);
+  /// // first attempt: 5 second
+  /// // second attempt: 3 seconds
+  /// // third attempt: 1 seconds
+  /// // fourth and subsequent attempts: 1 seconds
+  /// ```
+  factory DelayStrategy.byDelays(List<Duration> delays) = ListDelayStrategy;
+
+  /// {@macro custom_delay_strategy}
+  ///
+  /// Example:
+  /// ```dart
+  /// final customStrategy = DelayStrategy.custom((stats) {
+  ///   // Custom logic to calculate delay
+  ///   return Duration(milliseconds: stats.attempt * 100);
+  /// });
+  /// ```
+  factory DelayStrategy.custom(DelayStrategyFn calculateDelay) =
+      CustomDelayStrategy;
 }
 
 /// {@template exponential_delay_strategy}
@@ -98,18 +98,18 @@ class ExponentialDelayStrategy extends DelayStrategy {
   }
 }
 
-/// {@template delay_list_strategy}
+/// {@template list_delay_strategy}
 /// Delay strategy that uses a predefined list of durations.
 ///
 /// For attempts exceeding the list length, the last duration in the list is used.
 /// This allows for complete control over the exact sequence of delays.
 /// {@endtemplate}
-class DelayListStrategy extends DelayStrategy {
+class ListDelayStrategy extends DelayStrategy {
   /// Creates a delay list strategy with the specified delays.
   ///
   /// The [delays] parameter is a list of durations to use for each attempt.
   /// For attempts beyond the list length, the last duration will be used.
-  const DelayListStrategy(this.delays);
+  const ListDelayStrategy(this.delays);
 
   /// The list of durations to use for each attempt.
   final List<Duration> delays;
