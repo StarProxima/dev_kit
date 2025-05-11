@@ -1,0 +1,31 @@
+import 'package:example/src/handler.dart';
+import 'package:example/src/app_button.dart';
+import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
+
+class SuccessButton extends StatelessWidget {
+  const SuccessButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: AppButton(
+        isSmall: true,
+        onTap: () => handler.handle(
+          () => Future.delayed(
+            const Duration(milliseconds: 300),
+            () => 'Success Response',
+          ),
+          onSuccess: (res) {
+            toastification.show(
+              type: ToastificationType.success,
+              autoCloseDuration: const Duration(seconds: 2),
+              title: Text(res),
+            );
+          },
+        ),
+        text: 'Success function',
+      ),
+    );
+  }
+}
