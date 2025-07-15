@@ -63,9 +63,19 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
       encryptedSharedPreferences: true,
     ),
   );
+  static const _encryptedStorageV2 = FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+      ),
+      iOptions: IOSOptions(
+        accessibility: KeychainAccessibility.first_unlock,
+      ));
   static const _refreshKey = 'refreshToken';
   static const _accessKey = 'accessToken';
   static const _userId = 'userId';
+  static const _refreshKeyV2 = 'refreshTokenV2';
+  static const _accessKeyV2 = 'accessTokenV2';
+  static const _userIdV2 = 'userIdV2';
 
   @override
   Future<AuthToken?> build() async {
@@ -82,24 +92,53 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
     await _encryptedStorage.delete(key: _refreshKey);
     await _encryptedStorage.delete(key: _accessKey);
     await _encryptedStorage.delete(key: _userId);
+    await _encryptedStorageV2.delete(key: _refreshKeyV2);
+    await _encryptedStorageV2.delete(key: _accessKeyV2);
+    await _encryptedStorageV2.delete(key: _userIdV2);
     setData(null);
   }
 
   @override
   Future<AuthToken?> read() async {
     try {
-      final refreshToken = await _encryptedStorage.read(key: _refreshKey);
-      final accessToken = await _encryptedStorage.read(key: _accessKey);
-      final userId = await _encryptedStorage.read(key: _userId);
+      var refreshToken = await _encryptedStorageV2.read(key: _refreshKeyV2);
+      var accessToken = await _encryptedStorageV2.read(key: _accessKeyV2);
+      var userId = await _encryptedStorageV2.read(key: _userIdV2);
 
-      if (accessToken == null || refreshToken == null) return null;
+      if (accessToken != null && refreshToken != null) {
+        return AuthToken(
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: userId,
+        );
+      }
+      try {
+        refreshToken = await _encryptedStorage.read(key: _refreshKey);
+        accessToken = await _encryptedStorage.read(key: _accessKey);
+        userId = await _encryptedStorage.read(key: _userId);
 
-      return AuthToken(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        userId: userId,
-      );
+        if (accessToken == null || refreshToken == null) return null;
+
+        final token = AuthToken(
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: userId,
+        );
+        // Сразу записываем старый токен в новый сторедж, так как он может быть еще валидным,
+        // чтобы в следующий раз считать уже из нового стореджа
+        await write(token);
+
+        return token;
+      } catch (e, s) {
+        await _encryptedStorage.deleteAll();
+        throw FailedReadFromStorageException(
+          message: 'Failed read from encrypted storage!',
+          error: e,
+          stacktrace: s,
+        );
+      }
     } catch (e, s) {
+      await _encryptedStorageV2.deleteAll();
       await _encryptedStorage.deleteAll();
       throw FailedReadFromStorageException(
         message: 'Failed read from encrypted storage!',
@@ -111,10 +150,16 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
 
   @override
   Future<void> write(AuthToken token) async {
-    await _encryptedStorage.write(key: _refreshKey, value: token.refreshToken);
-    await _encryptedStorage.write(key: _accessKey, value: token.accessToken);
-    await _encryptedStorage.write(
-      key: _userId,
+    await _encryptedStorageV2.write(
+      key: _refreshKeyV2,
+      value: token.refreshToken,
+    );
+    await _encryptedStorageV2.write(
+      key: _accessKeyV2,
+      value: token.accessToken,
+    );
+    await _encryptedStorageV2.write(
+      key: _userIdV2,
       value: token.userId?.toString(),
     );
 
