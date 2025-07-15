@@ -12,11 +12,10 @@ export 'package:project_kit/src/extensions/ref_cache.dart';
 export 'package:project_kit/src/extensions/string_utils.dart';
 export 'package:project_kit/src/hooks/use_app_lifecycle_listener.dart';
 export 'package:project_kit/src/hooks/use_listener.dart';
-export 'package:project_kit/src/internal/logger/dev_kit_logger.dart'
-    show _settingsBuilder, DevKitLogger;
+export 'package:project_kit/src/internal/logger/dev_kit_logger.dart' show _settingsBuilder, DevKitLogger;
 export 'package:project_kit/src/utils/auth_token_handler/auth_token.dart';
 export 'package:project_kit/src/utils/auth_token_handler/auth_token_handler.dart';
-export 'package:project_kit/src/utils/auth_token_handler/security_token_storage.dart';
+export 'package:project_kit/src/utils/auth_token_handler/secure_token_storage.dart';
 export 'package:project_kit/src/utils/interfaces.dart';
 export 'package:project_kit/src/utils/notifier_async_utils/notifier_async_utils.dart';
 export 'package:project_kit/src/utils/persistence/persistence_mixin.dart';

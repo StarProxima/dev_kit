@@ -11,29 +11,14 @@ import '../interfaces.dart';
 import '../notifier_async_utils/notifier_async_utils.dart';
 import 'auth_token.dart';
 
-part 'security_token_storage.g.dart';
-
-class FailedReadFromStorageException implements Exception {
-  final Object error;
-  final StackTrace stacktrace;
-
-  const FailedReadFromStorageException({
-    required this.stacktrace,
-    required this.error,
-  });
-
-  @override
-  String toString() {
-    return 'FailedReadFromStorageException(error: $error, stacktrace: $stacktrace)';
-  }
-}
+part 'secure_token_storage.g.dart';
 
 @Riverpod(keepAlive: true)
 class UserChanged extends _$UserChanged {
   @override
-  void build({String? id}) {
+  void build() {
     ref.listen(
-      securityTokenStorageProvider(id: id),
+      secureTokenStorageProvider,
       (asyncPrevToken, asyncCurrentToken) {
         if (asyncPrevToken == null) return;
         if (!asyncPrevToken.hasValue) return;
@@ -50,15 +35,23 @@ class UserChanged extends _$UserChanged {
 
 @Riverpod(keepAlive: true)
 // ignore: prefer-boolean-prefixes
-bool userAuthorized(Ref ref, {String? id}) {
-  final token = ref.watch(securityTokenStorageProvider(id: id));
+bool userAuthorized(Ref ref) {
+  final token = ref.watch(secureTokenStorageProvider);
 
   return token.valueOrNull != null;
 }
 
+@Riverpod(keepAlive: true)
+// ignore: prefer-boolean-prefixes
+/// Можно переопределить, чтобы использовать другой id для хранения токенов
+/// Например, чтобы использовать разные стораджи для разных окружений
+String? secureTokenStorageId(Ref ref) {
+  return null;
+}
+
 /// Отвечает за управление и хранение токенов авторизации пользователя.
 @Riverpod(keepAlive: true)
-class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, TokenStorage<AuthToken> {
+class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStorage<AuthToken> {
   static const _encryptedStorageV1 = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
@@ -77,10 +70,12 @@ class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, Token
   static const _accessKeyV1 = 'accessToken';
   static const _userIdV1 = 'userId';
 
-  String get _authTokenKeyV2 => '${id}_auth_token';
+  String? get _id => ref.read(secureTokenStorageIdProvider);
+
+  String get _authTokenKeyV2 => '${_id}_auth_token';
 
   @override
-  Future<AuthToken?> build({String? id}) async {
+  Future<AuthToken?> build() async {
     try {
       final token = await read();
       return token;
@@ -163,5 +158,20 @@ class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, Token
     );
 
     await future;
+  }
+}
+
+class FailedReadFromStorageException implements Exception {
+  final Object error;
+  final StackTrace stacktrace;
+
+  const FailedReadFromStorageException({
+    required this.stacktrace,
+    required this.error,
+  });
+
+  @override
+  String toString() {
+    return 'FailedReadFromStorageException(error: $error, stacktrace: $stacktrace)';
   }
 }
