@@ -51,13 +51,9 @@ class UserChanged extends _$UserChanged {
 @Riverpod(keepAlive: true)
 // ignore: prefer-boolean-prefixes
 bool userAuthorized(Ref ref, {String? id}) {
-  try {
-    final token = ref.watch(securityTokenStorageProvider(id: id));
+  final token = ref.watch(securityTokenStorageProvider(id: id));
 
-    return token.requireValue != null;
-  } catch (e) {
-    return false;
-  }
+  return token.valueOrNull != null;
 }
 
 /// Отвечает за управление и хранение токенов авторизации пользователя.
@@ -81,14 +77,16 @@ class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, Token
   static const _accessKeyV1 = 'accessToken';
   static const _userIdV1 = 'userId';
 
-  late final _authTokenKeyV2 = '${id}_auth_token';
+  String get _authTokenKeyV2 => '${id}_auth_token';
 
   @override
   Future<AuthToken?> build({String? id}) async {
     try {
       final token = await read();
       return token;
-    } catch (_) {
+    } catch (e, s) {
+      // ignore: unawaited_futures
+      Future.error(e, s);
       return null;
     }
   }
@@ -110,9 +108,11 @@ class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, Token
       final authTokenStr = await _encryptedStorageV2.read(key: _authTokenKeyV2);
 
       if (authTokenStr != null) {
-        return AuthToken.fromJson(
+        final authToken = AuthToken.fromJson(
           jsonDecode(authTokenStr),
         );
+
+        return authToken;
       }
 
       try {
@@ -151,13 +151,7 @@ class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, Token
 
   @override
   Future<void> write(AuthToken token) async {
-    setData(
-      AuthToken(
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-        userId: token.userId,
-      ),
-    );
+    setData(token);
 
     final authTokenStr = jsonEncode(token.toJson());
 
