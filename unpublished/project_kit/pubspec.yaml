@@ -20,7 +20,7 @@ dependencies:
   fluttertoast: ^8.2.4
   proxima_logger: ^0.7.2
   path_provider: ^2.1.1
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.4
   dio: ^5.4.1
 
 

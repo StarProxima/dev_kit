@@ -4,7 +4,7 @@ import 'package:riverpod_async_builder/riverpod_utils.dart' as utils;
 import '../../project_kit.dart';
 
 extension RefCacheX on AutoDisposeRef {
-  void listenUserChanges() {
+  void listenUserChanges({String? id}) {
     final ref = this;
 
     // Мы не можем сразу подписаться на userChangedProvider, т.к. если повайдера никто не слушает и он обновляется,
@@ -15,19 +15,19 @@ extension RefCacheX on AutoDisposeRef {
       case AutoDisposeFutureProviderRef():
         ref.listenSelf((prev, next) {
           if ((prev?.hasValue ?? false) || next.hasValue) {
-            ref.watch(userChangedProvider);
+            ref.watch(userChangedProvider(id: id));
           }
         });
 
       case AutoDisposeAsyncNotifierProviderRef():
         ref.listenSelf((prev, next) {
           if ((prev?.hasValue ?? false) || next.hasValue) {
-            ref.watch(userChangedProvider);
+            ref.watch(userChangedProvider(id: id));
           }
         });
 
       default:
-        ref.watch(userChangedProvider);
+        ref.watch(userChangedProvider(id: id));
     }
   }
 
