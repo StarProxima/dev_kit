@@ -112,6 +112,8 @@ class SecurityTokenStorage extends _$SecurityTokenStorage implements IRef, Token
           jsonDecode(authTokenStr),
         );
 
+        setData(authToken);
+
         return authToken;
       }
 
