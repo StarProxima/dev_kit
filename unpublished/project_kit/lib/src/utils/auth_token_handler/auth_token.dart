@@ -41,4 +41,22 @@ class AuthToken extends OAuth2Token {
       userId: json['userId'],
     );
   }
+
+  AuthToken copyWith({
+    String? accessToken,
+    String? refreshToken,
+    String? userId,
+    String? tokenType,
+    int? expiresIn,
+    String? scope,
+  }) {
+    return AuthToken(
+      accessToken: accessToken ?? this.accessToken,
+      refreshToken: refreshToken ?? this.refreshToken,
+      userId: userId ?? this.userId,
+      tokenType: tokenType ?? this.tokenType,
+      expiresIn: expiresIn ?? this.expiresIn,
+      scope: scope ?? this.scope,
+    );
+  }
 }
