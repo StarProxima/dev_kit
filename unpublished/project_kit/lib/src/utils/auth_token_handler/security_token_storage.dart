@@ -10,6 +10,18 @@ import 'auth_token.dart';
 
 part 'security_token_storage.g.dart';
 
+class FailedReadFromStorageException implements Exception {
+  final String message;
+  final Object error;
+  final StackTrace stacktrace;
+
+  const FailedReadFromStorageException({
+    required this.message,
+    required this.stacktrace,
+    required this.error,
+  });
+}
+
 @Riverpod(keepAlive: true)
 class UserChanged extends _$UserChanged {
   @override
@@ -89,7 +101,11 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
       );
     } catch (e, s) {
       await _encryptedStorage.deleteAll();
-      return null;
+      throw FailedReadFromStorageException(
+        message: 'Failed read from encrypted storage!',
+        error: e,
+        stacktrace: s,
+      );
     }
   }
 
