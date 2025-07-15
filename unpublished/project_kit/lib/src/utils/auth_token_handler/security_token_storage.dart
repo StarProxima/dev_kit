@@ -104,5 +104,6 @@ class SecurityTokenStorage extends _$SecurityTokenStorage
         userId: token.userId,
       ),
     );
+    await future;
   }
 }
