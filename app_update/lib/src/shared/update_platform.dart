@@ -4,23 +4,33 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class UpdatePlatform {
-  static const android = UpdatePlatform('android');
-  static const fuchsia = UpdatePlatform('fuchsia');
-  static const ios = UpdatePlatform('ios');
-  static const linux = UpdatePlatform('linux');
-  static const macos = UpdatePlatform('macos');
-  static const windows = UpdatePlatform('windows');
-  static const web = UpdatePlatform('web');
+  static const android = UpdatePlatform.custom('android');
+  static const fuchsia = UpdatePlatform.custom('fuchsia');
+  static const ios = UpdatePlatform.custom('ios');
+  static const linux = UpdatePlatform.custom('linux');
+  static const macos = UpdatePlatform.custom('macos');
+  static const windows = UpdatePlatform.custom('windows');
+  static const web = UpdatePlatform.custom('web');
 
-  static const values = [android, fuchsia, ios, linux, macos, windows, web];
+  static const values = [
+    android,
+    fuchsia,
+    ios,
+    linux,
+    macos,
+    windows,
+    web,
+  ];
 
-  final String _platform;
+  final String _name;
 
-  String get name => _platform.toLowerCase();
+  String get name => _name.toLowerCase();
 
-  const UpdatePlatform(this._platform);
+  const UpdatePlatform._(this._name);
 
-  factory UpdatePlatform.current() => UpdatePlatform(
+  const factory UpdatePlatform.custom(String name) = UpdatePlatform._;
+
+  factory UpdatePlatform.current() => UpdatePlatform._(
         kIsWeb ? web.name : Platform.operatingSystem,
       );
 

@@ -16,7 +16,7 @@ class GlobalPlatformParser {
       // Short syntax
       if (value is String) {
         return GlobalPlatformConfig.byRequired(
-          platform: UpdatePlatform(value),
+          platform: UpdatePlatform.custom(value),
           source: null,
           customData: null,
         );
@@ -32,7 +32,7 @@ class GlobalPlatformParser {
     // name
     final nameValue = map.remove('name');
     if (nameValue is! String) throw const UpdateConfigException();
-    final name = UpdatePlatform(nameValue);
+    final name = UpdatePlatform.custom(nameValue);
 
     // source
     final sourceValue = map.remove('source');

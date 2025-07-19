@@ -3,9 +3,15 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:pub_semver/pub_semver.dart';
+
 import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
+import '../shared/update_platform.dart';
+import '../shared/update_view_type.dart';
+import '../shared/update_version_type.dart';
+import '../sources/source.dart';
 import 'exceptions.dart';
 
 abstract class UpdateControllerBase {
@@ -33,6 +39,16 @@ abstract class UpdateControllerBase {
   /// Does not make a new request if the data already exists.
   Future<AppUpdate> findUpdate({
     Locale locale,
+  });
+
+  Future<AppUpdate> findUpdateV3({
+    UpdatePlatform? platform,
+    Source? targetSource,
+    Source? defaultSource,
+    Version? appVersion,
+    Locale? locale,
+    UpdateViewType? uiType,
+    AppVersionStatus? appVersionType,
   });
 
   /// Finds updates from all sources for current platform.

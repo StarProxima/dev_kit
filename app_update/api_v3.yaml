@@ -1,94 +1,124 @@
-text:
-  base:
-    base:
-      en:
-        title: Update App 
-        description: Description
-      ru:
-        title: Обновите приложение
-        description: Описание
-
-    unsupported:
-      title:
-  card:
-    base:
-     ru:
+content:
+  - view: card
+    app_status: all
+    locale: all
+    data:
+      title: Обновите приложение
+      description: Описание
+      custom_img: 
+        url: https://example.com
+        border_radius: 10
+  - view: all
+    locale: ru
+    app_status: 
+      - outdated
+      - deprecated
+    data:
       title: Обновите приложение
       description: Описание
 
-text_0:
-  title: Title
-
-text_1:
-  ru:
-    title: Title
-  en:
-    title: Title
-
-
-text_2:
-  base:
-    ru:
-      title: Title
-    en:
-      title: Title
-  unsupported:
-    ru:
-      title: Title
-
-text_3:
-  base:
-    base:
-      ru:
-        title: Title
-      en:
-        title: Title
-    unsupported:
-      ru:
-        title: Title
-  card:
-    title: Title
-
-text_999:
-  ru:
-    unsupported:
-      dialog:
-        title: Title
-  en:
-    dialog:
-      unsupported:
-        title: Title
-  fr:
-    dialog:
-      title: Title
-
-  es:
-    unsupported:
-      title: Title
-  
-  ch:
-    title: Title
-
-text:
-  card:
-    unsupported:
-      title: Title 2
-
-  
 settings:
-  base:
-    can_skip_release: true
-  dialog:
-    unsupported:
+  - view: all
+    app_status: unsupported
+    data:
+      reminder_period_hours: 96
+      rollout_hours: 96
+      delay_hours: 20
       can_skip_release: true
-    updatable:
+      can_postpone_release: true
+  - view: 
+      - card
+      - dialog
+    app_status: 
+      - unsupported
+      - deprecated
+      - custom_app_status
+    data:
+      postpone_delay_hours: 96
       can_skip_release: true
-  card:
-    can_skip_release: true
+      can_postpone_release: true
+      rollout:
+        - delay_hours: 20
+          rollout_hours: 96
+  - view: all
+    app_status: active
+    data:
+      should_show_release: false
 
-version_settings:
-  unsupported_versions: ["<=4.2.0", 0.3.4]
-  deprecated_versions: ["<=5.1.0 >=4.2.0 ", ">5.6.0 <5.6.7"]
+
+version_rules:
+  # All versions before 1.0.0 are unsupported
+  - version: '<=1.0.0'
+    rollout:
+      - app_status: unsupported
+
+  # All versions after 6.0.0 are active
+  - version: '>=6.0.0'
+    rollout:
+      - app_status: active
+
+  # All versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
+  - version: '<=2.0.0'
+    date: 2014-10-17 23:00:00
+    rollout:
+      - app_status: unsupported
+  
+  # All versions before 3.0.0 are: 
+  # unsupported after 2014-10-17 + 168+72 hours
+  - version: '<=3.0.0'
+    date: 2014-10-17
+    rollout:
+      - delay_hours: 168
+        rollout_hours: 72
+      - app_status: unsupported
+
+  # All versions before 4.0.0 are:
+  # outdated after 2014-10-17 + 10 days 
+  # deprecated after 2014-10-17 + 144 days
+  # unsupported after 2014-10-17 + 278 days
+  - version: '>-=3.0.0 <4.0.0'
+    date: 2014-10-17 00:00:00
+    rollout:
+      - delay_hours: 168 # 7 days
+        rollout_hours: 72 # 3 days
+        app_status: outdated
+      - delay_hours: 2880  # 120 days
+        rollout_hours: 336 # 14 days
+        app_status: deprecated
+      - date: 2015-01-01 00:00:00
+        rollout_hours: 336 # 14 days
+        app_status: unsupported
+
+  # All matched versions are deprecated
+  - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+    rollout: 
+      - app_status: deprecated
+
+
+  # Sets the lifecycle of the application updates.
+  # The `use_app_release_date` flag calculates the release of 
+  # the current or first matched lower version
+  # And uses it instead of `date`.
+  # If the date is not found in the `releases` list,
+  # then the `date` is used.
+  #
+  # All matched versions are:
+  # outdated if is older than 10 days
+  # deprecated if is older than 144 days
+  # unsupported if is older than 278 days
+  - version: all
+    date: 2014-10-17 00:00:00
+    use_app_release_date: true
+    rollout:
+      - delay_hours: 168 # 7 days
+        rollout_hours: 72 # 3 days
+        app_status: outdated
+      - delay_hours: 2880  # 120 days
+        rollout_hours: 336 # 14 days
+        app_status: deprecated
+      - delay_hours: 2880 # 120 days
+        rollout_hours: 336 # 14 days
+        app_status: unsupported
 
 sources:
   - name: appStore
@@ -224,7 +254,7 @@ releases:
               release:
                 settings:
                   dialog:
-                    updatable:
+                    outdated:
                       can_skip_release: true
 
       - name: appStore
