@@ -1,5 +1,9 @@
+# Набор правил для контента релизов, содержит строки и прочую инфу по конретному обновлению
+# Создается набор правил, которые поочередно применяются к конкретному релизу,
+# если они подходят под условия.
+# Т.е. для релиза может примениться несколько правил, последние более приоритетны.
 content:
-  - view: card
+  - display_target: card
     app_status: all
     locale: all
     data:
@@ -9,7 +13,7 @@ content:
         url: https://example.com
         border_radius: 10
 
-  - view: all
+  - display_target: all
     locale: ru
     app_status: 
       - outdated
@@ -18,10 +22,15 @@ content:
       title: Обновите приложение
       description: Описание
 
+# Набор правил для настроек релизов
+# Действует такая же логика с правилами, что и для контента
 settings:
+  # Задаем настройки по умолчанию для всех релизов
   - app_status: all
-    view: all
+    display_target: all
     data:
+      # Выключаем отображение по умолчанию,
+      # чтобы включить для конкретных таргетов
       should_show: false        
       actions:
         - name: skip
@@ -30,17 +39,19 @@ settings:
         - name: postpone
           release_delay_hours: 96
           all_releases_delay_hours: 24
-        - name: mark_as_viewed
+        - name: view
           release_delay_hours: 8
           all_releases_delay_hours: 0
+
+  # Настраиваем actions для статусов
   
   - app_status: unsupported
-    view: all
+    display_target: all
     data:   
       actions: []
 
   - app_status: deprecated
-    view: all
+    display_target: all
     data:   
       actions: 
         - name: postpone
@@ -51,27 +62,30 @@ settings:
       - outdated
       - updateable
       - active
-    view: all
+    display_target: all
     data:   
       actions: 
         - skip
         - postpone
         - view
 
+  # Настраиваем отображение по каждому статусу для конкретных таргетов,
+  # чтобы настроить гибкое отображение в зависимости от статуса
+
   - app_status: active
-    view: about_screen
+    display_target: about_screen
     data:
       should_show: true
   
   - app_status: updateable
-    view: 
+    display_target: 
       - about_screen
       - card
     data:
       should_show: true
 
   - app_status: outdated
-    view: 
+    display_target: 
       - about_screen
       - card
       - profile_badge
@@ -80,7 +94,7 @@ settings:
       should_show: true
 
   - app_status: deprecated
-    view: 
+    display_target: 
       - about_screen
       - card
       - profile_badge
@@ -89,19 +103,21 @@ settings:
       should_show: true
 
   - app_status: unsupported
-    view: screen
+    display_target: screen
     data:
       should_show: true
 
-release_version_rules:
-  # All matched versions are discontinued
-  - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
-    release_status: discontinued
-
-app_version_rules:
+# Правила для версий
+# Позволяет гибко задать настройки и распределить версии по статусам,
+# учитывая rollout и date.
+# Применяется первое подходящее правило (и последнее в rollout),
+# устанавливая app_status и release_status.
+version_rules:
   # All versions before 1.0.0 are unsupported
   - version: '<=1.0.0'
     app_status: unsupported
+    # Релизы с такой не будут доступны для обновления
+    release_status: discontinued
 
   # All versions after 6.0.0 are active
   - version: '>=6.0.0'
@@ -158,8 +174,7 @@ app_version_rules:
 
   # Sets the lifecycle of the application updates.
   # The `date: app_release` parameter calculates the release of 
-  # the current or nearest  version
-  # and uses it instead of `date`.
+  # the current or nearest  version and uses it instead of `date`.
   # If the date is not found in the `releases` list,
   # then rule is not applied.
   #
@@ -180,7 +195,10 @@ app_version_rules:
         rollout_hours: 336 # 14 days
         app_status: unsupported
 
-  - app_version: all
+  # Задает жизненный цикл релизов
+  # The `date: update_release` parameter take date from 
+  # latest matched release and uses it instead of `date`.
+  - version: all
     date: update_release
     rollout:
       - app_status: active
@@ -188,7 +206,7 @@ app_version_rules:
         rollout_hours: 72 # 3 days
         app_status: outdated
 
-  - app_version: all
+  - version: all
     app_status: active
 
 
@@ -228,6 +246,7 @@ sources:
 
 releases:
   - version: 0.3.7
+    # Local time
     date: "2024-08-24 15:35:00"
     content:
       release_notes: |-
@@ -290,32 +309,40 @@ releases:
                   ru:
                     release_notes: Windows Github release notes
                 settings:
-                  can_skip_release: false
+                  actions:
+                    - postpone
        
 
   - version: 0.2.4
+    # UTC time
     date: 2014-10-17 23:00:00Z
     content:
       title: Title
       description: Description
       release_notes: Note
     settings:
-      can_skip_release: true
+      actions:
+        - skip
+        - postpone
     sources:
       - name: googlePlay
         url: www.example.com
         release:
           date: 2014-10-17 23:00:00
           settings:
-            can_skip_release: false
+            actions:
+              - postpone
         platforms:
           - name: android
             source:
               release:
                 settings:
-                  dialog:
-                    outdated:
-                      can_skip_release: true
+                  - target: dialog
+                    app_status: outdated
+                    data:
+                      actions:
+                        - skip
+                        - postpone
 
       - name: appStore
         content:
