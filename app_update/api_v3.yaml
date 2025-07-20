@@ -43,11 +43,6 @@ settings:
         release_delay_hours: 96
         all_releases_delay_hours: 24
 
-      can_view: false
-      view_settings:
-          release_delay_hours: 8
-          all_releases_delay_hours: 0
-
   # Настраиваем actions для статусов
   
   - app_status: unsupported
@@ -55,13 +50,11 @@ settings:
     data:   
       can_skip: false
       can_postpone: false
-      can_view: false
 
   - app_status: deprecated
     display_target: all
     data:
       can_postpone: true
-      can_view: true
       postpone_settings:
         release_delay_hours: 24
         all_releases_delay_hours: 24
@@ -74,7 +67,6 @@ settings:
     data:   
       can_skip: true
       can_postpone: true
-      can_view: true
 
   # Настраиваем отображение по каждому статусу для конкретных таргетов,
   # чтобы настроить гибкое отображение в зависимости от статуса
