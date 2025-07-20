@@ -34,14 +34,12 @@ settings:
       should_show: false
 
       can_skip: false      
-      skip_settings:
-        release_delay_hours: 2160
-        all_releases_delay_hours: 72
+      skip_release_delay_hours: 2160
+      skip_all_releases_delay_hours: 72
 
       can_postpone: false
-      postpone_settings:
-        release_delay_hours: 96
-        all_releases_delay_hours: 24
+      postpone_release_delay_hours: 96
+      postpone_all_releases_delay_hours: 24
 
   # Настраиваем actions для статусов
   
@@ -55,9 +53,8 @@ settings:
     display_target: all
     data:
       can_postpone: true
-      postpone_settings:
-        release_delay_hours: 24
-        all_releases_delay_hours: 24
+      postpone_release_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
   
   - app_status: 
       - outdated
@@ -305,8 +302,9 @@ releases:
               url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
               release:
                 content:
-                  ru:
-                    release_notes: Windows Github release notes
+                  - locale: ru
+                    data:
+                      release_notes: Windows Github release notes
                 settings:
                   can_postpone: true
        
