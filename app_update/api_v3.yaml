@@ -31,15 +31,20 @@ settings:
     data:
       # Выключаем отображение по умолчанию,
       # чтобы включить для конкретных таргетов
-      should_show: false        
-      actions:
-        - name: skip
-          release_delay_hours: 2160
-          all_releases_delay_hours: 72
-        - name: postpone
-          release_delay_hours: 96
-          all_releases_delay_hours: 24
-        - name: view
+      should_show: false
+
+      can_skip: false      
+      skip_settings:
+        release_delay_hours: 2160
+        all_releases_delay_hours: 72
+
+      can_postpone: false
+      postpone_settings:
+        release_delay_hours: 96
+        all_releases_delay_hours: 24
+
+      can_view: false
+      view_settings:
           release_delay_hours: 8
           all_releases_delay_hours: 0
 
@@ -48,15 +53,18 @@ settings:
   - app_status: unsupported
     display_target: all
     data:   
-      actions: []
+      can_skip: false
+      can_postpone: false
+      can_view: false
 
   - app_status: deprecated
     display_target: all
-    data:   
-      actions: 
-        - name: postpone
-          release_delay_hours: 24
-          all_releases_delay_hours: 24
+    data:
+      can_postpone: true
+      can_view: true
+      postpone_settings:
+        release_delay_hours: 24
+        all_releases_delay_hours: 24
   
   - app_status: 
       - outdated
@@ -64,10 +72,9 @@ settings:
       - active
     display_target: all
     data:   
-      actions: 
-        - skip
-        - postpone
-        - view
+      can_skip: true
+      can_postpone: true
+      can_view: true
 
   # Настраиваем отображение по каждому статусу для конкретных таргетов,
   # чтобы настроить гибкое отображение в зависимости от статуса
@@ -309,8 +316,7 @@ releases:
                   ru:
                     release_notes: Windows Github release notes
                 settings:
-                  actions:
-                    - postpone
+                  can_postpone: true
        
 
   - version: 0.2.4
@@ -321,17 +327,15 @@ releases:
       description: Description
       release_notes: Note
     settings:
-      actions:
-        - skip
-        - postpone
+      can_skip: true
+      can_postpone: true
     sources:
       - name: googlePlay
         url: www.example.com
         release:
           date: 2014-10-17 23:00:00
           settings:
-            actions:
-              - postpone
+            can_postpone: true
         platforms:
           - name: android
             source:
@@ -340,9 +344,8 @@ releases:
                   - target: dialog
                     app_status: outdated
                     data:
-                      actions:
-                        - skip
-                        - postpone
+                      can_skip: true
+                      can_postpone: true
 
       - name: appStore
         content:
