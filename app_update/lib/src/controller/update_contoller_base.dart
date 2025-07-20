@@ -10,7 +10,7 @@ import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_view_type.dart';
-import '../shared/update_version_type.dart';
+import '../shared/app_status.dart';
 import '../sources/source.dart';
 import 'exceptions.dart';
 
@@ -43,12 +43,12 @@ abstract class UpdateControllerBase {
 
   Future<AppUpdate> findUpdateV3({
     UpdatePlatform? platform,
-    Source? targetSource,
-    Source? defaultSource,
+    List<Source?> sources,
     Version? appVersion,
     Locale? locale,
-    UpdateViewType? uiType,
-    AppVersionStatus? appVersionType,
+    UpdateViewType? viewType,
+    AppStatus? appStatus,
+    DateTime? date,
   });
 
   /// Finds updates from all sources for current platform.

@@ -8,6 +8,7 @@ content:
       custom_img: 
         url: https://example.com
         border_radius: 10
+
   - view: all
     locale: ru
     app_status: 
@@ -18,39 +19,89 @@ content:
       description: Описание
 
 settings:
-  - view: all
-    app_status: unsupported
+  - app_status: all
+    view: all
     data:
-      reminder_period_hours: 96
-      rollout_hours: 96
-      delay_hours: 20
-      can_skip_release: true
-      can_postpone_release: true
-  - view: 
+      should_show: false        
+      actions:
+        - name: skip
+          release_delay_hours: 2160
+          all_releases_delay_hours: 72
+        - name: postpone
+          release_delay_hours: 96
+          all_releases_delay_hours: 24
+        - name: mark_as_viewed
+          release_delay_hours: 8
+          all_releases_delay_hours: 0
+  
+  - app_status: unsupported
+    view: all
+    data:   
+      actions: []
+
+  - app_status: deprecated
+    view: all
+    data:   
+      actions: 
+        - name: postpone
+          release_delay_hours: 24
+          all_releases_delay_hours: 24
+  
+  - app_status: 
+      - outdated
+      - updateable
+      - active
+    view: all
+    data:   
+      actions: 
+        - skip
+        - postpone
+        - view
+
+  - app_status: active
+    view: about_screen
+    data:
+      should_show: true
+  
+  - app_status: updateable
+    view: 
+      - about_screen
       - card
-      - dialog
-    app_status: 
-      - unsupported
-      - deprecated
-      - custom_app_status
     data:
-      postpone_delay_hours: 96
-      can_skip_release: true
-      can_postpone_release: true
-      rollout:
-        - delay_hours: 20
-          rollout_hours: 96
-  - view: all
-    app_status: active
+      should_show: true
+
+  - app_status: outdated
+    view: 
+      - about_screen
+      - card
+      - profile_badge
+      - toast
     data:
-      should_show_release: false
+      should_show: true
 
+  - app_status: deprecated
+    view: 
+      - about_screen
+      - card
+      - profile_badge
+      - screen
+    data:
+      should_show: true
 
-version_rules:
+  - app_status: unsupported
+    view: screen
+    data:
+      should_show: true
+
+release_version_rules:
+  # All matched versions are discontinued
+  - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+    release_status: discontinued
+
+app_version_rules:
   # All versions before 1.0.0 are unsupported
   - version: '<=1.0.0'
-    rollout:
-      - app_status: unsupported
+    app_status: unsupported
 
   # All versions after 6.0.0 are active
   - version: '>=6.0.0'
@@ -60,17 +111,28 @@ version_rules:
   # All versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
   - version: '<=2.0.0'
     date: 2014-10-17 23:00:00
-    rollout:
-      - app_status: unsupported
+    sources:
+      - GooglePlay
+      - name: AppStore
+        platforms:
+          - ios
+    app_status: unsupported
+
   
   # All versions before 3.0.0 are: 
   # unsupported after 2014-10-17 + 168+72 hours
   - version: '<=3.0.0'
     date: 2014-10-17
     rollout:
-      - delay_hours: 168
+      - delay_hours: 12
         rollout_hours: 72
-      - app_status: unsupported
+        segmentation_percent: 10
+        app_status: unsupported
+
+      - date: 2014-10-17
+        rollout_hours: 72
+        segmentation_percent: 50
+        app_status: unsupported
 
   # All versions before 4.0.0 are:
   # outdated after 2014-10-17 + 10 days 
@@ -91,24 +153,22 @@ version_rules:
 
   # All matched versions are deprecated
   - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
-    rollout: 
-      - app_status: deprecated
+    app_status: deprecated 
 
 
   # Sets the lifecycle of the application updates.
-  # The `use_app_release_date` flag calculates the release of 
-  # the current or first matched lower version
-  # And uses it instead of `date`.
+  # The `date: app_release` parameter calculates the release of 
+  # the current or nearest  version
+  # and uses it instead of `date`.
   # If the date is not found in the `releases` list,
-  # then the `date` is used.
+  # then rule is not applied.
   #
   # All matched versions are:
   # outdated if is older than 10 days
   # deprecated if is older than 144 days
   # unsupported if is older than 278 days
   - version: all
-    date: 2014-10-17 00:00:00
-    use_app_release_date: true
+    date: app_release
     rollout:
       - delay_hours: 168 # 7 days
         rollout_hours: 72 # 3 days
@@ -120,15 +180,24 @@ version_rules:
         rollout_hours: 336 # 14 days
         app_status: unsupported
 
+  - app_version: all
+    date: update_release
+    rollout:
+      - app_status: active
+      - delay_hours: 48  # 2 days
+        rollout_hours: 72 # 3 days
+        app_status: outdated
+
+  - app_version: all
+    app_status: active
+
+
 sources:
   - name: appStore
     url: https://example.com
     platforms:
       - macos
       - name: ios
-        source:
-          version_settings:
-            unsupported_versions: ["1.8.3"]
 
   - name: appGallery
     url: https://example.com
@@ -136,10 +205,8 @@ sources:
   - name: ruStore
     url: https://example.com
 
-    text:
+    content:
       title: Title
-    version_settings:
-      unsupported_versions: ["<=4.2.0"]
 
   - name: gitHub
     url: https://example.com
@@ -148,10 +215,8 @@ sources:
       - name: android
         source:
           url: https://example.com/android
-          text:
+          content:
             title: Title
-          version_settings:
-            deprecated_versions: [">5.6.0 <5.6.7"]
       # Short syntax
       - windows
       - macos
@@ -164,17 +229,14 @@ sources:
 releases:
   - version: 0.3.7
     date: "2024-08-24 15:35:00"
-    text:
+    content:
       release_notes: |-
         # Big update!
         [click](https://example.com) - full changelog.
         ### Short notes
         - Added bugs
         - Fixed features
-    settings:
-      can_skip_release: true
-      reminder_period_hours: 48
-      release_delay_hours: 48
+    app_status: unsupported
     sources:
       - googlePlay
       - appStore
@@ -185,13 +247,13 @@ releases:
           platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
-    text:
+    content:
       release_notes: Minor Improvements
     sources: []
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
-    text:
+    content:
       release_notes: Improvements
     sources:
       - name: googlePlay
@@ -201,10 +263,8 @@ releases:
     sources: []
 
   - version: 1.2.0
-    text:
+    content:
       release_notes: Improvements
-    settings:
-      can_skip_release: true
     sources:
       - appStore
       - name: googlePlay
@@ -213,7 +273,7 @@ releases:
         platforms: [android]
         release:
           version: 1.2.1
-          text:
+          content:
             title: RuStore Title
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
@@ -226,7 +286,7 @@ releases:
             source:
               url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
               release:
-                text:
+                content:
                   ru:
                     release_notes: Windows Github release notes
                 settings:
@@ -235,7 +295,7 @@ releases:
 
   - version: 0.2.4
     date: 2014-10-17 23:00:00Z
-    text:
+    content:
       title: Title
       description: Description
       release_notes: Note
@@ -258,13 +318,13 @@ releases:
                       can_skip_release: true
 
       - name: appStore
-        text:
+        content:
           release_notes: note ios
         date: 2014-10-18 23:00:00
 
   - version: 0.2.6
     date: 2014-10-17 23:00:00
-    text:
+    content:
       release_notes: Note
       title: Title
       description: Description
@@ -276,7 +336,7 @@ releases:
         platforms: []
 
   - version: 0.2.5
-    text:
+    content:
       title: Title
       description: Description
       release_notes: Note
