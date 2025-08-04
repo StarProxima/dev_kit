@@ -10,7 +10,7 @@ import 'update_widget_builder.dart';
 class UpdateWidget extends StatefulWidget {
   const UpdateWidget({super.key, this.builder = UpdateWidgetBuilder.card});
 
-  final Widget Function(BuildContext context, AppUpdate update, UpdateControllerBase controller) builder;
+  final Widget Function(BuildContext context, UpdateResult update, UpdateControllerBase controller) builder;
 
   @override
   State<UpdateWidget> createState() => _UpdateWidgetState();

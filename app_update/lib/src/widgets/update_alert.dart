@@ -11,13 +11,13 @@ import 'update_alert_handler.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(
   BuildContext context,
-  AppUpdate update,
+  UpdateResult update,
   UpdateControllerBase controller,
 );
 
-typedef OnPickUpdateSource = FutureOr<AppUpdate?> Function(
+typedef OnPickUpdateSource = FutureOr<UpdateResult?> Function(
   BuildContext context,
-  List<AppUpdate> updates,
+  List<UpdateResult> updates,
   UpdateControllerBase controller,
 );
 
@@ -73,7 +73,7 @@ class _UpdateAlertState extends State<UpdateAlert> {
   Future<void> _check() async {
     if (!widget.enabled) return;
 
-    AppUpdate? appUpdate = await _controller.tryFindUpdate();
+    UpdateResult? appUpdate = await _controller.tryFindUpdate();
 
     if (appUpdate == null) {
       final onPickUpdateSource = widget.onPickUpdateSource;

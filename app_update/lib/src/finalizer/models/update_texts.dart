@@ -8,7 +8,6 @@ class UpdateText {
   final String skipButton;
   final String laterButton;
   final String updateButton;
-
   final Map<String, dynamic>? customData;
 
   const UpdateText({

@@ -56,11 +56,11 @@ class UpdateController extends UpdateControllerBase {
 
   Completer<UpdateConfigModel?>? _updateConfigModelCompleter;
   Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
-  final _availableUpdateStream = StreamController<AppUpdate>();
+  final _availableUpdateStream = StreamController<UpdateResult>();
   final _updateConfigStream = StreamController<UpdateConfig>();
 
   @override
-  Stream<AppUpdate> get availableUpdateStream => _availableUpdateStream.stream;
+  Stream<UpdateResult> get availableUpdateStream => _availableUpdateStream.stream;
 
   @override
   Stream<UpdateConfig> get updateConfigStream => _updateConfigStream.stream;
@@ -135,20 +135,20 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<AppUpdate> findUpdate({
+  Future<UpdateResult> findUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async =>
       (await _findUpdatesFromConfig(isFindUpdateFromOneSource: true, locale: locale)).firstOrNull ??
       (throw const UpdateNotFoundException());
 
   @override
-  Future<List<AppUpdate>> findAllAvailableUpdates({
+  Future<List<UpdateResult>> findAllAvailableUpdates({
     Locale locale = kAppUpdateDefaultLocale,
   }) =>
       _findUpdatesFromConfig(isFindUpdateFromOneSource: false, locale: locale);
 
   @override
-  Future<AppUpdate?> tryFindUpdate({
+  Future<UpdateResult?> tryFindUpdate({
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
     try {
@@ -195,7 +195,7 @@ class UpdateController extends UpdateControllerBase {
     await _availableUpdateStream.close();
   }
 
-  Future<List<AppUpdate>> _findUpdatesFromConfig({
+  Future<List<UpdateResult>> _findUpdatesFromConfig({
     required bool isFindUpdateFromOneSource,
     Locale locale = kAppUpdateDefaultLocale,
   }) async {
@@ -257,7 +257,7 @@ class UpdateController extends UpdateControllerBase {
     _updateStorage ??= UpdateStorage(await SharedPreferences.getInstance());
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
 
-    final appUpdateList = <AppUpdate>[];
+    final appUpdateList = <UpdateResult>[];
     for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
       final updateVersionController = UpdateVersionController.fromGlobalSource(
@@ -270,7 +270,7 @@ class UpdateController extends UpdateControllerBase {
         version: appVersion,
       );
 
-      final appUpdate = AppUpdate(
+      final appUpdate = UpdateResult(
         appName: appName,
         appVersion: appVersion,
         config: updateConfig,

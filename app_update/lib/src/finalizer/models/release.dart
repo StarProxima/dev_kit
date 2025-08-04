@@ -1,15 +1,15 @@
 import 'package:pub_semver/pub_semver.dart';
 
 import '../../sources/release_source.dart';
-import 'update_settings_container.dart';
-import 'update_text_container.dart';
+import 'update_settings.dart';
+import 'update_texts.dart';
 
 class Release {
   final Version version;
   final ReleaseSource source;
   final DateTime? date;
-  final UpdateTextContainer text;
-  final UpdateSettingsContainer settings;
+  final UpdateText text;
+  final UpdateSettings settings;
   final Map<String, dynamic>? customData;
 
   const Release({

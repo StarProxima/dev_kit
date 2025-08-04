@@ -9,13 +9,13 @@ import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../shared/update_platform.dart';
-import '../shared/update_view_type.dart';
+import '../shared/update_view_target.dart';
 import '../shared/app_status.dart';
 import '../sources/source.dart';
 import 'exceptions.dart';
 
 abstract class UpdateControllerBase {
-  Stream<AppUpdate?> get availableUpdateStream;
+  Stream<UpdateResult?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
@@ -37,24 +37,29 @@ abstract class UpdateControllerBase {
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
-  Future<AppUpdate> findUpdate({
+  Future<UpdateResult> findUpdate({
     Locale locale,
   });
 
-  Future<AppUpdate> findUpdateV3({
+  /// Finds an update from fetched UpdateConfig and global sources releases data.
+  /// If update founded add data to [availableUpdateStream] and [updateConfigStream]
+  ///
+  /// Does not make a new request if the data already exists.
+  Future<UpdateResult> findUpdateV3({
     UpdatePlatform? platform,
     List<Source?> sources,
     Version? appVersion,
     Locale? locale,
-    UpdateViewType? viewType,
+    UpdateViewTarget? displayTarget,
     AppStatus? appStatus,
     DateTime? date,
+    Map<String, dynamic>? customData,
   });
 
   /// Finds updates from all sources for current platform.
   ///
   /// Does not make a new request if the data already exists.
-  Future<List<AppUpdate>> findAllAvailableUpdates({
+  Future<List<UpdateResult>> findAllAvailableUpdates({
     Locale locale,
   });
 
@@ -62,7 +67,7 @@ abstract class UpdateControllerBase {
   ///
   /// If update not available return null.
   /// Does not make a new request if the data already exists.
-  Future<AppUpdate?> tryFindUpdate({
+  Future<UpdateResult?> tryFindUpdate({
     Locale locale,
   });
 

@@ -36,7 +36,7 @@ class UpdateNotFoundException implements UpdateException {
 }
 
 class UpdateSkippedException implements UpdateException {
-  final AppUpdate update;
+  final UpdateResult update;
 
   const UpdateSkippedException({
     required this.update,
@@ -47,7 +47,7 @@ class UpdateSkippedException implements UpdateException {
 }
 
 class UpdatePostponedException implements UpdateException {
-  final AppUpdate update;
+  final UpdateResult update;
 
   const UpdatePostponedException({
     required this.update,

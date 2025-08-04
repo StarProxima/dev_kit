@@ -3,7 +3,7 @@
 # если они подходят под условия.
 # Т.е. для релиза может примениться несколько правил, последние более приоритетны.
 content:
-  - display_target: card
+  - view_target: card
     app_status: all
     locale: all
     data:
@@ -13,7 +13,7 @@ content:
         url: https://example.com
         border_radius: 10
 
-  - display_target: all
+  - view_target: all
     locale: ru
     app_status: 
       - outdated
@@ -27,7 +27,7 @@ content:
 settings:
   # Задаем настройки по умолчанию для всех релизов
   - app_status: all
-    display_target: all
+    view_target: all
     data:
       # Выключаем отображение по умолчанию,
       # чтобы включить для конкретных таргетов
@@ -44,13 +44,13 @@ settings:
   # Настраиваем actions для статусов
   
   - app_status: unsupported
-    display_target: all
+    view_target: all
     data:   
       can_skip: false
       can_postpone: false
 
   - app_status: deprecated
-    display_target: all
+    view_target: all
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
@@ -60,7 +60,7 @@ settings:
       - outdated
       - updateable
       - active
-    display_target: all
+    view_target: all
     data:   
       can_skip: true
       can_postpone: true
@@ -69,19 +69,19 @@ settings:
   # чтобы настроить гибкое отображение в зависимости от статуса
 
   - app_status: active
-    display_target: about_screen
+    view_target: about_screen
     data:
       should_show: true
   
   - app_status: updateable
-    display_target: 
+    view_target: 
       - about_screen
       - card
     data:
       should_show: true
 
   - app_status: outdated
-    display_target: 
+    view_target: 
       - about_screen
       - card
       - profile_badge
@@ -90,7 +90,7 @@ settings:
       should_show: true
 
   - app_status: deprecated
-    display_target: 
+    view_target: 
       - about_screen
       - card
       - profile_badge
@@ -99,7 +99,7 @@ settings:
       should_show: true
 
   - app_status: unsupported
-    display_target: screen
+    view_target: screen
     data:
       should_show: true
 
@@ -272,7 +272,8 @@ releases:
       release_notes: Improvements
     sources:
       - name: googlePlay
-        date: 2014-10-17 23:00:00
+        release:
+          date: 2014-10-17 23:00:00
 
   - version: 0.0.2+30
     sources: []
