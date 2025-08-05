@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions
 
-import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/parser/base_parsers/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
@@ -21,7 +21,7 @@ void main() {
       expect(result?.name, 'appStore');
       expect(result?.url, isNull);
       expect(result?.platforms, isNull);
-      expect(result?.release, isNull);
+      expect(result?.releaseOverride, isNull);
     });
 
     test('parses full syntax with name, url, and release text', () {
@@ -41,9 +41,9 @@ void main() {
       expect(result?.url?.toString(), 'https://www.example.com');
       expect(result?.platforms?.length, 1);
       expect(result?.platforms?.firstOrNull?.platform.name, 'android');
-      expect(result?.release?.version?.toString(), '1.2.1');
+      expect(result?.releaseOverride?.version?.toString(), '1.2.1');
       expect(
-        result?.release?.text
+        result?.releaseOverride?.text
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
@@ -85,7 +85,7 @@ void main() {
         'https://github.com/hiddify/hiddify-next/releases/',
       );
       expect(
-        result?.release?.date?.toString(),
+        result?.releaseOverride?.date?.toString(),
         '2014-10-20 12:00:00.000',
       );
       expect(result?.platforms?.length, 3);
@@ -93,11 +93,11 @@ void main() {
       final windowsPlatform = result?.platforms?.lastOrNull;
       expect(windowsPlatform?.platform.name, 'windows');
       expect(
-        windowsPlatform?.source?.url?.toString(),
+        windowsPlatform?.sourceOverride?.url?.toString(),
         'https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip',
       );
 
-      final platformSourceRelease = windowsPlatform?.source?.release;
+      final platformSourceRelease = windowsPlatform?.sourceOverride?.releaseOverride;
       expect(
         platformSourceRelease?.text
             ?.getByBase(

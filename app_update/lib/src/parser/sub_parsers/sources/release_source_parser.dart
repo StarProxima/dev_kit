@@ -20,7 +20,7 @@ class ReleaseSourceParser {
           name: value,
           url: null,
           platforms: null,
-          release: null,
+          releaseOverride: null,
           customData: null,
         );
       }
@@ -76,7 +76,7 @@ class ReleaseSourceParser {
       name: name,
       url: url,
       platforms: platforms,
-      release: release,
+      releaseOverride: release,
       customData: map,
     );
   }

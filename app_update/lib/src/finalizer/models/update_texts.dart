@@ -1,6 +1,6 @@
 import '../../linker/models/update_text_data.dart';
 
-class UpdateText {
+class UpdateContent {
   final String title;
   final String description;
   final String releaseNotesTitle;
@@ -10,7 +10,7 @@ class UpdateText {
   final String updateButton;
   final Map<String, dynamic>? customData;
 
-  const UpdateText({
+  const UpdateContent({
     required this.title,
     required this.description,
     required this.releaseNotesTitle,
@@ -21,36 +21,36 @@ class UpdateText {
     required this.customData,
   });
 
-  factory UpdateText.fromData(
+  factory UpdateContent.fromData(
     UpdateTextData? data, {
-    required UpdateText defaultText,
+    required UpdateContent defaultText,
   }) {
-    return UpdateText(
+    return UpdateContent(
       title: data?.title ?? defaultText.title,
       description: data?.description ?? defaultText.description,
       releaseNotesTitle: data?.releaseNotesTitle ?? defaultText.releaseNotesTitle,
       releaseNotes: data?.releaseNotes ?? defaultText.releaseNotes,
       skipButton: data?.skipButton ?? defaultText.skipButton,
-      laterButton: data?.laterButton ?? defaultText.laterButton,
+      laterButton: data?.postponeButton ?? defaultText.laterButton,
       updateButton: data?.updateButton ?? defaultText.updateButton,
       customData: data?.customData,
     );
   }
 
-  UpdateText merge(UpdateTextData? data) {
-    return UpdateText(
+  UpdateContent merge(UpdateTextData? data) {
+    return UpdateContent(
       title: data?.title ?? title,
       description: data?.description ?? description,
       releaseNotesTitle: data?.releaseNotesTitle ?? releaseNotesTitle,
       releaseNotes: data?.releaseNotes ?? releaseNotes,
       skipButton: data?.skipButton ?? skipButton,
-      laterButton: data?.laterButton ?? laterButton,
+      laterButton: data?.postponeButton ?? laterButton,
       updateButton: data?.updateButton ?? updateButton,
       customData: data?.customData ?? customData,
     );
   }
 
-  UpdateText copyWith({
+  UpdateContent copyWith({
     String? title,
     String? description,
     String? releaseNotesTitle,
@@ -60,7 +60,7 @@ class UpdateText {
     String? updateButton,
     Map<String, dynamic>? customData,
   }) =>
-      UpdateText(
+      UpdateContent(
         title: title ?? this.title,
         description: description ?? this.description,
         releaseNotesTitle: releaseNotesTitle ?? this.releaseNotesTitle,

@@ -42,7 +42,7 @@ class ReleasePlatformParser {
 
     return ReleasePlatformConfig.byRequired(
       platform: name,
-      source: source,
+      sourceOverride: source,
       customData: map,
     );
   }

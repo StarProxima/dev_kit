@@ -1,13 +1,13 @@
-import '../../parser/models/update_text_config.dart';
+import '../../parser/models/update_content_config.dart';
 
-class UpdateTextData extends UpdateTextConfig {
+class UpdateTextData extends UpdateContentConfig {
   const UpdateTextData({
     super.title,
     super.description,
     super.releaseNotesTitle,
     super.releaseNotes,
     super.skipButton,
-    super.laterButton,
+    super.postponeButton,
     super.updateButton,
     super.customData,
   });
@@ -18,19 +18,19 @@ class UpdateTextData extends UpdateTextConfig {
     required super.releaseNotesTitle,
     required super.releaseNotes,
     required super.skipButton,
-    required super.laterButton,
+    required super.postponeButton,
     required super.updateButton,
     required super.customData,
   });
 
-  factory UpdateTextData.fromConfig(UpdateTextConfig? config) {
+  factory UpdateTextData.fromConfig(UpdateContentConfig? config) {
     return UpdateTextData.byRequired(
       title: config?.title,
       description: config?.description,
       releaseNotesTitle: config?.releaseNotesTitle,
       releaseNotes: config?.releaseNotes,
       skipButton: config?.skipButton,
-      laterButton: config?.laterButton,
+      postponeButton: config?.postponeButton,
       updateButton: config?.updateButton,
       customData: config?.customData,
     );
@@ -45,7 +45,7 @@ class UpdateTextData extends UpdateTextConfig {
       releaseNotesTitle: child?.releaseNotesTitle ?? releaseNotesTitle,
       releaseNotes: child?.releaseNotes ?? releaseNotes,
       skipButton: child?.skipButton ?? skipButton,
-      laterButton: child?.laterButton ?? laterButton,
+      postponeButton: child?.postponeButton ?? postponeButton,
       updateButton: child?.updateButton ?? updateButton,
       customData: customData.isEmpty ? null : customData,
     );

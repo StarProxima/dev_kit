@@ -22,7 +22,7 @@ void main() async {
 
   // ignore: unused_local_variable
   final widget = Scaffold(
-    body: UpdateAlert(
+    body: UpdateHandler(
       controller: controller,
       onUpdateAvailable: (context, update, controller) {
         // ignore: avoid-unsafe-collection-methods
@@ -31,7 +31,7 @@ void main() async {
         // ignore: unused_local_variable
         final settings = update.release.settings.getBy(
           type: UpdateAlertType.dialog,
-          status: update.appVersionStatus,
+          status: update.appStatus,
         );
 
         // final texts = update.release.texts.getBy(
@@ -81,9 +81,9 @@ void main() async {
   //   ),
   // );
 
-  UpdateAlert(
+  UpdateHandler(
     onUpdateAvailable: (context, update, controller) {
-      switch (update.appVersionStatus) {
+      switch (update.appStatus) {
         case VersionStatus.unsupported:
           UpdateAlertHandler.screen(context, update, controller);
 

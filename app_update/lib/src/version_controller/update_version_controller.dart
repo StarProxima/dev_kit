@@ -12,9 +12,8 @@ class UpdateVersionController {
     VersionSettingsConfig? versionSettingsConfig,
     GlobalSourceConfig? globalSource,
     UpdatePlatform? platform,
-  }) : configVersionSettings = versionSettingsConfig
-            .merge(globalSource?.versionSettings)
-            .merge(globalSource?.platforms?.firstWhereOrNull((e) => e.platform == platform)?.source?.versionSettings);
+  }) : configVersionSettings = versionSettingsConfig.merge(globalSource?.versionSettings).merge(
+            globalSource?.platforms?.firstWhereOrNull((e) => e.platform == platform)?.sourceOverride?.versionSettings);
 
   VersionStatus setStatusByVersion({required Version version}) {
     if (configVersionSettings == null) return VersionStatus.updatable;

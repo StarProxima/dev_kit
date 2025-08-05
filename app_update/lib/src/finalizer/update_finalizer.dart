@@ -53,7 +53,7 @@ class UpdateFinalizer {
           releaseData.source.title,
         );
 
-    UpdateText interpolateUpdateText(UpdateText text) => UpdateText(
+    UpdateContent interpolateUpdateText(UpdateContent text) => UpdateContent(
           title: interpolate(text.title),
           description: interpolate(text.description),
           releaseNotesTitle: interpolate(text.releaseNotesTitle),

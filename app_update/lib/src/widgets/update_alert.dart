@@ -6,47 +6,51 @@ import 'package:flutter/material.dart';
 
 import '../controller/update_contoller_base.dart';
 import '../controller/update_controller.dart';
-import '../finalizer/models/app_update.dart';
+import '../finalizer/models/update_response.dart';
+import '../shared/update_view_target.dart';
 import 'update_alert_handler.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(
   BuildContext context,
-  UpdateResult update,
+  UpdateResponse update,
   UpdateControllerBase controller,
 );
 
-typedef OnPickUpdateSource = FutureOr<UpdateResult?> Function(
-  BuildContext context,
-  List<UpdateResult> updates,
-  UpdateControllerBase controller,
-);
-
-class UpdateAlert extends StatefulWidget {
-  const UpdateAlert({
+class UpdateHandler extends StatefulWidget {
+  const UpdateHandler.alert({
     super.key,
     this.controller,
     this.enabled = true,
     this.shouldCheckUpdateAfterAppResume = true,
-    this.onUpdateAvailable = UpdateAlertHandler.adaptiveDialog,
-    this.shouldPickUpdateWhenSourceIsNotDefined = true,
-    this.onPickUpdateSource = UpdateAlertHandler.pickUpdate,
+    this.viewTargets = const [UpdateViewTarget.any],
+    this.onUpdateResponse = UpdateAlertHandler.adaptiveDialog,
     required this.child,
-  });
+  }) : builder = null;
+
+  UpdateHandler.builder({
+    super.key,
+    this.controller,
+    this.enabled = true,
+    this.shouldCheckUpdateAfterAppResume = true,
+    this.onUpdateResponse = UpdateAlertHandler.adaptiveDialog,
+    UpdateViewTarget viewTarget = UpdateViewTarget.card,
+    required this.builder,
+    this.child,
+  }) : viewTargets = [viewTarget];
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
   final UpdateControllerBase? controller;
-  final OnUpdateAvailable onUpdateAvailable;
-  final bool shouldPickUpdateWhenSourceIsNotDefined;
-  final OnPickUpdateSource onPickUpdateSource;
-
-  final Widget child;
+  final List<UpdateViewTarget> viewTargets;
+  final OnUpdateAvailable onUpdateResponse;
+  final Widget Function(BuildContext context, UpdateResponse update, Widget? child)? builder;
+  final Widget? child;
 
   @override
-  State<UpdateAlert> createState() => _UpdateAlertState();
+  State<UpdateHandler> createState() => _UpdateHandlerState();
 }
 
-class _UpdateAlertState extends State<UpdateAlert> {
+class _UpdateHandlerState extends State<UpdateHandler> {
   late final AppLifecycleListener _appLifecycleListener;
   late final UpdateControllerBase _controller;
 
@@ -73,23 +77,12 @@ class _UpdateAlertState extends State<UpdateAlert> {
   Future<void> _check() async {
     if (!widget.enabled) return;
 
-    UpdateResult? appUpdate = await _controller.tryFindUpdate();
-
-    if (appUpdate == null) {
-      final onPickUpdateSource = widget.onPickUpdateSource;
-      if (widget.shouldPickUpdateWhenSourceIsNotDefined) return;
-
-      final appUpdates = await _controller.findAllAvailableUpdates(locale: _locale);
-
-      if (!mounted) return;
-
-      appUpdate = await onPickUpdateSource(context, appUpdates, _controller);
-    }
+    UpdateResponse? appUpdate = await _controller.tryFindUpdate();
 
     if (appUpdate == null) return;
     if (!mounted) return;
 
-    final futurOr = widget.onUpdateAvailable(context, appUpdate, _controller);
+    final futurOr = widget.onUpdateResponse(context, appUpdate, _controller);
     if (futurOr is Future) await futurOr;
   }
 

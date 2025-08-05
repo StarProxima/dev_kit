@@ -19,7 +19,7 @@ import '../linker/models/update_settings_data_container.dart';
 import '../linker/models/update_text_data_container.dart';
 import '../linker/update_config_linker.dart';
 import '../parser/models/release_config.dart';
-import '../parser/models/update_config_model.dart';
+import '../parser/models/update_model_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
@@ -54,7 +54,7 @@ class UpdateController extends UpdateControllerBase {
   final String? _targetSourceName;
   final String? _defaultSourceName;
 
-  Completer<UpdateConfigModel?>? _updateConfigModelCompleter;
+  Completer<UpdateModelConfig?>? _updateConfigModelCompleter;
   Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
   final _availableUpdateStream = StreamController<UpdateResult>();
   final _updateConfigStream = StreamController<UpdateConfig>();
@@ -215,8 +215,8 @@ class UpdateController extends UpdateControllerBase {
     final releasesConfig = [...?configModel?.releases, ...releasesFromSources];
 
     final releasesData = _linker.linkConfigs(
-      globalSettingsConfig: configModel?.settings,
-      globalTextConfig: configModel?.text,
+      globalSettingsConfig: configModel?.settingsRules,
+      globalTextConfig: configModel?.contentRules,
       releasesConfig: releasesConfig,
       globalSourcesConfig: globalSourcesConfig,
       platform: _platform,
@@ -238,7 +238,7 @@ class UpdateController extends UpdateControllerBase {
     Map<ReleaseSource, Release> availableReleasesBySources = _finder!.findAvailableReleasesBySource(
       releases: updateConfig.releases,
       globalSourcesConfig: globalSourcesConfig,
-      versionSettings: configModel?.versionSettings,
+      versionSettings: configModel?.appStatusConditions,
     );
 
     if (isFindUpdateFromOneSource) {
@@ -261,7 +261,7 @@ class UpdateController extends UpdateControllerBase {
     for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
       final updateVersionController = UpdateVersionController.fromGlobalSource(
-        versionSettingsConfig: configModel?.versionSettings,
+        versionSettingsConfig: configModel?.appStatusConditions,
         globalSource: globalSource,
         platform: _platform,
       );

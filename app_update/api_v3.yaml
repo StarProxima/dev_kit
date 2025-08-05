@@ -2,10 +2,18 @@
 # Создается набор правил, которые поочередно применяются к конкретному релизу,
 # если они подходят под условия.
 # Т.е. для релиза может примениться несколько правил, последние более приоритетны.
-content:
+content_rules:
   - view_target: card
-    app_status: all
-    locale: all
+    app_status: any
+    locale: any
+    source: googlePlay
+    sources:
+      - name: gitHub
+        platforms:
+          - android
+          - ios
+    version: any
+    start_date: 2020-01-01
     data:
       title: Обновите приложение
       description: Описание
@@ -13,7 +21,7 @@ content:
         url: https://example.com
         border_radius: 10
 
-  - view_target: all
+  - view_target: any
     locale: ru
     app_status: 
       - outdated
@@ -24,10 +32,10 @@ content:
 
 # Набор правил для настроек релизов
 # Действует такая же логика с правилами, что и для контента
-settings:
+settings_rules:
   # Задаем настройки по умолчанию для всех релизов
-  - app_status: all
-    view_target: all
+  - app_status: any
+    view_target: any
     data:
       # Выключаем отображение по умолчанию,
       # чтобы включить для конкретных таргетов
@@ -35,32 +43,32 @@ settings:
 
       can_skip: false      
       skip_release_delay_hours: 2160
-      skip_all_releases_delay_hours: 72
+      skip_any_releases_delay_hours: 72
 
       can_postpone: false
       postpone_release_delay_hours: 96
-      postpone_all_releases_delay_hours: 24
+      postpone_any_releases_delay_hours: 24
 
   # Настраиваем actions для статусов
   
   - app_status: unsupported
-    view_target: all
+    view_target: any
     data:   
       can_skip: false
       can_postpone: false
 
   - app_status: deprecated
-    view_target: all
+    view_target: any
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
-      postpone_all_releases_delay_hours: 24
+      postpone_any_releases_delay_hours: 24
   
   - app_status: 
       - outdated
       - updateable
       - active
-    view_target: all
+    view_target: any
     data:   
       can_skip: true
       can_postpone: true
@@ -69,31 +77,31 @@ settings:
   # чтобы настроить гибкое отображение в зависимости от статуса
 
   - app_status: active
-    view_target: about_screen
+    view_target: aboutScreen
     data:
       should_show: true
   
   - app_status: updateable
     view_target: 
-      - about_screen
+      - aboutScreen
       - card
     data:
       should_show: true
 
   - app_status: outdated
     view_target: 
-      - about_screen
+      - aboutScreen
       - card
-      - profile_badge
+      - profileBadge
       - toast
     data:
       should_show: true
 
   - app_status: deprecated
     view_target: 
-      - about_screen
+      - aboutScreen
       - card
-      - profile_badge
+      - profileBadge
       - screen
     data:
       should_show: true
@@ -107,20 +115,19 @@ settings:
 # Позволяет гибко задать настройки и распределить версии по статусам,
 # учитывая rollout и date.
 # Применяется первое подходящее правило (и последнее в rollout),
-# устанавливая app_status и release_status.
-version_rules:
-  # All versions before 1.0.0 are unsupported
+# устанавливая app_status.
+app_status_conditions:
+  # any versions before 1.0.0 are unsupported
   - version: '<=1.0.0'
-    app_status: unsupported
-    # Релизы с такой не будут доступны для обновления
-    release_status: discontinued
+    data:
+      app_status: unsupported
 
-  # All versions after 6.0.0 are active
+  # any versions after 6.0.0 are active
   - version: '>=6.0.0'
     rollout:
       - app_status: active
 
-  # All versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
+  # any versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
   - version: '<=2.0.0'
     date: 2014-10-17 23:00:00
     sources:
@@ -128,10 +135,11 @@ version_rules:
       - name: AppStore
         platforms:
           - ios
-    app_status: unsupported
+    data:
+      app_status: unsupported
 
   
-  # All versions before 3.0.0 are: 
+  # any versions before 3.0.0 are: 
   # unsupported after 2014-10-17 + 168+72 hours
   - version: '<=3.0.0'
     date: 2014-10-17
@@ -139,14 +147,16 @@ version_rules:
       - delay_hours: 12
         rollout_hours: 72
         segmentation_percent: 10
-        app_status: unsupported
+        data:
+          app_status: unsupported
 
       - date: 2014-10-17
         rollout_hours: 72
         segmentation_percent: 50
-        app_status: unsupported
+        data:
+          app_status: unsupported
 
-  # All versions before 4.0.0 are:
+  # any versions before 4.0.0 are:
   # outdated after 2014-10-17 + 10 days 
   # deprecated after 2014-10-17 + 144 days
   # unsupported after 2014-10-17 + 278 days
@@ -155,17 +165,21 @@ version_rules:
     rollout:
       - delay_hours: 168 # 7 days
         rollout_hours: 72 # 3 days
-        app_status: outdated
+        data:
+          app_status: outdated
       - delay_hours: 2880  # 120 days
         rollout_hours: 336 # 14 days
-        app_status: deprecated
+        data:
+          app_status: deprecated
       - date: 2015-01-01 00:00:00
         rollout_hours: 336 # 14 days
-        app_status: unsupported
+        data:
+          app_status: unsupported
 
-  # All matched versions are deprecated
+  # any matched versions are deprecated
   - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
-    app_status: deprecated 
+    data:
+      app_status: deprecated 
 
 
   # Sets the lifecycle of the application updates.
@@ -174,36 +188,42 @@ version_rules:
   # If the date is not found in the `releases` list,
   # then rule is not applied.
   #
-  # All matched versions are:
+  # any matched versions are:
   # outdated if is older than 10 days
   # deprecated if is older than 144 days
   # unsupported if is older than 278 days
-  - version: all
-    date: app_release
+  - version: any
+    date: localReleaseDate
     rollout:
       - delay_hours: 168 # 7 days
         rollout_hours: 72 # 3 days
-        app_status: outdated
+        data:
+          app_status: outdated
       - delay_hours: 2880  # 120 days
         rollout_hours: 336 # 14 days
-        app_status: deprecated
+        data:
+          app_status: deprecated
       - delay_hours: 2880 # 120 days
         rollout_hours: 336 # 14 days
-        app_status: unsupported
+        data:
+          app_status: unsupported
 
   # Задает жизненный цикл релизов
   # The `date: update_release` parameter take date from 
   # latest matched release and uses it instead of `date`.
-  - version: all
-    date: update_release
+  - version: any
+    date: updateReleaseDate
     rollout:
-      - app_status: active
+      - data:
+          app_status: active
       - delay_hours: 48  # 2 days
         rollout_hours: 72 # 3 days
-        app_status: outdated
+        data:
+          app_status: outdated
 
-  - version: all
-    app_status: active
+  - version: any
+    data:
+      app_status: active
 
 
 sources:
@@ -213,14 +233,11 @@ sources:
       - macos
       - name: ios
 
-  - name: appGallery
+  - name: appGanyery
     url: https://example.com
 
   - name: ruStore
     url: https://example.com
-
-    content:
-      title: Title
 
   - name: gitHub
     url: https://example.com

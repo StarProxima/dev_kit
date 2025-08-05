@@ -12,7 +12,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_config.dart';
 import '../../parser/models/source_config.dart';
-import '../../parser/models/update_text_config.dart';
+import '../../parser/models/content_config.dart';
 import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
 import '../sources.dart';
@@ -42,7 +42,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     final sourceVersion = _version(decodedResults);
     if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
 
-    final updateTextConfig = UpdateTextConfig(
+    final updateTextConfig = UpdateContentConfig(
       releaseNotes: releaseNotes,
     );
 

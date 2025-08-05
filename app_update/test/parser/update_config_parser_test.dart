@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions
 
-import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/parser/base_parsers/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -52,8 +52,8 @@ void main() {
 
         final result = parser.parse(value, isDebug: isDebug);
 
-        expect(result.settings, isNotNull);
-        expect(result.versionSettings, isNotNull);
+        expect(result.settingsRules, isNotNull);
+        expect(result.appStatusConditions, isNotNull);
         expect(result.sources?.length, 2);
         expect(result.releases.length, 1);
         expect(result.releases.firstOrNull?.version?.toString(), '1.0.0');
@@ -88,8 +88,8 @@ void main() {
 
       final result = parser.parse(value, isDebug: isDebug);
 
-      expect(result.settings, isNull);
-      expect(result.versionSettings, isNull);
+      expect(result.settingsRules, isNull);
+      expect(result.appStatusConditions, isNull);
       expect(result.sources?.length, 1);
       expect(result.releases.length, 1);
       expect(result.releases.firstOrNull?.version?.toString(), '1.0.0');
@@ -184,8 +184,8 @@ void main() {
 
       final result = parser.parse(value, isDebug: isDebug);
 
-      expect(result.settings, isNotNull);
-      expect(result.versionSettings, isNotNull);
+      expect(result.settingsRules, isNotNull);
+      expect(result.appStatusConditions, isNotNull);
       expect(result.sources, isEmpty);
       expect(result.releases, isEmpty);
     });

@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../controller/update_contoller_base.dart';
-import '../finalizer/models/app_update.dart';
+import '../finalizer/models/update_result.dart';
 
 /// Нужен, чтобы можно было использовать отдельные методы в onUpdateAvailable.
 ///
@@ -40,7 +40,7 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> primaryDialog(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
@@ -48,7 +48,7 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> adaptiveDialog(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
@@ -56,7 +56,7 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> materialDialog(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
@@ -64,7 +64,7 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> cupertinoDialog(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
@@ -72,7 +72,7 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> bottomModalSheet(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
@@ -80,7 +80,7 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> screen(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
@@ -88,15 +88,15 @@ abstract final class UpdateAlertHandler {
 
   static FutureOr<void> snackbar(
     BuildContext context,
-    UpdateResult update,
+    UpdateResponse update,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c с виджетом, который принимает AppUpdate и UpdateController
   }
 
-  static FutureOr<UpdateResult?> pickUpdate(
+  static FutureOr<UpdateResponse?> pickUpdate(
     BuildContext context,
-    List<UpdateResult> updates,
+    List<UpdateResponse> updates,
     UpdateControllerBase controller,
   ) {
     // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController

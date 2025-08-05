@@ -13,12 +13,12 @@ import 'base_parsers/string_parser.dart';
 import 'base_parsers/version_parser.dart';
 import 'models/platform_config.dart';
 import 'models/release_config.dart';
-import 'models/release_settings_config.dart';
-import 'models/source_config.dart';
-import 'models/update_config_exception.dart';
-import 'models/update_config_model.dart';
+import 'models/update_settings_config.dart';
+import 'models/global_source_config.dart';
+import 'base_parsers/update_config_exception.dart';
+import 'models/update_model_config.dart';
 import 'models/update_settings_config_container.dart';
-import 'models/update_text_config.dart';
+import 'models/update_content_config.dart';
 import 'models/update_text_config_container.dart';
 import 'sub_parsers/version_settings_parser.dart';
 
@@ -42,7 +42,7 @@ class UpdateConfigParser {
 
   const UpdateConfigParser();
 
-  UpdateConfigModel parse(
+  UpdateModelConfig parse(
     RawUpdateConfig map, {
     required bool isDebug,
   }) {
@@ -88,10 +88,10 @@ class UpdateConfigParser {
         .whereType<ReleaseConfig>()
         .toList();
 
-    return UpdateConfigModel.byRequired(
-      text: text,
-      settings: updateSettings,
-      versionSettings: versionSettings,
+    return UpdateModelConfig.byRequired(
+      contentRules: text,
+      settingsRules: updateSettings,
+      appStatusConditions: versionSettings,
       sources: sources,
       releases: releases,
       customData: map,

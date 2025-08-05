@@ -1,31 +1,31 @@
-class UpdateTextConfig {
+class UpdateContentConfig {
   final String? title;
   final String? description;
   final String? releaseNotesTitle;
   final String? releaseNotes;
   final String? skipButton;
-  final String? laterButton;
+  final String? postponeButton;
   final String? updateButton;
   final Map<String, dynamic>? customData;
 
-  const UpdateTextConfig({
+  const UpdateContentConfig({
     this.title,
     this.description,
     this.releaseNotesTitle,
     this.releaseNotes,
     this.skipButton,
-    this.laterButton,
+    this.postponeButton,
     this.updateButton,
     this.customData,
   });
 
-  const UpdateTextConfig.byRequired({
+  const UpdateContentConfig.byRequired({
     required this.title,
     required this.description,
     required this.releaseNotesTitle,
     required this.releaseNotes,
     required this.skipButton,
-    required this.laterButton,
+    required this.postponeButton,
     required this.updateButton,
     required this.customData,
   });

@@ -2,15 +2,22 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import 'update_entity.dart';
+
 @immutable
-class UpdatePlatform {
-  static const android = UpdatePlatform.custom('android');
-  static const fuchsia = UpdatePlatform.custom('fuchsia');
-  static const ios = UpdatePlatform.custom('ios');
-  static const linux = UpdatePlatform.custom('linux');
-  static const macos = UpdatePlatform.custom('macos');
-  static const windows = UpdatePlatform.custom('windows');
-  static const web = UpdatePlatform.custom('web');
+class UpdatePlatform extends UpdateEntity {
+  static const android = UpdatePlatform._('android');
+  static const fuchsia = UpdatePlatform._('fuchsia');
+  static const ios = UpdatePlatform._('ios');
+  static const linux = UpdatePlatform._('linux');
+  static const macos = UpdatePlatform._('macos');
+  static const windows = UpdatePlatform._('windows');
+  static const web = UpdatePlatform._('web');
+  static const any = UpdatePlatform._('any');
+
+  const UpdatePlatform._(super._name);
+
+  const factory UpdatePlatform.custom(String name) = UpdatePlatform._;
 
   static const values = [
     android,
@@ -22,28 +29,7 @@ class UpdatePlatform {
     web,
   ];
 
-  final String _name;
-
-  String get name => _name.toLowerCase();
-
-  const UpdatePlatform._(this._name);
-
-  const factory UpdatePlatform.custom(String name) = UpdatePlatform._;
-
   factory UpdatePlatform.current() => UpdatePlatform._(
         kIsWeb ? web.name : Platform.operatingSystem,
       );
-
-  // ignore: member-ordering
-  @override
-  int get hashCode => name.hashCode;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    if (other is! UpdatePlatform) return false;
-
-    return other.name == name;
-  }
 }

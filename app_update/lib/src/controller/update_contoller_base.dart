@@ -8,14 +8,16 @@ import 'package:pub_semver/pub_semver.dart';
 import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
+import '../finalizer/models/update_result.dart';
 import '../shared/update_platform.dart';
+import '../shared/update_source.dart';
 import '../shared/update_view_target.dart';
 import '../shared/app_status.dart';
 import '../sources/source.dart';
 import 'exceptions.dart';
 
 abstract class UpdateControllerBase {
-  Stream<UpdateResult?> get availableUpdateStream;
+  Stream<UpdateResponse?> get availableUpdateStream;
 
   Stream<UpdateConfig> get updateConfigStream;
 
@@ -37,7 +39,7 @@ abstract class UpdateControllerBase {
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
-  Future<UpdateResult> findUpdate({
+  Future<UpdateResponse> findUpdate({
     Locale locale,
   });
 
@@ -45,13 +47,13 @@ abstract class UpdateControllerBase {
   /// If update founded add data to [availableUpdateStream] and [updateConfigStream]
   ///
   /// Does not make a new request if the data already exists.
-  Future<UpdateResult> findUpdateV3({
+  Future<UpdateResponse> findUpdateV3({
     UpdatePlatform? platform,
-    List<Source?> sources,
-    Version? appVersion,
-    Locale? locale,
+    List<UpdateSource?> sources,
+    Version? localVersion,
     UpdateViewTarget? displayTarget,
     AppStatus? appStatus,
+    Locale? locale,
     DateTime? date,
     Map<String, dynamic>? customData,
   });
@@ -59,7 +61,7 @@ abstract class UpdateControllerBase {
   /// Finds updates from all sources for current platform.
   ///
   /// Does not make a new request if the data already exists.
-  Future<List<UpdateResult>> findAllAvailableUpdates({
+  Future<List<UpdateResponse>> findAllAvailableUpdates({
     Locale locale,
   });
 
@@ -67,7 +69,7 @@ abstract class UpdateControllerBase {
   ///
   /// If update not available return null.
   /// Does not make a new request if the data already exists.
-  Future<UpdateResult?> tryFindUpdate({
+  Future<UpdateResponse?> tryFindUpdate({
     Locale locale,
   });
 

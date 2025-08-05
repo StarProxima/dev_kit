@@ -3,16 +3,17 @@ import 'dart:ui';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../../controller/exceptions.dart';
+import '../../shared/app_status.dart';
+import '../../shared/update_locale.dart';
 import '../../shared/update_view_target.dart';
-import '../../shared/version_status.dart';
 import 'release.dart';
 import 'update_config.dart';
 
-class UpdateResult {
+class UpdateResponse {
   final String appName;
   final Version appVersion;
-  final VersionStatus appVersionStatus;
-  final Locale? locale;
+  final AppStatus appStatus;
+  final UpdateLocale? locale;
   final UpdateViewTarget viewTarget;
   final UpdateConfig config;
   final UpdateException? updateException;
@@ -21,11 +22,11 @@ class UpdateResult {
 
   bool get canUpdate => release != null && updateException == null;
 
-  const UpdateResult({
+  const UpdateResponse({
     required this.appName,
     required this.appVersion,
     required this.config,
-    required this.appVersionStatus,
+    required this.appStatus,
     required this.updateException,
     required this.release,
     required this.locale,

@@ -14,7 +14,7 @@ class UpdateTextContainer {
   final UpdateContainerStorage<UpdateTextDataContainer> containerStorage;
 
   // ignore: prefer-correct-callback-field-name
-  final UpdateText Function(UpdateText text) interpolate;
+  final UpdateContent Function(UpdateContent text) interpolate;
 
   const UpdateTextContainer({
     required this.defaultContainer,
@@ -23,13 +23,13 @@ class UpdateTextContainer {
     required this.interpolate,
   });
 
-  UpdateText getDefault() => getByBase(
+  UpdateContent getDefault() => getByBase(
         locale: const Locale('base'),
         type: UpdateAlertTypeBase.base,
         status: VersionStatusBase.base,
       );
 
-  UpdateText getBy({
+  UpdateContent getBy({
     required Locale locale,
     required UpdateAlertType type,
     required VersionStatus status,
@@ -40,7 +40,7 @@ class UpdateTextContainer {
         status: status.toBase(),
       );
 
-  UpdateText getByBase({
+  UpdateContent getByBase({
     required Locale locale,
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
@@ -70,13 +70,13 @@ class UpdateTextContainer {
     if (textData == null) throw Exception('UpdateTextData has null field');
 
     try {
-      final updateText = UpdateText(
+      final updateText = UpdateContent(
         title: textData.title!,
         description: textData.description!,
         releaseNotesTitle: textData.releaseNotesTitle!,
         releaseNotes: textData.releaseNotes!,
         skipButton: textData.skipButton!,
-        laterButton: textData.laterButton!,
+        laterButton: textData.postponeButton!,
         updateButton: textData.updateButton!,
         customData: textData.customData,
       );

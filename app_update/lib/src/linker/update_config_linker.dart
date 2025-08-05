@@ -46,7 +46,7 @@ class UpdateConfigLinker {
         final sourceUrl = url ?? globalSource?.url;
         if (sourceUrl == null) continue;
 
-        final releaseSourceRelease = releaseSource.release;
+        final releaseSourceRelease = releaseSource.releaseOverride;
         final releaseSourceReleaseSettings = UpdateSettingsDataContainer.fromConfig(
           releaseSourceRelease?.settings,
         );
@@ -55,7 +55,7 @@ class UpdateConfigLinker {
         );
 
         final releaseSourcePlatforms =
-            releaseSource.platforms?.where((e) => e.platform == platform).firstOrNull?.source?.release;
+            releaseSource.platforms?.where((e) => e.platform == platform).firstOrNull?.sourceOverride?.releaseOverride;
         final releaseSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
           releaseSourcePlatforms?.settings,
         );
@@ -63,7 +63,8 @@ class UpdateConfigLinker {
           releaseSourcePlatforms?.text,
         );
 
-        final globalSourcePlatform = globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.source;
+        final globalSourcePlatform =
+            globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.sourceOverride;
         final globalSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
           globalSourcePlatform?.settings,
         );

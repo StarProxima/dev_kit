@@ -17,7 +17,7 @@ class GlobalPlatformParser {
       if (value is String) {
         return GlobalPlatformConfig.byRequired(
           platform: UpdatePlatform.custom(value),
-          source: null,
+          sourceOverride: null,
           customData: null,
         );
       }
@@ -44,7 +44,7 @@ class GlobalPlatformParser {
 
     return GlobalPlatformConfig.byRequired(
       platform: name,
-      source: source,
+      sourceOverride: source,
       customData: map,
     );
   }

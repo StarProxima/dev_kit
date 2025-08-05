@@ -6,7 +6,7 @@ class UpdateTextParser {
 
   const UpdateTextParser();
 
-  UpdateTextConfig? parse(
+  UpdateContentConfig? parse(
     // ignore: avoid-dynamic
     dynamic value, {
     required bool isDebug,
@@ -66,13 +66,13 @@ class UpdateTextParser {
       isDebug: isDebug,
     );
 
-    return UpdateTextConfig.byRequired(
+    return UpdateContentConfig.byRequired(
       title: title,
       description: description,
       releaseNotesTitle: releaseNotesTitle,
       releaseNotes: releaseNotes,
       skipButton: skipButton,
-      laterButton: laterButton,
+      postponeButton: laterButton,
       updateButton: updateButton,
       customData: value,
     );

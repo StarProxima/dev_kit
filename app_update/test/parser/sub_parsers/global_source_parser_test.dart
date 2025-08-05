@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions, no-equal-arguments
 
-import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/parser/base_parsers/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
@@ -89,11 +89,11 @@ void main() {
       final androidPlatform = result?.platforms?.firstOrNull;
       expect(androidPlatform?.platform.name, 'android');
       expect(
-        androidPlatform?.source?.url?.toString(),
+        androidPlatform?.sourceOverride?.url?.toString(),
         'https://example.com/android',
       );
       expect(
-        androidPlatform?.source?.text
+        androidPlatform?.sourceOverride?.text
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
@@ -103,7 +103,7 @@ void main() {
         'Title',
       );
       expect(
-        androidPlatform?.source?.settings
+        androidPlatform?.sourceOverride?.settings
             ?.getByBase(
               type: UpdateAlertTypeBase.base,
               status: VersionStatusBase.base,
@@ -112,7 +112,7 @@ void main() {
         false,
       );
       expect(
-        androidPlatform?.source?.versionSettings?.deprecatedVersions?.firstOrNull?.toString(),
+        androidPlatform?.sourceOverride?.versionSettings?.deprecatedVersions?.firstOrNull?.toString(),
         '>5.6.0 <5.6.7',
       );
     });

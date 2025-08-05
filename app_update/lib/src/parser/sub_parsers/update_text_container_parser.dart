@@ -21,7 +21,7 @@ class UpdateTextContainerParser {
     // ignore: avoid-unnecessary-type-assertions
     if (value is! Map<String, dynamic>) return null;
 
-    final map = _rawContainerParser.parse<UpdateTextConfig>(
+    final map = _rawContainerParser.parse<UpdateContentConfig>(
       value,
       parse: (e) => _updateTextParser.parse(e, isDebug: false),
     );
