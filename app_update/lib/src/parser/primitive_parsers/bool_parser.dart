@@ -8,7 +8,9 @@ class BoolParser {
     // ignore: avoid-dynamic
     dynamic value,
   ) {
-    if (value is! bool?) throw const UpdateConfigException();
+    if (value == null) return null;
+
+    if (value is! bool) throw const UpdateConfigException();
 
     return value;
   }

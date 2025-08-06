@@ -7,9 +7,9 @@ class DurationParser {
     // ignore: avoid-dynamic
     required dynamic hours,
   }) {
-    if (hours is! int?) throw const UpdateConfigException();
-
     if (hours == null) return null;
+
+    if (hours is! int) throw const UpdateConfigException();
 
     if (hours < 0) {
       throw const UpdateConfigException();

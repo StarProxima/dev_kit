@@ -8,9 +8,9 @@ class UriParser {
     // ignore: avoid-dynamic
     dynamic value,
   ) {
-    if (value is! String?) throw const UpdateConfigException();
-
     if (value == null) return null;
+
+    if (value is! String) throw const UpdateConfigException();
 
     final uri = Uri.parse(value);
 

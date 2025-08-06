@@ -11,9 +11,9 @@ class VersionParser {
     // ignore: avoid-dynamic
     dynamic version,
   ) {
-    if (version is! String?) throw const UpdateConfigException();
-
     if (version == null) return null;
+
+    if (version is! String) throw const UpdateConfigException();
 
     return Version.parse(version);
   }

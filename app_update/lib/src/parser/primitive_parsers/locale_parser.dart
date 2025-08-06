@@ -10,9 +10,9 @@ class LocaleParser {
     // ignore: avoid-dynamic
     dynamic value,
   ) {
-    if (value is! String?) throw const UpdateConfigException();
-
     if (value == null) return null;
+
+    if (value is! String) throw const UpdateConfigException();
 
     final list = value.split('_');
 

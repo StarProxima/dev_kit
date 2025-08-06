@@ -7,9 +7,9 @@ class UpdateViewTargetParser {
   UpdateViewTarget? parse(
     dynamic value,
   ) {
-    if (value is! String?) throw const UpdateConfigException();
-
     if (value == null) return null;
+
+    if (value is! String) throw const UpdateConfigException();
 
     return UpdateViewTarget.custom(value);
   }

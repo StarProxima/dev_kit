@@ -10,9 +10,9 @@ class UpdateLocaleParser {
   UpdateLocale? parse(
     dynamic value,
   ) {
-    if (value is! String?) throw const UpdateConfigException();
-
     if (value == null) return null;
+
+    if (value is! String) throw const UpdateConfigException();
 
     final byName = UpdateLocale(null, name: value);
 

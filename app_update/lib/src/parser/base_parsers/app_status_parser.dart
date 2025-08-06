@@ -7,9 +7,9 @@ class AppStatusParser {
   AppStatus? parse(
     dynamic value,
   ) {
-    if (value is! String?) throw const UpdateConfigException();
-
     if (value == null) return null;
+
+    if (value is! String) throw const UpdateConfigException();
 
     return AppStatus.custom(value);
   }
