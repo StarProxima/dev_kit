@@ -1,4 +1,4 @@
-import '../../parser/models/update_content_config.dart';
+import '../../parser/sub_parsers/update_content_config/update_content_config.dart';
 
 class UpdateTextData extends UpdateContentConfig {
   const UpdateTextData({

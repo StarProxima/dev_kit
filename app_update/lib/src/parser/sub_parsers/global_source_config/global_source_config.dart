@@ -1,9 +1,9 @@
-import '../../shared/update_platform.dart';
+import '../../../shared/update_platform.dart';
 
-import '../sub_parsers/update_app_status_config/update_app_status_config.dart';
-import 'update_content_config.dart';
-import 'update_rule_config.dart';
-import 'update_settings_config.dart';
+import '../update_app_status_config/update_app_status_config.dart';
+import '../update_content_config/update_content_config.dart';
+import '../update_rule_config/update_rule_config.dart';
+import '../update_settings_config/update_settings_config.dart';
 
 class GlobalSourceConfig {
   final String? name;
@@ -11,7 +11,7 @@ class GlobalSourceConfig {
   final List<GlobalPlatformConfig>? platforms;
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppStatusConfig>>? appStatusConditions;
+  final List<UpdateRuleConfig<UpdateAppStatusConfig>>? appStatusRules;
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({
@@ -20,7 +20,7 @@ class GlobalSourceConfig {
     this.platforms,
     this.contentRules,
     this.settingsRules,
-    this.appStatusConditions,
+    this.appStatusRules,
     this.customData,
   });
 
@@ -30,7 +30,7 @@ class GlobalSourceConfig {
     required this.platforms,
     required this.contentRules,
     required this.settingsRules,
-    required this.appStatusConditions,
+    required this.appStatusRules,
     required this.customData,
   });
 }

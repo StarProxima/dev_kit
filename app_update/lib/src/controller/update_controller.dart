@@ -18,8 +18,8 @@ import '../finder/update_finder.dart';
 import '../linker/models/update_settings_data_container.dart';
 import '../linker/models/update_text_data_container.dart';
 import '../linker/update_config_linker.dart';
-import '../parser/models/release_config.dart';
-import '../parser/models/update_model_config.dart';
+import '../parser/sub_parsers/release_config/release_config.dart';
+import '../parser/sub_parsers/update_model_config/update_model_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
 import '../shared/update_platform.dart';
@@ -76,7 +76,8 @@ class UpdateController extends UpdateControllerBase {
     String? targetSourceName,
     String? defaultSourceName,
   })  : _updateConfigFetcher = updateConfigFetcher,
-        _sourceFetcherCoordinator = sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
+        _sourceFetcherCoordinator =
+            sourceFetcherCoordinator ?? const SourceReleaseFetcherCoordinator(),
         _updateSettings = updateSettings,
         _updateText = updateText,
         _updateStorage = storage,
@@ -118,7 +119,8 @@ class UpdateController extends UpdateControllerBase {
     final releases = <ReleaseConfig>[];
     for (final source in _globalSources ?? <Source?>[null]) {
       try {
-        final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(source: source, platform: _platform);
+        final fetcher = await _sourceFetcherCoordinator.fetcherBySourceAndPlatform(
+            source: source, platform: _platform);
         final releaseFromSource = await fetcher
             .fetch(
               source: source,
@@ -211,7 +213,10 @@ class UpdateController extends UpdateControllerBase {
     }
     final releasesFromSources = await _sourceReleasesConfigFromFetchersCompleter!.future;
 
-    final globalSourcesConfig = [...?configModel?.sources, ...?_globalSources?.map((e) => e.toGlobalSourceConfig())];
+    final globalSourcesConfig = [
+      ...?configModel?.sources,
+      ...?_globalSources?.map((e) => e.toGlobalSourceConfig())
+    ];
     final releasesConfig = [...?configModel?.releases, ...releasesFromSources];
 
     final releasesData = _linker.linkConfigs(
@@ -232,13 +237,14 @@ class UpdateController extends UpdateControllerBase {
 
     final releases = _finalizer!.finalizeReleases(releasesData);
 
-    final updateConfig = UpdateConfig(sources: sources, releases: releases, customData: configModel?.customData);
+    final updateConfig =
+        UpdateConfig(sources: sources, releases: releases, customData: configModel?.customData);
 
     _finder ??= UpdateFinder(appVersion: appVersion, platform: _platform);
     Map<ReleaseSource, Release> availableReleasesBySources = _finder!.findAvailableReleasesBySource(
       releases: updateConfig.releases,
       globalSourcesConfig: globalSourcesConfig,
-      versionSettings: configModel?.appStatusConditions,
+      versionSettings: configModel?.appStatusRules,
     );
 
     if (isFindUpdateFromOneSource) {
@@ -258,10 +264,11 @@ class UpdateController extends UpdateControllerBase {
     _updateStorageManager ??= UpdateStorageManager(_updateStorage!);
 
     final appUpdateList = <UpdateResult>[];
-    for (final MapEntry(key: source, value: availableRelease) in availableReleasesBySources.entries) {
+    for (final MapEntry(key: source, value: availableRelease)
+        in availableReleasesBySources.entries) {
       final globalSource = globalSourcesConfig.where((e) => e.name == source.name).firstOrNull;
       final updateVersionController = UpdateVersionController.fromGlobalSource(
-        versionSettingsConfig: configModel?.appStatusConditions,
+        versionSettingsConfig: configModel?.appStatusRules,
         globalSource: globalSource,
         platform: _platform,
       );

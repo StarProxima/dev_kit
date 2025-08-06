@@ -3,7 +3,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../controller/exceptions.dart';
 import '../finalizer/models/release.dart';
-import '../parser/models/global_source_config.dart';
+import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/versions_settings_config.dart';
 import '../shared/update_platform.dart';
 import '../sources/release_source.dart';

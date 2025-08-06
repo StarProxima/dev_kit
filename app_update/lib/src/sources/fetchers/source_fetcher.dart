@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../parser/models/release_config.dart';
+import '../../parser/sub_parsers/release_config/release_config.dart';
 import '../source.dart';
 
 abstract class SourceReleaseFetcher {

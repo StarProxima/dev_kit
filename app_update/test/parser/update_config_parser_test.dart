@@ -53,7 +53,7 @@ void main() {
         final result = parser.parse(value, isDebug: isDebug);
 
         expect(result.settingsRules, isNotNull);
-        expect(result.appStatusConditions, isNotNull);
+        expect(result.appStatusRules, isNotNull);
         expect(result.sources?.length, 2);
         expect(result.releases.length, 1);
         expect(result.releases.firstOrNull?.version?.toString(), '1.0.0');
@@ -89,7 +89,7 @@ void main() {
       final result = parser.parse(value, isDebug: isDebug);
 
       expect(result.settingsRules, isNull);
-      expect(result.appStatusConditions, isNull);
+      expect(result.appStatusRules, isNull);
       expect(result.sources?.length, 1);
       expect(result.releases.length, 1);
       expect(result.releases.firstOrNull?.version?.toString(), '1.0.0');
@@ -185,7 +185,7 @@ void main() {
       final result = parser.parse(value, isDebug: isDebug);
 
       expect(result.settingsRules, isNotNull);
-      expect(result.appStatusConditions, isNotNull);
+      expect(result.appStatusRules, isNotNull);
       expect(result.sources, isEmpty);
       expect(result.releases, isEmpty);
     });

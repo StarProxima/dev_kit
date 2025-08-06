@@ -1,4 +1,4 @@
-import '../../parser/models/update_settings_config.dart';
+import '../../parser/sub_parsers/update_settings_config/update_settings_config.dart';
 
 class UpdateSettingsData {
   final bool? canSkipRelease;

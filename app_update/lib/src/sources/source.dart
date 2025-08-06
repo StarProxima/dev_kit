@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../parser/models/platform_config.dart';
-import '../parser/models/global_source_config.dart';
+import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
 import '../parser/models/update_text_config_container.dart';
 import '../shared/update_platform.dart';

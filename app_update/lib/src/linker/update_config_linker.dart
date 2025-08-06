@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-non-null-assertion
 
-import '../parser/models/release_config.dart';
-import '../parser/models/global_source_config.dart';
+import '../parser/sub_parsers/release_config/release_config.dart';
+import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
 import '../parser/models/update_text_config_container.dart';
 import '../shared/update_platform.dart';
@@ -38,7 +38,8 @@ class UpdateConfigLinker {
         final name = releaseSource.name;
         if (name == null) continue;
 
-        final globalSource = globalSources.firstWhere((source) => source?.name == name, orElse: () => null);
+        final globalSource =
+            globalSources.firstWhere((source) => source?.name == name, orElse: () => null);
         final globalSourceSettings = UpdateSettingsDataContainer.fromConfig(globalSource?.settings);
         final globalSourceTexts = UpdateTextDataContainer.fromConfig(globalSource?.text);
 
@@ -54,8 +55,11 @@ class UpdateConfigLinker {
           releaseSourceRelease?.text,
         );
 
-        final releaseSourcePlatforms =
-            releaseSource.platforms?.where((e) => e.platform == platform).firstOrNull?.sourceOverride?.releaseOverride;
+        final releaseSourcePlatforms = releaseSource.platforms
+            ?.where((e) => e.name == platform)
+            .firstOrNull
+            ?.sourceOverride
+            ?.releaseOverride;
         final releaseSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
           releaseSourcePlatforms?.settings,
         );
@@ -63,8 +67,10 @@ class UpdateConfigLinker {
           releaseSourcePlatforms?.text,
         );
 
-        final globalSourcePlatform =
-            globalSource?.platforms?.where((e) => e.platform == platform).firstOrNull?.sourceOverride;
+        final globalSourcePlatform = globalSource?.platforms
+            ?.where((e) => e.platform == platform)
+            .firstOrNull
+            ?.sourceOverride;
         final globalSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
           globalSourcePlatform?.settings,
         );
@@ -75,7 +81,7 @@ class UpdateConfigLinker {
         final targetSource = ReleaseSource(
           name: name,
           url: sourceUrl,
-          platforms: releaseSource.platforms?.map((e) => e.platform).toList() ??
+          platforms: releaseSource.platforms?.map((e) => e.name).toList() ??
               globalSource?.platforms?.map((e) => e.platform).toList(),
           customData: releaseSource.customData ?? globalSource?.customData,
         );
