@@ -14,9 +14,9 @@ import '../update_rule_config/update_rule_config.dart';
 import '../update_rule_config/update_rule_config_parser.dart';
 import '../update_settings_config/update_settings_config.dart';
 import '../update_settings_config/update_settings_config_parser.dart';
-import 'update_model_config.dart';
+import 'update_config.dart';
 
-class UpdateModelConfigParser {
+class UpdateConfigParser {
   static const _releaseConfigParser = ReleaseConfigParser();
   static const _globalSourceConfigParser = GlobalSourceConfigParser();
   static const _updateRuleConfigParser = UpdateRuleConfigParser();
@@ -25,9 +25,9 @@ class UpdateModelConfigParser {
   static const _updateAppStatusConfigParser = UpdateAppStatusConfigParser();
   static const _listOrValueParser = ListOrValueParser();
 
-  const UpdateModelConfigParser();
+  const UpdateConfigParser();
 
-  UpdateModelConfig? parse(
+  UpdateConfig? parse(
     dynamic value,
   ) {
     if (value is! Map<String, dynamic>?) {
@@ -87,7 +87,7 @@ class UpdateModelConfigParser {
         .whereType<UpdateRuleConfig<UpdateAppStatusConfig>>()
         .toList();
 
-    return UpdateModelConfig.byRequired(
+    return UpdateConfig.byRequired(
       releases: releases,
       sources: sources,
       contentRules: contentRules,

@@ -5,7 +5,7 @@ import '../update_content_config/update_content_config.dart';
 import '../update_rule_config/update_rule_config.dart';
 import '../update_settings_config/update_settings_config.dart';
 
-class UpdateModelConfig {
+class UpdateConfig {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppStatusConfig>>? appStatusRules;
@@ -13,7 +13,7 @@ class UpdateModelConfig {
   final List<ReleaseConfig> releases;
   final Map<String, dynamic>? customData;
 
-  const UpdateModelConfig({
+  const UpdateConfig({
     this.contentRules,
     this.settingsRules,
     this.appStatusRules,
@@ -22,7 +22,7 @@ class UpdateModelConfig {
     this.customData,
   });
 
-  const UpdateModelConfig.byRequired({
+  const UpdateConfig.byRequired({
     required this.contentRules,
     required this.settingsRules,
     required this.appStatusRules,

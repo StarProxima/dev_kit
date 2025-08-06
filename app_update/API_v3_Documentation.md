@@ -2,16 +2,16 @@
 
 ## Overview
 
-App Update API v3 provides a comprehensive configuration system for managing application updates across multiple platforms and stores. The API supports flexible content rules, version lifecycle management, progressive rollouts, and multi-source distribution.
+App Update provides a comprehensive configuration system for managing application updates across multiple platforms and stores. The API supports flexible content rules, version lifecycle management, progressive rollouts, and multi-source distribution.
 
 ## Configuration Structure
 
 The configuration consists of four main sections:
 
 ```yaml
-content:        # UI content rules for different contexts
-settings:       # Behavioral settings and user actions
-version_rules:  # Version lifecycle and status management
+content_rules:        # UI content rules for different contexts
+settings_rules:       # Behavioral settings and user actions
+app_status_rules:  # Version lifecycle and status management
 sources:        # Distribution sources (stores, platforms)
 releases:       # Specific release definitions
 ```
@@ -25,16 +25,13 @@ Define UI content based on context, locale, and app status.
 ### Basic Structure
 
 ```yaml
-content:
-  - view_target: card|dialog|screen|toast|profile_badge|about_screen|all
-    app_status: active|updateable|outdated|deprecated|unsupported|all
-    locale: ru|en|all
+content_rules:
+  - view_target: card|dialog|screen|toast|profile_badge|about_screen|any
+    app_statuses: active|updateable|outdated|deprecated|unsupported|any
+    locales: ru|en|any
     data:
       title: "Update Available"
       description: "New version with improvements"
-      custom_img:
-        url: "https://example.com/image.png"
-        border_radius: 10
 ```
 
 ### Parameters
@@ -46,7 +43,7 @@ content:
   - `toast` - Brief notification
   - `profile_badge` - Badge in user profile
   - `about_screen` - About/settings screen
-  - `all` - All contexts
+  - `any` - any contexts
 
 - **`app_status`**: Application version status
   - `active` - Current/latest version
@@ -67,43 +64,43 @@ Control update behavior, user actions, and timing.
 ### Basic Structure
 
 ```yaml
-settings:
-  - app_status: all
-    view_target: all
+settings_rules:
+  - app_statuses: any
+    view_target: any
     data:
       should_show: true|false
       can_skip: true|false
       can_postpone: true|false
       skip_release_delay_hours: 2160    # 90 days
-      skip_all_releases_delay_hours: 72  # 3 days
+      skip_any_releases_delay_hours: 72  # 3 days
       postpone_release_delay_hours: 96   # 4 days
-      postpone_all_releases_delay_hours: 24  # 1 day
+      postpone_any_releases_delay_hours: 24  # 1 day
 ```
 
 ### Key Settings
 
 - **`should_show`**: Whether to display update prompt
-- **`can_skip`**: Allow users to skip this update
-- **`can_postpone`**: Allow users to postpone update
+- **`can_skip`**: anyow users to skip this update
+- **`can_postpone`**: anyow users to postpone update
 - **`*_delay_hours`**: Cooldown periods for user actions
 
 ### Recommended Status Configurations
 
 ```yaml
 # Unsupported - Force update
-- app_status: unsupported
+- app_statuses: unsupported
   data:
     can_skip: false
     can_postpone: false
 
-# Deprecated - Allow postpone but encourage update
-- app_status: deprecated
+# Deprecated - anyow postpone but encourage update
+- app_statuses: deprecated
   data:
     can_postpone: true
     postpone_release_delay_hours: 24
 
 # Optional updates - Full user control
-- app_status: [outdated, updateable, active]
+- app_statuses: [outdated, updateable, active]
   data:
     can_skip: true
     can_postpone: true
@@ -118,62 +115,62 @@ Define version lifecycle with progressive rollouts and time-based transitions.
 ### Basic Structure
 
 ```yaml
-version_rules:
+app_status_rules:
   - version: ">=6.0.0"           # Semver constraint
     date: "2024-10-17 23:00:00"  # Activation date
-    app_status: active
+    app_statuses: active
     release_status: available|discontinued
     
   - version: "<=1.0.0"
-    app_status: unsupported
+    app_statuses: unsupported
     release_status: discontinued
 ```
 
 ### Progressive Rollout
 
 ```yaml
-version_rules:
+app_status_rules:
   - version: "<=3.0.0"
     date: "2024-10-17"
     rollout:
       - delay_hours: 12              # Wait 12h before starting
         rollout_hours: 72            # Roll out over 72h
         segmentation_percent: 10     # Affect 10% of users
-        app_status: deprecated
+        app_statuses: deprecated
         
       - delay_hours: 168            # After 7 days
         rollout_hours: 336          # Roll out over 14 days
-        segmentation_percent: 100   # Affect all users
-        app_status: unsupported
+        segmentation_percent: 100   # Affect any users
+        app_statuses: unsupported
 ```
 
 ### Dynamic Date References
 
 ```yaml
-version_rules:
+app_status_rules:
   # Use app release date as reference
-  - version: all
-    date: app_release    # Date from current app version
+  - version: any
+    date: localReleaseDate    # Date from current app version
     rollout:
       - delay_hours: 168
-        app_status: outdated
+        app_statuses: outdated
         
   # Use latest update release date
-  - version: all
-    date: update_release  # Date from latest available update
+  - version: any
+    date: updateReleaseDate  # Date from latest available update
     rollout:
       - delay_hours: 48
-        app_status: outdated
+        app_statuses: outdated
 ```
 
 ### Version Constraint Examples
 
 ```yaml
-version_rules:
+app_status_rules:
   - version: "<=1.0.0"                    # Single constraint
   - version: ">3.0.0 <4.0.0"            # Range constraint
   - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]  # Multiple constraints
-  - version: all                          # Match all versions
+  - version: any                          # Match any versions
 ```
 
 ---
@@ -206,7 +203,7 @@ sources:
       - name: android
         source:
           url: "https://github.com/user/repo/releases/download/v1.0/app.apk"
-          content:
+          content_rules:
             title: "Download APK"
       
       # Simple platform list
@@ -221,7 +218,7 @@ sources:
 sources:
   - name: ruStore
     url: "https://apps.rustore.ru/app/com.example"
-    content:
+    content_rules:
       title: "Обновить в RuStore"  # Source-specific content
 ```
 
@@ -237,7 +234,7 @@ Define specific application releases with version, date, and source information.
 releases:
   - version: "1.2.0"
     date: "2024-08-24 15:35:00"    # Local time
-    content:
+    content_rules:
       title: "Major Update"
       description: "New features and improvements"
       release_notes: |
@@ -275,7 +272,7 @@ releases:
         platforms: [android]
         release:
           version: "1.2.1"           # Different version number
-          content:
+          content_rules:
             title: "RuStore Exclusive"
 ```
 
@@ -291,11 +288,11 @@ releases:
             source:
               url: "https://github.com/user/repo/releases/download/v1.0/app-windows.zip"
               release:
-                content:
-                  - locale: ru
+                content_rules:
+                  - locales: ru
                     data:
                       release_notes: "Заметки для Windows версии"
-                settings:
+                settings_rules:
                   can_postpone: true
 ```
 
@@ -320,19 +317,19 @@ releases:
 Rules are applied in order with later rules taking priority:
 
 1. **Content Rules**: Multiple rules can apply, with later rules overriding specific fields
-2. **Settings Rules**: Merged hierarchically with specific rules overriding general ones
+2. **Settings Rules**: Merged hierarchicanyy with specific rules overriding general ones
 3. **Version Rules**: First matching rule applies (except in rollout scenarios)
 
 ### Localization Support
 
 ```yaml
-content:
-  - locale: ru
+content_rules:
+  - locales: ru
     data:
       title: "Обновление доступно"
       description: "Новая версия с улучшениями"
       
-  - locale: en  
+  - locales: en  
     data:
       title: "Update Available"
       description: "New version with improvements"
@@ -341,26 +338,26 @@ content:
 ### Progressive Rollout Strategy
 
 ```yaml
-version_rules:
+app_status_rules:
   - version: ">=2.0.0"
     rollout:
       # Phase 1: 10% of users after 1 day
       - delay_hours: 24
         rollout_hours: 48
         segmentation_percent: 10
-        app_status: updateable
+        app_statuses: updateable
         
       # Phase 2: 50% of users after 3 days  
       - delay_hours: 72
         rollout_hours: 72
         segmentation_percent: 50
-        app_status: outdated
+        app_statuses: outdated
         
-      # Phase 3: All users after 1 week
+      # Phase 3: any users after 1 week
       - delay_hours: 168
         rollout_hours: 24
         segmentation_percent: 100
-        app_status: deprecated
+        app_statuses: deprecated
 ```
 
 ---
@@ -370,48 +367,48 @@ version_rules:
 ### 1. Version Lifecycle Management
 
 ```yaml
-version_rules:
+app_status_rules:
   # Block very old versions
   - version: "<=1.0.0"
-    app_status: unsupported
+    app_statuses: unsupported
     release_status: discontinued
     
   # Gradual deprecation for older versions
-  - version: all
-    date: app_release
+  - version: any
+    date: localReleaseDate
     rollout:
       - delay_hours: 2160    # 90 days: outdated
-        app_status: outdated
+        app_statuses: outdated
       - delay_hours: 4320    # 180 days: deprecated  
-        app_status: deprecated
+        app_statuses: deprecated
       - delay_hours: 6480    # 270 days: unsupported
-        app_status: unsupported
+        app_statuses: unsupported
 ```
 
 ### 2. User Experience Optimization
 
 ```yaml
-settings:
+settings_rules:
   # Default: don't show unless explicitly enabled
-  - app_status: all
+  - app_statuses: any
     data:
       should_show: false
       
   # Progressive urgency
-  - app_status: updateable
+  - app_statuses: updateable
     data:
       should_show: true
       can_skip: true
       can_postpone: true
       
-  - app_status: deprecated
+  - app_statuses: deprecated
     data:
       should_show: true
       can_skip: false
       can_postpone: true
       postpone_release_delay_hours: 24
       
-  - app_status: unsupported
+  - app_statuses: unsupported
     data:
       should_show: true
       can_skip: false
@@ -429,7 +426,7 @@ sources:
   - name: secondary_store
     platforms: [android]
     url: "https://secondary-store.com"
-    content:
+    content_rules:
       title: "Also available on Secondary Store"
       
   - name: direct_download

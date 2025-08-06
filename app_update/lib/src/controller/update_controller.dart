@@ -54,7 +54,7 @@ class UpdateController extends UpdateControllerBase {
   final String? _targetSourceName;
   final String? _defaultSourceName;
 
-  Completer<UpdateModelConfig?>? _updateConfigModelCompleter;
+  Completer<UpdateConfig?>? _updateConfigModelCompleter;
   Completer<List<ReleaseConfig>>? _sourceReleasesConfigFromFetchersCompleter;
   final _availableUpdateStream = StreamController<UpdateResult>();
   final _updateConfigStream = StreamController<UpdateConfig>();

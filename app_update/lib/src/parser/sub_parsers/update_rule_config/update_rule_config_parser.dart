@@ -40,7 +40,8 @@ class UpdateRuleConfigParser {
     // appStatuses
     final appStatusesRawValue = value.remove('app_statuses');
     final appStatusesValue = _listOrValueParser.parse(appStatusesRawValue);
-    final appStatuses = appStatusesValue?.map(_appStatusParser.parse).whereType<AppStatus>().toList();
+    final appStatuses =
+        appStatusesValue?.map(_appStatusParser.parse).whereType<AppStatus>().toList();
 
     // locales
     final localesRawValue = value.remove('locales');
@@ -50,13 +51,16 @@ class UpdateRuleConfigParser {
     // viewTargets
     final viewTargetsRawValue = value.remove('view_targets');
     final viewTargetsValue = _listOrValueParser.parse(viewTargetsRawValue);
-    final viewTargets = viewTargetsValue?.map(_updateViewTargetParser.parse).whereType<UpdateViewTarget>().toList();
+    final viewTargets =
+        viewTargetsValue?.map(_updateViewTargetParser.parse).whereType<UpdateViewTarget>().toList();
 
     // versions
     final versionsRawValue = value.remove('versions');
     final versionsValue = _listOrValueParser.parse(versionsRawValue);
-    final versions =
-        versionsValue?.map(_updateVersionConstraintParser.parse).whereType<UpdateVersionConstraint>().toList();
+    final versions = versionsValue
+        ?.map(_updateVersionConstraintParser.parse)
+        .whereType<UpdateVersionConstraint>()
+        .toList();
 
     // sources
     final sourcesRawValue = value.remove('sources');
@@ -68,7 +72,8 @@ class UpdateRuleConfigParser {
     final date = _updateDateParser.parse(dateValue);
 
     // data
-    final dataValue = value.remove('data');
+    // if not exists, use rule itself as data
+    final dataValue = value.remove('data') ?? value;
     final data = dataParser(dataValue);
 
     final config = UpdateRuleConfig.byRequired(
