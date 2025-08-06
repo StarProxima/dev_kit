@@ -15,10 +15,6 @@ class VersionConstraintParser {
 
     if (version == null) return null;
 
-    try {
-      return VersionConstraint.parse(version);
-    } catch (e, s) {
-      Error.throwWithStackTrace(const UpdateConfigException(), s);
-    }
+    return VersionConstraint.parse(version);
   }
 }

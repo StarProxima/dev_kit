@@ -10,17 +10,19 @@ class UpdateDateParser {
   UpdateDate? parse(
     dynamic value,
   ) {
-    if (value! is String?) throw const UpdateConfigException();
+    if (value is! String?) throw const UpdateConfigException();
 
-    final date = _dateParser.parse(value);
-
-    if (date == null) return null;
+    if (value == null) return null;
 
     final byName = UpdateDate(null, name: value);
 
     if (UpdateDate.values.contains(byName)) {
       return byName;
     }
+
+    final date = _dateParser.parse(value);
+
+    if (date == null) return null;
 
     return UpdateDate(date);
   }

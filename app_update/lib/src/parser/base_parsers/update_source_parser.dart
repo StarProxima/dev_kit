@@ -16,7 +16,7 @@ class UpdateSourceParser {
     if (value == null) return null;
 
     // Short syntax
-    if (value! is String) {
+    if (value is String) {
       return UpdateSource.custom(value);
     }
 
@@ -31,7 +31,8 @@ class UpdateSourceParser {
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List?) throw const UpdateConfigException();
 
-    final platforms = platformsValue?.map(_updatePlatformParser.parse).whereType<UpdatePlatform>().toList();
+    final platforms =
+        platformsValue?.map(_updatePlatformParser.parse).whereType<UpdatePlatform>().toList();
 
     final source = UpdateSource.custom(name, platforms: platforms);
 

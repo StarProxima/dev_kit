@@ -9,12 +9,8 @@ class DateTimeParser {
   ) {
     if (value is! String) throw const UpdateConfigException();
 
-    try {
-      final date = DateTime.parse(value);
+    final date = DateTime.parse(value);
 
-      return date;
-    } on FormatException catch (e, s) {
-      Error.throwWithStackTrace(const UpdateConfigException(), s);
-    }
+    return date;
   }
 }

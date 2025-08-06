@@ -15,10 +15,6 @@ class VersionParser {
 
     if (version == null) return null;
 
-    try {
-      return Version.parse(version);
-    } catch (e, s) {
-      Error.throwWithStackTrace(const UpdateConfigException(), s);
-    }
+    return Version.parse(version);
   }
 }
