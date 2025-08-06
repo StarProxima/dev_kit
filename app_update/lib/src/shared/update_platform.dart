@@ -27,6 +27,7 @@ class UpdatePlatform extends UpdateEntity {
     macos,
     windows,
     web,
+    any,
   ];
 
   factory UpdatePlatform.current() => UpdatePlatform._(

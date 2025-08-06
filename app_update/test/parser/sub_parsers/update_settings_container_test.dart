@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-correct-test-file-name, avoid-long-functions, prefer-moving-to-variable, no-equal-arguments, avoid-missing-enum-constant-in-map
 
-import 'package:app_update/src/parser/models/update_config_exception.dart';
+import 'package:app_update/src/parser/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/shared/version_status.dart';

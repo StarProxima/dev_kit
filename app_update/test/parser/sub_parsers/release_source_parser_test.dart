@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions
 
-import 'package:app_update/src/parser/base_parsers/update_config_exception.dart';
+import 'package:app_update/src/parser/update_config_exception.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';

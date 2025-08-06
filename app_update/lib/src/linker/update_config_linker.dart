@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-non-null-assertion
 
 import '../parser/models/release_config.dart';
-import '../parser/models/source_config.dart';
+import '../parser/models/global_source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
 import '../parser/models/update_text_config_container.dart';
 import '../shared/update_platform.dart';

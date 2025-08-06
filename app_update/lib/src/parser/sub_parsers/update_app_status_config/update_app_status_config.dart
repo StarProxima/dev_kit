@@ -1,4 +1,4 @@
-import '../../shared/app_status.dart';
+import '../../../shared/app_status.dart';
 
 class UpdateAppStatusConfig {
   final AppStatus? appStatus;

@@ -12,4 +12,11 @@ class AppStatus extends UpdateEntity {
   static const outdated = AppStatus._('outdated');
   static const active = AppStatus._('active');
   static const any = AppStatus._('any');
+
+  static const values = [
+    unsupported,
+    outdated,
+    active,
+    any,
+  ];
 }

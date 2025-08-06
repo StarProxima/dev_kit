@@ -1,7 +1,7 @@
 import 'package:pub_semver/pub_semver.dart';
 
 import '../../shared/update_platform.dart';
-import 'update_app_status_config.dart';
+import '../sub_parsers/update_app_status_config/update_app_status_config.dart';
 import 'update_content_config.dart';
 import 'update_rule_config.dart';
 import 'update_settings_config.dart';

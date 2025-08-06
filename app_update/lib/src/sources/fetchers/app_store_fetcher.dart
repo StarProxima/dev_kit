@@ -11,8 +11,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import '../../parser/models/release_config.dart';
-import '../../parser/models/source_config.dart';
-import '../../parser/models/content_config.dart';
+import '../../parser/models/global_source_config.dart';
+import '../../parser/models/update_content_config.dart';
 import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
 import '../sources.dart';

@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../parser/models/source_config.dart';
+import '../parser/models/global_source_config.dart';
 import '../parser/models/versions_settings_config.dart';
 import '../shared/update_platform.dart';
 import '../shared/version_status.dart';

@@ -1,17 +1,23 @@
 import 'update_entity.dart';
 
 class UpdateDate extends UpdateEntity {
-  static const any = UpdateDate(null, 'any');
-  static const localReleaseDate = UpdateDate(null, 'localReleaseDate');
-  static const updateReleaseDate = UpdateDate(null, 'updateReleaseDate');
+  static const any = UpdateDate(null, name: 'any');
+  static const localReleaseDate = UpdateDate(null, name: 'localReleaseDate');
+  static const updateReleaseDate = UpdateDate(null, name: 'updateReleaseDate');
 
   final DateTime? date;
 
   const UpdateDate(
-    this.date, [
-    super._name = 'direct',
-  ]);
+    this.date, {
+    String name = 'direct',
+  }) : super(name);
 
   @override
   List<Object?> get params => [name, date];
+
+  static const values = [
+    any,
+    localReleaseDate,
+    updateReleaseDate,
+  ];
 }

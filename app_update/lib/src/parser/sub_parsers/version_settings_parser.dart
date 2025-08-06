@@ -2,8 +2,8 @@
 
 import 'package:pub_semver/pub_semver.dart';
 
-import '../base_parsers/version_constraint_parser.dart';
-import '../models/update_config_exception.dart';
+import '../primitive_parsers/version_constraint_parser.dart';
+import '../update_config_exception.dart';
 import '../models/versions_settings_config.dart';
 
 class VersionSettingsParser {

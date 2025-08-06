@@ -1,6 +1,6 @@
 import 'global_source_config.dart';
 import 'release_config.dart';
-import 'update_app_status_config.dart';
+import '../sub_parsers/update_app_status_config/update_app_status_config.dart';
 import 'update_content_config.dart';
 import 'update_rule_config.dart';
 import 'update_settings_config.dart';

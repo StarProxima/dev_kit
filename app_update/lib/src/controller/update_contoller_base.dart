@@ -8,7 +8,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
-import '../finalizer/models/update_result.dart';
+import '../finalizer/models/update_response.dart';
 import '../shared/update_platform.dart';
 import '../shared/update_source.dart';
 import '../shared/update_view_target.dart';
