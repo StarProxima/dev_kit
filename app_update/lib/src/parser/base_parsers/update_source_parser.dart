@@ -1,4 +1,3 @@
-import '../../shared/update_platform.dart';
 import '../../shared/update_source.dart';
 import '../primitive_parsers/string_parser.dart';
 import '../update_config_exception.dart';

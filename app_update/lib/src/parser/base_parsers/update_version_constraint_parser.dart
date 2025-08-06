@@ -10,11 +10,11 @@ class UpdateVersionConstraintParser {
   UpdateVersionConstraint? parse(
     dynamic value,
   ) {
-    if (value is! String?) throw const UpdateConfigException();
-
     if (value == null) return null;
 
-    final byName = UpdateVersionConstraint(null, name: value!);
+    if (value is! String) throw const UpdateConfigException();
+
+    final byName = UpdateVersionConstraint(null, name: value);
 
     if (UpdateVersionConstraint.values.contains(byName)) {
       return byName;

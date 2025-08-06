@@ -1,10 +1,8 @@
-import 'dart:convert';
-
+import 'package:app_update/src/parser/sub_parsers/release_config/release_config.dart';
+import 'package:app_update/src/parser/sub_parsers/release_config/release_config_parser.dart';
+import 'package:app_update/src/parser/update_config_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
-import 'package:app_update/src/parser/sub_parsers/release_config/release_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/release_config/release_config.dart';
-import 'package:app_update/src/parser/update_config_exception.dart';
 
 void main() {
   group('ReleaseConfigParser', () {

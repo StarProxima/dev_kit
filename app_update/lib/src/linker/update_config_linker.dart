@@ -39,7 +39,7 @@ class UpdateConfigLinker {
         if (name == null) continue;
 
         final globalSource =
-            globalSources.firstWhere((source) => source?.name == name, orElse: () => null);
+            globalSources.firstWhere((source) => source?.source == name, orElse: () => null);
         final globalSourceSettings = UpdateSettingsDataContainer.fromConfig(globalSource?.settings);
         final globalSourceTexts = UpdateTextDataContainer.fromConfig(globalSource?.text);
 
@@ -129,7 +129,7 @@ class UpdateConfigLinker {
     // убираем сурсы с одинаковыми именами
     final sources = <ReleaseSource>{};
     for (final sourceConfig in sourcesConfig) {
-      final name = sourceConfig.name;
+      final name = sourceConfig.source;
       final url = sourceConfig.url;
       final platforms = sourceConfig.platforms?.map((p) => p.platform).toList();
 

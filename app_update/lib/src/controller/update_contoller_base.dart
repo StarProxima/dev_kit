@@ -5,7 +5,6 @@ import 'dart:ui';
 
 import 'package:pub_semver/pub_semver.dart';
 
-import '../finalizer/models/app_update.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../finalizer/models/update_response.dart';
@@ -18,8 +17,10 @@ import 'exceptions.dart';
 
 abstract class UpdateControllerBase {
   Stream<UpdateResponse?> get availableUpdateStream;
-
   Stream<UpdateConfig> get updateConfigStream;
+
+  UpdateResponse? get availableUpdate;
+  UpdateConfig? get updateConfig;
 
   /// Going to network to get the UpdateConfig and Releses from global sources to get the latest updates.
   Future<void> fetch({

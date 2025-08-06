@@ -1,8 +1,8 @@
+import 'package:app_update/src/parser/sub_parsers/update_rule_config/update_rule_config.dart';
+import 'package:app_update/src/parser/sub_parsers/update_rule_config/update_rule_config_parser.dart';
+import 'package:app_update/src/parser/update_config_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
-import 'package:app_update/src/parser/sub_parsers/update_rule_config/update_rule_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/update_rule_config/update_rule_config.dart';
-import 'package:app_update/src/parser/update_config_exception.dart';
 
 void main() {
   group('UpdateRuleConfigParser', () {
@@ -15,9 +15,9 @@ void main() {
           title: "Заголовок"
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
-      final result = parser.parse(map, dataParser: (v) => v);
+      final result = parser.parse<Map>(map, dataParser: (v) => v);
       expect(result, isA<UpdateRuleConfig>());
-      expect(result?.appStatuses?.first.name, 'outdated');
+      expect(result?.appStatuses.first.name, 'outdated');
       expect(result?.data['title'], 'Заголовок');
     });
 
@@ -33,11 +33,11 @@ void main() {
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map, dataParser: (v) => v);
-      expect(result?.appStatuses?.length, 2);
-      expect(result?.locales?.length, 2);
-      expect(result?.viewTargets?.length, 2);
-      expect(result?.versions?.length, 2);
-      expect(result?.sources?.length, 2);
+      expect(result?.appStatuses.length, 2);
+      expect(result?.locales.length, 2);
+      expect(result?.viewTargets.length, 2);
+      expect(result?.versions.length, 2);
+      expect(result?.sources.length, 2);
     });
 
     test('null возвращает null', () {

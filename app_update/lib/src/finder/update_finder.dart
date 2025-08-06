@@ -36,14 +36,16 @@ class UpdateFinder {
       // Обновляемся только на версии, которые строго выше нынешней
       if (release.version <= appVersion) continue;
 
-      final globalSource = globalSourcesConfig.where((e) => e.name == releaseSource.name).firstOrNull;
+      final globalSource =
+          globalSourcesConfig.where((e) => e.source == releaseSource.name).firstOrNull;
       final updateVersionController = UpdateVersionController.fromGlobalSource(
         versionSettingsConfig: versionSettings,
         globalSource: globalSource,
         platform: platform,
       );
 
-      final releaseVersionStatus = updateVersionController.setStatusByVersion(version: release.version);
+      final releaseVersionStatus =
+          updateVersionController.setStatusByVersion(version: release.version);
       // Проверяем, актуальная ли версия релиза, если нет - пропускаем
       if (!releaseVersionStatus.isUpdatable) continue;
 
@@ -81,7 +83,8 @@ class UpdateFinder {
 
     // Используем приоритетный стор
     if (prioritySourceName != null) {
-      final prioritySource = sourcesWithReleases.firstWhereOrNull((source) => source.name == prioritySourceName);
+      final prioritySource =
+          sourcesWithReleases.firstWhereOrNull((source) => source.name == prioritySourceName);
       if (prioritySource != null) {
         return availableReleasesBySources[prioritySource];
       }
@@ -90,7 +93,8 @@ class UpdateFinder {
     // Либо определяем сами откуда установлено приложение
     final sourceCheckerType = await Sources.checkAppSource();
     if (sourceCheckerType != null) {
-      final checkedSource = sourcesWithReleases.firstWhereOrNull((source) => source.type == sourceCheckerType);
+      final checkedSource =
+          sourcesWithReleases.firstWhereOrNull((source) => source.type == sourceCheckerType);
       if (checkedSource != null) {
         // Если сурс существует в конфиге, но для него нет обновления
         if (availableReleasesBySources[checkedSource] == null && sources.contains(checkedSource)) {
@@ -103,7 +107,8 @@ class UpdateFinder {
 
     // Либо пытаемся взять из дефолтного
     if (defaultSourceName != null) {
-      final defaultSource = sourcesWithReleases.firstWhereOrNull((source) => source.name == defaultSourceName);
+      final defaultSource =
+          sourcesWithReleases.firstWhereOrNull((source) => source.name == defaultSourceName);
       if (defaultSource != null) {
         return availableReleasesBySources[defaultSource];
       }

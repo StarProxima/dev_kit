@@ -12,7 +12,7 @@ void main() {
       const yamlStr = '''android''';
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<GlobalPlatformConfig>());
-      expect(result?.name.name, 'android');
+      expect(result?.platform.name, 'android');
       expect(result?.sourceOverride, isNull);
       expect(result?.customData, isNull);
     });
@@ -27,8 +27,8 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<GlobalPlatformConfig>());
-      expect(result?.name.name, 'ios');
-      expect(result?.sourceOverride?.name, 'github');
+      expect(result?.platform.name, 'ios');
+      expect(result?.sourceOverride?.source?.name, 'github');
       expect(result?.customData, containsPair('custom_field', 42));
     });
 

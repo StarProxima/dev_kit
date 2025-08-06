@@ -34,7 +34,7 @@ class Source {
         type = Sources.parse(name);
 
   GlobalSourceConfig toGlobalSourceConfig() => GlobalSourceConfig(
-        name: _name,
+        source: _name,
         url: url,
         platforms: platforms.map((p) => GlobalPlatformConfig(platform: p)).toList(),
         text: text,

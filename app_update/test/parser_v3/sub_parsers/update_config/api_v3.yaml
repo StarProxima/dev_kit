@@ -1,0 +1,396 @@
+# Набор правил для контента релизов, содержит строки и прочую инфу по конретному обновлению
+# Создается набор правил, которые поочередно применяются к конкретному релизу,
+# если они подходят под условия.
+# Т.е. для релиза может примениться несколько правил, последние более приоритетны.
+content_rules:
+  - view_targets: card
+    app_statuses: any
+    locales: any
+    sources:
+      - name: gitHub
+        platforms:
+          - android
+          - ios
+    versions: any
+    date: 2020-01-01
+    data:
+      title: Обновите приложение
+      description: Описание
+      custom_img: 
+        url: https://example.com
+        border_radius: 10
+
+  - view_targets: any
+    locales: ru
+    app_statuses: 
+      - outdated
+      - deprecated
+    data:
+      title: Обновите приложение
+      description: Описание
+
+# Набор правил для настроек релизов
+# Действует такая же логика с правилами, что и для контента
+settings_rules:
+  # Задаем настройки по умолчанию для всех релизов
+  - app_statuses: any
+    view_targets: any
+    data:
+      # Выключаем отображение по умолчанию,
+      # чтобы включить для конкретных таргетов
+      should_show: false
+
+      can_skip: false      
+      skip_release_delay_hours: 2160
+      skip_any_releases_delay_hours: 72
+
+      can_postpone: false
+      postpone_release_delay_hours: 96
+      postpone_any_releases_delay_hours: 24
+
+  # Настраиваем actions для статусов
+  
+  - app_statuses: unsupported
+    view_targets: any
+    data:   
+      can_skip: false
+      can_postpone: false
+
+  - app_statuses: deprecated
+    view_targets: any
+    data:
+      can_postpone: true
+      postpone_release_delay_hours: 24
+      postpone_any_releases_delay_hours: 24
+  
+  - app_statuses: 
+      - outdated
+      - updateable
+      - active
+    view_targets: any
+    data:   
+      can_skip: true
+      can_postpone: true
+
+  # Настраиваем отображение по каждому статусу для конкретных таргетов,
+  # чтобы настроить гибкое отображение в зависимости от статуса
+
+  - app_statuses: active
+    view_targets: aboutScreen
+    data:
+      should_show: true
+  
+  - app_statuses: updateable
+    view_targets: 
+      - aboutScreen
+      - card
+    data:
+      should_show: true
+
+  - app_statuses: outdated
+    view_targets: 
+      - aboutScreen
+      - card
+      - profileBadge
+      - toast
+    data:
+      should_show: true
+
+  - app_statuses: deprecated
+    view_targets: 
+      - aboutScreen
+      - card
+      - profileBadge
+      - screen
+    data:
+      should_show: true
+
+  - app_statuses: unsupported
+    view_targets: screen
+    data:
+      should_show: true
+
+# Правила для версий
+# Позволяет гибко задать настройки и распределить версии по статусам,
+# учитывая rollout и date.
+# Применяется первое подходящее правило (и последнее в rollout),
+# устанавливая app_status.
+app_status_rules:
+  - versions: any
+    data:
+      app_status: active
+
+  # Задает жизненный цикл релизов
+  # The `date: update_release` parameter take date from 
+  # latest matched release and uses it instead of `date`.
+  - versions: any
+    date: updateReleaseDate
+    rollout:
+      - data:
+          app_status: active
+      - delay_hours: 48  # 2 days
+        rollout_hours: 72 # 3 days
+        data:
+          app_status: outdated
+
+  # Sets the lifecycle of the application updates.
+  # The `date: app_release` parameter calculates the release of 
+  # the current or nearest  version and uses it instead of `date`.
+  # If the date is not found in the `releases` list,
+  # then rule is not applied.
+  #
+  # any matched versions are:
+  # outdated if is older than 10 days
+  # deprecated if is older than 144 days
+  # unsupported if is older than 278 days
+  - versions: any
+    date: localReleaseDate
+    rollout:
+      - delay_hours: 168 # 7 days
+        rollout_hours: 72 # 3 days
+        data:
+          app_status: outdated
+      - delay_hours: 2880  # 120 days
+        rollout_hours: 336 # 14 days
+        data:
+          app_status: deprecated
+      - delay_hours: 2880 # 120 days
+        rollout_hours: 336 # 14 days
+        data:
+          app_status: unsupported
+
+  # any matched versions are deprecated
+  - versions: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+    data:
+      app_status: deprecated 
+
+  # any versions before 4.0.0 are:
+  # outdated after 2014-10-17 + 10 days 
+  # deprecated after 2014-10-17 + 144 days
+  # unsupported after 2014-10-17 + 278 days
+  - versions: '>=3.0.0 <4.0.0'
+    date: 2014-10-17 00:00:00
+    rollout:
+      - delay_hours: 168 # 7 days
+        rollout_hours: 72 # 3 days
+        data:
+          app_status: outdated
+      - delay_hours: 2880  # 120 days
+        rollout_hours: 336 # 14 days
+        data:
+          app_status: deprecated
+      - date: 2015-01-01 00:00:00
+        rollout_hours: 336 # 14 days
+        data:
+          app_status: unsupported
+
+  # any versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
+  - versions: '<=2.0.0'
+    date: 2014-10-17 23:00:00
+    sources:
+      - GooglePlay
+      - name: AppStore
+        platforms:
+          - ios
+    data:
+      app_status: unsupported
+
+  # any versions after 6.0.0 are active
+  - versions: '>=6.0.0'
+    rollout:
+      - app_status: active
+
+  # any versions before 3.0.0 are: 
+  # unsupported after 2014-10-17 + 168+72 hours
+  - versions: '<=3.0.0'
+    date: 2014-10-17
+    rollout:
+      - delay_hours: 12
+        rollout_hours: 72
+        segmentation_percent: 10
+        data:
+          app_status: unsupported
+
+      - date: 2014-10-17
+        rollout_hours: 72
+        segmentation_percent: 50
+        data:
+          app_status: unsupported
+
+  # any versions before 1.0.0 are unsupported
+  - versions: '<=1.0.0'
+    data:
+      app_status: unsupported
+
+
+sources:
+  - name: appStore
+    url: https://example.com
+    platforms:
+      - macos
+      - name: ios
+
+  - name: appGallery
+    url: https://example.com
+    content_rules:
+      - locales: ru
+        data:
+          update_button: Перейти в AppGallery
+      - locales: en
+        data:
+          update_button: Go to AppGallery
+
+  - name: ruStore
+    url: https://example.com
+
+  - name: gitHub
+    url: https://example.com
+    platforms:
+      # Full syntax
+      - name: android
+        source:
+          url: https://example.com/android
+          content_rules:
+            title: Title
+      # Short syntax
+      - windows
+      - macos
+      - linux
+
+  - name: site
+    platforms: [android]
+    url: https://example.com
+
+releases:
+  - version: 0.3.7
+    # Local time
+    date: "2024-08-24 15:35:00"
+    # List or value syntax
+    content_rules:
+      release_notes: |-
+        # Big update!
+        [click](https://example.com) - full changelog.
+        ### Short notes
+        - Added bugs
+        - Fixed features
+    sources:
+      - googlePlay
+      - appStore
+      - ruStore
+      - name: github
+        url: https://example.com
+        platforms: [android, ios, aurora]
+
+  - version: 0.3.8+10-beta
+    content_rules:
+      release_notes: Minor Improvements
+    sources: []
+    is_super_ultra_mega_release: true
+
+  - version: 0.0.3+80
+    content_rules:
+      - locales: ru
+        data:
+          release_notes: Improvements
+      - locales: en
+        data:
+          release_notes: Improvements
+    sources:
+      - name: googlePlay
+        release:
+          date: 2014-10-17 23:00:00
+
+  - version: 0.0.2+30
+    sources: []
+
+  - version: 1.2.0
+    content_rules:
+      release_notes: Improvements
+    sources:
+      - appStore
+      - name: googlePlay
+      - name: ruStore
+        url: www.example.com
+        platforms: [android]
+        release:
+          version: 1.2.1
+          content_rules:
+            title: RuStore Title
+      - name: github
+        url: https://github.com/hiddify/hiddify-next/releases/
+        release:
+          date: 2014-10-20 12:00:00
+        platforms:
+          - macos
+          - linux
+          - name: windows
+            source:
+              url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+              release:
+                content_rules:
+                  - locales: ru
+                    data:
+                      release_notes: Windows Github release notes
+                settings_rules:
+                  can_postpone: true
+       
+
+  - version: 0.2.4
+    # UTC time
+    date: 2014-10-17 23:00:00Z
+    content_rules:
+      title: Title
+      description: Description
+      release_notes: Note
+    settings_rules:
+      can_skip: true
+      can_postpone: true
+    sources:
+      - name: googlePlay
+        url: www.example.com
+        release:
+          date: 2014-10-17 23:00:00
+          settings_rules:
+            can_postpone: true
+        platforms:
+          - name: android
+            source:
+              release:
+                settings_rules:
+                  - target: dialog
+                    app_statuses: outdated
+                    data:
+                      can_skip: true
+                      can_postpone: true
+
+      - name: appStore
+        content_rules:
+          release_notes: note ios
+        date: 2014-10-18 23:00:00
+
+  - version: 0.2.6
+    date: 2014-10-17 23:00:00
+    content_rules:
+      release_notes: Note
+      title: Title
+      description: Description
+    settings_rules:
+      can_skip_release: true
+    sources:
+      - name: googlePlay
+        url: null
+        platforms: []
+
+  - version: 0.2.5
+    content_rules:
+      title: Title
+      description: Description
+      release_notes: Note
+    sources:
+      - googlePlay
+      - name: appStore
+        platforms: ['ios']
+    
+
+
+      

@@ -25,7 +25,7 @@ class GlobalPlatformConfigParser {
       }
 
       return GlobalPlatformConfig.byRequired(
-        name: name,
+        platform: name,
         sourceOverride: null,
         customData: null,
       );
@@ -51,7 +51,7 @@ class GlobalPlatformConfigParser {
     final sourceOverride = _globalSourceConfigParser.parse(sourceOverrideValue);
 
     return GlobalPlatformConfig.byRequired(
-      name: name,
+      platform: name,
       sourceOverride: sourceOverride,
       customData: map,
     );

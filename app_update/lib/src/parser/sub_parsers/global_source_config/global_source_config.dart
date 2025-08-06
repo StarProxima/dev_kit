@@ -1,13 +1,12 @@
-import '../../../shared/update_platform.dart';
-
+import '../../../shared/update_source.dart';
+import '../global_platform_config/global_platform_config.dart';
 import '../update_app_status_config/update_app_status_config.dart';
 import '../update_content_config/update_content_config.dart';
 import '../update_rule_config/update_rule_config.dart';
 import '../update_settings_config/update_settings_config.dart';
-import '../global_platform_config/global_platform_config.dart';
 
 class GlobalSourceConfig {
-  final String? name;
+  final UpdateSource? source;
   final Uri? url;
   final List<GlobalPlatformConfig>? platforms;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
@@ -16,7 +15,7 @@ class GlobalSourceConfig {
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({
-    this.name,
+    this.source,
     this.url,
     this.platforms,
     this.contentRules,
@@ -26,7 +25,7 @@ class GlobalSourceConfig {
   });
 
   const GlobalSourceConfig.byRequired({
-    required this.name,
+    required this.source,
     required this.url,
     required this.platforms,
     required this.contentRules,
