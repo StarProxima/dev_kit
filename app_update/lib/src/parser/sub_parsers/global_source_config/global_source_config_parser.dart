@@ -4,6 +4,7 @@ import '../../primitive_parsers/list_or_value_parser.dart';
 import '../../primitive_parsers/string_parser.dart';
 import '../../primitive_parsers/uri_parser.dart';
 import '../../update_config_exception.dart';
+import '../global_platform_config/global_platform_config.dart';
 import '../global_platform_config/global_platform_config_parser.dart';
 import '../update_app_status_config/update_app_status_config.dart';
 import '../update_app_status_config/update_app_status_config_parser.dart';
@@ -53,7 +54,8 @@ class GlobalSourceConfigParser {
     }
     final platforms = platformsValue
         ?.map(_globalPlatformConfigParser.parse)
-        .whereType<GlobalPlatformConfig>()
+        .where((e) => e != null)
+        .cast<GlobalPlatformConfig>()
         .toList();
 
     // contentRules

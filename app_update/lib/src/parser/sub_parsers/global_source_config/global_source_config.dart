@@ -4,6 +4,7 @@ import '../update_app_status_config/update_app_status_config.dart';
 import '../update_content_config/update_content_config.dart';
 import '../update_rule_config/update_rule_config.dart';
 import '../update_settings_config/update_settings_config.dart';
+import '../global_platform_config/global_platform_config.dart';
 
 class GlobalSourceConfig {
   final String? name;
@@ -31,24 +32,6 @@ class GlobalSourceConfig {
     required this.contentRules,
     required this.settingsRules,
     required this.appStatusRules,
-    required this.customData,
-  });
-}
-
-class GlobalPlatformConfig {
-  final UpdatePlatform platform;
-  final GlobalSourceConfig? sourceOverride;
-  final Map<String, dynamic>? customData;
-
-  const GlobalPlatformConfig({
-    required this.platform,
-    this.sourceOverride,
-    this.customData,
-  });
-
-  const GlobalPlatformConfig.byRequired({
-    required this.platform,
-    required this.sourceOverride,
     required this.customData,
   });
 }

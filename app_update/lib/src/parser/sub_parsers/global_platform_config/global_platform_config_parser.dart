@@ -41,8 +41,8 @@ class GlobalPlatformConfigParser {
     final nameValue = map.remove('name');
     final name = _updatePlatformParser.parse(nameValue);
 
-    if (name == null) {
-      // name is required
+    // Разрешаем любые значения name, если строка не пуста
+    if (name == null || (name.name.isEmpty)) {
       throw const UpdateConfigException();
     }
 

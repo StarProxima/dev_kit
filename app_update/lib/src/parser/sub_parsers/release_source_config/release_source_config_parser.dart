@@ -1,5 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
+import '../../base_parsers/update_source_parser.dart';
 import '../../primitive_parsers/string_parser.dart';
 import '../../primitive_parsers/uri_parser.dart';
 import '../../update_config_exception.dart';
@@ -11,6 +12,7 @@ import 'release_source_config.dart';
 
 class ReleaseSourceConfigParser {
   static const _stringParser = StringParser();
+  static const _updateSourceParser = UpdateSourceParser();
   static const _uriParser = UriParser();
   static const _releasePlatformConfigParser = ReleasePlatformConfigParser();
   static const _releaseConfigParser = ReleaseConfigParser();
@@ -24,9 +26,9 @@ class ReleaseSourceConfigParser {
 
     // Short syntax
     if (value is String) {
-      final name = _stringParser.parse(value);
+      final name = _updateSourceParser.parse(value);
       return ReleaseSourceConfig.byRequired(
-        name: name,
+        source: name,
         url: null,
         platforms: null,
         releaseOverride: null,
@@ -43,7 +45,7 @@ class ReleaseSourceConfigParser {
     // name
     final nameValue = map.remove('name');
     if (nameValue == null) return null;
-    final name = _stringParser.parse(nameValue);
+    final name = _updateSourceParser.parse(nameValue);
 
     // url
     final urlValue = map.remove('url');
@@ -63,7 +65,7 @@ class ReleaseSourceConfigParser {
     final releaseOverride = _releaseConfigParser.parse(releaseOverrideValue);
 
     return ReleaseSourceConfig.byRequired(
-      name: name,
+      source: name,
       url: url,
       platforms: platforms,
       releaseOverride: releaseOverride,

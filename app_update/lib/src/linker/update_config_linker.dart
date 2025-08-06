@@ -35,7 +35,7 @@ class UpdateConfigLinker {
       if (releaseSources == null || releaseSources.isEmpty) continue;
 
       for (final releaseSource in releaseSources) {
-        final name = releaseSource.name;
+        final name = releaseSource.source;
         if (name == null) continue;
 
         final globalSource =
@@ -56,7 +56,7 @@ class UpdateConfigLinker {
         );
 
         final releaseSourcePlatforms = releaseSource.platforms
-            ?.where((e) => e.name == platform)
+            ?.where((e) => e.platform == platform)
             .firstOrNull
             ?.sourceOverride
             ?.releaseOverride;
@@ -81,7 +81,7 @@ class UpdateConfigLinker {
         final targetSource = ReleaseSource(
           name: name,
           url: sourceUrl,
-          platforms: releaseSource.platforms?.map((e) => e.name).toList() ??
+          platforms: releaseSource.platforms?.map((e) => e.platform).toList() ??
               globalSource?.platforms?.map((e) => e.platform).toList(),
           customData: releaseSource.customData ?? globalSource?.customData,
         );

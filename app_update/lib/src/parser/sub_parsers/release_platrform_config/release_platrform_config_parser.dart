@@ -25,7 +25,7 @@ class ReleasePlatformConfigParser {
       }
 
       return ReleasePlatformConfig.byRequired(
-        name: name,
+        platform: name,
         sourceOverride: null,
         customData: null,
       );
@@ -50,7 +50,7 @@ class ReleasePlatformConfigParser {
     final sourceOverride = _releaseSourceConfigParser.parse(sourceOverrideValue);
 
     return ReleasePlatformConfig.byRequired(
-      name: name,
+      platform: name,
       sourceOverride: sourceOverride,
       customData: map,
     );
