@@ -10,9 +10,9 @@ class GlobalSourceConfig {
   final String? name;
   final Uri? url;
   final List<GlobalPlatformConfig>? platforms;
-  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppStatusConfig>>? appStatusRules;
+  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppStatusConfig?>>? appStatusRules;
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({

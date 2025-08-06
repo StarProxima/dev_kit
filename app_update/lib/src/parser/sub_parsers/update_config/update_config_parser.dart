@@ -44,15 +44,13 @@ class UpdateConfigParser {
 
     if (releasesValue == null) throw const UpdateConfigException();
 
-    final releases =
-        releasesValue.map(_releaseConfigParser.parse).whereType<ReleaseConfig>().toList();
+    final releases = releasesValue.map(_releaseConfigParser.parse).nonNulls.toList();
 
     // sources
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
-    final sources =
-        sourcesValue?.map(_globalSourceConfigParser.parse).whereType<GlobalSourceConfig>().toList();
+    final sources = sourcesValue?.map(_globalSourceConfigParser.parse).nonNulls.toList();
 
     // contentRules
     final contentRulesRawValue = map.remove('content_rules');
@@ -63,7 +61,7 @@ class UpdateConfigParser {
               value,
               dataParser: _updateContentConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateContentConfig>>()
+        .nonNulls
         .toList();
 
     // settingsRules
@@ -75,7 +73,7 @@ class UpdateConfigParser {
               value,
               dataParser: _updateSettingsConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateSettingsConfig>>()
+        .nonNulls
         .toList();
 
     // appStatusRules
@@ -86,7 +84,7 @@ class UpdateConfigParser {
               value,
               dataParser: _updateAppStatusConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateAppStatusConfig>>()
+        .nonNulls
         .toList();
 
     return UpdateConfig.byRequired(

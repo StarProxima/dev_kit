@@ -52,10 +52,7 @@ class ReleaseConfigParser {
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
-    final sources = sourcesValue
-        ?.map(_releaseSourceConfigParser.parse)
-        .whereType<ReleaseSourceConfig>()
-        .toList();
+    final sources = sourcesValue?.map(_releaseSourceConfigParser.parse).nonNulls.toList();
 
     // contentRules
     final contentRulesRawValue = map.remove('content_rules');
@@ -63,10 +60,10 @@ class ReleaseConfigParser {
 
     final contentRules = contentRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
-              map,
+              value,
               dataParser: _updateContentConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateContentConfig>>()
+        .nonNulls
         .toList();
 
     // settingsRules
@@ -78,7 +75,7 @@ class ReleaseConfigParser {
               value,
               dataParser: _updateSettingsConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateSettingsConfig>>()
+        .nonNulls
         .toList();
 
     // appStatusRules
@@ -89,7 +86,7 @@ class ReleaseConfigParser {
               value,
               dataParser: _updateAppStatusConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateAppStatusConfig>>()
+        .nonNulls
         .toList();
 
     return ReleaseConfig.byRequired(

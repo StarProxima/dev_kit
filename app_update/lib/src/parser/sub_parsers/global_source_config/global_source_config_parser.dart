@@ -67,7 +67,7 @@ class GlobalSourceConfigParser {
               value,
               dataParser: _updateContentConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateContentConfig>>()
+        .nonNulls
         .toList();
 
     // settingsRules
@@ -79,7 +79,7 @@ class GlobalSourceConfigParser {
               value,
               dataParser: _updateSettingsConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateSettingsConfig>>()
+        .nonNulls
         .toList();
 
     // appStatusRules
@@ -90,7 +90,7 @@ class GlobalSourceConfigParser {
               value,
               dataParser: _updateAppStatusConfigParser.parse,
             ))
-        .whereType<UpdateRuleConfig<UpdateAppStatusConfig>>()
+        .nonNulls
         .toList();
 
     return GlobalSourceConfig.byRequired(

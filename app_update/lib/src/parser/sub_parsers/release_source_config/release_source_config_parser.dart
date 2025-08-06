@@ -1,7 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../base_parsers/update_source_parser.dart';
-import '../../primitive_parsers/string_parser.dart';
 import '../../primitive_parsers/uri_parser.dart';
 import '../../update_config_exception.dart';
 
@@ -11,7 +10,6 @@ import '../release_platrform_config/release_platrform_config_parser.dart';
 import 'release_source_config.dart';
 
 class ReleaseSourceConfigParser {
-  static const _stringParser = StringParser();
   static const _updateSourceParser = UpdateSourceParser();
   static const _uriParser = UriParser();
   static const _releasePlatformConfigParser = ReleasePlatformConfigParser();
@@ -55,10 +53,7 @@ class ReleaseSourceConfigParser {
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List?) throw const UpdateConfigException();
 
-    final platforms = platformsValue
-        ?.map(_releasePlatformConfigParser.parse)
-        .whereType<ReleasePlatformConfig>()
-        .toList();
+    final platforms = platformsValue?.map(_releasePlatformConfigParser.parse).nonNulls.toList();
 
     // releaseOverride
     final releaseOverrideValue = map.remove('release');

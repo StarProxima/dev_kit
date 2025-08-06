@@ -12,7 +12,7 @@ class UpdateRuleConfig<T> {
   final List<UpdateVersionConstraint> versions;
   final List<UpdateSource> sources;
   final UpdateDate date;
-  final T? data;
+  final T data;
   final Map<String, dynamic>? customData;
 
   const UpdateRuleConfig({
@@ -22,7 +22,7 @@ class UpdateRuleConfig<T> {
     this.versions = const [UpdateVersionConstraint.any],
     this.sources = const [UpdateSource.any],
     this.date = UpdateDate.any,
-    this.data,
+    required this.data,
     this.customData,
   });
 

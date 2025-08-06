@@ -31,8 +31,7 @@ class UpdateSourceParser {
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List?) throw const UpdateConfigException();
 
-    final platforms =
-        platformsValue?.map(_updatePlatformParser.parse).whereType<UpdatePlatform>().toList();
+    final platforms = platformsValue?.map(_updatePlatformParser.parse).nonNulls.toList();
 
     final source = UpdateSource.custom(name, platforms: platforms);
 
