@@ -14,6 +14,8 @@ class ReleasePlatformConfigParser {
   ReleasePlatformConfig? parse(
     dynamic value,
   ) {
+    if (value == null) return null;
+
     // Short syntax
     if (value is String) {
       final name = _updatePlatformParser.parse(value);
@@ -29,14 +31,14 @@ class ReleasePlatformConfigParser {
       );
     }
 
-    if (value is! Map<String, dynamic>?) {
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // name
-    final nameValue = value.remove('name');
+    final nameValue = map.remove('name');
     final name = _updatePlatformParser.parse(nameValue);
 
     if (name == null) {
@@ -44,13 +46,13 @@ class ReleasePlatformConfigParser {
     }
 
     // sourceOverride
-    final sourceOverrideValue = value.remove('source');
+    final sourceOverrideValue = map.remove('source');
     final sourceOverride = _releaseSourceConfigParser.parse(sourceOverrideValue);
 
     return ReleasePlatformConfig.byRequired(
       name: name,
       sourceOverride: sourceOverride,
-      customData: value,
+      customData: map,
     );
   }
 }

@@ -20,7 +20,7 @@ class UpdateSourceParser {
       return UpdateSource.custom(value);
     }
 
-    if (value is! Map<String, dynamic>) throw const UpdateConfigException();
+    if (value is! Map) throw const UpdateConfigException();
     final map = value;
 
     final nameValue = map.remove('name');

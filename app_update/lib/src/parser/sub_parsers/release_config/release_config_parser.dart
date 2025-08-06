@@ -32,22 +32,24 @@ class ReleaseConfigParser {
   ReleaseConfig? parse(
     dynamic value,
   ) {
-    if (value is! Map<String, dynamic>?) {
+    if (value == null) return null;
+
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // version
-    final versionValue = value.remove('version');
+    final versionValue = map.remove('version');
     final version = _versionParser.parse(versionValue);
 
     // date
-    final dateValue = value.remove('date');
+    final dateValue = map.remove('date');
     final date = _dateTimeParser.parse(dateValue);
 
     // sources
-    final sourcesRawValue = value.remove('sources');
+    final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
     final sources = sourcesValue
@@ -56,19 +58,19 @@ class ReleaseConfigParser {
         .toList();
 
     // contentRules
-    final contentRulesRawValue = value.remove('content_rules');
+    final contentRulesRawValue = map.remove('content_rules');
     final contentRulesValue = _listOrValueParser.parse(contentRulesRawValue);
 
     final contentRules = contentRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
-              value,
+              map,
               dataParser: _updateContentConfigParser.parse,
             ))
         .whereType<UpdateRuleConfig<UpdateContentConfig>>()
         .toList();
 
     // settingsRules
-    final settingsRulesRawValue = value.remove('settings_rules');
+    final settingsRulesRawValue = map.remove('settings_rules');
     final settingsRulesValue = _listOrValueParser.parse(settingsRulesRawValue);
 
     final settingsRules = settingsRulesValue
@@ -80,7 +82,7 @@ class ReleaseConfigParser {
         .toList();
 
     // appStatusRules
-    final appStatusRulesRawValue = value.remove('app_status_rules');
+    final appStatusRulesRawValue = map.remove('app_status_rules');
     final appStatusRulesValue = _listOrValueParser.parse(appStatusRulesRawValue);
     final appStatusRules = appStatusRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
@@ -97,7 +99,7 @@ class ReleaseConfigParser {
       contentRules: contentRules,
       settingsRules: settingsRules,
       appStatusRules: appStatusRules,
-      customData: value,
+      customData: map,
     );
   }
 }

@@ -8,7 +8,6 @@ class DateTimeParser {
     dynamic value,
   ) {
     if (value == null) return null;
-
     if (value is! String) throw const UpdateConfigException();
 
     final date = DateTime.parse(value);

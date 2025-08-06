@@ -30,14 +30,16 @@ class UpdateConfigParser {
   UpdateConfig? parse(
     dynamic value,
   ) {
-    if (value is! Map<String, dynamic>?) {
+    if (value == null) return null;
+
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // releases
-    final releasesRawValue = value.remove('releases');
+    final releasesRawValue = map.remove('releases');
     final releasesValue = _listOrValueParser.parse(releasesRawValue);
 
     if (releasesValue == null) throw const UpdateConfigException();
@@ -46,14 +48,14 @@ class UpdateConfigParser {
         releasesValue.map(_releaseConfigParser.parse).whereType<ReleaseConfig>().toList();
 
     // sources
-    final sourcesRawValue = value.remove('sources');
+    final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
     final sources =
         sourcesValue?.map(_globalSourceConfigParser.parse).whereType<GlobalSourceConfig>().toList();
 
     // contentRules
-    final contentRulesRawValue = value.remove('content_rules');
+    final contentRulesRawValue = map.remove('content_rules');
     final contentRulesValue = _listOrValueParser.parse(contentRulesRawValue);
 
     final contentRules = contentRulesValue
@@ -65,7 +67,7 @@ class UpdateConfigParser {
         .toList();
 
     // settingsRules
-    final settingsRulesRawValue = value.remove('settings_rules');
+    final settingsRulesRawValue = map.remove('settings_rules');
     final settingsRulesValue = _listOrValueParser.parse(settingsRulesRawValue);
 
     final settingsRules = settingsRulesValue
@@ -77,7 +79,7 @@ class UpdateConfigParser {
         .toList();
 
     // appStatusRules
-    final appStatusRulesRawValue = value.remove('app_status_rules');
+    final appStatusRulesRawValue = map.remove('app_status_rules');
     final appStatusRulesValue = _listOrValueParser.parse(appStatusRulesRawValue);
     final appStatusRules = appStatusRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
@@ -93,7 +95,7 @@ class UpdateConfigParser {
       contentRules: contentRules,
       settingsRules: settingsRules,
       appStatusRules: appStatusRules,
-      customData: value,
+      customData: map,
     );
   }
 }

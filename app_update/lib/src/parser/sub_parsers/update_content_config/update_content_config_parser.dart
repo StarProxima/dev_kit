@@ -12,38 +12,40 @@ class UpdateContentConfigParser {
   UpdateContentConfig? parse(
     dynamic value,
   ) {
-    if (value is! Map<String, dynamic>?) {
+    if (value == null) return null;
+
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // title
-    final titleValue = value.remove('title');
+    final titleValue = map.remove('title');
     final title = _stringParser.parse(titleValue);
 
     // description
-    final descriptionValue = value.remove('description');
+    final descriptionValue = map.remove('description');
     final description = _stringParser.parse(descriptionValue);
 
     // releaseNotesTitle
-    final releaseNotesTitleValue = value.remove('release_notes_title');
+    final releaseNotesTitleValue = map.remove('release_notes_title');
     final releaseNotesTitle = _stringParser.parse(releaseNotesTitleValue);
 
     // releaseNotes
-    final releaseNotesValue = value.remove('release_notes');
+    final releaseNotesValue = map.remove('release_notes');
     final releaseNotes = _stringParser.parse(releaseNotesValue);
 
     // skipButton
-    final skipButtonValue = value.remove('skip_button');
+    final skipButtonValue = map.remove('skip_button');
     final skipButton = _stringParser.parse(skipButtonValue);
 
     // postponeButton
-    final postponeButtonValue = value.remove('postpone_button');
+    final postponeButtonValue = map.remove('postpone_button');
     final postponeButton = _stringParser.parse(postponeButtonValue);
 
     // updateButton
-    final updateButtonValue = value.remove('update_button');
+    final updateButtonValue = map.remove('update_button');
     final updateButton = _stringParser.parse(updateButtonValue);
 
     return UpdateContentConfig.byRequired(
@@ -54,7 +56,7 @@ class UpdateContentConfigParser {
       skipButton: skipButton,
       postponeButton: postponeButton,
       updateButton: updateButton,
-      customData: value,
+      customData: map,
     );
   }
 }

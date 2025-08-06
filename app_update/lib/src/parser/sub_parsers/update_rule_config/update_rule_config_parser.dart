@@ -31,31 +31,33 @@ class UpdateRuleConfigParser {
     dynamic value, {
     required T Function(dynamic) dataParser,
   }) {
-    if (value is! Map<String, dynamic>?) {
+    if (value == null) return null;
+
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // appStatuses
-    final appStatusesRawValue = value.remove('app_statuses');
+    final appStatusesRawValue = map.remove('app_statuses');
     final appStatusesValue = _listOrValueParser.parse(appStatusesRawValue);
     final appStatuses =
         appStatusesValue?.map(_appStatusParser.parse).whereType<AppStatus>().toList();
 
     // locales
-    final localesRawValue = value.remove('locales');
+    final localesRawValue = map.remove('locales');
     final localesValue = _listOrValueParser.parse(localesRawValue);
     final locales = localesValue?.map(_updateLocaleParser.parse).whereType<UpdateLocale>().toList();
 
     // viewTargets
-    final viewTargetsRawValue = value.remove('view_targets');
+    final viewTargetsRawValue = map.remove('view_targets');
     final viewTargetsValue = _listOrValueParser.parse(viewTargetsRawValue);
     final viewTargets =
         viewTargetsValue?.map(_updateViewTargetParser.parse).whereType<UpdateViewTarget>().toList();
 
     // versions
-    final versionsRawValue = value.remove('versions');
+    final versionsRawValue = map.remove('versions');
     final versionsValue = _listOrValueParser.parse(versionsRawValue);
     final versions = versionsValue
         ?.map(_updateVersionConstraintParser.parse)
@@ -63,17 +65,17 @@ class UpdateRuleConfigParser {
         .toList();
 
     // sources
-    final sourcesRawValue = value.remove('sources');
+    final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
     final sources = sourcesValue?.map(_updateSourceParser.parse).whereType<UpdateSource>().toList();
 
     // date
-    final dateValue = value.remove('date');
+    final dateValue = map.remove('date');
     final date = _updateDateParser.parse(dateValue);
 
     // data
     // if not exists, use rule itself as data
-    final dataValue = value.remove('data') ?? value;
+    final dataValue = map.remove('data') ?? value;
     final data = dataParser(dataValue);
 
     final config = UpdateRuleConfig.byRequired(
@@ -84,7 +86,7 @@ class UpdateRuleConfigParser {
       sources: sources ?? [UpdateSource.any],
       date: date ?? UpdateDate.any,
       data: data,
-      customData: value,
+      customData: map,
     );
 
     return config;

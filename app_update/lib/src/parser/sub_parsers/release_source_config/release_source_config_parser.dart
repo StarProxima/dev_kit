@@ -20,6 +20,8 @@ class ReleaseSourceConfigParser {
   ReleaseSourceConfig? parse(
     dynamic value,
   ) {
+    if (value == null) return null;
+
     // Short syntax
     if (value is String) {
       final name = _stringParser.parse(value);
@@ -32,32 +34,32 @@ class ReleaseSourceConfigParser {
       );
     }
 
-    if (value is! Map<String, dynamic>?) {
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // name
-    final nameValue = value.remove('name');
+    final nameValue = map.remove('name');
+    if (nameValue == null) return null;
     final name = _stringParser.parse(nameValue);
 
     // url
-    final urlValue = value.remove('url');
+    final urlValue = map.remove('url');
     final url = _uriParser.parse(urlValue);
 
     // platforms
-    final platformsValue = value.remove('platforms');
-    if (platformsValue is! List<dynamic>?) {
-      throw const UpdateConfigException();
-    }
+    final platformsValue = map.remove('platforms');
+    if (platformsValue is! List?) throw const UpdateConfigException();
+
     final platforms = platformsValue
         ?.map(_releasePlatformConfigParser.parse)
         .whereType<ReleasePlatformConfig>()
         .toList();
 
     // releaseOverride
-    final releaseOverrideValue = value.remove('release');
+    final releaseOverrideValue = map.remove('release');
     final releaseOverride = _releaseConfigParser.parse(releaseOverrideValue);
 
     return ReleaseSourceConfig.byRequired(
@@ -65,7 +67,7 @@ class ReleaseSourceConfigParser {
       url: url,
       platforms: platforms,
       releaseOverride: releaseOverride,
-      customData: value,
+      customData: map,
     );
   }
 }

@@ -14,38 +14,40 @@ class UpdateSettingsConfigParser {
   UpdateSettingsConfig? parse(
     dynamic value,
   ) {
-    if (value is! Map<String, dynamic>?) {
+    if (value == null) return null;
+
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // shouldShow
-    final shouldShowValue = value.remove('should_show');
+    final shouldShowValue = map.remove('should_show');
     final shouldShow = _boolParser.parse(shouldShowValue);
 
     // canSkip
-    final canSkipValue = value.remove('can_skip');
+    final canSkipValue = map.remove('can_skip');
     final canSkip = _boolParser.parse(canSkipValue);
 
     // canPostpone
-    final canPostponeValue = value.remove('can_postpone');
+    final canPostponeValue = map.remove('can_postpone');
     final canPostpone = _boolParser.parse(canPostponeValue);
 
     // skipReleaseDelay
-    final skipReleaseDelayValue = value.remove('skip_release_delay_hours');
+    final skipReleaseDelayValue = map.remove('skip_release_delay_hours');
     final skipReleaseDelay = _durationParser.parse(hours: skipReleaseDelayValue);
 
     // skipAllReleasesDelay
-    final skipAllReleasesDelayValue = value.remove('skip_all_releases_delay_hours');
+    final skipAllReleasesDelayValue = map.remove('skip_all_releases_delay_hours');
     final skipAllReleasesDelay = _durationParser.parse(hours: skipAllReleasesDelayValue);
 
     // postponeReleaseDelay
-    final postponeReleaseDelayValue = value.remove('postpone_release_delay_hours');
+    final postponeReleaseDelayValue = map.remove('postpone_release_delay_hours');
     final postponeReleaseDelay = _durationParser.parse(hours: postponeReleaseDelayValue);
 
     // postponeAllReleasesDelay
-    final postponeAllReleasesDelayValue = value.remove('postpone_all_releases_delay_hours');
+    final postponeAllReleasesDelayValue = map.remove('postpone_all_releases_delay_hours');
     final postponeAllReleasesDelay = _durationParser.parse(hours: postponeAllReleasesDelayValue);
 
     return UpdateSettingsConfig.byRequired(
@@ -56,7 +58,7 @@ class UpdateSettingsConfigParser {
       skipAllReleasesDelay: skipAllReleasesDelay,
       postponeReleaseDelay: postponeReleaseDelay,
       postponeAllReleasesDelay: postponeAllReleasesDelay,
-      customData: value,
+      customData: map,
     );
   }
 }

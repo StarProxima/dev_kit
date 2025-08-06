@@ -30,22 +30,24 @@ class GlobalSourceConfigParser {
   GlobalSourceConfig? parse(
     dynamic value,
   ) {
-    if (value is! Map<String, dynamic>?) {
+    if (value == null) return null;
+
+    if (value is! Map) {
       throw const UpdateConfigException();
     }
 
-    if (value == null) return null;
+    final map = Map<String, dynamic>.from(value);
 
     // name
-    final nameValue = value.remove('name');
+    final nameValue = map.remove('name');
     final name = _stringParser.parse(nameValue);
 
     // url
-    final urlValue = value.remove('url');
+    final urlValue = map.remove('url');
     final url = _uriParser.parse(urlValue);
 
     // platforms
-    final platformsValue = value.remove('platforms');
+    final platformsValue = map.remove('platforms');
     if (platformsValue is! List<dynamic>?) {
       throw const UpdateConfigException();
     }
@@ -55,7 +57,7 @@ class GlobalSourceConfigParser {
         .toList();
 
     // contentRules
-    final contentRulesRawValue = value.remove('content_rules');
+    final contentRulesRawValue = map.remove('content_rules');
     final contentRulesValue = _listOrValueParser.parse(contentRulesRawValue);
 
     final contentRules = contentRulesValue
@@ -67,7 +69,7 @@ class GlobalSourceConfigParser {
         .toList();
 
     // settingsRules
-    final settingsRulesRawValue = value.remove('settings_rules');
+    final settingsRulesRawValue = map.remove('settings_rules');
     final settingsRulesValue = _listOrValueParser.parse(settingsRulesRawValue);
 
     final settingsRules = settingsRulesValue
@@ -79,7 +81,7 @@ class GlobalSourceConfigParser {
         .toList();
 
     // appStatusRules
-    final appStatusRulesRawValue = value.remove('app_status_rules');
+    final appStatusRulesRawValue = map.remove('app_status_rules');
     final appStatusRulesValue = _listOrValueParser.parse(appStatusRulesRawValue);
     final appStatusRules = appStatusRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
@@ -96,7 +98,7 @@ class GlobalSourceConfigParser {
       contentRules: contentRules,
       settingsRules: settingsRules,
       appStatusRules: appStatusRules,
-      customData: value,
+      customData: map,
     );
   }
 }
