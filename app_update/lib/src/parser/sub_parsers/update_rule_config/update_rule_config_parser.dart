@@ -13,6 +13,8 @@ import '../../base_parsers/update_source_parser.dart';
 import '../../base_parsers/update_version_constraint_parser.dart';
 import '../../base_parsers/update_view_target_parser.dart';
 import '../../primitive_parsers/list_or_value_parser.dart';
+import '../../primitive_parsers/duration_parser.dart';
+import '../../primitive_parsers/double_parser.dart';
 import '../../update_config_exception.dart';
 import 'update_rule_config.dart';
 
@@ -24,6 +26,8 @@ class UpdateRuleConfigParser {
   static const _updateSourceParser = UpdateSourceParser();
   static const _updateDateParser = UpdateDateParser();
   static const _listOrValueParser = ListOrValueParser();
+  static const _durationParser = DurationParser();
+  static const _doubleParser = DoubleParser();
 
   const UpdateRuleConfigParser();
 
@@ -68,6 +72,18 @@ class UpdateRuleConfigParser {
     final dateValue = map.remove('date');
     final date = _updateDateParser.parse(dateValue);
 
+    // delay_hours
+    final delayHoursValue = map.remove('delay_hours');
+    final delay = _durationParser.parse(hours: delayHoursValue);
+
+    // rollout_hours
+    final rolloutHoursValue = map.remove('rollout_hours');
+    final rollout = _durationParser.parse(hours: rolloutHoursValue);
+
+    // segmentation_percent
+    final segmentationPercentValue = map.remove('segmentation_percent');
+    final segmentationPercent = _doubleParser.parse(value: segmentationPercentValue);
+
     // data
     // if not exists, use rule itself as data
     final dataValue = map.remove('data') ?? value;
@@ -80,6 +96,9 @@ class UpdateRuleConfigParser {
       versions: versions ?? [UpdateVersionConstraint.any],
       sources: sources ?? [UpdateSource.any],
       date: date ?? UpdateDate.any,
+      delay: delay,
+      rollout: rollout,
+      segmentationPercent: segmentationPercent,
       data: data,
       customData: map,
     );

@@ -313,7 +313,7 @@ releases:
         ### Short notes
         - Added bugs
         - Fixed features
-    sources: [googlePlay, appStore, ruStore, { name: github, source: { url: https://example.com, platforms: [android, ios, aurora] } }]
+    sources: [googlePlay, appStore, ruStore, { name: github, source: { url: https://example.com, platforms: [android, ios, aurora]}}]
 
   - version: 0.3.8+10-beta
     content_rules: { release_notes: Minor Improvements }
@@ -402,16 +402,3 @@ releases:
 - **UX**: по умолчанию `should_show: false`, явно включайте нужные таргеты; давайте пользователю выбор для не‑критичных апдейтов.
 - **Мульти‑платформенность**: используйте `platforms` и точечные переопределения для разных ОС.
 - **Прозрачность**: локализуйте контент (`locales`) и ведите понятные `release_notes`.
-
-## Миграция с v2
-
-- `text.*` → `content_rules[].data.*`
-- `settings.*` → `settings_rules[].data.*` (вместо булевых флагов — задержки `*_delay_hours`)
-- `version_settings.*` → `app_status_rules` с семантическими ограничениями версий
-- Источники и релизы получили вложенные переопределения (`source`, `release`, `platforms`)
-
-## Частые вопросы
-
-- **Как задать дату в UTC?** Добавьте `Z` в конце: `2014-10-17 23:00:00Z`.
-- **Что такое `any`?** Специальное значение, соответствующее любому значению в данном измерении.
-- **Можно ли хранить кастомные поля?** Да, любые дополнительные ключи сохраняются и доступны потребителю.

@@ -12,6 +12,12 @@ class UpdateRuleConfig<T> {
   final List<UpdateVersionConstraint> versions;
   final List<UpdateSource> sources;
   final UpdateDate date;
+  // Задержка перед началом выкатывания
+  final Duration? delay;
+  // Длительность выкатывания
+  final Duration? rollout;
+  // Процент сегментации пользователей (0-100)
+  final double? segmentationPercent;
   final T data;
   final Map<String, dynamic>? customData;
 
@@ -22,6 +28,9 @@ class UpdateRuleConfig<T> {
     this.versions = const [UpdateVersionConstraint.any],
     this.sources = const [UpdateSource.any],
     this.date = UpdateDate.any,
+    this.delay,
+    this.rollout,
+    this.segmentationPercent,
     required this.data,
     this.customData,
   });
@@ -33,6 +42,9 @@ class UpdateRuleConfig<T> {
     required this.versions,
     required this.sources,
     required this.date,
+    required this.delay,
+    required this.rollout,
+    required this.segmentationPercent,
     required this.data,
     required this.customData,
   });

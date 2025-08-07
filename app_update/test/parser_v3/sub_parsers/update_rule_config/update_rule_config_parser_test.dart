@@ -61,5 +61,22 @@ void main() {
       final result = parser.parse(map, dataParser: (v) => v);
       expect(result?.customData, containsPair('custom_field', 42));
     });
+
+    test('Парсит delay_hours, rollout_hours, segmentation_percent', () {
+      const yamlStr = '''
+        app_statuses: deprecated
+        delay_hours: 12
+        rollout_hours: 72
+        segmentation_percent: 12.5
+        data:
+          title: test
+      ''';
+      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final result = parser.parse<Map>(map, dataParser: (v) => v);
+      expect(result, isA<UpdateRuleConfig>());
+      expect(result?.delay?.inHours, 12);
+      expect(result?.rollout?.inHours, 72);
+      expect(result?.segmentationPercent, closeTo(12.5, 0.0001));
+    });
   });
 }
