@@ -18,7 +18,9 @@ class UpdateSearchData {
   final AppStatus? appStatus;
 
   /// Uses for calculate rule date and delay compliance.
-  final UpdateDate date;
+  final DateTime currentDate;
+  final DateTime? localReleaseDate;
+  final DateTime? updateReleaseDate;
 
   /// From 0.0 to 1.0, uses for calculate user segmentation compliance.
   final double segmentationPointer;
@@ -36,7 +38,9 @@ class UpdateSearchData {
     required this.displayTarget,
     required this.appStatus,
     required this.locale,
-    required this.date,
+    required this.currentDate,
+    this.localReleaseDate,
+    this.updateReleaseDate,
     required this.segmentationPointer,
     required this.rolloutPointer,
     required this.customData,
