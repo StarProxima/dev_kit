@@ -12,11 +12,8 @@ class UpdateRuleConfig<T> {
   final List<UpdateVersionConstraint> versions;
   final List<UpdateSource> sources;
   final UpdateDate date;
-  // Задержка перед началом выкатывания
   final Duration? delay;
-  // Длительность выкатывания
   final Duration? rollout;
-  // Процент сегментации пользователей (0-100)
   final double? segmentationPercent;
   final T data;
   final Map<String, dynamic>? customData;
