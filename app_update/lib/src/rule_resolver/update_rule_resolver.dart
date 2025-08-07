@@ -1,3 +1,5 @@
+// ignore_for_file: comment_references
+
 import 'package:pub_semver/pub_semver.dart';
 
 import '../parser/common.dart';
@@ -5,6 +7,7 @@ import '../parser/sub_parsers/update_rule_config/update_rule_config.dart';
 import '../shared/app_status.dart';
 import '../shared/update_date.dart';
 import '../shared/update_locale.dart';
+import '../shared/update_platform.dart';
 import '../shared/update_source.dart';
 import '../shared/update_version_constraint.dart';
 import '../shared/update_view_target.dart';
@@ -57,8 +60,8 @@ class UpdateRuleResolver {
     // 2) Локаль
     if (!_matchByLocale(rule.locales, searchData.locale)) return false;
 
-    // 3) Источники
-    if (!_matchBySources(rule.sources, searchData.sources)) return false;
+    // 3) Источники (+ платформа)
+    if (!_matchBySources(rule.sources, searchData.sources, searchData.platform)) return false;
 
     // 4) Версии
     if (!_matchByVersions(rule.versions, searchData.localVersion)) return false;
@@ -72,13 +75,17 @@ class UpdateRuleResolver {
       delay: rule.delay,
       rollout: rule.rollout,
       segmentationPercent: rule.segmentationPercent,
-      nowOrReference: searchData.currentDate,
+      currentDate: searchData.currentDate,
+      localReleaseDate: searchData.localReleaseDate,
+      updateReleaseDate: searchData.updateReleaseDate,
       rolloutPointer: searchData.rolloutPointer,
       segmentationPointer: searchData.segmentationPointer,
-    )) return false;
+    )) {
+      return false;
+    }
 
-    // 7) Кастомные поля — считаем, что резолвер не фильтрует по ним;
-    // фильтрация по customData (если потребуется) может быть добавлена позже.
+    // 7) Кастомные поля
+    if (!_matchByCustomData(rule.customData, searchData.customData)) return false;
 
     return true;
   }
@@ -91,13 +98,23 @@ class UpdateRuleResolver {
     return locales.contains(UpdateLocale.any) || locales.contains(locale);
   }
 
-  bool _matchBySources(List<UpdateSource> ruleSources, List<UpdateSource> searchSources) {
+  bool _matchBySources(
+    List<UpdateSource> ruleSources,
+    List<UpdateSource> searchSources,
+    UpdatePlatform platform,
+  ) {
     if (ruleSources.contains(UpdateSource.any)) return true;
     final searchNames = searchSources.map((e) => e.name).toSet();
     for (final s in ruleSources) {
-      if (searchNames.contains(s.name)) return true;
+      if (searchNames.contains(s.name) && _sourceSupportsPlatform(s, platform)) return true;
     }
     return false;
+  }
+
+  bool _sourceSupportsPlatform(UpdateSource source, UpdatePlatform platform) {
+    final platforms = source.platforms;
+    if (platforms == null || platforms.isEmpty) return true;
+    return platforms.any((p) => p == platform || p == UpdatePlatform.any);
   }
 
   bool _matchByVersions(List<UpdateVersionConstraint> constraints, Version localVersion) {
@@ -119,7 +136,9 @@ class UpdateRuleResolver {
     required Duration? delay,
     required Duration? rollout,
     required double? segmentationPercent,
-    required UpdateDate nowOrReference,
+    required DateTime currentDate,
+    required DateTime? localReleaseDate,
+    required DateTime? updateReleaseDate,
     required double rolloutPointer,
     required double segmentationPointer,
   }) {
@@ -137,15 +156,14 @@ class UpdateRuleResolver {
     // Определяем базовую дату для правила
     DateTime? baseDate = ruleDate.date;
 
-    // Динамические ссылки на дату — используем nowOrReference, если имена совпадают
+    // Динамические ссылки на дату — используем значения из searchData
     if (baseDate == null && ruleDate.name != UpdateDate.any.name) {
-      if (nowOrReference.name == ruleDate.name) {
-        baseDate = nowOrReference.date;
+      if (ruleDate.name == UpdateDate.localReleaseDate.name) {
+        baseDate = localReleaseDate;
+      } else if (ruleDate.name == UpdateDate.updateReleaseDate.name) {
+        baseDate = updateReleaseDate;
       }
     }
-
-    // Текущее время/референс
-    final now = nowOrReference.date;
 
     if (!hasTemporalConditions) {
       // Только само наличие ruleDate без доп. условий — если мы не смогли сопоставить
@@ -153,16 +171,16 @@ class UpdateRuleResolver {
       return baseDate != null;
     }
 
-    // Для delay/rollout необходимо знать обе даты
-    if (baseDate == null || now == null) return false;
+    // Для delay/rollout необходимо знать базовую дату
+    if (baseDate == null) return false;
 
     if (delay != null) {
       final start = baseDate.add(delay);
-      if (now.isBefore(start)) return false;
+      if (currentDate.isBefore(start)) return false;
     }
 
     if (rollout != null) {
-      final elapsed = now.difference(baseDate);
+      final elapsed = currentDate.difference(baseDate);
       if (elapsed.isNegative) return false;
       final totalMs = rollout.inMilliseconds;
       if (totalMs <= 0) return false;
@@ -170,6 +188,16 @@ class UpdateRuleResolver {
       if (rolloutPointer > fraction) return false;
     }
 
+    return true;
+  }
+
+  bool _matchByCustomData(Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {
+    if (ruleCustom == null || ruleCustom.isEmpty) return true;
+    if (searchCustom == null) return false;
+    for (final entry in ruleCustom.entries) {
+      if (!searchCustom.containsKey(entry.key)) return false;
+      if (searchCustom[entry.key] != entry.value) return false;
+    }
     return true;
   }
 }

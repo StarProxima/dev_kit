@@ -1,7 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
 import '../../shared/app_status.dart';
-import '../../shared/update_date.dart';
 import '../../shared/update_locale.dart';
 import '../../shared/update_platform.dart';
 import '../../shared/update_source.dart';

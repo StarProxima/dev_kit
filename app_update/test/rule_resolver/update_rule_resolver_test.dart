@@ -24,8 +24,11 @@ void main() {
       String version = '1.0.0',
       AppStatus? appStatus,
       UpdateDate? date,
+      DateTime? localReleaseDate,
+      DateTime? updateReleaseDate,
       double segmentationPointer = 0.0,
       double rolloutPointer = 0.0,
+      Map<String, dynamic>? custom,
     }) {
       return UpdateSearchData(
         platform: UpdatePlatform.android,
@@ -34,10 +37,12 @@ void main() {
         displayTarget: target,
         appStatus: appStatus,
         locale: locale ?? UpdateLocale(const Locale('ru')),
-        currentDate: date ?? UpdateDate(DateTime(2024, 10, 20, 12, 0, 0)),
+        currentDate: (date ?? UpdateDate(DateTime(2024, 10, 20, 12, 0, 0))).date!,
+        localReleaseDate: localReleaseDate,
+        updateReleaseDate: updateReleaseDate,
         segmentationPointer: segmentationPointer,
         rolloutPointer: rolloutPointer,
-        customData: null,
+        customData: custom,
       );
     }
 
@@ -53,6 +58,7 @@ void main() {
       double? segmentation,
       String? title,
       String? description,
+      Map<String, dynamic>? custom,
     }) {
       return UpdateRuleConfig<UpdateContentData>.byRequired(
         appStatuses: statuses,
@@ -74,7 +80,7 @@ void main() {
           updateButton: null,
           customData: null,
         ),
-        customData: null,
+        customData: custom,
       );
     }
 
@@ -157,7 +163,9 @@ void main() {
       expect(
         () => resolver.resolve(
           searchData: _search(
-              date: UpdateDate(baseDate.add(const Duration(hours: 10))), rolloutPointer: 0.2),
+            date: UpdateDate(baseDate.add(const Duration(hours: 10))),
+            rolloutPointer: 0.2,
+          ),
           rules: rules,
         ),
         throwsA(isA<Exception>()),
@@ -166,10 +174,79 @@ void main() {
       // pointer 0.05 проходит
       final res = resolver.resolve(
         searchData: _search(
-            date: UpdateDate(baseDate.add(const Duration(hours: 10))), rolloutPointer: 0.05),
+          date: UpdateDate(baseDate.add(const Duration(hours: 10))),
+          rolloutPointer: 0.05,
+        ),
         rules: rules,
       );
       expect(res.title, 'A');
+    });
+
+    test('Платформы и customData + dynamic dates (local/update release)', () {
+      final baseDate = DateTime(2024, 10, 20, 12, 0, 0);
+
+      final rules = [
+        // 1. База, работает везде, задаём заглушки
+        _rule(title: 'base', description: 'd0', custom: const {'env': 'prod'}),
+
+        // 2. Источник googlePlay + платформа android => мердж описания
+        _rule(
+          sources: const [UpdateSource.googlePlay],
+          targets: const [UpdateViewTarget.card],
+          versions: [UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0'))],
+          description: 'android-store',
+        ),
+
+        // 3. Сегментация 100% + rollout 48h, pointer 0.5 через 24h — не пройдёт
+        _rule(
+          date: UpdateDate.updateReleaseDate,
+          rollout: const Duration(hours: 48),
+          segmentation: 100,
+          title: 'segmented',
+        ),
+
+        // 4. Delay от localReleaseDate: через 20h не пройдёт, через 30h — пройдёт
+        _rule(
+          date: UpdateDate.localReleaseDate,
+          delay: const Duration(hours: 24),
+          title: 'after-delay',
+        ),
+      ];
+
+      // Первый проход — 20h после updateRelease, rolloutPointer 0.6,
+      // target=screen (чтобы правило 2 не прошло), custom=null (чтобы правило 1 не прошло)
+      expect(
+        () => resolver.resolve(
+          searchData: _search(
+            target: UpdateViewTarget.screen,
+            date: UpdateDate(baseDate.add(const Duration(hours: 20))),
+            rolloutPointer: 0.6,
+            localReleaseDate: baseDate,
+            updateReleaseDate: baseDate,
+            sources: const [UpdateSource.googlePlay],
+            // customData отсутствует => правило 1 не пройдёт
+            custom: null,
+          ),
+          rules: rules,
+        ),
+        throwsA(isA<Exception>()),
+      );
+
+      // Второй проход — 30h после localReleaseDate -> сработает правило 4 (delay 24h)
+      final res2 = resolver.resolve(
+        searchData: _search(
+          date: UpdateDate(baseDate.add(const Duration(hours: 30))),
+          rolloutPointer: 0.5,
+          localReleaseDate: baseDate,
+          updateReleaseDate: baseDate,
+          sources: const [UpdateSource.googlePlay],
+          // теперь передаём customData для базового правила
+          custom: const {'env': 'prod'},
+        ),
+        rules: rules,
+      );
+      expect(res2.title, 'after-delay');
+      expect(res2.description, 'android-store');
     });
   });
 }
