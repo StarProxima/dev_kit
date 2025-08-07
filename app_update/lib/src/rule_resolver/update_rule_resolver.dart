@@ -104,17 +104,39 @@ class UpdateRuleResolver {
     UpdatePlatform platform,
   ) {
     if (ruleSources.contains(UpdateSource.any)) return true;
-    final searchNames = searchSources.map((e) => e.name).toSet();
-    for (final s in ruleSources) {
-      if (searchNames.contains(s.name) && _sourceSupportsPlatform(s, platform)) return true;
+
+    for (final ruleSource in ruleSources) {
+      final matchedSearchSource = _findSource(searchSources, ruleSource);
+      if (matchedSearchSource == null) continue;
+
+      if (_sourceSupportsPlatform(ruleSource, platform, matchedSearchSource)) {
+        return true;
+      }
     }
     return false;
   }
 
-  bool _sourceSupportsPlatform(UpdateSource source, UpdatePlatform platform) {
-    final platforms = source.platforms;
-    if (platforms == null || platforms.isEmpty) return true;
-    return platforms.any((p) => p == platform || p == UpdatePlatform.any);
+  UpdateSource? _findSource(List<UpdateSource> sources, UpdateSource target) {
+    for (final s in sources) {
+      if (s == target) return s;
+    }
+    return null;
+  }
+
+  bool _sourceSupportsPlatform(
+    UpdateSource ruleSource,
+    UpdatePlatform platform,
+    UpdateSource searchSource,
+  ) {
+    final rulePlatforms = ruleSource.platforms;
+    if (rulePlatforms == null) {
+      // Берём платформы из глобального дефинишена (что пришёл в поиске)
+      final globalPlatforms = searchSource.platforms;
+      if (globalPlatforms == null || globalPlatforms.isEmpty) return true;
+      return globalPlatforms.any((p) => p == platform || p == UpdatePlatform.any);
+    }
+    if (rulePlatforms.isEmpty) return false; // явное отключение
+    return rulePlatforms.any((p) => p == platform || p == UpdatePlatform.any);
   }
 
   bool _matchByVersions(List<UpdateVersionConstraint> constraints, Version localVersion) {
@@ -157,18 +179,18 @@ class UpdateRuleResolver {
     DateTime? baseDate = ruleDate.date;
 
     // Динамические ссылки на дату — используем значения из searchData
-    if (baseDate == null && ruleDate.name != UpdateDate.any.name) {
-      if (ruleDate.name == UpdateDate.localReleaseDate.name) {
+    if (baseDate == null && ruleDate != UpdateDate.any) {
+      if (ruleDate == UpdateDate.localReleaseDate) {
         baseDate = localReleaseDate;
-      } else if (ruleDate.name == UpdateDate.updateReleaseDate.name) {
+      } else if (ruleDate == UpdateDate.updateReleaseDate) {
         baseDate = updateReleaseDate;
       }
     }
 
     if (!hasTemporalConditions) {
-      // Только само наличие ruleDate без доп. условий — если мы не смогли сопоставить
-      // дату, считаем правило неприменимым.
-      return baseDate != null;
+      // Даже без delay/rollout правило активно не ранее базовой даты
+      return baseDate != null && currentDate.isAfter(baseDate) ||
+          baseDate != null && currentDate.isAtSameMomentAs(baseDate);
     }
 
     // Для delay/rollout необходимо знать базовую дату
@@ -193,11 +215,76 @@ class UpdateRuleResolver {
 
   bool _matchByCustomData(Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {
     if (ruleCustom == null || ruleCustom.isEmpty) return true;
-    if (searchCustom == null) return false;
-    for (final entry in ruleCustom.entries) {
-      if (!searchCustom.containsKey(entry.key)) return false;
-      if (searchCustom[entry.key] != entry.value) return false;
+    if (searchCustom == null || searchCustom.isEmpty) return false;
+
+    return _deepContainsCaseInsensitive(ruleCustom, searchCustom);
+  }
+
+  bool _deepContainsCaseInsensitive(dynamic rule, dynamic search) {
+    // nulls
+    if (rule == null) return true; // отсутствие ограничений в правиле
+    if (search == null) return false;
+
+    // String: сравниваем без регистра
+    if (rule is String) {
+      if (rule.toLowerCase() == 'any') return true;
+      if (search is String) {
+        return rule.toLowerCase() == search.toLowerCase();
+      }
+      if (search is List) {
+        return search.any((s) => _deepContainsCaseInsensitive(rule, s));
+      }
+      return false;
     }
-    return true;
+
+    // num/bool: точное сравнение
+    if (rule is num && search is num) return rule == search;
+    if (rule is bool && search is bool) return rule == search;
+
+    // Map: каждый ключ из rule должен присутствовать в search; ключи без регистра
+    if (rule is Map && search is Map) {
+      // Построим мапу ключей search в нижнем регистре -> значение
+      final Map<String, dynamic> searchNormalized = {
+        for (final e in search.entries)
+          if (e.key is String)
+            (e.key as String).toLowerCase(): e.value
+          else
+            e.key.toString().toLowerCase(): e.value,
+      };
+      for (final e in rule.entries) {
+        final keyLc = (e.key is String ? (e.key as String) : e.key.toString()).toLowerCase();
+        if (!searchNormalized.containsKey(keyLc)) return false;
+        if (!_deepContainsCaseInsensitive(e.value, searchNormalized[keyLc])) return false;
+      }
+      return true;
+    }
+
+    // List: принцип как для других условий — достаточно вхождения хотя бы одного элемента из search в rule
+    if (rule is List && search is List) {
+      // Если в правиле есть 'any' -> любое значение подходит
+      final hasAny = rule.any((e) => e is String && e.toLowerCase() == 'any');
+      if (hasAny) return true;
+
+      // Достаточно, чтобы хотя бы один элемент из search совпал с любым элементом rule
+      for (final s in search) {
+        for (final r in rule) {
+          if (_deepContainsCaseInsensitive(r, s)) return true;
+        }
+      }
+      return false;
+    }
+
+    // Правило-скаляр против списка: достаточно наличия элемента
+    if (search is List) {
+      return search.any((s) => _deepContainsCaseInsensitive(rule, s));
+    }
+
+    // Правило-скаляр против списка: достаточно наличия элемента
+    if (rule is List) {
+      return rule.any((r) => _deepContainsCaseInsensitive(r, search));
+    }
+
+    // По умолчанию — точное сравнение
+    return rule == search;
   }
 }
