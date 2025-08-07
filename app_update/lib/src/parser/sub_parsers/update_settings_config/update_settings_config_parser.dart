@@ -2,7 +2,7 @@
 
 import '../../primitive_parsers/bool_parser.dart';
 import '../../primitive_parsers/duration_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 import 'update_settings_config.dart';
 
 class UpdateSettingsConfigParser {

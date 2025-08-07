@@ -1,4 +1,4 @@
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class DurationParser {
   const DurationParser();

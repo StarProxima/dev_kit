@@ -1,6 +1,6 @@
 import 'package:app_update/src/parser/sub_parsers/update_content_config/update_content_config.dart';
 import 'package:app_update/src/parser/sub_parsers/update_content_config/update_content_config_parser.dart';
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 

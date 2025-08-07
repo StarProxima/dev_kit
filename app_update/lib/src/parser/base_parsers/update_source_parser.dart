@@ -1,6 +1,6 @@
 import '../../shared/update_source.dart';
 import '../primitive_parsers/string_parser.dart';
-import '../update_config_exception.dart';
+import '../common.dart';
 import 'update_platform_parser.dart';
 
 class UpdateSourceParser {

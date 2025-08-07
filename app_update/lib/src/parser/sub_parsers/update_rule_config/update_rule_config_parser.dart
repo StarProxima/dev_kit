@@ -15,7 +15,7 @@ import '../../base_parsers/update_view_target_parser.dart';
 import '../../primitive_parsers/list_or_value_parser.dart';
 import '../../primitive_parsers/duration_parser.dart';
 import '../../primitive_parsers/double_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 import 'update_rule_config.dart';
 
 class UpdateRuleConfigParser {

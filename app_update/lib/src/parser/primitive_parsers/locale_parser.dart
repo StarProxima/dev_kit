@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class LocaleParser {
   const LocaleParser();

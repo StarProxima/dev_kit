@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../primitive_parsers/string_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 import 'update_content_config.dart';
 
 class UpdateContentConfigParser {

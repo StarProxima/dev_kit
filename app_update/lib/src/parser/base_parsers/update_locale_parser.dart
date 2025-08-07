@@ -1,6 +1,6 @@
 import '../../shared/update_locale.dart';
 import '../primitive_parsers/locale_parser.dart';
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class UpdateLocaleParser {
   static const _localeParser = LocaleParser();

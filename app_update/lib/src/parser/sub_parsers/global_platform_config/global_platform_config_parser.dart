@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../base_parsers/update_platform_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 import '../global_source_config/global_source_config_parser.dart';
 import 'global_platform_config.dart';
 

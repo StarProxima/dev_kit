@@ -2,7 +2,7 @@
 
 import 'dart:ui';
 
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/shared/version_status.dart';

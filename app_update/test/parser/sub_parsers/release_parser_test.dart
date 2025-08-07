@@ -1,5 +1,5 @@
 // ignore_for_file: avoid-long-functions
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';

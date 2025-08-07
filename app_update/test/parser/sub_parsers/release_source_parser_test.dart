@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions
 
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
@@ -67,7 +67,8 @@ void main() {
           {
             'name': 'windows',
             'source': {
-              'url': 'https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip',
+              'url':
+                  'https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip',
               'release': {
                 'date': '2014-10-20 13:00:00',
                 'text': {'release_notes': 'Windows Github release notes'},

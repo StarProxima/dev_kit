@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions, no-equal-arguments
 
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/text_translations.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
@@ -112,7 +112,8 @@ void main() {
         false,
       );
       expect(
-        androidPlatform?.sourceOverride?.versionSettings?.deprecatedVersions?.firstOrNull?.toString(),
+        androidPlatform?.sourceOverride?.versionSettings?.deprecatedVersions?.firstOrNull
+            ?.toString(),
         '>5.6.0 <5.6.7',
       );
     });

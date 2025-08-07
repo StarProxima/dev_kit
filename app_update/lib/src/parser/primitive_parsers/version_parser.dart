@@ -2,7 +2,7 @@
 
 import 'package:pub_semver/pub_semver.dart';
 
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class VersionParser {
   const VersionParser();

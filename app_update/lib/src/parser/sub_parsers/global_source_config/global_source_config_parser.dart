@@ -3,7 +3,7 @@
 import '../../base_parsers/update_source_parser.dart';
 import '../../primitive_parsers/list_or_value_parser.dart';
 import '../../primitive_parsers/uri_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 import '../global_platform_config/global_platform_config.dart';
 import '../global_platform_config/global_platform_config_parser.dart';
 import '../update_app_status_config/update_app_status_config_parser.dart';

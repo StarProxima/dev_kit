@@ -1,5 +1,5 @@
 import '../../shared/app_status.dart';
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class AppStatusParser {
   const AppStatusParser();

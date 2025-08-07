@@ -1,5 +1,5 @@
 import '../../shared/update_platform.dart';
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class UpdatePlatformParser {
   const UpdatePlatformParser();

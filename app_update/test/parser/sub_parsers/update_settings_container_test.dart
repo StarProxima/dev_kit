@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-correct-test-file-name, avoid-long-functions, prefer-moving-to-variable, no-equal-arguments, avoid-missing-enum-constant-in-map
 
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/update_config_parser.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
 import 'package:app_update/src/shared/version_status.dart';
@@ -144,15 +144,21 @@ void main() {
 
       final result = containerParser.parse(value, isDebug: isDebug);
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.base)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.base)
+            ?.canSkipRelease,
         isTrue,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)
+            ?.canSkipRelease,
         isTrue,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.updatable)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.updatable)
+            ?.canSkipRelease,
         isTrue,
       );
     });
@@ -175,19 +181,27 @@ void main() {
 
         final result = containerParser.parse(value, isDebug: isDebug);
         expect(
-          result?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.base)?.canSkipRelease,
+          result
+              ?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.base)
+              ?.canSkipRelease,
           isTrue,
         );
         expect(
-          result?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.unsupported)?.canSkipRelease,
+          result
+              ?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.unsupported)
+              ?.canSkipRelease,
           isFalse,
         );
         expect(
-          result?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.updatable)?.canSkipRelease,
+          result
+              ?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.updatable)
+              ?.canSkipRelease,
           isFalse,
         );
         expect(
-          result?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.updatable)?.canPostponeRelease,
+          result
+              ?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.updatable)
+              ?.canPostponeRelease,
           isTrue,
         );
       },
@@ -213,19 +227,27 @@ void main() {
 
       final result = containerParser.parse(value, isDebug: isDebug);
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.base)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.base, status: VersionStatusBase.base)
+            ?.canSkipRelease,
         isTrue,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)
+            ?.canSkipRelease,
         isTrue,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.updatable)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.updatable)
+            ?.canSkipRelease,
         isTrue,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)
+            ?.canSkipRelease,
         isTrue,
       );
     });
@@ -263,15 +285,21 @@ void main() {
       final result = containerParser.parse(value, isDebug: isDebug);
 
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)?.canPostponeRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.dialog, status: VersionStatusBase.unsupported)
+            ?.canPostponeRelease,
         isTrue,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)?.canSkipRelease,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)
+            ?.canSkipRelease,
         isFalse,
       );
       expect(
-        result?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)?.releaseDelay,
+        result
+            ?.getByBase(type: UpdateAlertTypeBase.card, status: VersionStatusBase.base)
+            ?.releaseDelay,
         const Duration(hours: 32),
       );
     });

@@ -2,7 +2,7 @@
 
 import '../../base_parsers/update_source_parser.dart';
 import '../../primitive_parsers/uri_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 
 import '../release_config/release_config_parser.dart';
 import '../release_platrform_config/release_platrform_config_parser.dart';

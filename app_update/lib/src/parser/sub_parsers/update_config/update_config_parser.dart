@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../primitive_parsers/list_or_value_parser.dart';
-import '../../update_config_exception.dart';
+import '../../common.dart';
 import '../global_source_config/global_source_config_parser.dart';
 import '../release_config/release_config_parser.dart';
 import '../update_app_status_config/update_app_status_config_parser.dart';

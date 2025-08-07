@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:app_update/src/parser/base_parsers/text_translations_parser.dart';
-import 'package:app_update/src/parser/update_config_exception.dart';
+import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/shared/text_translations.dart';
 import 'package:flutter_test/flutter_test.dart';
 

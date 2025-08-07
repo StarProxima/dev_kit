@@ -1,5 +1,5 @@
 import '../../shared/update_view_target.dart';
-import '../update_config_exception.dart';
+import '../common.dart';
 
 class UpdateViewTargetParser {
   const UpdateViewTargetParser();
