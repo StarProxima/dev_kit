@@ -5,7 +5,7 @@ import 'models/update_search_data.dart';
 class UpdateRuleResolver {
   const UpdateRuleResolver();
 
-  UpdateRuleConfig resolve<T extends Mergeable>({
+  T resolve<T extends Mergeable>({
     required UpdateSearchData searchData,
     required List<UpdateRuleConfig<T>> rules,
   }) {
