@@ -1,448 +1,417 @@
-# App Update API v3 Documentation
+## App Update API v3 — README
 
-## Overview
+App Update — система конфигураций для управления обновлениями приложения на разных платформах и в разных сторах. Поддерживает правила контента, поведение UI, жизненный цикл версий, прогрессивный выкатывание и мульти‑источники дистрибуции.
 
-App Update provides a comprehensive configuration system for managing application updates across multiple platforms and stores. The API supports flexible content rules, version lifecycle management, progressive rollouts, and multi-source distribution.
+## Быстрый старт
 
-## Configuration Structure
-
-The configuration consists of four main sections:
-
-```yaml
-content_rules:        # UI content rules for different contexts
-settings_rules:       # Behavioral settings and user actions
-app_status_rules:  # Version lifecycle and status management
-sources:        # Distribution sources (stores, platforms)
-releases:       # Specific release definitions
-```
-
----
-
-## Content Rules
-
-Define UI content based on context, locale, and app status.
-
-### Basic Structure
+Минимальная конфигурация, чтобы показать карточку обновления для любых версий и локалей:
 
 ```yaml
 content_rules:
-  - view_target: card|dialog|screen|toast|profile_badge|about_screen|any
-    app_statuses: active|updateable|outdated|deprecated|unsupported|any
-    locales: ru|en|any
+  - view_targets: card
+    app_statuses: any
+    locales: any
     data:
-      title: "Update Available"
-      description: "New version with improvements"
+      title: Обновление доступно
+      description: Новая версия с улучшениями
+
+settings_rules:
+  - app_statuses: any
+    view_targets: any
+    data:
+      should_show: true
+
+app_status_rules:
+  - version: any
+    data:
+      app_status: active
 ```
 
-### Parameters
+Добавьте простейший источник и релиз:
 
-- **`view_target`**: Where the update UI appears
-  - `card` - Card-style notification
-  - `dialog` - Modal dialog
-  - `screen` - Full-screen update prompt
-  - `toast` - Brief notification
-  - `profile_badge` - Badge in user profile
-  - `about_screen` - About/settings screen
-  - `any` - any contexts
+```yaml
+sources:
+  - name: appStore
+    url: https://apps.apple.com/app/id123
+    platforms: [ios]
 
-- **`app_status`**: Application version status
-  - `active` - Current/latest version
-  - `updateable` - Update available but optional
-  - `outdated` - Should update soon
-  - `deprecated` - Must update soon
-  - `unsupported` - Forced update required
+releases:
+  - version: 1.2.0
+    date: "2024-08-24 15:35:00"
+    content_rules:
+      release_notes: Улучшения и исправления
+    sources: [appStore]
+```
 
-- **`locale`**: Language/region targeting
-- **`data`**: Content payload with custom fields support
+## Структура конфигурации
 
----
+Конфиг состоит из разделов:
 
-## Settings Rules
+```yaml
+content_rules:    # Текст/контент для UI по контекстам
+settings_rules:   # Поведение UI и доступные действия
+app_status_rules: # Жизненный цикл версий (статусы, выкатывание)
+sources:          # Источники дистрибуции (сторы/платформы)
+releases:         # Конкретные релизы приложения
+```
 
-Control update behavior, user actions, and timing.
+## Базовые понятия
 
-### Basic Structure
+- **Статусы приложения (`app_statuses`)**: `active`, `updateable`, `outdated`, `deprecated`, `unsupported`, `any`.
+- **Таргеты отображения (`view_targets`)**: `card`, `dialog`, `screen`, `toast`, `profileBadge`, `aboutScreen`, `any`.
+- **Локали (`locales`)**: коды языков, например `ru`, `en`, либо `any`.
+- **Дата и время (`date`)**: локальное время в формате `YYYY-MM-DD HH:mm:ss` либо UTC c суффиксом `Z`.
+- **Динамические даты**: `$localReleaseDate` (дата текущей версии приложения) и `$updateReleaseDate` (дата последнего доступного обновления).
+- **Выкатывание**: `delay_hours`, `rollout_hours`, `segmentation_percent`.
+
+## Content Rules — контент UI
+
+Определяют, что отображать пользователю в разных контекстах. Несколько правил могут примениться к одному контексту; последние по списку имеют приоритет и переопределяют поля в `data`.
+
+Пример: общий заголовок для карточки и отдельный — для RU во время старых версий:
+
+```yaml
+content_rules:
+  - view_targets: card
+    app_statuses: any
+    locales: any
+    data:
+      title: Обновите приложение
+      description: Описание
+
+  - view_targets: any
+    locales: ru
+    app_statuses: [outdated, deprecated]
+    data:
+      title: Обновите приложение (важно)
+```
+
+Поддерживаются произвольные поля в `data`, например:
+
+```yaml
+data:
+  custom_img:
+    url: https://example.com
+    border_radius: 10
+```
+
+## Settings Rules — поведение UI
+
+Определяют, можно ли показывать UI и какие действия доступны пользователю. Работают по тем же правилам мерджа.
+
+Рекомендуемая матрица действий по статусам:
 
 ```yaml
 settings_rules:
+  # База: по умолчанию скрыто, явно включаем нужные места
   - app_statuses: any
-    view_target: any
+    view_targets: any
     data:
-      should_show: true|false
-      can_skip: true|false
-      can_postpone: true|false
-      skip_release_delay_hours: 2160    # 90 days
-      skip_any_releases_delay_hours: 72  # 3 days
-      postpone_release_delay_hours: 96   # 4 days
-      postpone_any_releases_delay_hours: 24  # 1 day
+      should_show: false
+      can_skip: false
+      skip_release_delay_hours: 2160   # 90 дней
+      skip_any_releases_delay_hours: 72
+      can_postpone: false
+      postpone_release_delay_hours: 96
+      postpone_any_releases_delay_hours: 24
+
+  # Unsupported — блокирующее обновление
+  - app_statuses: unsupported
+    view_targets: any
+    data:
+      can_skip: false
+      can_postpone: false
+
+  # Deprecated — разрешаем отложить на короткий срок
+  - app_statuses: deprecated
+    view_targets: any
+    data:
+      can_postpone: true
+      postpone_release_delay_hours: 24
+      postpone_any_releases_delay_hours: 24
+
+  # Optional — полная свобода
+  - app_statuses: [outdated, updateable, active]
+    view_targets: any
+    data:
+      can_skip: true
+      can_postpone: true
+
+  # Точечное включение UI по таргетам
+  - app_statuses: active
+    view_targets: aboutScreen
+    data:
+      should_show: true
+
+  - app_statuses: updateable
+    view_targets: [aboutScreen, card]
+    data:
+      should_show: true
+
+  - app_statuses: outdated
+    view_targets: [aboutScreen, card, profileBadge, toast]
+    data:
+      should_show: true
+
+  - app_statuses: deprecated
+    view_targets: [aboutScreen, card, profileBadge, screen]
+    data:
+      should_show: true
+
+  - app_statuses: unsupported
+    view_targets: screen
+    data:
+      should_show: true
 ```
 
-### Key Settings
+## App Status Rules — жизненный цикл версий
 
-- **`should_show`**: Whether to display update prompt
-- **`can_skip`**: anyow users to skip this update
-- **`can_postpone`**: anyow users to postpone update
-- **`*_delay_hours`**: Cooldown periods for user actions
+Классифицируют версии по статусам, учитывая дату активации, динамические ссылки на даты и фазный rollout.
 
-### Recommended Status Configurations
-
-```yaml
-# Unsupported - Force update
-- app_statuses: unsupported
-  data:
-    can_skip: false
-    can_postpone: false
-
-# Deprecated - anyow postpone but encourage update
-- app_statuses: deprecated
-  data:
-    can_postpone: true
-    postpone_release_delay_hours: 24
-
-# Optional updates - Full user control
-- app_statuses: [outdated, updateable, active]
-  data:
-    can_skip: true
-    can_postpone: true
-```
-
----
-
-## Version Rules
-
-Define version lifecycle with progressive rollouts and time-based transitions.
-
-### Basic Structure
+База и динамические даты:
 
 ```yaml
 app_status_rules:
-  - version: ">=6.0.0"           # Semver constraint
-    date: "2024-10-17 23:00:00"  # Activation date
-    app_statuses: active
-    release_status: available|discontinued
-    
-  - version: "<=1.0.0"
-    app_statuses: unsupported
-    release_status: discontinued
+  - version: any
+    data:
+      app_status: active
+
+  # Берём дату последнего доступного обновления
+  - version: any
+    date: $updateReleaseDate
+    app_status: active
+
+  - version: any
+    date: $updateReleaseDate
+    delay_hours: 48
+    rollout_hours: 72
+    app_status: outdated
+
+  # Жизненный цикл от локальной даты релиза текущего приложения
+  - version: any
+    date: $localReleaseDate
+    delay_hours: 168
+    rollout_hours: 72
+    data:
+      app_status: outdated
+  - version: any
+    date: $localReleaseDate
+    delay_hours: 2880
+    rollout_hours: 168
+    data:
+      app_status: deprecated
+  - version: any
+    date: $localReleaseDate
+    delay_hours: 6760
+    rollout_hours: 168
+    data:
+      app_status: unsupported
 ```
 
-### Progressive Rollout
+Ограничения по версиям (semver):
 
 ```yaml
 app_status_rules:
+  - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+    data:
+      app_status: deprecated
+
+  - version: "<4.0.0"
+    date: 2014-10-17 00:00:00
+    delay_hours: 168
+    rollout_hours: 72
+    data: { app_status: outdated }
+
+  - version: "<4.0.0"
+    date: 2014-10-17 00:00:00
+    delay_hours: 2880
+    rollout_hours: 168
+    data: { app_status: deprecated }
+
+  - version: "<4.0.0"
+    date: 2015-01-01 00:00:00
+    delay_hours: 6720
+    rollout_hours: 336
+
+  - version: "<=2.0.0"
+    date: 2014-10-17 23:00:00
+    sources:
+      - GooglePlay
+      - name: AppStore
+        platforms: [ios]
+    data: { app_status: unsupported }
+
+  - version: ">=6.0.0"
+    data: { app_status: active }
+
+  # Пример фазного выкатывания
   - version: "<=3.0.0"
-    date: "2024-10-17"
-    rollout:
-      - delay_hours: 12              # Wait 12h before starting
-        rollout_hours: 72            # Roll out over 72h
-        segmentation_percent: 10     # Affect 10% of users
-        app_statuses: deprecated
-        
-      - delay_hours: 168            # After 7 days
-        rollout_hours: 336          # Roll out over 14 days
-        segmentation_percent: 100   # Affect any users
-        app_statuses: unsupported
+    date: 2014-10-17
+    delay_hours: 12
+    rollout_hours: 72
+    segmentation_percent: 10
+    data: { app_status: unsupported }
+
+  - version: "<=3.0.0"
+    date: 2014-10-17
+    delay_hours: 120
+    rollout_hours: 72
+    segmentation_percent: 50
+    data: { app_status: unsupported }
 ```
 
-### Dynamic Date References
+## Sources — источники дистрибуции
 
-```yaml
-app_status_rules:
-  # Use app release date as reference
-  - version: any
-    date: localReleaseDate    # Date from current app version
-    rollout:
-      - delay_hours: 168
-        app_statuses: outdated
-        
-  # Use latest update release date
-  - version: any
-    date: updateReleaseDate  # Date from latest available update
-    rollout:
-      - delay_hours: 48
-        app_statuses: outdated
-```
-
-### Version Constraint Examples
-
-```yaml
-app_status_rules:
-  - version: "<=1.0.0"                    # Single constraint
-  - version: ">3.0.0 <4.0.0"            # Range constraint
-  - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]  # Multiple constraints
-  - version: any                          # Match any versions
-```
-
----
-
-## Sources
-
-Define distribution sources with platform-specific configurations.
-
-### Basic Structure
+Задают сторы/каналы и платформы, на которые распространяется релиз. Возможны переопределения на уровне платформ и контента.
 
 ```yaml
 sources:
-  - name: googlePlay
-    url: "https://play.google.com/store/apps/details?id=com.example"
-    platforms: [android]
-    
-  - name: appStore  
-    url: "https://apps.apple.com/app/id123456789"
-    platforms: [ios, macos]
-```
+  - name: appStore
+    url: https://example.com
+    platforms: [macos, { name: ios }]
 
-### Platform-Specific Overrides
+  - name: appGallery
+    url: https://example.com
+    content_rules:
+      - locales: ru
+        data: { update_button: Перейти в AppGallery }
+      - locales: en
+        data: { update_button: Go to AppGallery }
 
-```yaml
-sources:
-  - name: github
-    url: "https://github.com/user/repo/releases"
+  - name: ruStore
+    url: https://example.com
+
+  - name: gitHub
+    url: https://example.com
     platforms:
-      # Full platform configuration
       - name: android
         source:
-          url: "https://github.com/user/repo/releases/download/v1.0/app.apk"
+          url: https://example.com/android
           content_rules:
-            title: "Download APK"
-      
-      # Simple platform list
+            title: Title
       - windows
       - macos
       - linux
+
+  - name: site
+    platforms: [android]
+    url: https://example.com
 ```
 
-### Source Content Override
+## Releases — релизы
 
-```yaml
-sources:
-  - name: ruStore
-    url: "https://apps.rustore.ru/app/com.example"
-    content_rules:
-      title: "Обновить в RuStore"  # Source-specific content
-```
-
----
-
-## Releases
-
-Define specific application releases with version, date, and source information.
-
-### Basic Structure
+Описывают конкретные версии, их даты и привязку к источникам, включая локализацию контента и переопределения по платформам.
 
 ```yaml
 releases:
-  - version: "1.2.0"
-    date: "2024-08-24 15:35:00"    # Local time
+  - version: 0.3.7
+    date: "2024-08-24 15:35:00"   # локальное время
     content_rules:
-      title: "Major Update"
-      description: "New features and improvements"
-      release_notes: |
-        # What's New
-        - Feature A
-        - Bug fixes
+      release_notes: |-
+        # Big update!
+        [click](https://example.com) - full changelog.
+        ### Short notes
+        - Added bugs
+        - Fixed features
+    sources: [googlePlay, appStore, ruStore, { name: github, source: { url: https://example.com, platforms: [android, ios, aurora] } }]
+
+  - version: 0.3.8+10-beta
+    content_rules: { release_notes: Minor Improvements }
+    sources: []
+    is_super_ultra_mega_release: true   # произвольные поля поддерживаются
+
+  - version: 0.0.3+80
+    content_rules:
+      - locales: ru
+        data: { release_notes: Improvements }
+      - locales: en
+        data: { release_notes: Improvements }
     sources:
-      - googlePlay
-      - appStore
-```
+      - name: googlePlay
+        release:
+          date: 2014-10-17 23:00:00
 
-### Time Zone Handling
-
-```yaml
-releases:
-  - version: "1.0.0"
-    date: "2024-10-17 23:00:00"    # Local time
-    
-  - version: "1.0.1" 
-    date: "2024-10-17 23:00:00Z"   # UTC time (note the Z suffix)
-```
-
-### Source-Specific Releases
-
-```yaml
-releases:
-  - version: "1.2.0"
+  - version: 1.2.0
+    content_rules: { release_notes: Improvements }
     sources:
       - appStore
       - name: googlePlay
-        date: "2024-10-18 10:00:00"  # Different release date
-        
       - name: ruStore
-        url: "https://custom-url.com"
+        url: www.example.com
         platforms: [android]
         release:
-          version: "1.2.1"           # Different version number
-          content_rules:
-            title: "RuStore Exclusive"
-```
-
-### Nested Platform Overrides
-
-```yaml
-releases:
-  - version: "1.0.0"
-    sources:
+          version: 1.2.1
+          content_rules: { title: RuStore Title }
       - name: github
+        url: https://github.com/hiddify/hiddify-next/releases/
+        release:
+          date: 2014-10-20 12:00:00
         platforms:
+          - macos
+          - linux
           - name: windows
             source:
-              url: "https://github.com/user/repo/releases/download/v1.0/app-windows.zip"
+              url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
               release:
                 content_rules:
                   - locales: ru
-                    data:
-                      release_notes: "Заметки для Windows версии"
+                    data: { release_notes: Windows Github release notes }
                 settings_rules:
                   can_postpone: true
-```
 
-### Custom Data Support
-
-```yaml
-releases:
-  - version: "0.3.8+10-beta"
-    sources: []
-    is_super_ultra_mega_release: true    # Custom fields preserved
-    custom_metadata:
-      priority: high
-      feature_flags: ["new_ui", "beta_features"]
-```
-
----
-
-## Advanced Features
-
-### Rule Priority and Merging
-
-Rules are applied in order with later rules taking priority:
-
-1. **Content Rules**: Multiple rules can apply, with later rules overriding specific fields
-2. **Settings Rules**: Merged hierarchicanyy with specific rules overriding general ones
-3. **Version Rules**: First matching rule applies (except in rollout scenarios)
-
-### Localization Support
-
-```yaml
-content_rules:
-  - locales: ru
-    data:
-      title: "Обновление доступно"
-      description: "Новая версия с улучшениями"
-      
-  - locales: en  
-    data:
-      title: "Update Available"
-      description: "New version with improvements"
-```
-
-### Progressive Rollout Strategy
-
-```yaml
-app_status_rules:
-  - version: ">=2.0.0"
-    rollout:
-      # Phase 1: 10% of users after 1 day
-      - delay_hours: 24
-        rollout_hours: 48
-        segmentation_percent: 10
-        app_statuses: updateable
-        
-      # Phase 2: 50% of users after 3 days  
-      - delay_hours: 72
-        rollout_hours: 72
-        segmentation_percent: 50
-        app_statuses: outdated
-        
-      # Phase 3: any users after 1 week
-      - delay_hours: 168
-        rollout_hours: 24
-        segmentation_percent: 100
-        app_statuses: deprecated
-```
-
----
-
-## Best Practices
-
-### 1. Version Lifecycle Management
-
-```yaml
-app_status_rules:
-  # Block very old versions
-  - version: "<=1.0.0"
-    app_statuses: unsupported
-    release_status: discontinued
-    
-  # Gradual deprecation for older versions
-  - version: any
-    date: localReleaseDate
-    rollout:
-      - delay_hours: 2160    # 90 days: outdated
-        app_statuses: outdated
-      - delay_hours: 4320    # 180 days: deprecated  
-        app_statuses: deprecated
-      - delay_hours: 6480    # 270 days: unsupported
-        app_statuses: unsupported
-```
-
-### 2. User Experience Optimization
-
-```yaml
-settings_rules:
-  # Default: don't show unless explicitly enabled
-  - app_statuses: any
-    data:
-      should_show: false
-      
-  # Progressive urgency
-  - app_statuses: updateable
-    data:
-      should_show: true
+  - version: 0.2.4
+    # UTC
+    date: 2014-10-17 23:00:00Z
+    content_rules:
+      title: Title
+      description: Description
+      release_notes: Note
+    settings_rules:
       can_skip: true
       can_postpone: true
-      
-  - app_statuses: deprecated
-    data:
-      should_show: true
-      can_skip: false
-      can_postpone: true
-      postpone_release_delay_hours: 24
-      
-  - app_statuses: unsupported
-    data:
-      should_show: true
-      can_skip: false
-      can_postpone: false
+    sources:
+      - name: googlePlay
+        url: www.example.com
+        release:
+          date: 2014-10-17 23:00:00
+          settings_rules: { can_postpone: true }
+        platforms:
+          - name: android
+            source:
+              release:
+                settings_rules:
+                  - target: dialog
+                    app_statuses: outdated
+                    data: { can_skip: true, can_postpone: true }
+
+      - name: appStore
+        content_rules: { release_notes: note ios }
+        date: 2014-10-18 23:00:00
 ```
 
-### 3. Multi-Platform Distribution
+## Правила мерджа и приоритеты
 
-```yaml
-sources:
-  - name: primary_store
-    platforms: [android, ios]
-    url: "https://primary-store.com"
-    
-  - name: secondary_store
-    platforms: [android]
-    url: "https://secondary-store.com"
-    content_rules:
-      title: "Also available on Secondary Store"
-      
-  - name: direct_download
-    platforms: [windows, macos, linux]
-    url: "https://example.com/download"
-```
+- **Порядок в списке важен**: более позднее правило переопределяет предыдущие поля в `data`/`settings`.
+- **Чем контекст специфичнее — тем приоритетнее**: переопределения на уровне `release` > `source` > глобальных `content_rules`/`settings_rules`.
+- **Вложенность источников**: `platform.source.release` переопределяет `source.release`, который переопределяет `release`.
+- **Объединение**: поля объединяются по ключам; отсутствующие поля не затираются.
 
----
+## Лучшие практики
 
-## Migration and Compatibility
+- **Жизненный цикл версий**: постепенно повышайте срочность — `updateable` → `outdated` → `deprecated` → `unsupported` с использованием `$localReleaseDate`/`$updateReleaseDate`.
+- **UX**: по умолчанию `should_show: false`, явно включайте нужные таргеты; давайте пользователю выбор для не‑критичных апдейтов.
+- **Мульти‑платформенность**: используйте `platforms` и точечные переопределения для разных ОС.
+- **Прозрачность**: локализуйте контент (`locales`) и ведите понятные `release_notes`.
 
-When upgrading to API v3:
+## Миграция с v2
 
-1. **Content Rules**: Replace static content with rule-based system
-2. **Settings**: Migrate boolean flags to time-based delay system  
-3. **Version Management**: Convert simple version checks to constraint-based rules
-4. **Sources**: Restructure platform-specific URLs using nested configuration
+- `text.*` → `content_rules[].data.*`
+- `settings.*` → `settings_rules[].data.*` (вместо булевых флагов — задержки `*_delay_hours`)
+- `version_settings.*` → `app_status_rules` с семантическими ограничениями версий
+- Источники и релизы получили вложенные переопределения (`source`, `release`, `platforms`)
 
-The API maintains backward compatibility for basic configurations while providing advanced features through the new rule system.
+## Частые вопросы
+
+- **Как задать дату в UTC?** Добавьте `Z` в конце: `2014-10-17 23:00:00Z`.
+- **Что такое `any`?** Специальное значение, соответствующее любому значению в данном измерении.
+- **Можно ли хранить кастомные поля?** Да, любые дополнительные ключи сохраняются и доступны потребителю.

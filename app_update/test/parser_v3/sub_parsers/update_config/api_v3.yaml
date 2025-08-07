@@ -1,6 +1,6 @@
 # Набор правил для контента релизов, содержит строки и прочую инфу по конретному обновлению
-# Создается набор правил, которые поочередно применяются к конкретному релизу,
-# если они подходят под условия.
+# Создается набор правил, которые поочередно мержуться применяются по заданным параметрам в условиях, 
+# переопределяя параметры в data, если они подходят под условия.
 # Т.е. для релиза может примениться несколько правил, последние более приоритетны.
 content_rules:
   - view_targets: card
@@ -30,7 +30,7 @@ content_rules:
       description: Описание
 
 # Набор правил для настроек релизов
-# Действует такая же логика с правилами, что и для контента
+# Действует такая же логика применения правил.
 settings_rules:
   # Задаем настройки по умолчанию для всех релизов
   - app_statuses: any
@@ -112,9 +112,7 @@ settings_rules:
 
 # Правила для версий
 # Позволяет гибко задать настройки и распределить версии по статусам,
-# учитывая rollout и date.
-# Применяется первое подходящее правило (и последнее в rollout),
-# устанавливая app_status.
+# Действует такая же логика применения правил.
 app_status_rules:
   - versions: any
     data:
@@ -124,14 +122,14 @@ app_status_rules:
   # The `date: update_release` parameter take date from 
   # latest matched release and uses it instead of `date`.
   - versions: any
-    date: updateReleaseDate
-    rollout:
-      - data:
-          app_status: active
-      - delay_hours: 48  # 2 days
-        rollout_hours: 72 # 3 days
-        data:
-          app_status: outdated
+    date: $updateReleaseDate
+    app_status: active
+
+  - versions: any
+    date: $updateReleaseDate
+    delay_hours: 48  # 2 days
+    rollout_hours: 72 # 3 days
+    app_status: outdated
 
   # Sets the lifecycle of the application updates.
   # The `date: app_release` parameter calculates the release of 
@@ -144,20 +142,23 @@ app_status_rules:
   # deprecated if is older than 144 days
   # unsupported if is older than 278 days
   - versions: any
-    date: localReleaseDate
-    rollout:
-      - delay_hours: 168 # 7 days
-        rollout_hours: 72 # 3 days
-        data:
-          app_status: outdated
-      - delay_hours: 2880  # 120 days
-        rollout_hours: 336 # 14 days
-        data:
-          app_status: deprecated
-      - delay_hours: 2880 # 120 days
-        rollout_hours: 336 # 14 days
-        data:
-          app_status: unsupported
+    date: $localReleaseDate
+    delay_hours: 168 # 7 days
+    rollout_hours: 72 # 3 days
+    data:
+      app_status: outdated
+  - versions: any
+    date: $localReleaseDate
+    delay_hours: 2880 # 120 days
+    rollout_hours: 168 # 7 days
+    data:
+      app_status: deprecated
+  - versions: any
+    date: $localReleaseDate
+    delay_hours: 6760 # 240 days
+    rollout_hours: 168 # 7 days
+    data:
+      app_status: unsupported
 
   # any matched versions are deprecated
   - versions: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
@@ -166,23 +167,24 @@ app_status_rules:
 
   # any versions before 4.0.0 are:
   # outdated after 2014-10-17 + 10 days 
-  # deprecated after 2014-10-17 + 144 days
-  # unsupported after 2014-10-17 + 278 days
-  - versions: '>=3.0.0 <4.0.0'
+  # deprecated after 2014-10-17 + 127 days
+  # unsupported after 2014-10-17 + 294 days
+  - versions: '<4.0.0'
     date: 2014-10-17 00:00:00
-    rollout:
-      - delay_hours: 168 # 7 days
-        rollout_hours: 72 # 3 days
-        data:
-          app_status: outdated
-      - delay_hours: 2880  # 120 days
-        rollout_hours: 336 # 14 days
-        data:
-          app_status: deprecated
-      - date: 2015-01-01 00:00:00
-        rollout_hours: 336 # 14 days
-        data:
-          app_status: unsupported
+    delay_hours: 168 # 7 days
+    rollout_hours: 72 # 3 days
+    data:
+      app_status: outdated
+  - versions: '<4.0.0'
+    date: 2014-10-17 00:00:00
+    delay_hours: 2880 # 120 days
+    rollout_hours: 168 # 7 days
+    data:
+      app_status: deprecated
+  - versions: '<4.0.0'
+    date: 2015-01-01 00:00:00
+    delay_hours: 6720 # 280 days
+    rollout_hours: 336 # 14 days
 
   # any versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
   - versions: '<=2.0.0'
@@ -197,25 +199,25 @@ app_status_rules:
 
   # any versions after 6.0.0 are active
   - versions: '>=6.0.0'
-    rollout:
-      - app_status: active
+    data:
+      app_status: active
 
   # any versions before 3.0.0 are: 
   # unsupported after 2014-10-17 + 168+72 hours
   - versions: '<=3.0.0'
     date: 2014-10-17
-    rollout:
-      - delay_hours: 12
-        rollout_hours: 72
-        segmentation_percent: 10
-        data:
-          app_status: unsupported
+    delay_hours: 12
+    rollout_hours: 72
+    segmentation_percent: 10
+    data:
+      app_status: unsupported
 
-      - date: 2014-10-17
-        rollout_hours: 72
-        segmentation_percent: 50
-        data:
-          app_status: unsupported
+  - versions: '<=3.0.0'
+    date: 2014-10-17
+    rollout_hours: 72
+    segmentation_percent: 50
+    data:
+      app_status: unsupported
 
   # any versions before 1.0.0 are unsupported
   - versions: '<=1.0.0'
@@ -278,8 +280,9 @@ releases:
       - appStore
       - ruStore
       - name: github
-        url: https://example.com
-        platforms: [android, ios, aurora]
+        source:
+          url: https://example.com
+          platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
     content_rules:
@@ -390,7 +393,3 @@ releases:
       - googlePlay
       - name: appStore
         platforms: ['ios']
-    
-
-
-      
