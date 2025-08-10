@@ -14,23 +14,21 @@ void main() {
         date: '2024-08-24 15:35:00'
         sources:
           - name: googlePlay
-            url: 'https://play.google.com/store/apps/details?id=com.example'
             platforms:
               - name: android
-                source:
-                  name: github
-                  url: 'https://github.com/user/repo/releases'
+                release_override:
+                  version: '1.2.4'
           - appStore
-        content_rules:
+        content:
           - locales: ru
             data:
               title: 'Заголовок'
-        settings_rules:
+        settings:
           - app_statuses: outdated
             data:
               can_skip: true
-        app_status_rules:
-          - version: any
+        app_settings:
+          - versions: any
             data:
               app_status: active
         custom_field: 123
@@ -45,7 +43,7 @@ void main() {
       expect(result?.sources?[0].sourceName?.name, 'googlePlay'.toLowerCase());
       expect(result?.sources?[0].platforms, isNotNull);
       expect(result?.sources?[0].platforms?[0].platformName.name, 'android');
-      expect(result?.sources?[0].platforms?[0].sourceOverride?.sourceName?.name, 'github');
+      expect(result?.sources?[0].platforms?[0].releaseOverride?.version.toString(), '1.2.4');
       expect(result?.sources?[1].sourceName?.name, 'appStore'.toLowerCase());
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
@@ -73,7 +71,7 @@ void main() {
         version: '0.2.0'
         sources:
           - name: github
-            release:
+            release_override:
               version: '0.2.1'
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));

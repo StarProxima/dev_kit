@@ -13,22 +13,30 @@ void main() {
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<GlobalPlatformConfig>());
       expect(result?.platformName.name, 'android');
-      expect(result?.sourceOverride, isNull);
+      expect(result?.contentRules, isNull);
+      expect(result?.settingsRules, isNull);
+      expect(result?.appSettingsRules, isNull);
       expect(result?.customData, isNull);
     });
 
-    test('Полный набор полей', () {
+    test('Полный набор полей (rules)', () {
       const yamlStr = '''
         name: ios
-        source:
-          name: github
+        content:
+          title: Title
+        settings:
+          should_show: true
+        app_settings:
+          app_status: active
         custom_field: 42
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<GlobalPlatformConfig>());
       expect(result?.platformName.name, 'ios');
-      expect(result?.sourceOverride?.source?.name, 'github');
+      expect(result?.contentRules, isNotNull);
+      expect(result?.settingsRules, isNotNull);
+      expect(result?.appSettingsRules, isNotNull);
       expect(result?.customData, containsPair('custom_field', 42));
     });
 

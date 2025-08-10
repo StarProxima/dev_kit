@@ -7,7 +7,7 @@ App Update — система конфигураций для управлени
 Минимальная конфигурация, чтобы показать карточку обновления для любых версий и локалей:
 
 ```yaml
-content_rules:
+content:
   - view_targets: card
     app_statuses: any
     locales: any
@@ -15,13 +15,13 @@ content_rules:
       title: Обновление доступно
       description: Новая версия с улучшениями
 
-settings_rules:
+settings:
   - app_statuses: any
     view_targets: any
     data:
       should_show: true
 
-app_status_rules:
+app_settings:
   - version: any
     data:
       app_status: active
@@ -38,7 +38,7 @@ sources:
 releases:
   - version: 1.2.0
     date: "2024-08-24 15:35:00"
-    content_rules:
+    content:
       release_notes: Улучшения и исправления
     sources: [appStore]
 ```
@@ -48,9 +48,9 @@ releases:
 Конфиг состоит из разделов:
 
 ```yaml
-content_rules:    # Текст/контент для UI по контекстам
-settings_rules:   # Поведение UI и доступные действия
-app_status_rules: # Жизненный цикл версий (статусы, выкатывание)
+content:    # Текст/контент для UI по контекстам
+settings:   # Поведение UI и доступные действия
+app_settings: # Жизненный цикл версий (статусы, выкатывание)
 sources:          # Источники дистрибуции (сторы/платформы)
 releases:         # Конкретные релизы приложения
 ```
@@ -71,7 +71,7 @@ releases:         # Конкретные релизы приложения
 Пример: общий заголовок для карточки и отдельный — для RU во время старых версий:
 
 ```yaml
-content_rules:
+content:
   - view_targets: card
     app_statuses: any
     locales: any
@@ -102,7 +102,7 @@ data:
 Рекомендуемая матрица действий по статусам:
 
 ```yaml
-settings_rules:
+settings:
   # База: по умолчанию скрыто, явно включаем нужные места
   - app_statuses: any
     view_targets: any
@@ -171,7 +171,7 @@ settings_rules:
 База и динамические даты:
 
 ```yaml
-app_status_rules:
+app_settings:
   - version: any
     data:
       app_status: active
@@ -211,7 +211,7 @@ app_status_rules:
 Ограничения по версиям (semver):
 
 ```yaml
-app_status_rules:
+app_settings:
   - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
     data:
       app_status: deprecated
@@ -272,7 +272,7 @@ sources:
 
   - name: appGallery
     url: https://example.com
-    content_rules:
+    content:
       - locales: ru
         data: { update_button: Перейти в AppGallery }
       - locales: en
@@ -287,7 +287,7 @@ sources:
       - name: android
         source:
           url: https://example.com/android
-          content_rules:
+          content:
             title: Title
       - windows
       - macos
@@ -306,7 +306,7 @@ sources:
 releases:
   - version: 0.3.7
     date: "2024-08-24 15:35:00"   # локальное время
-    content_rules:
+    content:
       release_notes: |-
         # Big update!
         [click](https://example.com) - full changelog.
@@ -316,12 +316,12 @@ releases:
     sources: [googlePlay, appStore, ruStore, { name: github, source: { url: https://example.com, platforms: [android, ios, aurora]}}]
 
   - version: 0.3.8+10-beta
-    content_rules: { release_notes: Minor Improvements }
+    content: { release_notes: Minor Improvements }
     sources: []
     is_super_ultra_mega_release: true   # произвольные поля поддерживаются
 
   - version: 0.0.3+80
-    content_rules:
+    content:
       - locales: ru
         data: { release_notes: Improvements }
       - locales: en
@@ -332,7 +332,7 @@ releases:
           date: 2014-10-17 23:00:00
 
   - version: 1.2.0
-    content_rules: { release_notes: Improvements }
+    content: { release_notes: Improvements }
     sources:
       - appStore
       - name: googlePlay
@@ -341,7 +341,7 @@ releases:
         platforms: [android]
         release:
           version: 1.2.1
-          content_rules: { title: RuStore Title }
+          content: { title: RuStore Title }
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
         release:
@@ -353,20 +353,20 @@ releases:
             source:
               url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
               release:
-                content_rules:
+                content:
                   - locales: ru
                     data: { release_notes: Windows Github release notes }
-                settings_rules:
+                settings:
                   can_postpone: true
 
   - version: 0.2.4
     # UTC
     date: 2014-10-17 23:00:00Z
-    content_rules:
+    content:
       title: Title
       description: Description
       release_notes: Note
-    settings_rules:
+    settings:
       can_skip: true
       can_postpone: true
     sources:
@@ -374,18 +374,18 @@ releases:
         url: www.example.com
         release:
           date: 2014-10-17 23:00:00
-          settings_rules: { can_postpone: true }
+          settings: { can_postpone: true }
         platforms:
           - name: android
             source:
               release:
-                settings_rules:
+                settings:
                   - target: dialog
                     app_statuses: outdated
                     data: { can_skip: true, can_postpone: true }
 
       - name: appStore
-        content_rules: { release_notes: note ios }
+        content: { release_notes: note ios }
         date: 2014-10-18 23:00:00
 ```
 

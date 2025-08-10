@@ -10,6 +10,7 @@ void main() {
 
     test('Парсинг полного набора полей', () {
       const yamlStr = '''
+        update_url: https://example.com
         title: "Заголовок"
         description: "Описание"
         release_notes_title: "Заметки"
@@ -22,6 +23,7 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<UpdateContentConfig>());
+      expect(result?.updateUrl, Uri.parse('https://example.com'));
       expect(result?.title, 'Заголовок');
       expect(result?.description, 'Описание');
       expect(result?.releaseNotesTitle, 'Заметки');

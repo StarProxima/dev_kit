@@ -13,30 +13,35 @@ void main() {
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<ReleasePlatformConfig>());
       expect(result?.platformName.name, 'android');
-      expect(result?.sourceOverride, isNull);
+      expect(result?.releaseOverride, isNull);
+      expect(result?.contentRules, isNull);
+      expect(result?.settingsRules, isNull);
+      expect(result?.appSettingsRules, isNull);
       expect(result?.customData, isNull);
     });
 
     test('Полный набор полей', () {
       const yamlStr = '''
         name: ios
-        source:
-          name: github
+        release_override:
+          version: '1.2.3'
+        content:
+          title: Title
+        settings:
+          should_show: true
+        app_settings:
+          app_status: active
         custom_field: 42
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<ReleasePlatformConfig>());
       expect(result?.platformName.name, 'ios');
-      expect(result?.sourceOverride?.sourceName?.name, 'github'.toLowerCase());
+      expect(result?.releaseOverride?.version.toString(), '1.2.3');
+      expect(result?.contentRules, isNotNull);
+      expect(result?.settingsRules, isNotNull);
+      expect(result?.appSettingsRules, isNotNull);
       expect(result?.customData, containsPair('custom_field', 42));
-    });
-
-    test('Ошибка при невалидном имени', () {
-      const yamlStr = '''unknown_platform''';
-      final result = parser.parse(loadYaml(yamlStr));
-      expect(result, isA<ReleasePlatformConfig>());
-      expect(result?.platformName.name, 'unknown_platform');
     });
 
     test('Ошибка при неверном типе', () {

@@ -13,7 +13,7 @@ class UpdateSearchData {
   final UpdateViewTarget displayTarget;
   final UpdateLocale locale;
 
-  /// Null for search in app_status_rules.
+  /// Null for search in app_settings_rules.
   final AppStatus? appStatus;
 
   /// Uses for calculate rule date and delay compliance.

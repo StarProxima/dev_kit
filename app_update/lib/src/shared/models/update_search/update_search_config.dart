@@ -7,7 +7,9 @@ import '../../update_entities/update_source.dart';
 import '../../update_entities/update_view_target.dart';
 
 class UpdateSearchConfig {
+  /// Default [UpdatePlatform.current].
   final UpdatePlatform? platform;
+
   final List<UpdateSource>? sources;
   final Version? localVersion;
   final UpdateViewTarget? displayTarget;
@@ -18,7 +20,7 @@ class UpdateSearchConfig {
   final DateTime? localReleaseDate;
   final DateTime? updateReleaseDate;
 
-  /// Null for search in app_status_rules.
+  /// Null for search in app_settings_rules.
   final AppStatus? appStatus;
 
   /// From 0.0 to 1.0, uses for calculate user segmentation compliance.

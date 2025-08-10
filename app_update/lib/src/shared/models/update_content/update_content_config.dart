@@ -1,6 +1,7 @@
 import '../../mergeable.dart';
 
 class UpdateContentConfig with Mergeable {
+  final Uri? updateUrl;
   final String? title;
   final String? description;
   final String? releaseNotesTitle;
@@ -11,6 +12,7 @@ class UpdateContentConfig with Mergeable {
   final Map<String, dynamic>? customData;
 
   const UpdateContentConfig({
+    this.updateUrl,
     this.title,
     this.description,
     this.releaseNotesTitle,
@@ -22,6 +24,7 @@ class UpdateContentConfig with Mergeable {
   });
 
   const UpdateContentConfig.byRequired({
+    required this.updateUrl,
     required this.title,
     required this.description,
     required this.releaseNotesTitle,
@@ -34,6 +37,7 @@ class UpdateContentConfig with Mergeable {
 
   @override
   UpdateContentConfig merge(covariant UpdateContentConfig other) => UpdateContentConfig.byRequired(
+        updateUrl: other.updateUrl ?? updateUrl,
         title: other.title ?? title,
         description: other.description ?? description,
         releaseNotesTitle: other.releaseNotesTitle ?? releaseNotesTitle,

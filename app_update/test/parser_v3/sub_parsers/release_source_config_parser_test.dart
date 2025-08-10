@@ -13,34 +13,43 @@ void main() {
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<ReleaseSourceConfig>());
       expect(result?.sourceName?.name, 'googlePlay'.toLowerCase());
-      expect(result?.url, isNull);
       expect(result?.platforms, isNull);
       expect(result?.releaseOverride, isNull);
+      expect(result?.contentRules, isNull);
+      expect(result?.settingsRules, isNull);
+      expect(result?.appSettingsRules, isNull);
       expect(result?.customData, isNull);
     });
 
     test('Полный набор полей', () {
       const yamlStr = '''
         name: github
-        url: 'https://github.com/user/repo/releases'
         platforms:
           - name: android
           - name: ios
+        content:
+          title: Title
+        settings:
+          should_show: true
+        app_settings:
+          app_status: active
         custom_field: 42
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<ReleaseSourceConfig>());
       expect(result?.sourceName?.name, 'github'.toLowerCase());
-      expect(result?.url.toString(), 'https://github.com/user/repo/releases');
       expect(result?.platforms?.length, 2);
+      expect(result?.contentRules, isNotNull);
+      expect(result?.settingsRules, isNotNull);
+      expect(result?.appSettingsRules, isNotNull);
       expect(result?.customData, containsPair('custom_field', 42));
     });
 
     test('Вложенный релиз', () {
       const yamlStr = '''
         name: github
-        release:
+        release_override:
           version: '1.2.3'
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));

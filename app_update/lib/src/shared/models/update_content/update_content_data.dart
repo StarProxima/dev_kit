@@ -1,4 +1,5 @@
 class UpdateContentData {
+  final Uri updateUrl;
   final String title;
   final String description;
   final String releaseNotesTitle;
@@ -9,6 +10,7 @@ class UpdateContentData {
   final Map<String, dynamic>? customData;
 
   const UpdateContentData({
+    required this.updateUrl,
     required this.title,
     required this.description,
     required this.releaseNotesTitle,

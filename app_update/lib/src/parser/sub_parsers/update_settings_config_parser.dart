@@ -4,12 +4,10 @@ import '../../shared/models/update_settings/update_settings_config.dart';
 import '../common.dart';
 import '../primitive_parsers/bool_parser.dart';
 import '../primitive_parsers/duration_parser.dart';
-import '../primitive_parsers/uri_parser.dart';
 
 class UpdateSettingsConfigParser {
   static const _boolParser = BoolParser();
   static const _durationParser = DurationParser();
-  static const _uriParser = UriParser();
 
   const UpdateSettingsConfigParser();
 
@@ -23,10 +21,6 @@ class UpdateSettingsConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
-
-    // updateUrl
-    final updateUrlValue = map.remove('update_url');
-    final updateUrl = _uriParser.parse(updateUrlValue);
 
     // shouldShow
     final shouldShowValue = map.remove('should_show');
@@ -57,7 +51,6 @@ class UpdateSettingsConfigParser {
     final postponeAllReleasesDelay = _durationParser.parse(hours: postponeAllReleasesDelayValue);
 
     return UpdateSettingsConfig.byRequired(
-      updateUrl: updateUrl,
       shouldShow: shouldShow,
       canSkip: canSkip,
       canPostpone: canPostpone,

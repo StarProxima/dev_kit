@@ -11,20 +11,19 @@ void main() {
     test('Полный набор полей', () {
       const yamlStr = '''
         name: github
-        url: 'https://github.com/user/repo/releases'
         platforms:
           - name: android
           - name: ios
-        content_rules:
+        content:
           - locales: ru
             data:
               title: 'Заголовок'
-        settings_rules:
+        settings:
           - app_statuses: outdated
             data:
               can_skip: true
-        app_status_rules:
-          - version: any
+        app_settings:
+          - versions: any
             data:
               app_status: active
         custom_field: 42
@@ -32,8 +31,7 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<GlobalSourceConfig>());
-      expect(result?.source?.name, 'github');
-      expect(result?.url.toString(), 'https://github.com/user/repo/releases');
+      expect(result?.sourceName?.name, 'github');
       expect(result?.platforms?.length, 2);
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);

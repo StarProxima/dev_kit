@@ -17,7 +17,7 @@ content:
       title: Обновите приложение
       description: Описание
       custom_img: 
-        url: https://example.com
+        update_url: https://example.com
         border_radius: 10
 
   - view_targets: any
@@ -229,16 +229,16 @@ app_settings:
 
 sources:
   - name: appStore
-    settings:
-      url: https://example.com
+    content:
+      update_url: https://example.com
     platforms:
       - macos
       - name: ios
 
   - name: appGallery
-    settings:
-      url: https://example.com
     content:
+      - data:
+          update_url: https://example.com
       - locales: ru
         data:
           update_button: Перейти в AppGallery
@@ -247,18 +247,17 @@ sources:
           update_button: Go to AppGallery
 
   - name: ruStore
-    settings:
-      url: https://example.com
+    content:
+      update_url: https://example.com
 
   - name: gitHub
-    settings:
-      url: https://example.com
+    content:
+      update_url: https://example.com
     platforms:
       # Full syntax
       - name: android
-        settings:
-          url: https://example.com/android
         content:
+          update_url: https://example.com/android
           title: Title
           
       # Short syntax
@@ -268,8 +267,8 @@ sources:
 
   - name: site
     platforms: [android]
-    settings:
-      url: https://example.com
+    content:
+      update_url: https://example.com
 
 releases:
   - version: 0.3.7
@@ -288,8 +287,8 @@ releases:
       - appStore
       - ruStore
       - name: github
-        settings:
-          url: https://example.com
+        content:
+          update_url: https://example.com
         platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
@@ -308,7 +307,7 @@ releases:
           release_notes: Improvements
     sources:
       - name: googlePlay
-        release:
+        release_override:
           date: 2014-10-17 23:00:00
 
   - version: 0.0.2+30
@@ -320,40 +319,31 @@ releases:
     sources:
       - appStore
       - name: googlePlay
-      - name: ruStore
-
-      - 
-        release:
+      - name: ruStore   
+        release_override:
           version: 1.2.1
-          settings:
-          url: www.example.com
         content:
-            title: RuStore Title
-
-  
+          title: RuStore Title
+          update_url: www.example.com
         platforms: [android]
         
-          
-          
       - name: github
-        url: https://github.com/hiddify/hiddify-next/releases/
-        release:
+        content:
+          update_url: https://github.com/hiddify/hiddify-next/releases/
+        release_override:
           date: 2014-10-20 12:00:00
         platforms:
           - macos
           - linux
           - name: windows
-            source:
-              url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-              release:
-                content:
-                  - locales: ru
-                    data:
-                      release_notes: Windows Github release notes
-                settings:
-                  can_postpone: true
-       
-
+            content:
+              - update_url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
+              - locales: ru
+                data:
+                  release_notes: Windows Github release notes              
+            settings:
+              can_postpone: true
+              
   - version: 0.2.4
     # UTC time
     date: 2014-10-17 23:00:00Z
@@ -366,26 +356,26 @@ releases:
       can_postpone: true
     sources:
       - name: googlePlay
-        url: www.example.com
-        release:
+        settings:
+          can_postpone: true
+        content:
+          update_url: www.example.com
+        release_override:
           date: 2014-10-17 23:00:00
-          settings:
-            can_postpone: true
         platforms:
           - name: android
-            source:
-              release:
-                settings:
-                  - target: dialog
-                    app_statuses: outdated
-                    data:
-                      can_skip: true
-                      can_postpone: true
-
+            settings:
+              - target: dialog
+                app_statuses: outdated
+                data:
+                  can_skip: true
+                  can_postpone: true
+                
       - name: appStore
         content:
           release_notes: note ios
-        date: 2014-10-18 23:00:00
+        release_override:
+          date: 2014-10-18 23:00:00
 
   - version: 0.2.6
     date: 2014-10-17 23:00:00
@@ -397,7 +387,6 @@ releases:
       can_skip_release: true
     sources:
       - name: googlePlay
-        url: null
         platforms: []
 
   - version: 0.2.5
@@ -409,7 +398,3 @@ releases:
       - googlePlay
       - name: appStore
         platforms: ['ios']
-    
-
-
-      
