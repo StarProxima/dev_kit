@@ -84,7 +84,7 @@ class UpdateReleaseLinker {
     return UpdateData(
       version: finalVersion,
       date: finalRerelase.date,
-      source: source.sourceName,
+      sourceName: source.sourceName,
       platform: platform.platformName,
       contentRules: finalRerelase.contentRules,
       settingsRules: finalRerelase.settingsRules,

@@ -10,7 +10,7 @@ import '../update_app_settings/update_app_settings_config.dart';
 class UpdateData {
   final Version version;
   final DateTime? date;
-  final UpdateSourceName source;
+  final UpdateSourceName sourceName;
   final UpdatePlatform platform;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
@@ -20,7 +20,7 @@ class UpdateData {
   const UpdateData({
     required this.version,
     required this.date,
-    required this.source,
+    required this.sourceName,
     required this.platform,
     required this.contentRules,
     required this.settingsRules,

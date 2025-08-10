@@ -197,7 +197,7 @@ void main() {
           expect(result, hasLength(1));
           expect(result[0].version, Version.parse('1.0.0'));
           expect(result[0].date, DateTime(2024, 10, 20));
-          expect(result[0].source, UpdateSourceName.googlePlay);
+          expect(result[0].sourceName, UpdateSourceName.googlePlay);
           expect(result[0].platform, UpdatePlatform.android);
         });
 
