@@ -1,8 +1,8 @@
 import '../../parser/sub_parsers/update_rule_config/update_rule_config.dart';
 import '../../shared/update_date.dart';
 import '../models/mergeable.dart';
+import '../models/rule_matcher.dart';
 import '../models/update_search_data.dart';
-import 'rule_matcher.dart';
 
 class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const TemporalMatcher();
