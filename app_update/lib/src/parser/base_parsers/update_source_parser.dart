@@ -2,9 +2,11 @@ import '../../shared/update_entities/update_source.dart';
 import '../primitive_parsers/string_parser.dart';
 import '../common.dart';
 import 'update_platform_parser.dart';
+import 'update_source_name_parser.dart';
 
 class UpdateSourceParser {
   static const _updatePlatformParser = UpdatePlatformParser();
+  static const _updateSourceNameParser = UpdateSourceNameParser();
   static const _stringParser = StringParser();
 
   const UpdateSourceParser();
@@ -16,7 +18,9 @@ class UpdateSourceParser {
 
     // Short syntax
     if (value is String) {
-      return UpdateSource.custom(value);
+      final name = _updateSourceNameParser.parse(value)!;
+
+      return UpdateSource.custom(name);
     }
 
     if (value is! Map) throw const UpdateConfigException();
@@ -25,14 +29,16 @@ class UpdateSourceParser {
     final nameValue = map.remove('name');
     final name = _stringParser.parse(nameValue);
 
-    if (name == null) throw const UpdateConfigException();
+    final sourceName = _updateSourceNameParser.parse(name);
+
+    if (sourceName == null) throw const UpdateConfigException();
 
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List?) throw const UpdateConfigException();
 
     final platforms = platformsValue?.map(_updatePlatformParser.parse).nonNulls.toList();
 
-    final source = UpdateSource.custom(name, platforms: platforms);
+    final source = UpdateSource.custom(sourceName, platforms: platforms);
 
     return source;
   }

@@ -7,6 +7,7 @@ import 'package:app_update/src/shared/update_entities/update_date.dart';
 import 'package:app_update/src/shared/update_entities/update_locale.dart';
 import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/shared/update_entities/update_source.dart';
+import 'package:app_update/src/shared/update_entities/update_source_name.dart';
 import 'package:app_update/src/shared/update_entities/update_version_constraint.dart';
 import 'package:app_update/src/shared/update_entities/update_view_target.dart';
 import 'package:flutter/material.dart';
@@ -438,8 +439,9 @@ void main() {
 
     group('sources/platforms matching', () {
       test('rule platforms == null берёт платформы из search source', () {
-        const ruleSource = UpdateSource.custom('storeX');
-        const searchSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.ios]);
+        const ruleSource = UpdateSource.custom(UpdateSourceName.custom('storeX'));
+        const searchSource =
+            UpdateSource.custom(UpdateSourceName.custom('storeX'), platforms: [UpdatePlatform.ios]);
 
         final rules = [
           rule(sources: [ruleSource], title: 'ok'),
@@ -458,8 +460,9 @@ void main() {
       });
 
       test('rule platforms == [] отключает правило', () {
-        const ruleSource = UpdateSource.custom('storeX', platforms: []);
-        const searchSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.ios]);
+        const ruleSource = UpdateSource.custom(UpdateSourceName.custom('storeX'), platforms: []);
+        const searchSource =
+            UpdateSource.custom(UpdateSourceName.custom('storeX'), platforms: [UpdatePlatform.ios]);
 
         final rules = [
           rule(sources: [ruleSource], title: 'bad'),
@@ -504,8 +507,10 @@ void main() {
       });
 
       test('rule platforms == [any] допускает любую платформу', () {
-        const ruleSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.any]);
-        const searchSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.windows]);
+        const ruleSource =
+            UpdateSource.custom(UpdateSourceName.custom('storeX'), platforms: [UpdatePlatform.any]);
+        const searchSource = UpdateSource.custom(UpdateSourceName.custom('storeX'),
+            platforms: [UpdatePlatform.windows]);
 
         final rules = [
           rule(sources: [ruleSource], title: 'ok'),

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'update_entity.dart';
 
 @immutable
-class UpdateSourceName extends UpdateEntity {
+class UpdateSourceName extends UpdateEntityName {
   static const googlePlay = UpdateSourceName._('googlePlay');
   static const appStore = UpdateSourceName._('appStore');
   static const testFlight = UpdateSourceName._('testFlight');

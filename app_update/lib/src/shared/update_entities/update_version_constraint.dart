@@ -2,7 +2,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'update_entity.dart';
 
-class UpdateVersionConstraint extends UpdateEntity {
+class UpdateVersionConstraint extends UpdateEntityName {
   static const any = UpdateVersionConstraint(null, name: 'any');
 
   final VersionConstraint? versionConstraint;

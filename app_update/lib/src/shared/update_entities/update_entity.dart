@@ -1,14 +1,22 @@
 import 'package:flutter/widgets.dart';
 
 @immutable
-abstract class UpdateEntity {
+abstract class UpdateEntityName extends UpdateEntityBase {
   final String _name;
 
   String get name => _name.toLowerCase();
 
+  @override
   List<Object?> get params => [name];
 
-  const UpdateEntity(this._name);
+  const UpdateEntityName(this._name);
+}
+
+@immutable
+abstract class UpdateEntityBase {
+  const UpdateEntityBase();
+
+  List<Object?> get params;
 
   // ignore: member-ordering
   @override
@@ -18,8 +26,9 @@ abstract class UpdateEntity {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    if (other is! UpdateEntity) return false;
+    if (other is! UpdateEntityName) return false;
 
-    return other.params.length == params.length && other.params.every((param) => params.contains(param));
+    return other.params.length == params.length &&
+        other.params.every((param) => params.contains(param));
   }
 }

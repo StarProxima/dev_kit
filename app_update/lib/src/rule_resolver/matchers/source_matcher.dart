@@ -35,7 +35,7 @@ class SourceMatcher<T extends Mergeable> implements RuleMatcher<T> {
 
   UpdateSource? _findSource(List<UpdateSource> sources, UpdateSource target) {
     for (final s in sources) {
-      if (s == target) return s;
+      if (s.sourceName == target.sourceName) return s;
     }
     return null;
   }

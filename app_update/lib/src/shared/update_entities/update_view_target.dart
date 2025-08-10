@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'update_entity.dart';
 
 @immutable
-class UpdateViewTarget extends UpdateEntity {
+class UpdateViewTarget extends UpdateEntityName {
   static const card = UpdateViewTarget._('card');
   static const dialog = UpdateViewTarget._('dialog');
   static const adaptiveDialog = UpdateViewTarget._('adaptiveDialog');

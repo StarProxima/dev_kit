@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'update_entity.dart';
 
-class UpdateLocale extends UpdateEntity {
+class UpdateLocale extends UpdateEntityName {
   static const any = UpdateLocale(null, name: 'any');
 
   final Locale? locale;
