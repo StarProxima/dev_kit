@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions
 
-import 'package:app_update/src/shared/version_x.dart';
+import 'package:app_update/src/utils/version_x.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -72,13 +72,16 @@ void main() {
       expect(result, '1.2.3');
     });
 
-    test('toVersionWithBuildString should return version with build info but without pre-releases', () {
+    test('toVersionWithBuildString should return version with build info but without pre-releases',
+        () {
       final version = Version.parse('1.2.3-beta+build123');
       final result = version.toVersionWithBuildString();
       expect(result, '1.2.3+build123');
     });
 
-    test('toVersionWithBuildString should return only version and build when there is no pre-release', () {
+    test(
+        'toVersionWithBuildString should return only version and build when there is no pre-release',
+        () {
       final version = Version.parse('1.2.3+build123');
       final result = version.toVersionWithBuildString();
       expect(result, '1.2.3+build123');
@@ -93,7 +96,8 @@ void main() {
       },
     );
 
-    test('toVersionWithBuildString should return version without pre-release and empty build info', () {
+    test('toVersionWithBuildString should return version without pre-release and empty build info',
+        () {
       final version = Version.parse('1.2.3-beta');
       final result = version.toVersionWithBuildString();
       expect(result, '1.2.3');

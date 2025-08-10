@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:app_update/src/controller/update_controller.dart';
 import 'package:app_update/src/fetcher/update_config_fetcher.dart';
-import 'package:app_update/src/shared/update_platform.dart';
+import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/sources/sources.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +17,8 @@ void main() {
   group('Sources by platform', () {
     final updateConfigFetcher = UpdateConfigFetcher.byFile(
       file: File(
-        p.join(Directory.current.path, 'test', 'e2e', 'sources_by_platform', 'sources_by_platform_config.yaml'),
+        p.join(Directory.current.path, 'test', 'e2e', 'sources_by_platform',
+            'sources_by_platform_config.yaml'),
       ),
     );
 
@@ -43,8 +44,10 @@ void main() {
         // ignore: avoid-unsafe-collection-methods
         final releases = result.first.config.releases;
         expect(result.firstOrNull?.config.releases.length, 13);
-        expect(releases.where((e) => e.source.platforms.contains(UpdatePlatform.android)).length, 8);
-        expect(releases.where((e) => e.source.platforms.contains(UpdatePlatform.windows)).length, 5);
+        expect(
+            releases.where((e) => e.source.platforms.contains(UpdatePlatform.android)).length, 8);
+        expect(
+            releases.where((e) => e.source.platforms.contains(UpdatePlatform.windows)).length, 5);
         expect(releases.where((e) => e.source.platforms.contains(UpdatePlatform.ios)).length, 4);
         expect(releases.where((e) => e.source.platforms.contains(UpdatePlatform.linux)).length, 1);
         expect(result.firstOrNull?.config.sources.length, 3);

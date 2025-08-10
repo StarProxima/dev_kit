@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import '../../shared/update_platform.dart';
+import '../../shared/update_entities/update_platform.dart';
 import '../source.dart';
 import '../sources.dart';
 import 'app_store_fetcher.dart';
@@ -12,7 +12,8 @@ import 'source_fetcher.dart';
 base class SourceReleaseFetcherCoordinator {
   const SourceReleaseFetcherCoordinator();
 
-  FutureOr<SourceReleaseFetcher> fetcherBySourceAndPlatform({Source? source, required UpdatePlatform platform}) =>
+  FutureOr<SourceReleaseFetcher> fetcherBySourceAndPlatform(
+          {Source? source, required UpdatePlatform platform}) =>
       source == null
           ? switch (platform) {
               UpdatePlatform.android => const GooglePlayFetcher(),

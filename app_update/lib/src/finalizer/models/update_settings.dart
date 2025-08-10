@@ -27,7 +27,7 @@ class UpdateSettings {
   });
 
   UpdateSettings merge(
-    UpdateSettingsData? data,
+    UpdateSettingsConfig? data,
   ) {
     final customData = {...?this.customData, ...?data?.customData};
 

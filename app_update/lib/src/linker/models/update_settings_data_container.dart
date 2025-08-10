@@ -5,22 +5,22 @@ import '../../shared/update_alert_type.dart';
 import '../../shared/version_status.dart';
 import 'release_settings_data.dart';
 
-class UpdateSettingsDataContainer {
-  final Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateSettingsData>> value;
+class UpdateSettingsConfigContainer {
+  final Map<UpdateAlertTypeBase, Map<VersionStatusBase, UpdateSettingsConfig>> value;
 
-  const UpdateSettingsDataContainer(this.value);
+  const UpdateSettingsConfigContainer(this.value);
 
-  static UpdateSettingsDataContainer? fromConfig(UpdateSettingsConfigContainer? config) {
+  static UpdateSettingsConfigContainer? fromConfig(UpdateSettingsConfigContainer? config) {
     if (config == null) return null;
 
-    return UpdateSettingsDataContainer(
+    return UpdateSettingsConfigContainer(
       config.value.map(
         (key, value) => MapEntry(
           key,
           value.map(
             (key, value) => MapEntry(
               key,
-              UpdateSettingsData.fromConfig(value),
+              UpdateSettingsConfig.fromConfig(value),
             ),
           ),
         ),
@@ -28,7 +28,7 @@ class UpdateSettingsDataContainer {
     );
   }
 
-  UpdateSettingsData? getByBase({
+  UpdateSettingsConfig? getByBase({
     required UpdateAlertTypeBase type,
     required VersionStatusBase status,
   }) {
@@ -39,7 +39,7 @@ class UpdateSettingsDataContainer {
       (type, status),
     ];
 
-    UpdateSettingsData? settingsData;
+    UpdateSettingsConfig? settingsData;
 
     for (final combination in combinations) {
       // ignore: avoid-positional-record-field-access

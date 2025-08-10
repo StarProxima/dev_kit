@@ -4,7 +4,7 @@ import '../parser/models/platform_config.dart';
 import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
 import '../parser/models/update_text_config_container.dart';
-import '../shared/update_platform.dart';
+import '../shared/update_entities/update_platform.dart';
 import 'sources.dart';
 
 // TODO объединить модели сурсов

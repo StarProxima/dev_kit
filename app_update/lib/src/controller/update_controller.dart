@@ -22,7 +22,7 @@ import '../parser/sub_parsers/release_config/release_config.dart';
 import '../parser/sub_parsers/update_model_config/update_model_config.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/text_translations.dart';
-import '../shared/update_platform.dart';
+import '../shared/update_entities/update_platform.dart';
 import '../sources/fetchers/source_release_fetcher_coordinator.dart';
 import '../sources/release_source.dart';
 import '../sources/source.dart';
@@ -37,7 +37,7 @@ class UpdateController extends UpdateControllerBase {
 
   final UpdateConfigFetcher? _updateConfigFetcher;
   final _parser = const UpdateConfigParser();
-  final UpdateSettingsDataContainer? _updateSettings;
+  final UpdateSettingsConfigContainer? _updateSettings;
   final UpdateTextDataContainer? _updateText;
   final _linker = const UpdateConfigLinker();
 
@@ -68,7 +68,7 @@ class UpdateController extends UpdateControllerBase {
   UpdateController({
     UpdateConfigFetcher? updateConfigFetcher,
     SourceReleaseFetcherCoordinator? sourceFetcherCoordinator,
-    UpdateSettingsDataContainer? updateSettings,
+    UpdateSettingsConfigContainer? updateSettings,
     UpdateTextDataContainer? updateText,
     UpdateStorage? storage,
     List<Source>? globalSources,

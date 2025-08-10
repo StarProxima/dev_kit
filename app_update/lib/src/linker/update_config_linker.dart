@@ -4,7 +4,7 @@ import '../parser/sub_parsers/release_config/release_config.dart';
 import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/update_settings_config_container.dart';
 import '../parser/models/update_text_config_container.dart';
-import '../shared/update_platform.dart';
+import '../shared/update_entities/update_platform.dart';
 import '../sources/release_source.dart';
 import 'models/release_data.dart';
 import 'models/update_container_storage.dart';
@@ -21,13 +21,13 @@ class UpdateConfigLinker {
     required List<GlobalSourceConfig>? globalSourcesConfig,
     required UpdatePlatform platform,
   }) {
-    final globalSettings = UpdateSettingsDataContainer.fromConfig(globalSettingsConfig);
+    final globalSettings = UpdateSettingsConfigContainer.fromConfig(globalSettingsConfig);
     final globalTexts = UpdateTextDataContainer.fromConfig(globalTextConfig);
     final globalSources = <GlobalSourceConfig?>[...?globalSourcesConfig];
     final releases = <ReleaseData>[];
 
     for (final releaseConfig in releasesConfig) {
-      final releaseSettings = UpdateSettingsDataContainer.fromConfig(releaseConfig.settings);
+      final releaseSettings = UpdateSettingsConfigContainer.fromConfig(releaseConfig.settings);
       final releaseTexts = UpdateTextDataContainer.fromConfig(releaseConfig.text);
 
       final releaseSources = releaseConfig.sources;
@@ -40,7 +40,8 @@ class UpdateConfigLinker {
 
         final globalSource =
             globalSources.firstWhere((source) => source?.source == name, orElse: () => null);
-        final globalSourceSettings = UpdateSettingsDataContainer.fromConfig(globalSource?.settings);
+        final globalSourceSettings =
+            UpdateSettingsConfigContainer.fromConfig(globalSource?.settings);
         final globalSourceTexts = UpdateTextDataContainer.fromConfig(globalSource?.text);
 
         final url = releaseSource.url;
@@ -48,7 +49,7 @@ class UpdateConfigLinker {
         if (sourceUrl == null) continue;
 
         final releaseSourceRelease = releaseSource.releaseOverride;
-        final releaseSourceReleaseSettings = UpdateSettingsDataContainer.fromConfig(
+        final releaseSourceReleaseSettings = UpdateSettingsConfigContainer.fromConfig(
           releaseSourceRelease?.settings,
         );
         final releaseSourceReleaseTexts = UpdateTextDataContainer.fromConfig(
@@ -60,7 +61,7 @@ class UpdateConfigLinker {
             .firstOrNull
             ?.sourceOverride
             ?.releaseOverride;
-        final releaseSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
+        final releaseSourcePlatformSettings = UpdateSettingsConfigContainer.fromConfig(
           releaseSourcePlatforms?.settings,
         );
         final releaseSourcePlatformTexts = UpdateTextDataContainer.fromConfig(
@@ -71,7 +72,7 @@ class UpdateConfigLinker {
             ?.where((e) => e.platform == platform)
             .firstOrNull
             ?.sourceOverride;
-        final globalSourcePlatformSettings = UpdateSettingsDataContainer.fromConfig(
+        final globalSourcePlatformSettings = UpdateSettingsConfigContainer.fromConfig(
           globalSourcePlatform?.settings,
         );
         final globalSourcePlatformTexts = UpdateTextDataContainer.fromConfig(
@@ -91,7 +92,7 @@ class UpdateConfigLinker {
         final date = releaseSourceRelease?.date ?? releaseConfig.date;
         final releaseCustomData = releaseSourceRelease?.customData ?? releaseConfig.customData;
 
-        final settingsContainers = UpdateContainerStorage<UpdateSettingsDataContainer>(
+        final settingsContainers = UpdateContainerStorage<UpdateSettingsConfigContainer>(
           global: globalSettings,
           globalSource: globalSourceSettings,
           globalSourcePlatform: globalSourcePlatformSettings,

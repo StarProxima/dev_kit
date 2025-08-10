@@ -17,10 +17,10 @@ class UpdateFinalizer {
   final Version appVersion;
 
   final UpdateTextDataContainer? textContainer;
-  final UpdateSettingsDataContainer? settingsContainer;
+  final UpdateSettingsConfigContainer? settingsContainer;
 
   static final _defaultTextContainer = DefaultUpdateTextDataContainer();
-  static const _defaultSettingsContainer = DefaultUpdateSettingsDataContainer();
+  static const _defaultSettingsContainer = DefaultUpdateSettingsConfigContainer();
 
   const UpdateFinalizer({
     required this.appName,
@@ -81,7 +81,7 @@ class UpdateFinalizer {
       version: releaseData.version,
       source: releaseData.source,
       date: releaseData.date,
-      text: text,
+      content: text,
       settings: settings,
       customData: releaseData.customData,
     );

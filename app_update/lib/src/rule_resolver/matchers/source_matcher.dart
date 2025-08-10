@@ -1,16 +1,20 @@
-import '../../parser/sub_parsers/update_rule_config/update_rule_config.dart';
-import '../../shared/update_platform.dart';
-import '../../shared/update_source.dart';
-import '../models/mergeable.dart';
-import '../models/rule_matcher.dart';
-import '../models/update_search_data.dart';
+import '../../shared/mergeable.dart';
+import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../shared/models/update_search/update_search_data.dart';
+import '../../shared/update_entities/update_platform.dart';
+import '../../shared/update_entities/update_source.dart';
+import 'rule_matcher.dart';
 
 class SourceMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const SourceMatcher();
 
   @override
   bool matches({required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
-    return _matchBySources(rule.sources, search.sources, search.platform);
+    return _matchBySources(
+      rule.sources ?? [UpdateSource.any],
+      search.sources,
+      search.platform,
+    );
   }
 
   bool _matchBySources(

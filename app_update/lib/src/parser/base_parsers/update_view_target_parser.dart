@@ -1,4 +1,4 @@
-import '../../shared/update_view_target.dart';
+import '../../shared/update_entities/update_view_target.dart';
 import '../common.dart';
 
 class UpdateViewTargetParser {

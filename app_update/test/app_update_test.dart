@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 
 void main() async {
   final controller = UpdateController(
-    updateSettings: const UpdateSettingsDataContainer({
+    updateSettings: const UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsData(),
+        VersionStatusBase.base: UpdateSettingsConfig(),
       },
     }),
   );

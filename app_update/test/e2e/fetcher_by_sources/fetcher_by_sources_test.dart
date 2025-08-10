@@ -6,7 +6,7 @@ import 'package:app_update/src/linker/models/update_settings_data_container.dart
 import 'package:app_update/src/linker/models/update_text_data.dart';
 import 'package:app_update/src/linker/models/update_text_data_container.dart';
 import 'package:app_update/src/shared/update_alert_type.dart';
-import 'package:app_update/src/shared/update_platform.dart';
+import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/shared/version_status.dart';
 import 'package:app_update/src/sources/sources.dart';
 import 'package:flutter/widgets.dart';
@@ -57,10 +57,10 @@ void main() {
         const testReminderPeriod = Duration(days: 123);
         const testTitle = 'lolkek';
         final controller = UpdateController(
-          updateSettings: const UpdateSettingsDataContainer(
+          updateSettings: const UpdateSettingsConfigContainer(
             {
               UpdateAlertTypeBase.base: {
-                VersionStatusBase.base: UpdateSettingsData(
+                VersionStatusBase.base: UpdateSettingsConfig(
                   reminderPeriod: testReminderPeriod,
                 ),
               },

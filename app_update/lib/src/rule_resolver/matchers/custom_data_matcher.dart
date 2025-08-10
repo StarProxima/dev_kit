@@ -1,14 +1,17 @@
-import '../../parser/sub_parsers/update_rule_config/update_rule_config.dart';
-import '../models/mergeable.dart';
-import '../models/rule_matcher.dart';
-import '../models/update_search_data.dart';
+import '../../shared/mergeable.dart';
+import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../shared/models/update_search/update_search_data.dart';
+import 'rule_matcher.dart';
 
 class CustomDataMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const CustomDataMatcher();
 
   @override
   bool matches({required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
-    return _matchByCustomData(rule.customData, search.customData);
+    return _matchByCustomData(
+      rule.customData,
+      search.customData,
+    );
   }
 
   bool _matchByCustomData(Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {

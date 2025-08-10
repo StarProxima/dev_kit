@@ -1,6 +1,6 @@
 import '../../parser/sub_parsers/update_settings_config/update_settings_config.dart';
 
-class UpdateSettingsData {
+class UpdateSettingsConfig {
   final bool? canSkipRelease;
   final bool? canPostponeRelease;
   final Duration? reminderPeriod;
@@ -8,7 +8,7 @@ class UpdateSettingsData {
   final Duration? progressiveRolloutDuration;
   final Map<String, dynamic>? customData;
 
-  const UpdateSettingsData({
+  const UpdateSettingsConfig({
     this.canSkipRelease,
     this.canPostponeRelease,
     this.reminderPeriod,
@@ -17,7 +17,7 @@ class UpdateSettingsData {
     this.customData,
   });
 
-  const UpdateSettingsData.byRequired({
+  const UpdateSettingsConfig.byRequired({
     required this.canSkipRelease,
     required this.canPostponeRelease,
     required this.reminderPeriod,
@@ -26,8 +26,8 @@ class UpdateSettingsData {
     required this.customData,
   });
 
-  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig? config) {
-    return UpdateSettingsData.byRequired(
+  factory UpdateSettingsConfig.fromConfig(UpdateSettingsConfig? config) {
+    return UpdateSettingsConfig.byRequired(
       canSkipRelease: config?.canSkipRelease,
       canPostponeRelease: config?.canPostponeRelease,
       reminderPeriod: config?.reminderPeriod,
@@ -37,10 +37,10 @@ class UpdateSettingsData {
     );
   }
 
-  UpdateSettingsData merge(UpdateSettingsData? child) {
+  UpdateSettingsConfig merge(UpdateSettingsConfig? child) {
     final customData = {...?this.customData, ...?child?.customData};
 
-    return UpdateSettingsData.byRequired(
+    return UpdateSettingsConfig.byRequired(
       canSkipRelease: child?.canSkipRelease ?? canSkipRelease,
       canPostponeRelease: child?.canPostponeRelease ?? canPostponeRelease,
       reminderPeriod: child?.reminderPeriod ?? reminderPeriod,

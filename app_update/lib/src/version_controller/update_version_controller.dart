@@ -3,7 +3,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/versions_settings_config.dart';
-import '../shared/update_platform.dart';
+import '../shared/update_entities/update_platform.dart';
 import '../shared/version_status.dart';
 
 class UpdateVersionController {
@@ -13,7 +13,10 @@ class UpdateVersionController {
     GlobalSourceConfig? globalSource,
     UpdatePlatform? platform,
   }) : configVersionSettings = versionSettingsConfig.merge(globalSource?.versionSettings).merge(
-            globalSource?.platforms?.firstWhereOrNull((e) => e.platform == platform)?.sourceOverride?.versionSettings);
+            globalSource?.platforms
+                ?.firstWhereOrNull((e) => e.platform == platform)
+                ?.sourceOverride
+                ?.versionSettings);
 
   VersionStatus setStatusByVersion({required Version version}) {
     if (configVersionSettings == null) return VersionStatus.updatable;

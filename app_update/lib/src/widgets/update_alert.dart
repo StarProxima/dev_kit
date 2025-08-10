@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import '../controller/update_contoller_base.dart';
 import '../controller/update_controller.dart';
 import '../finalizer/models/update_response.dart';
-import '../shared/update_view_target.dart';
+import '../shared/update_entities/update_view_target.dart';
 import 'update_alert_handler.dart';
 
 typedef OnUpdateAvailable = FutureOr<void> Function(

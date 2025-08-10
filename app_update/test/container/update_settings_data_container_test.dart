@@ -7,24 +7,24 @@ import 'package:app_update/src/shared/version_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('UpdateSettingsDataContainer', () {
-    const container = UpdateSettingsDataContainer({
+  group('UpdateSettingsConfigContainer', () {
+    const container = UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsData(
+        VersionStatusBase.base: UpdateSettingsConfig(
           canSkipRelease: true,
           reminderPeriod: Duration(hours: 48),
           customData: {'key1': 'value1'},
         ),
-        VersionStatusBase.deprecated: UpdateSettingsData(
+        VersionStatusBase.deprecated: UpdateSettingsConfig(
           canPostponeRelease: false,
           customData: {'key2': 'wow'},
         ),
       },
       UpdateAlertTypeBase.dialog: {
-        VersionStatusBase.base: UpdateSettingsData(
+        VersionStatusBase.base: UpdateSettingsConfig(
           canPostponeRelease: true,
         ),
-        VersionStatusBase.unsupported: UpdateSettingsData(
+        VersionStatusBase.unsupported: UpdateSettingsConfig(
           releaseDelay: Duration(hours: 24),
           customData: {'key1': 'value2'},
         ),

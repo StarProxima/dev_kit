@@ -10,9 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('UpdateSettingsContainer', () {
-    const defaultContainer = UpdateSettingsDataContainer({
+    const defaultContainer = UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsData.byRequired(
+        VersionStatusBase.base: UpdateSettingsConfig.byRequired(
           canSkipRelease: true,
           canPostponeRelease: true,
           reminderPeriod: Duration(hours: 48),
@@ -23,36 +23,36 @@ void main() {
       },
     });
 
-    const controllerContainer = UpdateSettingsDataContainer({
+    const controllerContainer = UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.dialog: {
-        VersionStatusBase.base: UpdateSettingsData(
+        VersionStatusBase.base: UpdateSettingsConfig(
           canPostponeRelease: true,
         ),
-        VersionStatusBase.deprecated: UpdateSettingsData(
+        VersionStatusBase.deprecated: UpdateSettingsConfig(
           canSkipRelease: false,
           customData: {'key2': 'controller_override'},
         ),
       },
     });
 
-    const globalContainer = UpdateSettingsDataContainer({
+    const globalContainer = UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.dialog: {
-        VersionStatusBase.unsupported: UpdateSettingsData(
+        VersionStatusBase.unsupported: UpdateSettingsConfig(
           releaseDelay: Duration(hours: 24),
           customData: {'key3': 'global_value'},
         ),
       },
     });
 
-    const releaseContainer = UpdateSettingsDataContainer({
+    const releaseContainer = UpdateSettingsConfigContainer({
       UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsData(
+        VersionStatusBase.base: UpdateSettingsConfig(
           progressiveRolloutDuration: Duration(hours: 96),
         ),
       },
     });
 
-    const containerStorage = UpdateContainerStorage<UpdateSettingsDataContainer>(
+    const containerStorage = UpdateContainerStorage<UpdateSettingsConfigContainer>(
       global: globalContainer,
       globalSource: null,
       globalSourcePlatform: null,
@@ -133,9 +133,9 @@ void main() {
 
     test('throws an exception if resulting settings data has null fields', () {
       const invalidContainer = UpdateSettingsContainer(
-        defaultContainer: UpdateSettingsDataContainer({
+        defaultContainer: UpdateSettingsConfigContainer({
           UpdateAlertTypeBase.base: {
-            VersionStatusBase.base: UpdateSettingsData(
+            VersionStatusBase.base: UpdateSettingsConfig(
               reminderPeriod: Duration(hours: 48),
             ),
           },
@@ -162,9 +162,9 @@ void main() {
 
     test('returns defaults settings data without null fields', () {
       const container = UpdateSettingsContainer(
-        defaultContainer: UpdateSettingsDataContainer({
+        defaultContainer: UpdateSettingsConfigContainer({
           UpdateAlertTypeBase.base: {
-            VersionStatusBase.base: UpdateSettingsData.byRequired(
+            VersionStatusBase.base: UpdateSettingsConfig.byRequired(
               canSkipRelease: false,
               canPostponeRelease: false,
               reminderPeriod: Duration.zero,

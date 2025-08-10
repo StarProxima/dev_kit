@@ -1,14 +1,14 @@
-import 'package:app_update/src/parser/sub_parsers/update_rule_config/update_rule_config.dart';
-import 'package:app_update/src/rule_resolver/models/update_content_data.dart';
-import 'package:app_update/src/rule_resolver/models/update_search_data.dart';
 import 'package:app_update/src/rule_resolver/update_rule_resolver.dart';
-import 'package:app_update/src/shared/app_status.dart';
-import 'package:app_update/src/shared/update_date.dart';
-import 'package:app_update/src/shared/update_locale.dart';
-import 'package:app_update/src/shared/update_platform.dart';
-import 'package:app_update/src/shared/update_source.dart';
-import 'package:app_update/src/shared/update_version_constraint.dart';
-import 'package:app_update/src/shared/update_view_target.dart';
+import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
+import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
+import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
+import 'package:app_update/src/shared/update_entities/app_status.dart';
+import 'package:app_update/src/shared/update_entities/update_date.dart';
+import 'package:app_update/src/shared/update_entities/update_locale.dart';
+import 'package:app_update/src/shared/update_entities/update_platform.dart';
+import 'package:app_update/src/shared/update_entities/update_source.dart';
+import 'package:app_update/src/shared/update_entities/update_version_constraint.dart';
+import 'package:app_update/src/shared/update_entities/update_view_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -47,13 +47,11 @@ void main() {
       );
     }
 
-    UpdateRuleConfig<UpdateContentData> rule({
+    UpdateRuleConfig<UpdateContentConfig> rule({
       List<UpdateViewTarget> targets = const [UpdateViewTarget.any],
       List<UpdateLocale> locales = const [UpdateLocale.any],
       List<UpdateSource> sources = const [UpdateSource.any],
-      List<UpdateVersionConstraint> versions = const [
-        UpdateVersionConstraint.any
-      ],
+      List<UpdateVersionConstraint> versions = const [UpdateVersionConstraint.any],
       List<AppStatus> statuses = const [AppStatus.any],
       UpdateDate date = UpdateDate.any,
       Duration? delay,
@@ -63,7 +61,7 @@ void main() {
       String? description,
       Map<String, dynamic>? custom,
     }) {
-      return UpdateRuleConfig<UpdateContentData>.byRequired(
+      return UpdateRuleConfig<UpdateContentConfig>.byRequired(
         appStatuses: statuses,
         locales: locales,
         viewTargets: targets,
@@ -73,7 +71,7 @@ void main() {
         delay: delay,
         rollout: rollout,
         segmentationPercent: segmentation,
-        data: UpdateContentData(
+        data: UpdateContentConfig(
           title: title,
           description: description,
           releaseNotesTitle: null,
@@ -93,9 +91,7 @@ void main() {
           targets: const [UpdateViewTarget.card],
           locales: [const UpdateLocale(Locale('ru'))],
           sources: const [UpdateSource.googlePlay],
-          versions: [
-            UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0 <2.0.0'))
-          ],
+          versions: [UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0 <2.0.0'))],
           title: 'A',
         ),
       ];
@@ -124,8 +120,7 @@ void main() {
 
       // pointer 0.2 > 0.1 => правило не подходит
       expect(
-        () => resolver.resolve(
-            searchData: search(segmentationPointer: 0.2), rules: rules),
+        () => resolver.resolve(searchData: search(segmentationPointer: 0.2), rules: rules),
         throwsA(isA<Exception>()),
       );
     });
@@ -133,17 +128,13 @@ void main() {
     test('Delay: применяется только после delay', () {
       final baseDate = DateTime(2024, 10, 20, 12);
       final rules = [
-        rule(
-            date: UpdateDate(baseDate),
-            delay: const Duration(hours: 24),
-            title: 'A'),
+        rule(date: UpdateDate(baseDate), delay: const Duration(hours: 24), title: 'A'),
       ];
 
       // now до (base+24h) — правило не подходит
       expect(
         () => resolver.resolve(
-          searchData:
-              search(currentDate: baseDate.add(const Duration(hours: 23))),
+          searchData: search(currentDate: baseDate.add(const Duration(hours: 23))),
           rules: rules,
         ),
         throwsA(isA<Exception>()),
@@ -151,8 +142,7 @@ void main() {
 
       // now после (base+24h)
       final res = resolver.resolve(
-        searchData:
-            search(currentDate: baseDate.add(const Duration(hours: 25))),
+        searchData: search(currentDate: baseDate.add(const Duration(hours: 25))),
         rules: rules,
       );
       expect(res.title, 'A');
@@ -161,10 +151,7 @@ void main() {
     test('Rollout: pointer должен быть <= прогрессу выката', () {
       final baseDate = DateTime(2024, 10, 20, 12);
       final rules = [
-        rule(
-            date: UpdateDate(baseDate),
-            rollout: const Duration(hours: 100),
-            title: 'A'),
+        rule(date: UpdateDate(baseDate), rollout: const Duration(hours: 100), title: 'A'),
       ];
 
       // Через 10 часов, прогресс ~0.1 — pointer 0.2 не проходит
@@ -201,9 +188,7 @@ void main() {
         rule(
           sources: const [UpdateSource.googlePlay],
           targets: const [UpdateViewTarget.card],
-          versions: [
-            UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0'))
-          ],
+          versions: [UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0'))],
           description: 'android-store',
         ),
 
@@ -393,8 +378,7 @@ void main() {
           rule(custom: const {'n': 5}, title: 'bad'),
         ];
         expect(
-          () => resolver.resolve(
-              searchData: search(custom: const {'n': '5'}), rules: rules),
+          () => resolver.resolve(searchData: search(custom: const {'n': '5'}), rules: rules),
           throwsA(isA<Exception>()),
         );
 
@@ -402,8 +386,7 @@ void main() {
           rule(custom: const {'b': true}, title: 'bad'),
         ];
         expect(
-          () => resolver.resolve(
-              searchData: search(custom: const {'b': false}), rules: rules),
+          () => resolver.resolve(searchData: search(custom: const {'b': false}), rules: rules),
           throwsA(isA<Exception>()),
         );
       });
@@ -430,8 +413,7 @@ void main() {
         ];
 
         expect(
-          () => resolver.resolve(
-              searchData: search(custom: const {}), rules: rules),
+          () => resolver.resolve(searchData: search(custom: const {}), rules: rules),
           throwsA(isA<Exception>()),
         );
       });
@@ -457,8 +439,7 @@ void main() {
     group('sources/platforms matching', () {
       test('rule platforms == null берёт платформы из search source', () {
         const ruleSource = UpdateSource.custom('storeX');
-        const searchSource =
-            UpdateSource.custom('storeX', platforms: [UpdatePlatform.ios]);
+        const searchSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.ios]);
 
         final rules = [
           rule(sources: [ruleSource], title: 'ok'),
@@ -478,16 +459,14 @@ void main() {
 
       test('rule platforms == [] отключает правило', () {
         const ruleSource = UpdateSource.custom('storeX', platforms: []);
-        const searchSource =
-            UpdateSource.custom('storeX', platforms: [UpdatePlatform.ios]);
+        const searchSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.ios]);
 
         final rules = [
           rule(sources: [ruleSource], title: 'bad'),
         ];
 
         expect(
-          () => resolver.resolve(
-              searchData: search(sources: [searchSource]), rules: rules),
+          () => resolver.resolve(searchData: search(sources: [searchSource]), rules: rules),
           throwsA(isA<Exception>()),
         );
       });
@@ -525,10 +504,8 @@ void main() {
       });
 
       test('rule platforms == [any] допускает любую платформу', () {
-        const ruleSource =
-            UpdateSource.custom('storeX', platforms: [UpdatePlatform.any]);
-        const searchSource =
-            UpdateSource.custom('storeX', platforms: [UpdatePlatform.windows]);
+        const ruleSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.any]);
+        const searchSource = UpdateSource.custom('storeX', platforms: [UpdatePlatform.windows]);
 
         final rules = [
           rule(sources: [ruleSource], title: 'ok'),
@@ -552,8 +529,7 @@ void main() {
         // До даты — не подходит
         expect(
           () => resolver.resolve(
-            searchData: search(
-                currentDate: baseDate.subtract(const Duration(hours: 1))),
+            searchData: search(currentDate: baseDate.subtract(const Duration(hours: 1))),
             rules: rules,
           ),
           throwsA(isA<Exception>()),
@@ -567,9 +543,7 @@ void main() {
         expect(res.title, 'ok');
       });
 
-      test(
-          'Dynamic date: отсутствует localReleaseDate => правило не применяется',
-          () {
+      test('Dynamic date: отсутствует localReleaseDate => правило не применяется', () {
         final rules = [
           rule(date: UpdateDate.localReleaseDate, title: 'bad'),
         ];

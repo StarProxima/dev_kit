@@ -8,12 +8,13 @@ import 'package:pub_semver/pub_semver.dart';
 import '../finalizer/models/release.dart';
 import '../finalizer/models/update_config.dart';
 import '../finalizer/models/update_response.dart';
-import '../shared/update_platform.dart';
-import '../shared/update_source.dart';
-import '../shared/update_view_target.dart';
-import '../shared/app_status.dart';
+import '../shared/update_entities/update_platform.dart';
+import '../shared/update_entities/update_source.dart';
+import '../shared/update_entities/update_view_target.dart';
+import '../shared/update_entities/app_status.dart';
 import '../sources/source.dart';
 import 'exceptions.dart';
+import '../shared/models/update_search/update_search_config.dart';
 
 abstract class UpdateControllerBase {
   Stream<UpdateResponse?> get availableUpdateStream;
@@ -40,39 +41,18 @@ abstract class UpdateControllerBase {
   ///
   /// May throw errors - [UpdateNotFoundException], [UpdateSkippedException], [UpdatePostponedException].
   /// Does not make a new request if the data already exists.
-  Future<UpdateResponse> findUpdate({
-    Locale locale,
-  });
-
-  /// Finds an update from fetched UpdateConfig and global sources releases data.
-  /// If update founded add data to [availableUpdateStream] and [updateConfigStream]
-  ///
-  /// Does not make a new request if the data already exists.
-  Future<UpdateResponse> findUpdateV3({
-    UpdatePlatform? platform,
-    List<UpdateSource?> sources,
-    Version? localVersion,
-    UpdateViewTarget? displayTarget,
-    AppStatus? appStatus,
-    Locale? locale,
-    DateTime? date,
-    Map<String, dynamic>? customData,
-  });
+  Future<UpdateResponse> findUpdate(UpdateSearchConfig searchConfig);
 
   /// Finds updates from all sources for current platform.
   ///
   /// Does not make a new request if the data already exists.
-  Future<List<UpdateResponse>> findAllAvailableUpdates({
-    Locale locale,
-  });
+  Future<List<UpdateResponse>> findAllAvailableUpdates(UpdateSearchConfig searchConfig);
 
   /// Finds an update. Like [findUpdate], but does not throw errors.
   ///
   /// If update not available return null.
   /// Does not make a new request if the data already exists.
-  Future<UpdateResponse?> tryFindUpdate({
-    Locale locale,
-  });
+  Future<UpdateResponse?> tryFindUpdate(UpdateSearchConfig searchConfig);
 
   /// Skip a release, a release with this version will no longer be displayed.
   Future<void> skipRelease(Release release);

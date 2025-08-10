@@ -8,9 +8,9 @@ import '../../shared/version_status.dart';
 import 'update_settings.dart';
 
 class UpdateSettingsContainer {
-  final UpdateSettingsDataContainer defaultContainer;
-  final UpdateSettingsDataContainer? controllerContainer;
-  final UpdateContainerStorage<UpdateSettingsDataContainer> containerStorage;
+  final UpdateSettingsConfigContainer defaultContainer;
+  final UpdateSettingsConfigContainer? controllerContainer;
+  final UpdateContainerStorage<UpdateSettingsConfigContainer> containerStorage;
 
   const UpdateSettingsContainer({
     required this.defaultContainer,
@@ -42,13 +42,15 @@ class UpdateSettingsContainer {
       'controller': controllerContainer?.getByBase(type: type, status: status),
       'global': containerStorage.global?.getByBase(type: type, status: status),
       'globalSource': containerStorage.globalSource?.getByBase(type: type, status: status),
-      'globalSourcePlatform': containerStorage.globalSourcePlatform?.getByBase(type: type, status: status),
+      'globalSourcePlatform':
+          containerStorage.globalSourcePlatform?.getByBase(type: type, status: status),
       'release': containerStorage.release?.getByBase(type: type, status: status),
       'releaseSource': containerStorage.releaseSource?.getByBase(type: type, status: status),
-      'releaseSourcePlatform': containerStorage.releaseSourcePlatform?.getByBase(type: type, status: status),
+      'releaseSourcePlatform':
+          containerStorage.releaseSourcePlatform?.getByBase(type: type, status: status),
     };
 
-    UpdateSettingsData? settingsData;
+    UpdateSettingsConfig? settingsData;
 
     // ignore: unused_local_variable
     for (final MapEntry(key: name, :value) in dataFromAllContainers.entries) {

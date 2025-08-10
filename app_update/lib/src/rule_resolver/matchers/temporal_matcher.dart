@@ -1,8 +1,8 @@
-import '../../parser/sub_parsers/update_rule_config/update_rule_config.dart';
-import '../../shared/update_date.dart';
-import '../models/mergeable.dart';
-import '../models/rule_matcher.dart';
-import '../models/update_search_data.dart';
+import '../../shared/mergeable.dart';
+import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../shared/models/update_search/update_search_data.dart';
+import '../../shared/update_entities/update_date.dart';
+import 'rule_matcher.dart';
 
 class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const TemporalMatcher();
@@ -10,7 +10,7 @@ class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
   @override
   bool matches({required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchByDateAndRollout(
-      ruleDate: rule.date,
+      ruleDate: rule.date ?? UpdateDate.any,
       delay: rule.delay,
       rollout: rule.rollout,
       segmentationPercent: rule.segmentationPercent,

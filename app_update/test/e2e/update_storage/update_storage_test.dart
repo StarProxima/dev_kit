@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:app_update/src/controller/exceptions.dart';
 import 'package:app_update/src/controller/update_controller.dart';
 import 'package:app_update/src/fetcher/update_config_fetcher.dart';
-import 'package:app_update/src/shared/update_platform.dart';
+import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/sources/sources.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -19,7 +19,8 @@ void main() {
   group('Update storage', () {
     final updateConfigFetcher = UpdateConfigFetcher.byFile(
       file: File(
-        p.join(Directory.current.path, 'test', 'e2e', 'update_storage', 'update_storage_config.yaml'),
+        p.join(
+            Directory.current.path, 'test', 'e2e', 'update_storage', 'update_storage_config.yaml'),
       ),
     );
     const targetPlatform = UpdatePlatform.android;

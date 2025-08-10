@@ -1,20 +1,10 @@
-import 'dart:ui';
-
-import 'package:pub_semver/pub_semver.dart';
-
 import '../../controller/exceptions.dart';
-import '../../shared/app_status.dart';
-import '../../shared/update_locale.dart';
-import '../../shared/update_view_target.dart';
+import '../../shared/models/update_search/update_search_data.dart';
 import 'release.dart';
 import 'update_config.dart';
 
 class UpdateResponse {
-  final String appName;
-  final Version appVersion;
-  final AppStatus appStatus;
-  final UpdateLocale? locale;
-  final UpdateViewTarget viewTarget;
+  final UpdateSearchData searchData;
   final UpdateConfig config;
   final UpdateException? updateException;
   final Release? release;
@@ -23,14 +13,10 @@ class UpdateResponse {
   bool get canUpdate => release != null && updateException == null;
 
   const UpdateResponse({
-    required this.appName,
-    required this.appVersion,
+    required this.searchData,
     required this.config,
-    required this.appStatus,
     required this.updateException,
     required this.release,
-    required this.locale,
-    required this.viewTarget,
     required this.customData,
   });
 }

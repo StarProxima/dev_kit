@@ -5,7 +5,7 @@ import '../controller/exceptions.dart';
 import '../finalizer/models/release.dart';
 import '../parser/sub_parsers/global_source_config/global_source_config.dart';
 import '../parser/models/versions_settings_config.dart';
-import '../shared/update_platform.dart';
+import '../shared/update_entities/update_platform.dart';
 import '../sources/release_source.dart';
 import '../sources/sources.dart';
 import '../version_controller/update_version_controller.dart';

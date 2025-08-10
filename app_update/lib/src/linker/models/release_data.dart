@@ -10,7 +10,7 @@ class ReleaseData {
   final ReleaseSource source;
   final DateTime? date;
   final UpdateContainerStorage<UpdateTextDataContainer> textContainers;
-  final UpdateContainerStorage<UpdateSettingsDataContainer> settingsContainers;
+  final UpdateContainerStorage<UpdateSettingsConfigContainer> settingsContainers;
   final Map<String, dynamic>? customData;
 
   const ReleaseData({

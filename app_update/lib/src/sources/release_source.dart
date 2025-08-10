@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../shared/update_platform.dart';
+import '../shared/update_entities/update_platform.dart';
 import 'sources.dart';
 
 @immutable
@@ -32,19 +32,23 @@ class ReleaseSource {
         return ReleaseSource.appStore(url: url, platforms: platforms, customData: customData);
 
       case Sources.googlePlayPackageInstaller:
-        return ReleaseSource.googlePlayPackageInstaller(url: url, platforms: platforms, customData: customData);
+        return ReleaseSource.googlePlayPackageInstaller(
+            url: url, platforms: platforms, customData: customData);
 
       case Sources.amazonAppStore:
         return ReleaseSource.amazonAppStore(url: url, platforms: platforms, customData: customData);
 
       case Sources.huaweiAppGallery:
-        return ReleaseSource.huaweiAppGallery(url: url, platforms: platforms, customData: customData);
+        return ReleaseSource.huaweiAppGallery(
+            url: url, platforms: platforms, customData: customData);
 
       case Sources.samsungGalaxyStore:
-        return ReleaseSource.samsungGalaxyStore(url: url, platforms: platforms, customData: customData);
+        return ReleaseSource.samsungGalaxyStore(
+            url: url, platforms: platforms, customData: customData);
 
       case Sources.samsungSmartSwitchMobile:
-        return ReleaseSource.samsungSmartSwitchMobile(url: url, platforms: platforms, customData: customData);
+        return ReleaseSource.samsungSmartSwitchMobile(
+            url: url, platforms: platforms, customData: customData);
 
       case Sources.xiaomiGetApps:
         return ReleaseSource.xiaomiGetApps(url: url, platforms: platforms, customData: customData);
@@ -176,5 +180,6 @@ class ReleaseSource {
         _name = name;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is ReleaseSource && name == other.name;
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ReleaseSource && name == other.name;
 }
