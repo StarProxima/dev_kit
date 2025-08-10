@@ -1,10 +1,9 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../shared/models/release_source/release_source_config.dart';
-import '../base_parsers/update_rules_part_parser.dart';
+import '../base_parsers/update_rules_container_parser.dart';
 import '../base_parsers/update_source_name_parser.dart';
 import '../common.dart';
-import 'release_config_parser.dart';
 import 'release_override_config_parser.dart';
 import 'release_platrform_config_parser.dart';
 
@@ -30,7 +29,7 @@ class ReleaseSourceConfigParser {
         releaseOverride: null,
         contentRules: null,
         settingsRules: null,
-        appStatusRules: null,
+        appSettingsRules: null,
         customData: null,
       );
     }
@@ -65,7 +64,7 @@ class ReleaseSourceConfigParser {
       releaseOverride: releaseOverride,
       contentRules: rules?.contentRules,
       settingsRules: rules?.settingsRules,
-      appStatusRules: rules?.appStatusRules,
+      appSettingsRules: rules?.appSettingsRules,
       customData: map,
     );
   }

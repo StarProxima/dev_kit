@@ -24,9 +24,9 @@ class UpdateSettingsConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // url
-    final urlValue = map.remove('url');
-    final url = _uriParser.parse(urlValue);
+    // updateUrl
+    final updateUrlValue = map.remove('update_url');
+    final updateUrl = _uriParser.parse(updateUrlValue);
 
     // shouldShow
     final shouldShowValue = map.remove('should_show');
@@ -57,7 +57,7 @@ class UpdateSettingsConfigParser {
     final postponeAllReleasesDelay = _durationParser.parse(hours: postponeAllReleasesDelayValue);
 
     return UpdateSettingsConfig.byRequired(
-      url: url,
+      updateUrl: updateUrl,
       shouldShow: shouldShow,
       canSkip: canSkip,
       canPostpone: canPostpone,

@@ -49,7 +49,7 @@ void main() {
       expect(result?.sources?[1].sourceName?.name, 'appStore'.toLowerCase());
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
-      expect(result?.appStatusRules, isNotNull);
+      expect(result?.appSettingsRules, isNotNull);
       expect(result?.customData, containsPair('custom_field', 123));
     });
 

@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 import 'package:app_update/src/parser/common.dart';
-import 'package:app_update/src/parser/sub_parsers/update_app_status_config_parser.dart';
-import 'package:app_update/src/shared/models/update_app_status/update_app_status_config.dart';
+import 'package:app_update/src/parser/sub_parsers/update_app_settings_config_parser.dart';
+import 'package:app_update/src/shared/models/update_app_settings/update_app_settings_config.dart';
 
 void main() {
   group('UpdateAppStatusConfigParser', () {
-    const parser = UpdateAppStatusConfigParser();
+    const parser = UpdateAppSettingsConfigParser();
 
     test('Базовый кейс', () {
       const yamlStr = '''
@@ -15,7 +15,7 @@ void main() {
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
-      expect(result, isA<UpdateAppStatusConfig>());
+      expect(result, isA<UpdateAppSettingsConfig>());
       expect(result?.appStatus?.name, 'outdated');
       expect(result?.customData, containsPair('custom_field', 42));
     });

@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../shared/models/release/release_config.dart';
-import '../base_parsers/update_rules_part_parser.dart';
+import '../base_parsers/update_rules_container_parser.dart';
 import '../common.dart';
 import '../primitive_parsers/date_time_parser.dart';
 import '../primitive_parsers/list_or_value_parser.dart';
@@ -51,7 +51,7 @@ class ReleaseConfigParser {
       sources: sources,
       contentRules: rules?.contentRules,
       settingsRules: rules?.settingsRules,
-      appStatusRules: rules?.appStatusRules,
+      appSettingsRules: rules?.appSettingsRules,
       customData: map,
     );
   }

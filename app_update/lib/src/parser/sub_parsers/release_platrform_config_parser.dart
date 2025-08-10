@@ -2,7 +2,7 @@
 
 import '../../shared/models/release_platrform/release_platrform_config.dart';
 import '../base_parsers/update_platform_parser.dart';
-import '../base_parsers/update_rules_part_parser.dart';
+import '../base_parsers/update_rules_container_parser.dart';
 import '../common.dart';
 import 'release_override_config_parser.dart';
 
@@ -31,7 +31,7 @@ class ReleasePlatformConfigParser {
         releaseOverride: null,
         contentRules: null,
         settingsRules: null,
-        appStatusRules: null,
+        appSettingsRules: null,
         customData: null,
       );
     }
@@ -62,7 +62,7 @@ class ReleasePlatformConfigParser {
       releaseOverride: releaseOverride,
       contentRules: rules?.contentRules,
       settingsRules: rules?.settingsRules,
-      appStatusRules: rules?.appStatusRules,
+      appSettingsRules: rules?.appSettingsRules,
       customData: map,
     );
   }

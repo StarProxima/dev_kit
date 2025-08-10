@@ -2,9 +2,8 @@
 
 import '../../shared/models/global_platform/global_platform_config.dart';
 import '../base_parsers/update_platform_parser.dart';
-import '../base_parsers/update_rules_part_parser.dart';
+import '../base_parsers/update_rules_container_parser.dart';
 import '../common.dart';
-import 'global_source_config_parser.dart';
 
 class GlobalPlatformConfigParser {
   static const _updatePlatformParser = UpdatePlatformParser();
@@ -29,7 +28,7 @@ class GlobalPlatformConfigParser {
         platformName: name,
         contentRules: null,
         settingsRules: null,
-        appStatusRules: null,
+        appSettingsRules: null,
         customData: null,
       );
     }
@@ -56,7 +55,7 @@ class GlobalPlatformConfigParser {
       platformName: name,
       contentRules: rules?.contentRules,
       settingsRules: rules?.settingsRules,
-      appStatusRules: rules?.appStatusRules,
+      appSettingsRules: rules?.appSettingsRules,
       customData: map,
     );
   }

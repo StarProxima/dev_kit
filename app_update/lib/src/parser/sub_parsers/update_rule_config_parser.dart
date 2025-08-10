@@ -1,12 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../shared/models/update_rule/update_rule_config.dart';
-import '../../shared/update_entities/app_status.dart';
-import '../../shared/update_entities/update_date.dart';
-import '../../shared/update_entities/update_locale.dart';
-import '../../shared/update_entities/update_source.dart';
-import '../../shared/update_entities/update_version_constraint.dart';
-import '../../shared/update_entities/update_view_target.dart';
 import '../base_parsers/app_status_parser.dart';
 import '../base_parsers/update_date_parser.dart';
 import '../base_parsers/update_locale_parser.dart';

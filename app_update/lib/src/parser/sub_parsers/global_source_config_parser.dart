@@ -2,16 +2,10 @@
 
 import '../../shared/models/global_platform/global_platform_config.dart';
 import '../../shared/models/global_source/global_source_config.dart';
-import '../base_parsers/update_rules_part_parser.dart';
+import '../base_parsers/update_rules_container_parser.dart';
 import '../base_parsers/update_source_name_parser.dart';
 import '../common.dart';
-import '../primitive_parsers/list_or_value_parser.dart';
-import '../primitive_parsers/uri_parser.dart';
 import 'global_platform_config_parser.dart';
-import 'update_app_status_config_parser.dart';
-import 'update_content_config_parser.dart';
-import 'update_rule_config_parser.dart';
-import 'update_settings_config_parser.dart';
 
 class GlobalSourceConfigParser {
   static const _updateSourceNameParser = UpdateSourceNameParser();
@@ -54,7 +48,7 @@ class GlobalSourceConfigParser {
       platforms: platforms,
       contentRules: rules?.contentRules,
       settingsRules: rules?.settingsRules,
-      appStatusRules: rules?.appStatusRules,
+      appSettingsRules: rules?.appSettingsRules,
       customData: map,
     );
   }

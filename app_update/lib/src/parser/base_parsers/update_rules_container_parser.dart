@@ -2,7 +2,7 @@
 
 import '../../shared/models/update_rule/update_rules_container.dart';
 import '../primitive_parsers/list_or_value_parser.dart';
-import '../sub_parsers/update_app_status_config_parser.dart';
+import '../sub_parsers/update_app_settings_config_parser.dart';
 import '../sub_parsers/update_content_config_parser.dart';
 import '../sub_parsers/update_rule_config_parser.dart';
 import '../sub_parsers/update_settings_config_parser.dart';
@@ -12,7 +12,7 @@ class UpdateRulesPartParser {
   static const _listOrValueParser = ListOrValueParser();
   static const _updateContentConfigParser = UpdateContentConfigParser();
   static const _updateSettingsConfigParser = UpdateSettingsConfigParser();
-  static const _updateAppStatusConfigParser = UpdateAppStatusConfigParser();
+  static const _updateAppStatusConfigParser = UpdateAppSettingsConfigParser();
 
   const UpdateRulesPartParser();
 
@@ -20,7 +20,7 @@ class UpdateRulesPartParser {
     Map<String, dynamic> map,
   ) {
     // contentRules
-    final contentRulesRawValue = map.remove('content_rules');
+    final contentRulesRawValue = map.remove('content');
     final contentRulesValue = _listOrValueParser.parse(contentRulesRawValue);
 
     final contentRules = contentRulesValue
@@ -32,7 +32,7 @@ class UpdateRulesPartParser {
         .toList();
 
     // settingsRules
-    final settingsRulesRawValue = map.remove('settings_rules');
+    final settingsRulesRawValue = map.remove('settings');
     final settingsRulesValue = _listOrValueParser.parse(settingsRulesRawValue);
 
     final settingsRules = settingsRulesValue
@@ -43,10 +43,10 @@ class UpdateRulesPartParser {
         .nonNulls
         .toList();
 
-    // appStatusRules
-    final appStatusRulesRawValue = map.remove('app_status_rules');
-    final appStatusRulesValue = _listOrValueParser.parse(appStatusRulesRawValue);
-    final appStatusRules = appStatusRulesValue
+    // appSettingsRules
+    final appSettingsRulesRawValue = map.remove('app_settings');
+    final appSettingsRulesValue = _listOrValueParser.parse(appSettingsRulesRawValue);
+    final appSettingsRules = appSettingsRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
               value,
               dataParser: _updateAppStatusConfigParser.parse,
@@ -57,7 +57,7 @@ class UpdateRulesPartParser {
     final rules = UpdateRulesContainer(
       contentRules: contentRules,
       settingsRules: settingsRules,
-      appStatusRules: appStatusRules,
+      appSettingsRules: appSettingsRules,
     );
 
     return rules;

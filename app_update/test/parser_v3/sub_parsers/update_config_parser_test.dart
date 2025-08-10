@@ -63,8 +63,8 @@ void main() {
           result?.releases.firstWhere((r) => r.customData?['is_super_ultra_mega_release'] == true);
       expect(megaRelease?.customData?['is_super_ultra_mega_release'], isTrue);
       // Проверка appStatusRules
-      expect(result?.appStatusRules, isNotNull);
-      expect(result?.appStatusRules, isNotEmpty);
+      expect(result?.appSettingsRules, isNotNull);
+      expect(result?.appSettingsRules, isNotEmpty);
     });
 
     test('Ошибка при некорректном yaml', () {

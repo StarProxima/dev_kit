@@ -37,7 +37,7 @@ void main() {
       expect(result?.platforms?.length, 2);
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
-      expect(result?.appStatusRules, isNotNull);
+      expect(result?.appSettingsRules, isNotNull);
       expect(result?.customData, containsPair('custom_field', 42));
     });
 

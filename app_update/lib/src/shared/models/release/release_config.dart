@@ -1,7 +1,7 @@
 import 'package:pub_semver/pub_semver.dart';
 
 import '../release_source/release_source_config.dart';
-import '../update_app_status/update_app_status_config.dart';
+import '../update_app_settings/update_app_settings_config.dart';
 import '../update_content/update_content_config.dart';
 import '../update_rule/update_rule_config.dart';
 import '../update_settings/update_settings_config.dart';
@@ -12,7 +12,7 @@ class ReleaseConfig {
   final List<ReleaseSourceConfig>? sources;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppStatusConfig?>>? appStatusRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({
@@ -21,7 +21,7 @@ class ReleaseConfig {
     this.sources,
     this.contentRules,
     this.settingsRules,
-    this.appStatusRules,
+    this.appSettingsRules,
     this.customData,
   });
 
@@ -31,7 +31,7 @@ class ReleaseConfig {
     required this.sources,
     required this.contentRules,
     required this.settingsRules,
-    required this.appStatusRules,
+    required this.appSettingsRules,
     required this.customData,
   });
 }
