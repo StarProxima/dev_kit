@@ -20,4 +20,35 @@ class UpdateContentData {
     required this.updateButton,
     required this.customData,
   });
+
+  UpdateContentData interpolate(Map<String, String> interpolateData) {
+    final interpolatedCustomData = customData?.map(
+      (key, value) => MapEntry(
+        key,
+        value is String ? _interpolateString(value, interpolateData) : value,
+      ),
+    );
+
+    return UpdateContentData(
+      updateUrl: updateUrl,
+      title: _interpolateString(title, interpolateData),
+      description: _interpolateString(description, interpolateData),
+      releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
+      releaseNotes: _interpolateString(releaseNotes, interpolateData),
+      skipButton: _interpolateString(skipButton, interpolateData),
+      postponeButton: _interpolateString(postponeButton, interpolateData),
+      updateButton: _interpolateString(updateButton, interpolateData),
+      customData: interpolatedCustomData,
+    );
+  }
+
+  String _interpolateString(String text, Map<String, String> interpolateData) {
+    String result = text;
+    for (final entry in interpolateData.entries) {
+      result = result.replaceAll(_regExpForField(entry.key), entry.value);
+    }
+    return result;
+  }
+
+  RegExp _regExpForField(String name) => RegExp('\$$name|{$name}|\${$name}');
 }
