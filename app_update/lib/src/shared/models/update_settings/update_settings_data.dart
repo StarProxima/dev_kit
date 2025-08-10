@@ -1,4 +1,5 @@
 class UpdateSettingsData {
+  final Uri url;
   final bool shouldShow;
   final bool canSkip;
   final bool canPostpone;
@@ -9,6 +10,7 @@ class UpdateSettingsData {
   final Map<String, dynamic>? customData;
 
   const UpdateSettingsData({
+    required this.url,
     required this.shouldShow,
     required this.canSkip,
     required this.canPostpone,

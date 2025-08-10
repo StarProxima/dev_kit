@@ -2,7 +2,8 @@
 
 import '../../shared/models/global_platform/global_platform_config.dart';
 import '../../shared/models/global_source/global_source_config.dart';
-import '../base_parsers/update_source_parser.dart';
+import '../base_parsers/update_rules_part_parser.dart';
+import '../base_parsers/update_source_name_parser.dart';
 import '../common.dart';
 import '../primitive_parsers/list_or_value_parser.dart';
 import '../primitive_parsers/uri_parser.dart';
@@ -13,14 +14,9 @@ import 'update_rule_config_parser.dart';
 import 'update_settings_config_parser.dart';
 
 class GlobalSourceConfigParser {
-  static const _updateSourceParser = UpdateSourceParser();
-  static const _uriParser = UriParser();
+  static const _updateSourceNameParser = UpdateSourceNameParser();
   static const _globalPlatformConfigParser = GlobalPlatformConfigParser();
-  static const _updateRuleConfigParser = UpdateRuleConfigParser();
-  static const _listOrValueParser = ListOrValueParser();
-  static const _updateContentConfigParser = UpdateContentConfigParser();
-  static const _updateSettingsConfigParser = UpdateSettingsConfigParser();
-  static const _updateAppStatusConfigParser = UpdateAppStatusConfigParser();
+  static const _updateRulesPartParser = UpdateRulesPartParser();
 
   const GlobalSourceConfigParser();
 
@@ -37,11 +33,7 @@ class GlobalSourceConfigParser {
 
     // name
     final nameValue = map.remove('name');
-    final name = _updateSourceParser.parse(nameValue);
-
-    // url
-    final urlValue = map.remove('url');
-    final url = _uriParser.parse(urlValue);
+    final name = _updateSourceNameParser.parse(nameValue);
 
     // platforms
     final platformsValue = map.remove('platforms');
@@ -54,48 +46,15 @@ class GlobalSourceConfigParser {
         .cast<GlobalPlatformConfig>()
         .toList();
 
-    // contentRules
-    final contentRulesRawValue = map.remove('content_rules');
-    final contentRulesValue = _listOrValueParser.parse(contentRulesRawValue);
-
-    final contentRules = contentRulesValue
-        ?.map((value) => _updateRuleConfigParser.parse(
-              value,
-              dataParser: _updateContentConfigParser.parse,
-            ))
-        .nonNulls
-        .toList();
-
-    // settingsRules
-    final settingsRulesRawValue = map.remove('settings_rules');
-    final settingsRulesValue = _listOrValueParser.parse(settingsRulesRawValue);
-
-    final settingsRules = settingsRulesValue
-        ?.map((value) => _updateRuleConfigParser.parse(
-              value,
-              dataParser: _updateSettingsConfigParser.parse,
-            ))
-        .nonNulls
-        .toList();
-
-    // appStatusRules
-    final appStatusRulesRawValue = map.remove('app_status_rules');
-    final appStatusRulesValue = _listOrValueParser.parse(appStatusRulesRawValue);
-    final appStatusRules = appStatusRulesValue
-        ?.map((value) => _updateRuleConfigParser.parse(
-              value,
-              dataParser: _updateAppStatusConfigParser.parse,
-            ))
-        .nonNulls
-        .toList();
+    // rules
+    final rules = _updateRulesPartParser.parse(map);
 
     return GlobalSourceConfig.byRequired(
-      source: name,
-      url: url,
+      sourceName: name,
       platforms: platforms,
-      contentRules: contentRules,
-      settingsRules: settingsRules,
-      appStatusRules: appStatusRules,
+      contentRules: rules?.contentRules,
+      settingsRules: rules?.settingsRules,
+      appStatusRules: rules?.appStatusRules,
       customData: map,
     );
   }

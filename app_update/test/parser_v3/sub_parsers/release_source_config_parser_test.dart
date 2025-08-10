@@ -12,7 +12,7 @@ void main() {
       const yamlStr = '''googlePlay''';
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<ReleaseSourceConfig>());
-      expect(result?.source?.name, 'googlePlay'.toLowerCase());
+      expect(result?.sourceName?.name, 'googlePlay'.toLowerCase());
       expect(result?.url, isNull);
       expect(result?.platforms, isNull);
       expect(result?.releaseOverride, isNull);
@@ -31,7 +31,7 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<ReleaseSourceConfig>());
-      expect(result?.source?.name, 'github'.toLowerCase());
+      expect(result?.sourceName?.name, 'github'.toLowerCase());
       expect(result?.url.toString(), 'https://github.com/user/repo/releases');
       expect(result?.platforms?.length, 2);
       expect(result?.customData, containsPair('custom_field', 42));

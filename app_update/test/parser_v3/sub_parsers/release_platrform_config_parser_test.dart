@@ -12,7 +12,7 @@ void main() {
       const yamlStr = '''android''';
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<ReleasePlatformConfig>());
-      expect(result?.platform.name, 'android');
+      expect(result?.platformName.name, 'android');
       expect(result?.sourceOverride, isNull);
       expect(result?.customData, isNull);
     });
@@ -27,8 +27,8 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<ReleasePlatformConfig>());
-      expect(result?.platform.name, 'ios');
-      expect(result?.sourceOverride?.source?.name, 'github'.toLowerCase());
+      expect(result?.platformName.name, 'ios');
+      expect(result?.sourceOverride?.sourceName?.name, 'github'.toLowerCase());
       expect(result?.customData, containsPair('custom_field', 42));
     });
 
@@ -36,7 +36,7 @@ void main() {
       const yamlStr = '''unknown_platform''';
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<ReleasePlatformConfig>());
-      expect(result?.platform.name, 'unknown_platform');
+      expect(result?.platformName.name, 'unknown_platform');
     });
 
     test('Ошибка при неверном типе', () {

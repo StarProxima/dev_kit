@@ -2,12 +2,13 @@
 
 import '../../shared/models/global_platform/global_platform_config.dart';
 import '../base_parsers/update_platform_parser.dart';
+import '../base_parsers/update_rules_part_parser.dart';
 import '../common.dart';
 import 'global_source_config_parser.dart';
 
 class GlobalPlatformConfigParser {
   static const _updatePlatformParser = UpdatePlatformParser();
-  static const _globalSourceConfigParser = GlobalSourceConfigParser();
+  static const _updateRulesPartParser = UpdateRulesPartParser();
 
   const GlobalPlatformConfigParser();
 
@@ -25,8 +26,10 @@ class GlobalPlatformConfigParser {
       }
 
       return GlobalPlatformConfig.byRequired(
-        platform: name,
-        sourceOverride: null,
+        platformName: name,
+        contentRules: null,
+        settingsRules: null,
+        appStatusRules: null,
         customData: null,
       );
     }
@@ -46,13 +49,14 @@ class GlobalPlatformConfigParser {
       throw const UpdateConfigException();
     }
 
-    // sourceOverride
-    final sourceOverrideValue = map.remove('source');
-    final sourceOverride = _globalSourceConfigParser.parse(sourceOverrideValue);
+    // rules
+    final rules = _updateRulesPartParser.parse(map);
 
     return GlobalPlatformConfig.byRequired(
-      platform: name,
-      sourceOverride: sourceOverride,
+      platformName: name,
+      contentRules: rules?.contentRules,
+      settingsRules: rules?.settingsRules,
+      appStatusRules: rules?.appStatusRules,
       customData: map,
     );
   }

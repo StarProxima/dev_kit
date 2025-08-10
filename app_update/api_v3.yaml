@@ -227,13 +227,15 @@ app_status_rules:
 
 sources:
   - name: appStore
-    url: https://example.com
+    settings:
+      url: https://example.com
     platforms:
       - macos
       - name: ios
 
   - name: appGallery
-    url: https://example.com
+    settings:
+      url: https://example.com
     content_rules:
       - locales: ru
         data:
@@ -243,17 +245,20 @@ sources:
           update_button: Go to AppGallery
 
   - name: ruStore
-    url: https://example.com
+    settings:
+      url: https://example.com
 
   - name: gitHub
-    url: https://example.com
+    settings:
+      url: https://example.com
     platforms:
       # Full syntax
       - name: android
-        source:
+        settings:
           url: https://example.com/android
-          content_rules:
-            title: Title
+        content_rules:
+          title: Title
+          
       # Short syntax
       - windows
       - macos
@@ -261,7 +266,8 @@ sources:
 
   - name: site
     platforms: [android]
-    url: https://example.com
+    settings:
+      url: https://example.com
 
 releases:
   - version: 0.3.7
@@ -280,9 +286,9 @@ releases:
       - appStore
       - ruStore
       - name: github
-        source:
+        settings:
           url: https://example.com
-          platforms: [android, ios, aurora]
+        platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
     content_rules:
@@ -313,12 +319,19 @@ releases:
       - appStore
       - name: googlePlay
       - name: ruStore
-        url: www.example.com
-        platforms: [android]
+
+      - settings:
+          url: www.example.com
+        content_rules:
+            title: RuStore Title
         release:
           version: 1.2.1
-          content_rules:
-            title: RuStore Title
+
+  
+        platforms: [android]
+        
+          
+          
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
         release:

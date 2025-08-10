@@ -1,30 +1,16 @@
-import '../../update_entities/update_platform.dart';
-
 import '../update_app_status/update_app_status_config.dart';
 import '../update_content/update_content_config.dart';
 import '../update_rule/update_rule_config.dart';
 import '../update_settings/update_settings_config.dart';
 
-class GlobalPlatformConfig {
-  final UpdatePlatform platformName;
+class UpdateRulesContainer {
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppStatusConfig?>>? appStatusRules;
-  final Map<String, dynamic>? customData;
 
-  const GlobalPlatformConfig({
-    required this.platformName,
-    this.contentRules,
-    this.settingsRules,
-    this.appStatusRules,
-    this.customData,
-  });
-
-  const GlobalPlatformConfig.byRequired({
-    required this.platformName,
+  const UpdateRulesContainer({
     required this.contentRules,
     required this.settingsRules,
     required this.appStatusRules,
-    required this.customData,
   });
 }

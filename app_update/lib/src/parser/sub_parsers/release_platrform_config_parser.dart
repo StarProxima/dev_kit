@@ -2,12 +2,14 @@
 
 import '../../shared/models/release_platrform/release_platrform_config.dart';
 import '../base_parsers/update_platform_parser.dart';
+import '../base_parsers/update_rules_part_parser.dart';
 import '../common.dart';
-import 'release_source_config_parser.dart';
+import 'release_override_config_parser.dart';
 
 class ReleasePlatformConfigParser {
   static const _updatePlatformParser = UpdatePlatformParser();
-  static const _releaseSourceConfigParser = ReleaseSourceConfigParser();
+  static const _releaseOverrideConfigParser = ReleaseOverrideConfigParser();
+  static const _updateRulesPartParser = UpdateRulesPartParser();
 
   const ReleasePlatformConfigParser();
 
@@ -25,8 +27,11 @@ class ReleasePlatformConfigParser {
       }
 
       return ReleasePlatformConfig.byRequired(
-        platform: name,
-        sourceOverride: null,
+        platformName: name,
+        releaseOverride: null,
+        contentRules: null,
+        settingsRules: null,
+        appStatusRules: null,
         customData: null,
       );
     }
@@ -45,13 +50,19 @@ class ReleasePlatformConfigParser {
       throw const UpdateConfigException();
     }
 
-    // sourceOverride
-    final sourceOverrideValue = map.remove('source');
-    final sourceOverride = _releaseSourceConfigParser.parse(sourceOverrideValue);
+    // releaseOverride
+    final releaseOverrideValue = map.remove('release_override');
+    final releaseOverride = _releaseOverrideConfigParser.parse(releaseOverrideValue);
+
+    // rules
+    final rules = _updateRulesPartParser.parse(map);
 
     return ReleasePlatformConfig.byRequired(
-      platform: name,
-      sourceOverride: sourceOverride,
+      platformName: name,
+      releaseOverride: releaseOverride,
+      contentRules: rules?.contentRules,
+      settingsRules: rules?.settingsRules,
+      appStatusRules: rules?.appStatusRules,
       customData: map,
     );
   }

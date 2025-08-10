@@ -1,6 +1,7 @@
 import '../../mergeable.dart';
 
 class UpdateSettingsConfig with Mergeable {
+  final Uri? url;
   final bool? shouldShow;
   final bool? canSkip;
   final bool? canPostpone;
@@ -11,6 +12,7 @@ class UpdateSettingsConfig with Mergeable {
   final Map<String, dynamic>? customData;
 
   const UpdateSettingsConfig({
+    this.url,
     this.shouldShow,
     this.canSkip,
     this.canPostpone,
@@ -22,6 +24,7 @@ class UpdateSettingsConfig with Mergeable {
   });
 
   const UpdateSettingsConfig.byRequired({
+    required this.url,
     required this.shouldShow,
     required this.canSkip,
     required this.canPostpone,
@@ -35,6 +38,7 @@ class UpdateSettingsConfig with Mergeable {
   @override
   UpdateSettingsConfig merge(covariant UpdateSettingsConfig other) =>
       UpdateSettingsConfig.byRequired(
+        url: other.url ?? url,
         shouldShow: other.shouldShow ?? shouldShow,
         canSkip: other.canSkip ?? canSkip,
         canPostpone: other.canPostpone ?? canPostpone,

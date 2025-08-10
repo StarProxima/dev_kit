@@ -35,7 +35,8 @@ void main() {
       // Проверка sources
       expect(result?.sources?.any((s) => s.source?.name == 'appstore'), isTrue);
       expect(
-          result?.sources?.any((s) => s.platforms?.any((p) => p.platform.name == 'macos') ?? false),
+          result?.sources
+              ?.any((s) => s.platforms?.any((p) => p.platformName.name == 'macos') ?? false),
           isTrue);
       // Проверка releases
       expect(result?.releases.any((r) => r.version.toString() == '0.3.7'), isTrue);
@@ -50,12 +51,12 @@ void main() {
       // Проверка вложенных источников и платформ
       final githubSource = result?.sources?.firstWhere((s) => s.source?.name == 'github');
       expect(githubSource?.platforms, isNotNull);
-      expect(githubSource?.platforms?.any((p) => p.platform.name == 'android'), isTrue);
+      expect(githubSource?.platforms?.any((p) => p.platformName.name == 'android'), isTrue);
       // Проверка вложенного release в source
       final releaseWithNested =
           result?.releases.firstWhere((r) => r.version.toString() == '0.0.3+80');
       final googlePlaySource =
-          releaseWithNested?.sources?.firstWhere((s) => s.source?.name == 'googleplay');
+          releaseWithNested?.sources?.firstWhere((s) => s.sourceName?.name == 'googleplay');
       expect(googlePlaySource?.releaseOverride, isNotNull);
       // Проверка кастомных полей
       final megaRelease =
