@@ -23,6 +23,8 @@ class ReleaseSourceConfigParser {
     // Short syntax
     if (value is String) {
       final name = _updateSourceNameParser.parse(value);
+      if (name == null) throw const UpdateConfigException();
+
       return ReleaseSourceConfig.byRequired(
         sourceName: name,
         platforms: null,
@@ -42,8 +44,8 @@ class ReleaseSourceConfigParser {
 
     // name
     final nameValue = map.remove('name');
-    if (nameValue == null) return null;
     final name = _updateSourceNameParser.parse(nameValue);
+    if (name == null) throw const UpdateConfigException();
 
     // platforms
     final platformsValue = map.remove('platforms');

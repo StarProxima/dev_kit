@@ -12,7 +12,7 @@ void main() {
       const yamlStr = '''googlePlay''';
       final result = parser.parse(loadYaml(yamlStr));
       expect(result, isA<ReleaseSourceConfig>());
-      expect(result?.sourceName?.name, 'googlePlay'.toLowerCase());
+      expect(result?.sourceName.name, 'googlePlay'.toLowerCase());
       expect(result?.platforms, isNull);
       expect(result?.releaseOverride, isNull);
       expect(result?.contentRules, isNull);
@@ -72,6 +72,19 @@ void main() {
 
     test('null возвращает null', () {
       expect(parser.parse(null), isNull);
+    });
+
+    test('name обязательное поле', () {
+      final map = {
+        'platforms': ['android'],
+      };
+
+      expect(
+        () => parser.parse(map),
+        throwsA(
+          isA<UpdateConfigException>(),
+        ),
+      );
     });
   });
 }

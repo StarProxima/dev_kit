@@ -119,266 +119,477 @@ void main() {
     }
 
     group('link', () {
-      test('возвращает пустой список если sources == null', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: null,
-        );
+      group('базовая логика', () {
+        test('возвращает пустой список если sources == null', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: null,
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, isEmpty);
-      });
+          expect(result, isEmpty);
+        });
 
-      test('возвращает пустой список если sources пустой', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: [],
-        );
+        test('возвращает пустой список если sources пустой', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, isEmpty);
-      });
+          expect(result, isEmpty);
+        });
 
-      test('пропускает источники которых нет в списке доступных', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: [
-            createSource(sourceName: const UpdateSourceName.custom('unknown')),
-          ],
-        );
+        test('возвращает пустой список для неизвестных источников', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(sourceName: const UpdateSourceName.custom('unknown')),
+            ],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, isEmpty);
-      });
+          expect(result, isEmpty);
+        });
 
-      test('создает обновления с заданными платформами', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          date: DateTime(2024, 10, 20),
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [
-                createPlatform(platformName: UpdatePlatform.android),
-              ],
+        test('возвращает пустой список если источник не имеет платформ', () {
+          // Создаем источник который не существует в глобальном списке источников
+          final customSources = [
+            const UpdateSource.custom(
+              UpdateSourceName.custom('noplatforms'),
+              platforms: [], // Пустой список платформ
             ),
-          ],
-        );
+          ];
 
-        final result = linker.link(release: release, sources: sources);
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(sourceName: const UpdateSourceName.custom('noplatforms')),
+            ],
+          );
 
-        expect(result, hasLength(1));
-        expect(result[0].version, Version.parse('1.0.0'));
-        expect(result[0].date, DateTime(2024, 10, 20));
-        expect(result[0].source, UpdateSourceName.googlePlay);
-        expect(result[0].platform, UpdatePlatform.android);
+          final result = linker.link(release: release, sources: customSources);
+
+          expect(result, isEmpty);
+        });
       });
 
-      test('создает платформы из UpdateSource.platforms когда platforms == null', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: null, // Должны создаться из UpdateSource.platforms
+      group('создание платформ', () {
+        test('создает обновления с заданными платформами', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            date: DateTime(2024, 10, 20),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [
+                  createPlatform(platformName: UpdatePlatform.android),
+                ],
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          expect(result, hasLength(1));
+          expect(result[0].version, Version.parse('1.0.0'));
+          expect(result[0].date, DateTime(2024, 10, 20));
+          expect(result[0].source, UpdateSourceName.googlePlay);
+          expect(result[0].platform, UpdatePlatform.android);
+        });
+
+        test('создает платформы из UpdateSource.platforms когда platforms == null', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: null, // Должны создаться из UpdateSource.platforms
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          // Google Play поддерживает только Android
+          expect(result, hasLength(1));
+          expect(result[0].platform, UpdatePlatform.android);
+        });
+
+        test('создает обновления для нескольких платформ', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.appStore,
+                platforms: null, // iOS и macOS из UpdateSource.platforms
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          // App Store поддерживает iOS и macOS
+          expect(result, hasLength(2));
+          expect(result.map((e) => e.platform),
+              containsAll([UpdatePlatform.ios, UpdatePlatform.macos]));
+        });
+
+        test('комбинирует заданные и автоматические платформы для разных источников', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [
+                  createPlatform(platformName: UpdatePlatform.android),
+                ],
+              ),
+              createSource(
+                sourceName: UpdateSourceName.appStore,
+                platforms: null, // Автоматически iOS и macOS
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          expect(result, hasLength(3)); // 1 Android + 2 (iOS + macOS)
+          final platforms = result.map((e) => e.platform).toList();
+          expect(platforms,
+              containsAll([UpdatePlatform.android, UpdatePlatform.ios, UpdatePlatform.macos]));
+        });
+
+        test('обрабатывает кастомные источники с кастомными платформами', () {
+          final customSources = [
+            const UpdateSource.custom(
+              UpdateSourceName.custom('custom'),
+              platforms: [UpdatePlatform.linux, UpdatePlatform.windows],
             ),
-          ],
-        );
+          ];
 
-        final result = linker.link(release: release, sources: sources);
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: const UpdateSourceName.custom('custom'),
+                platforms: null, // Должны взяться из customSources
+              ),
+            ],
+          );
 
-        // Google Play поддерживает только Android
-        expect(result, hasLength(1));
-        expect(result[0].platform, UpdatePlatform.android);
+          final result = linker.link(release: release, sources: customSources);
+
+          expect(result, hasLength(2));
+          expect(result.map((e) => e.platform),
+              containsAll([UpdatePlatform.linux, UpdatePlatform.windows]));
+        });
       });
 
-      test('создает обновления для нескольких платформ', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.appStore,
-              platforms: null, // iOS и macOS из UpdateSource.platforms
-            ),
-          ],
-        );
+      group('переопределения ReleaseOverrideConfig', () {
+        test('применяет переопределения версии из источника', () {
+          final overrideVersion = Version.parse('2.0.0');
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+                releaseOverride: ReleaseOverrideConfig(version: overrideVersion),
+              ),
+            ],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        // App Store поддерживает iOS и macOS
-        expect(result, hasLength(2));
-        expect(
-            result.map((e) => e.platform), containsAll([UpdatePlatform.ios, UpdatePlatform.macos]));
-      });
+          expect(result, hasLength(1));
+          expect(result[0].version, overrideVersion);
+        });
 
-      test('применяет переопределения версии из ReleaseOverrideConfig', () {
-        final overrideVersion = Version.parse('2.0.0');
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [createPlatform(platformName: UpdatePlatform.android)],
-              releaseOverride: ReleaseOverrideConfig(version: overrideVersion),
-            ),
-          ],
-        );
+        test('применяет переопределения даты из источника', () {
+          final overrideDate = DateTime(2024, 12, 25);
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            date: DateTime(2024, 10, 20),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+                releaseOverride: ReleaseOverrideConfig(date: overrideDate),
+              ),
+            ],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, hasLength(1));
-        expect(result[0].version, overrideVersion);
-      });
+          expect(result, hasLength(1));
+          expect(result[0].date, overrideDate);
+        });
 
-      test('применяет переопределения даты из ReleaseOverrideConfig', () {
-        final overrideDate = DateTime(2024, 12, 25);
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          date: DateTime(2024, 10, 20),
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [createPlatform(platformName: UpdatePlatform.android)],
-              releaseOverride: ReleaseOverrideConfig(date: overrideDate),
-            ),
-          ],
-        );
+        test('переопределения платформы имеют приоритет над источником', () {
+          final platformVersion = Version.parse('3.0.0');
+          final sourceVersion = Version.parse('2.0.0');
 
-        final result = linker.link(release: release, sources: sources);
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    releaseOverride: ReleaseOverrideConfig(version: platformVersion),
+                  ),
+                ],
+                releaseOverride: ReleaseOverrideConfig(version: sourceVersion),
+              ),
+            ],
+          );
 
-        expect(result, hasLength(1));
-        expect(result[0].date, overrideDate);
-      });
+          final result = linker.link(release: release, sources: sources);
 
-      test('переопределения платформы имеют приоритет над источником', () {
-        final platformVersion = Version.parse('3.0.0');
-        final sourceVersion = Version.parse('2.0.0');
+          expect(result, hasLength(1));
+          expect(result[0].version, platformVersion);
+        });
 
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [
-                createPlatform(
-                  platformName: UpdatePlatform.android,
-                  releaseOverride: ReleaseOverrideConfig(version: platformVersion),
+        test('переопределения даты платформы имеют приоритет над источником и релизом', () {
+          final platformDate = DateTime(2024, 12, 31);
+          final sourceDate = DateTime(2024, 12, 25);
+          final releaseDate = DateTime(2024, 10, 20);
+
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            date: releaseDate,
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    releaseOverride: ReleaseOverrideConfig(date: platformDate),
+                  ),
+                ],
+                releaseOverride: ReleaseOverrideConfig(date: sourceDate),
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          expect(result, hasLength(1));
+          expect(result[0].date, platformDate);
+        });
+
+        test('применяет переопределения кастомных данных с правильным приоритетом', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            customData: {'release': 'data', 'shared': 'release'},
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                customData: {'source': 'data', 'shared': 'source'},
+                releaseOverride: ReleaseOverrideConfig(
+                  customData: {'sourceOverride': 'data', 'shared': 'sourceOverride'},
                 ),
-              ],
-              releaseOverride: ReleaseOverrideConfig(version: sourceVersion),
-            ),
-          ],
-        );
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    customData: {'platform': 'data', 'shared': 'platform'},
+                    releaseOverride: ReleaseOverrideConfig(
+                      customData: {'platformOverride': 'data', 'shared': 'platformOverride'},
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, hasLength(1));
-        expect(result[0].version, platformVersion);
+          expect(result, hasLength(1));
+          final customData = result[0].customData!;
+          expect(customData['release'], 'data');
+          expect(customData['source'], 'data');
+          expect(customData['sourceOverride'], 'data');
+          expect(customData['platform'], 'data');
+          expect(customData['platformOverride'], 'data');
+          expect(customData['shared'],
+              'platformOverride'); // платформа override имеет высший приоритет
+        });
+
+        test('использует Version.none если никакая версия не задана', () {
+          final release = createRelease(
+            version: null,
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          expect(result, hasLength(1));
+          expect(result[0].version, Version.none);
+        });
       });
 
-      test('объединяет правила в правильном приоритете', () {
-        final releaseRule = createContentRule(title: 'Release Title');
-        final sourceRule = createContentRule(description: 'Source Description');
-        final platformRule = createContentRule(title: 'Platform Title');
+      group('объединение правил', () {
+        test('объединяет правила в правильном приоритете (релиз -> источник -> платформа)', () {
+          final releaseRule = createContentRule(title: 'Release Title');
+          final sourceRule = createContentRule(description: 'Source Description');
+          final platformRule = createContentRule(title: 'Platform Title');
 
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          contentRules: [releaseRule],
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              contentRules: [sourceRule],
-              platforms: [
-                createPlatform(
-                  platformName: UpdatePlatform.android,
-                  contentRules: [platformRule],
-                ),
-              ],
-            ),
-          ],
-        );
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            contentRules: [releaseRule],
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                contentRules: [sourceRule],
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    contentRules: [platformRule],
+                  ),
+                ],
+              ),
+            ],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, hasLength(1));
-        expect(result[0].contentRules, hasLength(3));
-        expect(result[0].contentRules![0], same(releaseRule));
-        expect(result[0].contentRules![1], same(sourceRule));
-        expect(result[0].contentRules![2], same(platformRule));
-      });
+          expect(result, hasLength(1));
+          expect(result[0].contentRules, hasLength(3));
+          expect(result[0].contentRules![0], same(releaseRule));
+          expect(result[0].contentRules![1], same(sourceRule));
+          expect(result[0].contentRules![2], same(platformRule));
+        });
 
-      test('объединяет все типы правил', () {
-        final contentRule = createContentRule(title: 'Title');
-        final settingsRule = createSettingsRule(shouldShow: true);
-        final appSettingsRule = createAppSettingsRule(appStatus: AppStatus.active);
+        test('объединяет все типы правил', () {
+          final contentRule = createContentRule(title: 'Title');
+          final settingsRule = createSettingsRule(shouldShow: true);
+          final appSettingsRule = createAppSettingsRule(appStatus: AppStatus.active);
 
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          contentRules: [contentRule],
-          settingsRules: [settingsRule],
-          appSettingsRules: [appSettingsRule],
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [createPlatform(platformName: UpdatePlatform.android)],
-            ),
-          ],
-        );
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            contentRules: [contentRule],
+            settingsRules: [settingsRule],
+            appSettingsRules: [appSettingsRule],
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+            ],
+          );
 
-        final result = linker.link(release: release, sources: sources);
+          final result = linker.link(release: release, sources: sources);
 
-        expect(result, hasLength(1));
-        expect(result[0].contentRules, contains(contentRule));
-        expect(result[0].settingsRules, contains(settingsRule));
-        expect(result[0].appSettingsRules, contains(appSettingsRule));
-      });
+          expect(result, hasLength(1));
+          expect(result[0].contentRules, contains(contentRule));
+          expect(result[0].settingsRules, contains(settingsRule));
+          expect(result[0].appSettingsRules, contains(appSettingsRule));
+        });
 
-      test('объединяет кастомные данные в правильном приоритете', () {
-        final release = createRelease(
-          version: Version.parse('1.0.0'),
-          customData: {'release': 'data', 'shared': 'release'},
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              customData: {'source': 'data', 'shared': 'source'},
-              platforms: [
-                createPlatform(
-                  platformName: UpdatePlatform.android,
-                  customData: {'platform': 'data', 'shared': 'platform'},
-                ),
-              ],
-            ),
-          ],
-        );
+        test('обрабатывает множественные правила одного типа', () {
+          final releaseRule1 = createContentRule(title: 'Release Title 1');
+          final releaseRule2 = createContentRule(title: 'Release Title 2');
+          final sourceRule = createContentRule(description: 'Source Description');
+          final platformRule1 = createContentRule(title: 'Platform Title 1');
+          final platformRule2 = createContentRule(title: 'Platform Title 2');
 
-        final result = linker.link(release: release, sources: sources);
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            contentRules: [releaseRule1, releaseRule2],
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                contentRules: [sourceRule],
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    contentRules: [platformRule1, platformRule2],
+                  ),
+                ],
+              ),
+            ],
+          );
 
-        expect(result, hasLength(1));
-        final customData = result[0].customData!;
-        expect(customData['release'], 'data');
-        expect(customData['source'], 'data');
-        expect(customData['platform'], 'data');
-        expect(customData['shared'], 'platform'); // платформа имеет приоритет
-      });
+          final result = linker.link(release: release, sources: sources);
 
-      test('использует Version.none если версия не задана', () {
-        final release = createRelease(
-          version: null,
-          sources: [
-            createSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [createPlatform(platformName: UpdatePlatform.android)],
-            ),
-          ],
-        );
+          expect(result, hasLength(1));
+          expect(result[0].contentRules, hasLength(5));
+          // Порядок: релиз (2), источник (1), платформа (2)
+          expect(result[0].contentRules![0], same(releaseRule1));
+          expect(result[0].contentRules![1], same(releaseRule2));
+          expect(result[0].contentRules![2], same(sourceRule));
+          expect(result[0].contentRules![3], same(platformRule1));
+          expect(result[0].contentRules![4], same(platformRule2));
+        });
 
-        final result = linker.link(release: release, sources: sources);
+        test('возвращает null для правил если все списки пустые', () {
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            contentRules: null,
+            settingsRules: null,
+            appSettingsRules: null,
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                contentRules: null,
+                settingsRules: null,
+                appSettingsRules: null,
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    contentRules: null,
+                    settingsRules: null,
+                    appSettingsRules: null,
+                  ),
+                ],
+              ),
+            ],
+          );
 
-        expect(result, hasLength(1));
-        expect(result[0].version, Version.none);
+          final result = linker.link(release: release, sources: sources);
+
+          expect(result, hasLength(1));
+          expect(result[0].contentRules, isNull);
+          expect(result[0].settingsRules, isNull);
+          expect(result[0].appSettingsRules, isNull);
+        });
+
+        test('обрабатывает смешанные null и пустые списки правил', () {
+          final contentRule = createContentRule(title: 'Title');
+
+          final release = createRelease(
+            version: Version.parse('1.0.0'),
+            contentRules: null, // null
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                contentRules: [], // пустой список
+                platforms: [
+                  createPlatform(
+                    platformName: UpdatePlatform.android,
+                    contentRules: [contentRule], // есть правила
+                  ),
+                ],
+              ),
+            ],
+          );
+
+          final result = linker.link(release: release, sources: sources);
+
+          expect(result, hasLength(1));
+          expect(result[0].contentRules, hasLength(1));
+          expect(result[0].contentRules![0], same(contentRule));
+        });
       });
     });
 
@@ -444,6 +655,168 @@ void main() {
 
         expect(result, hasLength(1));
         expect(result[0].version, Version.parse('1.1.0'));
+      });
+
+      test('обрабатывает релизы с неизвестными источниками', () {
+        final releases = [
+          createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(sourceName: const UpdateSourceName.custom('unknown')),
+            ],
+          ),
+          createRelease(
+            version: Version.parse('1.1.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+            ],
+          ),
+        ];
+
+        final result = linker.linkAll(releases: releases, sources: sources);
+
+        expect(result, hasLength(1));
+        expect(result[0].version, Version.parse('1.1.0'));
+      });
+
+      test('сохраняет порядок релизов в результате', () {
+        final releases = [
+          createRelease(
+            version: Version.parse('3.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+            ],
+          ),
+          createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+            ],
+          ),
+          createRelease(
+            version: Version.parse('2.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+            ],
+          ),
+        ];
+
+        final result = linker.linkAll(releases: releases, sources: sources);
+
+        expect(result, hasLength(3));
+        expect(result[0].version, Version.parse('3.0.0'));
+        expect(result[1].version, Version.parse('1.0.0'));
+        expect(result[2].version, Version.parse('2.0.0'));
+      });
+
+      test('обрабатывает сложный случай с множественными источниками и платформами', () {
+        final releases = [
+          createRelease(
+            version: Version.parse('1.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.googlePlay,
+                platforms: [createPlatform(platformName: UpdatePlatform.android)],
+              ),
+              createSource(
+                sourceName: UpdateSourceName.appStore,
+                platforms: null, // iOS и macOS
+              ),
+            ],
+          ),
+          createRelease(
+            version: Version.parse('2.0.0'),
+            sources: [
+              createSource(
+                sourceName: UpdateSourceName.gitHub,
+                platforms: null, // Android, Windows, Linux, macOS
+              ),
+            ],
+          ),
+        ];
+
+        final result = linker.linkAll(releases: releases, sources: sources);
+
+        // Релиз 1.0.0: 1 Android + 2 (iOS + macOS) = 3
+        // Релиз 2.0.0: 4 (Android, Windows, Linux, macOS) = 4
+        // Итого: 7
+        expect(result, hasLength(7));
+
+        final version100Count = result.where((e) => e.version == Version.parse('1.0.0')).length;
+        final version200Count = result.where((e) => e.version == Version.parse('2.0.0')).length;
+
+        expect(version100Count, 3);
+        expect(version200Count, 4);
+      });
+    });
+
+    group('edge cases', () {
+      test('обрабатывает пустой список источников с дополнительной проверкой', () {
+        // Тест для дополнительной проверки edge case с пустыми источниками
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [], // Пустой список
+        );
+
+        final result = linker.link(release: release, sources: sources);
+
+        expect(result, isEmpty);
+      });
+
+      test('обрабатывает глобальные источники без платформ', () {
+        final customSources = [
+          const UpdateSource.custom(
+            UpdateSourceName.custom('empty'),
+            platforms: null,
+          ),
+        ];
+
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [
+            createSource(sourceName: const UpdateSourceName.custom('empty')),
+          ],
+        );
+
+        final result = linker.link(release: release, sources: customSources);
+
+        expect(result, isEmpty);
+      });
+
+      test('обрабатывает null customData корректно', () {
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          customData: null,
+          sources: [
+            createSource(
+              sourceName: UpdateSourceName.googlePlay,
+              customData: null,
+              platforms: [
+                createPlatform(
+                  platformName: UpdatePlatform.android,
+                  customData: null,
+                ),
+              ],
+            ),
+          ],
+        );
+
+        final result = linker.link(release: release, sources: sources);
+
+        expect(result, hasLength(1));
+        expect(result[0].customData, isNull);
       });
     });
   });
