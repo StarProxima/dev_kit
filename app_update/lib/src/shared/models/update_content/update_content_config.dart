@@ -1,6 +1,6 @@
 import '../../mergeable.dart';
 
-class UpdateContentConfig with Mergeable {
+class UpdateContentConfig implements Mergeable {
   final Uri? updateUrl;
   final String? title;
   final String? description;
@@ -45,6 +45,6 @@ class UpdateContentConfig with Mergeable {
         skipButton: other.skipButton ?? skipButton,
         postponeButton: other.postponeButton ?? postponeButton,
         updateButton: other.updateButton ?? updateButton,
-        customData: mergeCustomData(customData, other.customData),
+        customData: Mergeable.mergeCustomData(customData, other.customData),
       );
 }

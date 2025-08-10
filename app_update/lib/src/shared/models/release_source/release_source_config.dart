@@ -7,7 +7,7 @@ import '../update_rule/update_rule_config.dart';
 import '../update_settings/update_settings_config.dart';
 
 class ReleaseSourceConfig {
-  final UpdateSourceName? sourceName;
+  final UpdateSourceName sourceName;
   final List<ReleasePlatformConfig>? platforms;
   final ReleaseOverrideConfig? releaseOverride;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
@@ -16,7 +16,7 @@ class ReleaseSourceConfig {
   final Map<String, dynamic>? customData;
 
   const ReleaseSourceConfig({
-    this.sourceName,
+    required this.sourceName,
     this.platforms,
     this.releaseOverride,
     this.contentRules,

@@ -1,6 +1,6 @@
 import '../../mergeable.dart';
 
-class UpdateSettingsConfig with Mergeable {
+class UpdateSettingsConfig implements Mergeable {
   final bool? shouldShow;
   final bool? canSkip;
   final bool? canPostpone;
@@ -42,6 +42,6 @@ class UpdateSettingsConfig with Mergeable {
         skipAllReleasesDelay: other.skipAllReleasesDelay ?? skipAllReleasesDelay,
         postponeReleaseDelay: other.postponeReleaseDelay ?? postponeReleaseDelay,
         postponeAllReleasesDelay: other.postponeAllReleasesDelay ?? postponeAllReleasesDelay,
-        customData: mergeCustomData(customData, other.customData),
+        customData: Mergeable.mergeCustomData(customData, other.customData),
       );
 }
