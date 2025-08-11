@@ -200,8 +200,45 @@ void main() {
       expect(res.map((e) => e.version.toString()).toList(), ['2.1.0', '2.0.0']);
     });
 
-    test('если локальная версия выше всех доступных — возвращает пусто', () {
+    test('одинаковые версии сортируются по приоритету источников из sources', () {
       final updates = [
+        u('2.0.0',
+            date: DateTime(2024, 10, 10),
+            platform: UpdatePlatform.android,
+            source: UpdateSourceName.appStore),
+        u('2.0.0',
+            date: DateTime(2024, 10, 10),
+            platform: UpdatePlatform.android,
+            source: UpdateSourceName.googlePlay),
+        u('2.0.0',
+            date: DateTime(2024, 10, 10),
+            platform: UpdatePlatform.android,
+            source: UpdateSourceName.gitHub),
+      ];
+
+      final res = finder.find(
+        currentDate: currentDate,
+        localVersion: Version.parse('1.0.0'),
+        platform: UpdatePlatform.android,
+        sources: const [
+          UpdateSourceName.googlePlay,
+          UpdateSourceName.appStore,
+          UpdateSourceName.gitHub
+        ],
+        updates: updates,
+      );
+
+      // Приоритет источников: googlePlay, appStore, gitHub
+      expect(res.map((e) => e.sourceName).toList(),
+          [UpdateSourceName.googlePlay, UpdateSourceName.appStore, UpdateSourceName.gitHub]);
+    });
+
+    test('источники, отсутствующие в списке sources, отфильтровываются', () {
+      final updates = [
+        u('2.0.0',
+            date: DateTime(2024, 10, 10),
+            platform: UpdatePlatform.android,
+            source: const UpdateSourceName.custom('custom')), // нет в списке
         u('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
@@ -210,25 +247,14 @@ void main() {
 
       final res = finder.find(
         currentDate: currentDate,
-        localVersion: Version.parse('3.0.0'),
+        localVersion: Version.parse('1.0.0'),
         platform: UpdatePlatform.android,
         sources: const [UpdateSourceName.googlePlay],
         updates: updates,
       );
 
-      expect(res, isEmpty);
-    });
-
-    test('возвращает пусто при пустом списке обновлений', () {
-      final res = finder.find(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSourceName.googlePlay],
-        updates: const [],
-      );
-
-      expect(res, isEmpty);
+      expect(res.length, 1);
+      expect(res.first.sourceName, UpdateSourceName.googlePlay);
     });
   });
 }

@@ -24,7 +24,7 @@ void main() {
     const parser = UpdateConfigParser();
 
     test('Парсинг большого конфига из api_v3.yaml', () async {
-      final yamlStr = await File('test/parser_v3/sub_parsers/api_v3.yaml').readAsString();
+      final yamlStr = await File('test/parser/sub_parsers/api_v3.yaml').readAsString();
       final map = deepConvert(loadYaml(yamlStr))! as Map<String, dynamic>;
       final result = parser.parse(map);
       expect(result, isA<UpdateConfig>());
@@ -57,7 +57,7 @@ void main() {
       final releaseWithNested =
           result?.releases.firstWhere((r) => r.version.toString() == '0.0.3+80');
       final googlePlaySource =
-          releaseWithNested?.sources?.firstWhere((s) => s.sourceName?.name == 'googleplay');
+          releaseWithNested?.sources?.firstWhere((s) => s.sourceName.name == 'googleplay');
       expect(googlePlaySource?.releaseOverride, isNotNull);
       // Проверка кастомных полей
       final megaRelease =

@@ -40,11 +40,11 @@ void main() {
       expect(result?.date?.year, 2024);
       expect(result?.sources, isNotNull);
       expect(result?.sources?.length, 2);
-      expect(result?.sources?[0].sourceName?.name, 'googlePlay'.toLowerCase());
+      expect(result?.sources?[0].sourceName.name, 'googlePlay'.toLowerCase());
       expect(result?.sources?[0].platforms, isNotNull);
       expect(result?.sources?[0].platforms?[0].platformName.name, 'android');
       expect(result?.sources?[0].platforms?[0].releaseOverride?.version.toString(), '1.2.4');
-      expect(result?.sources?[1].sourceName?.name, 'appStore'.toLowerCase());
+      expect(result?.sources?[1].sourceName.name, 'appStore'.toLowerCase());
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
       expect(result?.appSettingsRules, isNotNull);
@@ -62,8 +62,8 @@ void main() {
       final result = parser.parse(map);
       expect(result, isA<ReleaseConfig>());
       expect(result?.sources?.length, 2);
-      expect(result?.sources?[0].sourceName?.name, 'googlePlay'.toLowerCase());
-      expect(result?.sources?[1].sourceName?.name, 'appStore'.toLowerCase());
+      expect(result?.sources?[0].sourceName.name, 'googlePlay'.toLowerCase());
+      expect(result?.sources?[1].sourceName.name, 'appStore'.toLowerCase());
     });
 
     test('Парсинг вложенного релиза в источнике', () {

@@ -38,7 +38,7 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<ReleaseSourceConfig>());
-      expect(result?.sourceName?.name, 'github'.toLowerCase());
+      expect(result?.sourceName.name, 'github'.toLowerCase());
       expect(result?.platforms?.length, 2);
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
