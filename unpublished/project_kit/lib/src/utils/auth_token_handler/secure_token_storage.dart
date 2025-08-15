@@ -76,6 +76,8 @@ class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStor
 
   @override
   Future<AuthToken?> build() async {
+    ref.watch(secureTokenStorageIdProvider);
+
     try {
       final token = await read();
       return token;
