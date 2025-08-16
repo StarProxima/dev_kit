@@ -20,8 +20,9 @@ class UserChanged extends _$UserChanged {
     ref.listen(
       secureTokenStorageProvider,
       (asyncPrevToken, asyncCurrentToken) {
-        if (asyncPrevToken == null) return;
-        if (!asyncPrevToken.hasValue) return;
+        if (asyncPrevToken == null || !asyncPrevToken.hasValue) return;
+        if (!asyncCurrentToken.hasValue) return;
+
         final prevUserId = asyncPrevToken.requireValue?.userId;
         final currentUserId = asyncCurrentToken.requireValue?.userId;
         if (prevUserId != currentUserId) ref.invalidateSelf();
