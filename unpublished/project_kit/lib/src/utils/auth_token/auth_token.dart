@@ -1,34 +1,29 @@
 import 'package:fresh_dio/fresh_dio.dart';
 
-/// Обертка над OAuth2Token, чтобы напрямую не зависить от Fresh
-/// и поддержать новые поля
+class AuthToken extends Token {
+  final DateTime? issuedAt;
 
-class AuthToken extends OAuth2Token {
+  @override
+  final DateTime? expiresAt;
   final String? userId;
-  final DateTime? refreshDate;
 
   const AuthToken({
     required super.accessToken,
-    super.tokenType = 'bearer',
+    super.tokenType,
     super.refreshToken,
-    super.scope,
+    this.issuedAt,
+    this.expiresAt,
     this.userId,
-    this.refreshDate,
   });
-
-  @override
-  String toString() {
-    return 'AuthToken(accessToken: $accessToken, tokenType: $tokenType, refreshToken: $refreshToken, scope: $scope, userId: $userId, refreshDate: $refreshDate)';
-  }
 
   Map<String, dynamic> toJson() {
     return {
       'accessToken': accessToken,
       'tokenType': tokenType,
       'refreshToken': refreshToken,
-      'scope': scope,
+      'expiresAt': expiresAt?.toIso8601String(),
+      'issuedAt': issuedAt?.toIso8601String(),
       'userId': userId,
-      'refreshDate': refreshDate?.toIso8601String(),
     };
   }
 
@@ -37,27 +32,32 @@ class AuthToken extends OAuth2Token {
       accessToken: json['accessToken'],
       tokenType: json['tokenType'],
       refreshToken: json['refreshToken'],
-      scope: json['scope'],
+      expiresAt: json['expiresAt'] != null ? DateTime.parse(json['expiresAt']) : null,
+      issuedAt: json['issuedAt'] != null ? DateTime.parse(json['issuedAt']) : null,
       userId: json['userId'],
-      refreshDate: json['refreshDate'] != null ? DateTime.parse(json['refreshDate']) : null,
     );
   }
 
   AuthToken copyWith({
     String? accessToken,
     String? refreshToken,
-    String? userId,
     String? tokenType,
-    String? scope,
-    DateTime? refreshDate,
+    DateTime? issuedAt,
+    DateTime? expiresAt,
+    String? userId,
   }) {
     return AuthToken(
       accessToken: accessToken ?? this.accessToken,
       refreshToken: refreshToken ?? this.refreshToken,
-      userId: userId ?? this.userId,
       tokenType: tokenType ?? this.tokenType,
-      refreshDate: refreshDate ?? this.refreshDate,
-      scope: scope ?? this.scope,
+      issuedAt: issuedAt ?? this.issuedAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      userId: userId ?? this.userId,
     );
+  }
+
+  @override
+  String toString() {
+    return 'AuthToken(accessToken: $accessToken, tokenType: $tokenType, refreshToken: $refreshToken, expiresAt: $expiresAt, issuedAt: $issuedAt, userId: $userId)';
   }
 }
