@@ -1,3 +1,4 @@
+import '../../mergeable.dart';
 import '../../update_entities/update_platform.dart';
 import '../release/release_override_config.dart';
 import '../update_app_settings/update_app_settings_config.dart';
@@ -30,4 +31,21 @@ class ReleasePlatformConfig {
     required this.appSettingsRules,
     required this.customData,
   });
+
+  ReleasePlatformConfig copyWith({
+    UpdatePlatform? platformName,
+    ReleaseOverrideConfig? releaseOverride,
+    List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
+    List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
+    List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+    Map<String, dynamic>? customData,
+  }) =>
+      ReleasePlatformConfig.byRequired(
+        platformName: platformName ?? this.platformName,
+        releaseOverride: releaseOverride ?? this.releaseOverride,
+        contentRules: contentRules ?? this.contentRules,
+        settingsRules: settingsRules ?? this.settingsRules,
+        appSettingsRules: appSettingsRules ?? this.appSettingsRules,
+        customData: Mergeable.mergeCustomData(this.customData, customData),
+      );
 }

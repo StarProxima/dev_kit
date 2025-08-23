@@ -1,3 +1,4 @@
+import '../../mergeable.dart';
 import '../../update_entities/app_status.dart';
 import '../../update_entities/update_date.dart';
 import '../../update_entities/update_locale.dart';
@@ -45,4 +46,31 @@ class UpdateRuleConfig<T> {
     required this.data,
     required this.customData,
   });
+
+  UpdateRuleConfig<T> copyWith({
+    List<AppStatus>? appStatuses,
+    List<UpdateLocale>? locales,
+    List<UpdateViewTarget>? viewTargets,
+    List<UpdateVersionConstraint>? versions,
+    List<UpdateSource>? sources,
+    UpdateDate? date,
+    Duration? delay,
+    Duration? rollout,
+    double? segmentationPercent,
+    T? data,
+    Map<String, dynamic>? customData,
+  }) =>
+      UpdateRuleConfig.byRequired(
+        appStatuses: appStatuses ?? this.appStatuses,
+        locales: locales ?? this.locales,
+        viewTargets: viewTargets ?? this.viewTargets,
+        versions: versions ?? this.versions,
+        sources: sources ?? this.sources,
+        date: date ?? this.date,
+        delay: delay ?? this.delay,
+        rollout: rollout ?? this.rollout,
+        segmentationPercent: segmentationPercent ?? this.segmentationPercent,
+        data: data ?? this.data,
+        customData: Mergeable.mergeCustomData(this.customData, customData),
+      );
 }

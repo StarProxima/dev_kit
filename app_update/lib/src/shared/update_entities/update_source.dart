@@ -52,6 +52,5 @@ class UpdateSource extends UpdateEntityBase {
   ];
 
   @override
-  // TODO: implement params
   List<Object?> get params => [sourceName, ...?platforms];
 }

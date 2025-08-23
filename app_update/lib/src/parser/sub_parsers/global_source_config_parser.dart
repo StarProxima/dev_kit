@@ -29,6 +29,10 @@ class GlobalSourceConfigParser {
     final nameValue = map.remove('name');
     final name = _updateSourceNameParser.parse(nameValue);
 
+    if (name == null) {
+      throw const UpdateConfigException();
+    }
+
     // platforms
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List<dynamic>?) {

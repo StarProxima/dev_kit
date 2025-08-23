@@ -6,7 +6,7 @@ import '../update_rule/update_rule_config.dart';
 import '../update_settings/update_settings_config.dart';
 
 class GlobalSourceConfig {
-  final UpdateSourceName? sourceName;
+  final UpdateSourceName sourceName;
   final List<GlobalPlatformConfig>? platforms;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
@@ -14,7 +14,7 @@ class GlobalSourceConfig {
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({
-    this.sourceName,
+    required this.sourceName,
     this.platforms,
     this.contentRules,
     this.settingsRules,

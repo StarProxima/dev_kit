@@ -1,5 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
+import '../../mergeable.dart';
 import '../../update_entities/update_platform.dart';
 import '../../update_entities/update_source_name.dart';
 import '../update_app_settings/update_app_settings_config.dart';
@@ -27,4 +28,25 @@ class UpdateData {
     required this.appSettingsRules,
     required this.customData,
   });
+
+  UpdateData copyWith({
+    Version? version,
+    DateTime? date,
+    UpdateSourceName? sourceName,
+    UpdatePlatform? platform,
+    List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+    List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
+    List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
+    Map<String, dynamic>? customData,
+  }) =>
+      UpdateData(
+        version: version ?? this.version,
+        date: date ?? this.date,
+        sourceName: sourceName ?? this.sourceName,
+        platform: platform ?? this.platform,
+        appSettingsRules: appSettingsRules ?? this.appSettingsRules,
+        contentRules: contentRules ?? this.contentRules,
+        settingsRules: settingsRules ?? this.settingsRules,
+        customData: Mergeable.mergeCustomData(this.customData, customData),
+      );
 }

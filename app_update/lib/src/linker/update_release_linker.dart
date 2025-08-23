@@ -1,13 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../shared/mergeable.dart';
 import '../shared/models/release/release_config.dart';
 import '../shared/models/release/release_override_config.dart';
 import '../shared/models/release/update_data.dart';
 import '../shared/models/release_platrform/release_platrform_config.dart';
 import '../shared/models/release_source/release_source_config.dart';
+import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/update_entities/update_source.dart';
 import '../shared/update_entities/update_source_name.dart';
+import '../shared/update_entities/update_version_constraint.dart';
 
 class UpdateReleaseLinker {
   const UpdateReleaseLinker();
@@ -29,10 +32,11 @@ class UpdateReleaseLinker {
 
   /// Преобразует релиз в конкретные обновления с источником и платформой.
   ///
+  /// [sources] — список источников, используеются для получения дефолтных платформ.
   /// Если [ReleaseSourceConfig.platforms] null (но не []), то платформы будет созданы
   /// из [UpdateSource.platforms] через [ReleasePlatformConfig] для каждого источника.
   ///
-  /// Если источники  не заданы, то обновлений нет.
+  /// Если источники не заданы, то обновлений нет.
   /// Применяет [ReleaseOverrideConfig], чтобы переопределить параметры релиза.
   ///
   /// Мержит все правила в приоритете:
@@ -74,9 +78,44 @@ class UpdateReleaseLinker {
     required ReleaseSourceConfig source,
     required ReleasePlatformConfig platform,
   }) {
-    final finalRerelase = release.overrideBy(
-      source: source,
-      platform: platform,
+    final finalRerelase = release
+        .overrideBy(
+          source.releaseOverride,
+        )
+        .overrideBy(
+          platform.releaseOverride,
+        );
+
+    List<UpdateRuleConfig<T>>? linkRules<T>(
+      List<UpdateRuleConfig<T>>? rules,
+    ) =>
+        rules
+            ?.map(
+              (rule) => _linkRule(
+                rule: rule,
+                release: release,
+                source: source,
+                platform: platform,
+              ),
+            )
+            .toList();
+
+    final contentRules = Mergeable.mergeRules(
+      linkRules(release.contentRules),
+      linkRules(source.contentRules),
+      linkRules(platform.contentRules),
+    );
+
+    final settingsRules = Mergeable.mergeRules(
+      linkRules(release.settingsRules),
+      linkRules(source.settingsRules),
+      linkRules(platform.settingsRules),
+    );
+
+    final appSettingsRules = Mergeable.mergeRules(
+      linkRules(release.appSettingsRules),
+      linkRules(source.appSettingsRules),
+      linkRules(platform.appSettingsRules),
     );
 
     final finalVersion = finalRerelase.version ?? Version.none;
@@ -86,9 +125,9 @@ class UpdateReleaseLinker {
       date: finalRerelase.date,
       sourceName: source.sourceName,
       platform: platform.platformName,
-      contentRules: finalRerelase.contentRules,
-      settingsRules: finalRerelase.settingsRules,
-      appSettingsRules: finalRerelase.appSettingsRules,
+      contentRules: contentRules,
+      settingsRules: settingsRules,
+      appSettingsRules: appSettingsRules,
       customData: finalRerelase.customData,
     );
   }
@@ -112,5 +151,32 @@ class UpdateReleaseLinker {
         [];
 
     return platforms;
+  }
+
+  /// Добавляет в правило источник, платформу и версию релиза.
+  UpdateRuleConfig<T> _linkRule<T>({
+    required UpdateRuleConfig<T> rule,
+    required ReleaseConfig release,
+    required ReleaseSourceConfig? source,
+    required ReleasePlatformConfig? platform,
+  }) {
+    final finalPlatforms = source?.platforms
+        ?.map((releasePlatformConfig) => releasePlatformConfig.platformName)
+        .where((platformName) => platform == null || platformName == platform.platformName)
+        .toList();
+
+    final finalSource = source != null
+        ? UpdateSource.custom(
+            source.sourceName,
+            platforms: finalPlatforms,
+          )
+        : null;
+
+    final finalRule = rule.copyWith(
+      versions: [UpdateVersionConstraint(release.version)],
+      sources: finalSource != null ? [finalSource] : null,
+    );
+
+    return finalRule;
   }
 }
