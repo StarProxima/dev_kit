@@ -8,6 +8,9 @@ class UpdateLocale extends UpdateEntityName {
   final Locale? locale;
   const UpdateLocale(this.locale, {String name = 'direct'}) : super(name);
 
+  static const ru = UpdateLocale(Locale('ru'), name: 'ru');
+  static const en = UpdateLocale(Locale('en'), name: 'en');
+
   @override
   List<Object?> get params => [name, locale];
 

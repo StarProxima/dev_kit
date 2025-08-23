@@ -3,7 +3,7 @@ class UpdateContentData {
   final String title;
   final String description;
   final String releaseNotesTitle;
-  final String releaseNotes;
+  final String? releaseNotes;
   final String skipButton;
   final String postponeButton;
   final String updateButton;
@@ -34,7 +34,8 @@ class UpdateContentData {
       title: _interpolateString(title, interpolateData),
       description: _interpolateString(description, interpolateData),
       releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
-      releaseNotes: _interpolateString(releaseNotes, interpolateData),
+      releaseNotes:
+          releaseNotes != null ? _interpolateString(releaseNotes!, interpolateData) : null,
       skipButton: _interpolateString(skipButton, interpolateData),
       postponeButton: _interpolateString(postponeButton, interpolateData),
       updateButton: _interpolateString(updateButton, interpolateData),
