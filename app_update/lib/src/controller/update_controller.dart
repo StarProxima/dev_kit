@@ -17,7 +17,7 @@ import '../finalizer/update_finalizer.dart';
 import '../finder/update_finder.dart';
 import '../linker/models/update_settings_data_container.dart';
 import '../linker/models/update_text_data_container.dart';
-import '../linker/update_config_linker.dart';
+import '../linker/sub_linkers/update_data_linker.dart';
 import '../parser/sub_parsers/release_config/release_config.dart';
 import '../parser/sub_parsers/update_model_config/update_model_config.dart';
 import '../parser/update_config_parser.dart';
@@ -29,7 +29,7 @@ import '../sources/source.dart';
 import '../storage/update_storage.dart';
 import '../storage/update_storage_manager.dart';
 import '../version_controller/update_version_controller.dart';
-import 'exceptions.dart';
+import '../shared/models/update_status/update_status.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateControllerBase {
@@ -60,7 +60,7 @@ class UpdateController extends UpdateControllerBase {
   final _updateConfigStream = StreamController<UpdateConfig>();
 
   @override
-  Stream<UpdateResult> get availableUpdateStream => _availableUpdateStream.stream;
+  Stream<UpdateResult> get updateResultStream => _availableUpdateStream.stream;
 
   @override
   Stream<UpdateConfig> get updateConfigStream => _updateConfigStream.stream;
