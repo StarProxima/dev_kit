@@ -4,30 +4,48 @@ import '../../shared/mergeable.dart';
 import '../../shared/models/global_platform/global_platform_config.dart';
 import '../../shared/models/global_source/global_source_config.dart';
 import '../../shared/models/release/update_data.dart';
-import '../../shared/models/update/update_config.dart';
+import '../../shared/models/update_app_settings/update_app_settings_config.dart';
+import '../../shared/models/update_content/update_content_config.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../shared/models/update_settings/update_settings_config.dart';
 import '../../shared/update_entities/update_source.dart';
 
 class UpdateDataLinker {
   const UpdateDataLinker();
 
+  /// Добавляет в обновления переданные правила и правила из глобальных источников.
   List<UpdateData> linkAll({
     required List<UpdateData> updates,
-    required UpdateConfig config,
+    required List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
+    required List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
+    required List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
     required List<GlobalSourceConfig> globalSources,
   }) {
     final finalUpdates = updates
         .map(
-          (update) => link(update: update, config: config, globalSources: globalSources),
+          (update) => link(
+            update: update,
+            contentRules: contentRules,
+            settingsRules: settingsRules,
+            appSettingsRules: appSettingsRules,
+            globalSources: globalSources,
+          ),
         )
         .toList();
 
     return finalUpdates;
   }
 
+  /// Добавляет в обновление переданные правила и правила из глобальных источников.
+  ///
+  /// Мержит все правила в приоритете:
+  /// [...rules, ...globalSourceRules, ...globalPlatformRules, ...updateRules]
+  /// в общий список правил в [UpdateData].
   UpdateData link({
     required UpdateData update,
-    required UpdateConfig config,
+    required List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
+    required List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
+    required List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
     required List<GlobalSourceConfig> globalSources,
   }) {
     final globalSource = globalSources.firstWhereOrNull(
@@ -51,37 +69,37 @@ class UpdateDataLinker {
             )
             .toList();
 
-    final contentRules = Mergeable.mergeRules(
-      config.contentRules,
+    final finalContentRules = Mergeable.mergeRules(
+      contentRules,
       linkRules(globalSource?.contentRules),
       linkRules(globalSourcePlatform?.contentRules),
       update.contentRules,
     );
 
-    final settingsRules = Mergeable.mergeRules(
-      config.settingsRules,
+    final finalSettingsRules = Mergeable.mergeRules(
+      settingsRules,
       linkRules(globalSource?.settingsRules),
       linkRules(globalSourcePlatform?.settingsRules),
       update.settingsRules,
     );
 
-    final appSettingsRules = Mergeable.mergeRules(
-      config.appSettingsRules,
+    final finalAppSettingsRules = Mergeable.mergeRules(
+      appSettingsRules,
       linkRules(globalSource?.appSettingsRules),
       linkRules(globalSourcePlatform?.appSettingsRules),
       update.appSettingsRules,
     );
 
     final finalUpdate = update.copyWith(
-      contentRules: contentRules,
-      settingsRules: settingsRules,
-      appSettingsRules: appSettingsRules,
+      contentRules: finalContentRules,
+      settingsRules: finalSettingsRules,
+      appSettingsRules: finalAppSettingsRules,
     );
 
     return finalUpdate;
   }
 
-  /// Добавляет в правило источник, платформу и версию релиза.
+  /// Добавляет в правило источник и платформу.
   UpdateRuleConfig<T> _linkRule<T>({
     required UpdateRuleConfig<T> rule,
     required GlobalSourceConfig? source,
