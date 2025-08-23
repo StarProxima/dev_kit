@@ -1,20 +1,34 @@
 import 'package:collection/collection.dart';
 
-import '../shared/mergeable.dart';
-import '../shared/models/global_platform/global_platform_config.dart';
-import '../shared/models/global_source/global_source_config.dart';
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update/update_config.dart';
-import '../shared/models/update_rule/update_rule_config.dart';
-import '../shared/update_entities/update_source.dart';
+import '../../shared/mergeable.dart';
+import '../../shared/models/global_platform/global_platform_config.dart';
+import '../../shared/models/global_source/global_source_config.dart';
+import '../../shared/models/release/update_data.dart';
+import '../../shared/models/update/update_config.dart';
+import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../shared/update_entities/update_source.dart';
 
-class UpdateConfigLinker {
-  const UpdateConfigLinker();
+class UpdateDataLinker {
+  const UpdateDataLinker();
 
-  UpdateData link({
+  List<UpdateData> linkAll({
+    required List<UpdateData> updates,
     required UpdateConfig config,
     required List<GlobalSourceConfig> globalSources,
+  }) {
+    final finalUpdates = updates
+        .map(
+          (update) => link(update: update, config: config, globalSources: globalSources),
+        )
+        .toList();
+
+    return finalUpdates;
+  }
+
+  UpdateData link({
     required UpdateData update,
+    required UpdateConfig config,
+    required List<GlobalSourceConfig> globalSources,
   }) {
     final globalSource = globalSources.firstWhereOrNull(
       (source) => source.sourceName == update.sourceName,

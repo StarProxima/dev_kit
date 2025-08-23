@@ -1,16 +1,16 @@
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../shared/mergeable.dart';
-import '../shared/models/release/release_config.dart';
-import '../shared/models/release/release_override_config.dart';
-import '../shared/models/release/update_data.dart';
-import '../shared/models/release_platrform/release_platrform_config.dart';
-import '../shared/models/release_source/release_source_config.dart';
-import '../shared/models/update_rule/update_rule_config.dart';
-import '../shared/update_entities/update_source.dart';
-import '../shared/update_entities/update_source_name.dart';
-import '../shared/update_entities/update_version_constraint.dart';
+import '../../shared/mergeable.dart';
+import '../../shared/models/release/release_config.dart';
+import '../../shared/models/release/release_override_config.dart';
+import '../../shared/models/release/update_data.dart';
+import '../../shared/models/release_platrform/release_platrform_config.dart';
+import '../../shared/models/release_source/release_source_config.dart';
+import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../shared/update_entities/update_source.dart';
+import '../../shared/update_entities/update_source_name.dart';
+import '../../shared/update_entities/update_version_constraint.dart';
 
 class UpdateReleaseLinker {
   const UpdateReleaseLinker();

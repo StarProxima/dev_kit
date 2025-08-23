@@ -39,7 +39,7 @@ class UpdateController extends UpdateControllerBase {
   final _parser = const UpdateConfigParser();
   final UpdateSettingsConfigContainer? _updateSettings;
   final UpdateTextDataContainer? _updateText;
-  final _linker = const UpdateConfigLinker();
+  final _linker = const UpdateDataLinker();
 
   UpdateFinalizer? _finalizer;
   final SourceReleaseFetcherCoordinator _sourceFetcherCoordinator;

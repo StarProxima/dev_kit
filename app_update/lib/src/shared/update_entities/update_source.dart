@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/global_source/global_source_config.dart';
+import '../models/release_source/release_source_config.dart';
 import 'update_entity.dart';
 import 'update_platform.dart';
 import 'update_source_name.dart';
@@ -53,4 +55,18 @@ class UpdateSource extends UpdateEntityBase {
 
   @override
   List<Object?> get params => [sourceName, ...?platforms];
+}
+
+extension ReleaseSourceConfigToUpdateSourceX on ReleaseSourceConfig {
+  UpdateSource toUpdateSource() => UpdateSource.custom(
+        sourceName,
+        platforms: platforms?.map((e) => e.platformName).toList(),
+      );
+}
+
+extension GlobalSourceConfigToUpdateSourceX on GlobalSourceConfig {
+  UpdateSource toUpdateSource() => UpdateSource.custom(
+        sourceName,
+        platforms: platforms?.map((e) => e.platformName).toList(),
+      );
 }
