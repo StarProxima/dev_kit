@@ -1,5 +1,7 @@
 import 'package:pub_semver/pub_semver.dart';
 
+import '../../mergeable.dart';
+
 class ReleaseOverrideConfig {
   final Version? version;
   final DateTime? date;
@@ -16,4 +18,18 @@ class ReleaseOverrideConfig {
     required this.date,
     required this.customData,
   });
+
+  ReleaseOverrideConfig copyWith({
+    Version? version,
+    DateTime? date,
+    Map<String, dynamic>? customData,
+  }) =>
+      ReleaseOverrideConfig(
+        version: version ?? this.version,
+        date: date ?? this.date,
+        customData: Mergeable.mergeCustomData(
+          this.customData,
+          customData,
+        ),
+      );
 }

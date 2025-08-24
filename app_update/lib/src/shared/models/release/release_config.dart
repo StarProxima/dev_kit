@@ -37,7 +37,11 @@ class ReleaseConfig {
     required this.customData,
   });
 
-  ReleaseConfig overrideBy(ReleaseOverrideConfig? overrideData) => ReleaseConfig.byRequired(
+  ReleaseConfig overrideBy(
+    ReleaseOverrideConfig? overrideData, {
+    Map<String, dynamic>? customData,
+  }) =>
+      ReleaseConfig.byRequired(
         version: overrideData?.version ?? version,
         date: overrideData?.date ?? date,
         sources: sources,
@@ -45,6 +49,7 @@ class ReleaseConfig {
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
         customData: Mergeable.mergeCustomData(
+          this.customData,
           customData,
           overrideData?.customData,
         ),

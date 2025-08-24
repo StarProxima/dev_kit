@@ -81,9 +81,11 @@ class UpdateReleaseLinker {
     final finalRerelase = release
         .overrideBy(
           source.releaseOverride,
+          customData: source.customData,
         )
         .overrideBy(
           platform.releaseOverride,
+          customData: platform.customData,
         );
 
     List<UpdateRuleConfig<T>>? linkRules<T>(

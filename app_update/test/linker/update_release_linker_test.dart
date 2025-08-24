@@ -11,6 +11,7 @@ import 'package:app_update/src/shared/update_entities/app_status.dart';
 import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/shared/update_entities/update_source.dart';
 import 'package:app_update/src/shared/update_entities/update_source_name.dart';
+import 'package:app_update/src/shared/update_entities/update_version_constraint.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -465,9 +466,42 @@ void main() {
 
           expect(result, hasLength(1));
           expect(result[0].contentRules, hasLength(3));
-          expect(result[0].contentRules![0], same(releaseRule));
-          expect(result[0].contentRules![1], same(sourceRule));
-          expect(result[0].contentRules![2], same(platformRule));
+
+          final firstRule = result[0].contentRules![0];
+          expect(firstRule.data?.title, releaseRule.data.title);
+          expect(firstRule.versions, contains(UpdateVersionConstraint(release.version)));
+          expect(
+            firstRule.sources?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
+          expect(
+            firstRule.sources?.firstOrNull?.platforms,
+            equals([UpdatePlatform.android]),
+          );
+
+          final secondRule = result[0].contentRules![1];
+          expect(secondRule.data?.description, sourceRule.data.description);
+          expect(secondRule.versions, contains(UpdateVersionConstraint(release.version)));
+          expect(
+            secondRule.sources?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
+          expect(
+            secondRule.sources?.firstOrNull?.platforms,
+            equals([UpdatePlatform.android]),
+          );
+
+          final thirdRule = result[0].contentRules![2];
+          expect(thirdRule.data?.title, platformRule.data.title);
+          expect(thirdRule.versions, contains(UpdateVersionConstraint(release.version)));
+          expect(
+            thirdRule.sources?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
+          expect(
+            thirdRule.sources?.firstOrNull?.platforms,
+            equals([UpdatePlatform.android]),
+          );
         });
 
         test('объединяет все типы правил', () {
@@ -491,9 +525,41 @@ void main() {
           final result = linker.link(release: release, sources: sources);
 
           expect(result, hasLength(1));
-          expect(result[0].contentRules, contains(contentRule));
-          expect(result[0].settingsRules, contains(settingsRule));
-          expect(result[0].appSettingsRules, contains(appSettingsRule));
+          final firstContentRule = result[0].contentRules![0];
+          expect(firstContentRule.data?.title, equals('Title'));
+          expect(firstContentRule.versions, contains(UpdateVersionConstraint(release.version)));
+          expect(
+            firstContentRule.sources?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
+          expect(
+            firstContentRule.sources?.firstOrNull?.platforms,
+            equals([UpdatePlatform.android]),
+          );
+
+          final firstSettingsRule = result[0].settingsRules![0];
+          expect(firstSettingsRule.data?.shouldShow, equals(true));
+          expect(firstSettingsRule.versions, contains(UpdateVersionConstraint(release.version)));
+          expect(
+            firstSettingsRule.sources?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
+          expect(
+            firstSettingsRule.sources?.firstOrNull?.platforms,
+            equals([UpdatePlatform.android]),
+          );
+
+          final firstAppSettingsRule = result[0].appSettingsRules![0];
+          expect(firstAppSettingsRule.data?.appStatus, equals(AppStatus.active));
+          expect(firstAppSettingsRule.versions, contains(UpdateVersionConstraint(release.version)));
+          expect(
+            firstAppSettingsRule.sources?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
+          expect(
+            firstAppSettingsRule.sources?.firstOrNull?.platforms,
+            equals([UpdatePlatform.android]),
+          );
         });
 
         test('обрабатывает множественные правила одного типа', () {
@@ -525,11 +591,11 @@ void main() {
           expect(result, hasLength(1));
           expect(result[0].contentRules, hasLength(5));
           // Порядок: релиз (2), источник (1), платформа (2)
-          expect(result[0].contentRules![0], same(releaseRule1));
-          expect(result[0].contentRules![1], same(releaseRule2));
-          expect(result[0].contentRules![2], same(sourceRule));
-          expect(result[0].contentRules![3], same(platformRule1));
-          expect(result[0].contentRules![4], same(platformRule2));
+          expect(result[0].contentRules![0].data?.title, equals(releaseRule1.data.title));
+          expect(result[0].contentRules![1].data?.title, equals(releaseRule2.data.title));
+          expect(result[0].contentRules![2].data?.description, equals(sourceRule.data.description));
+          expect(result[0].contentRules![3].data?.title, equals(platformRule1.data.title));
+          expect(result[0].contentRules![4].data?.title, equals(platformRule2.data.title));
         });
 
         test('возвращает null для правил если все списки пустые', () {
@@ -588,7 +654,7 @@ void main() {
 
           expect(result, hasLength(1));
           expect(result[0].contentRules, hasLength(1));
-          expect(result[0].contentRules![0], same(contentRule));
+          expect(result[0].contentRules![0].data?.title, equals(contentRule.data.title));
         });
       });
     });
