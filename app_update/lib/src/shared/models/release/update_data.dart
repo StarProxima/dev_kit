@@ -10,7 +10,7 @@ import '../update_settings/update_settings_config.dart';
 
 class UpdateData {
   final Version version;
-  final DateTime? date;
+  final DateTime date;
   final UpdateSourceName sourceName;
   final UpdatePlatform platform;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;

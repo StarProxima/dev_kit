@@ -9,8 +9,8 @@ import '../update_settings/update_settings_config.dart';
 import 'release_override_config.dart';
 
 class ReleaseConfig {
-  final Version? version;
-  final DateTime? date;
+  final Version version;
+  final DateTime date;
   final List<ReleaseSourceConfig>? sources;
   final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
@@ -18,8 +18,8 @@ class ReleaseConfig {
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({
-    this.version,
-    this.date,
+    required this.version,
+    required this.date,
     this.sources,
     this.contentRules,
     this.settingsRules,

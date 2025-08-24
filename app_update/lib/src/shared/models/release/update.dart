@@ -11,6 +11,7 @@ class Update {
   final DateTime? date;
   final UpdateSourceName sourceName;
   final UpdatePlatform platform;
+  final UpdateContentData rawContent;
   final UpdateContentData content;
   final UpdateSettingsData settings;
   final UpdateAppSettingsData appSettings;
@@ -21,6 +22,7 @@ class Update {
     required this.date,
     required this.sourceName,
     required this.platform,
+    required this.rawContent,
     required this.content,
     required this.settings,
     required this.appSettings,

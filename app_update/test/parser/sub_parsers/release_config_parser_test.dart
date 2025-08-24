@@ -37,7 +37,7 @@ void main() {
       final result = parser.parse(map);
       expect(result, isA<ReleaseConfig>());
       expect(result?.version.toString(), '1.2.3+4');
-      expect(result?.date?.year, 2024);
+      expect(result?.date.year, 2024);
       expect(result?.sources, isNotNull);
       expect(result?.sources?.length, 2);
       expect(result?.sources?[0].sourceName.name, 'googlePlay'.toLowerCase());
@@ -54,6 +54,7 @@ void main() {
     test('Парсинг короткого синтаксиса источников', () {
       const yamlStr = '''
         version: '0.1.0'
+        date: '2024-08-24 15:35:00'
         sources:
           - googlePlay
           - appStore
@@ -64,20 +65,24 @@ void main() {
       expect(result?.sources?.length, 2);
       expect(result?.sources?[0].sourceName.name, 'googlePlay'.toLowerCase());
       expect(result?.sources?[1].sourceName.name, 'appStore'.toLowerCase());
+      expect(result?.date, equals(DateTime(2024, 8, 24, 15, 35)));
     });
 
     test('Парсинг вложенного релиза в источнике', () {
       const yamlStr = '''
         version: '0.2.0'
+        date: '2024-08-24 15:35:00'
         sources:
           - name: github
             release_override:
               version: '0.2.1'
+              date: '2025-10-10 12:00:00'
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<ReleaseConfig>());
       expect(result?.sources?[0].releaseOverride?.version.toString(), '0.2.1');
+      expect(result?.sources?[0].releaseOverride?.date, equals(DateTime(2025, 10, 10, 12)));
     });
 
     test('Парсинг null возвращает null', () {

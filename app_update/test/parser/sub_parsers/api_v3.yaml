@@ -292,12 +292,14 @@ releases:
         platforms: [android, ios, aurora]
 
   - version: 0.3.8+10-beta
+    date: 2024-08-24 15:35:00
     content:
       release_notes: Minor Improvements
     sources: []
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
+    date: 2024-08-24 15:35:00
     content:
       - locales: ru
         data:
@@ -311,9 +313,11 @@ releases:
           date: 2014-10-17 23:00:00
 
   - version: 0.0.2+30
+    date: 2024-08-24 15:35:00
     sources: []
 
   - version: 1.2.0
+    date: 2024-08-24 15:35:00
     content:
       release_notes: Improvements
     sources:
@@ -390,6 +394,7 @@ releases:
         platforms: []
 
   - version: 0.2.5
+    date: 2024-08-24 15:35:00
     content:
       title: Title
       description: Description

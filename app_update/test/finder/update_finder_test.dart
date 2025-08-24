@@ -1,5 +1,6 @@
 import 'package:app_update/src/finder/update_finder.dart';
 import 'package:app_update/src/shared/models/release/update_data.dart';
+import 'package:app_update/src/shared/models/update_search/update_find_data.dart';
 import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/shared/update_entities/update_source.dart';
 import 'package:app_update/src/shared/update_entities/update_source_name.dart';
@@ -11,9 +12,9 @@ void main() {
     const finder = UpdateFinder();
 
     // Хелпер для создания UpdateData
-    UpdateData u(
+    UpdateData createUpdateData(
       String version, {
-      DateTime? date,
+      required DateTime date,
       required UpdatePlatform platform,
       required UpdateSourceName source,
     }) {
@@ -33,42 +34,44 @@ void main() {
 
     test('фильтрует по версии/дате/платформе/источнику; одна запись на пару source+platform', () {
       final updates = [
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
-        u('2.1.0',
+        createUpdateData('2.1.0',
             date: DateTime(2025, 01, 01),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay), // будущая дата → skip
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.ios,
             source: UpdateSourceName.appStore), // другая платформа → skip
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.appStore), // другой источник → skip
-        u('1.0.0',
+        createUpdateData('1.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName
                 .googlePlay), // == local → ok, но будет отброшен, т.к. уже есть запись для пары
-        u('0.9.0',
+        createUpdateData('0.9.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay), // < local → break
-        u('0.8.0',
+        createUpdateData('0.8.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay), // не дойдет (после break)
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay],
+        ),
         updates: updates,
       );
 
@@ -76,51 +79,55 @@ void main() {
       expect(res.map((e) => e.version.toString()).toList(), ['2.0.0']);
       expect(res.every((e) => e.platform == UpdatePlatform.android), isTrue);
       expect(res.every((e) => e.sourceName == UpdateSourceName.googlePlay), isTrue);
-      expect(res.every((e) => (e.date == null) || !e.date!.isAfter(currentDate)), isTrue);
+      expect(res.every((e) => !e.date.isAfter(currentDate)), isTrue);
     });
 
-    test('учитывает null дату как допустимую (не фильтрует)', () {
-      final updates = [
-        u(
-          '2.0.0',
-          date: null,
-          platform: UpdatePlatform.android,
-          source: UpdateSourceName.googlePlay,
-        ),
-        u(
-          '1.5.0',
-          date: DateTime(2024, 10, 10),
-          platform: UpdatePlatform.android,
-          source: UpdateSourceName.googlePlay,
-        ),
-      ];
+    // test('учитывает null дату как допустимую (не фильтрует)', () {
+    //   final updates = [
+    //     createUpdateData(
+    //       '2.0.0',
+    //       date: null,
+    //       platform: UpdatePlatform.android,
+    //       source: UpdateSourceName.googlePlay,
+    //     ),
+    //     createUpdateData(
+    //       '1.5.0',
+    //       date: DateTime(2024, 10, 10),
+    //       platform: UpdatePlatform.android,
+    //       source: UpdateSourceName.googlePlay,
+    //     ),
+    //   ];
 
-      final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay],
-        updates: updates,
-      );
+    //   final res = finder.findAvailableUpdates(
+    //     findData: UpdateFindData(
+    //       currentDate: currentDate,
+    //       localVersion: Version.parse('1.0.0'),
+    //       platform: UpdatePlatform.android,
+    //       sources: const [UpdateSource.googlePlay],
+    //     ),
+    //     updates: updates,
+    //   );
 
-      // Одна запись на пару → берется максимальная (2.0.0)
-      expect(res.length, 1);
-      expect(res.first.version, Version.parse('2.0.0'));
-    });
+    //   // Одна запись на пару → берется максимальная (2.0.0)
+    //   expect(res.length, 1);
+    //   expect(res.first.version, Version.parse('2.0.0'));
+    // });
 
     test('возвращает пусто, если ни один источник не совпал', () {
       final updates = [
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.appStore),
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay],
+        ),
         updates: updates,
       );
 
@@ -129,25 +136,27 @@ void main() {
 
     test('выбирает наибольшую версию для каждой пары source+platform', () {
       final updates = [
-        u('1.2.0',
+        createUpdateData('1.2.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
-        u('1.5.0',
+        createUpdateData('1.5.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.appStore),
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+        ),
         updates: updates,
       );
 
@@ -158,25 +167,27 @@ void main() {
 
     test('если максимальная версия пары в будущем, берется следующая допустимая', () {
       final updates = [
-        u('3.0.0',
+        createUpdateData('3.0.0',
             date: DateTime(2025, 01, 01),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay), // future → skip
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
-        u('1.9.0',
+        createUpdateData('1.9.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay],
+        ),
         updates: updates,
       );
 
@@ -186,25 +197,25 @@ void main() {
 
     test('учитывает несколько источников сразу и сортирует по версии по убыванию', () {
       final updates = [
-        u(
+        createUpdateData(
           '2.1.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
           source: UpdateSourceName.gitHub,
         ),
-        u(
+        createUpdateData(
           '2.0.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
           source: UpdateSourceName.googlePlay,
         ),
-        u(
+        createUpdateData(
           '1.9.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
           source: UpdateSourceName.ruStore,
         ),
-        u(
+        createUpdateData(
           '2.1.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
@@ -213,10 +224,12 @@ void main() {
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay, UpdateSource.gitHub, UpdateSource.ruStore],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay, UpdateSource.gitHub, UpdateSource.ruStore],
+        ),
         updates: updates,
       );
 
@@ -234,19 +247,19 @@ void main() {
 
     test('одинаковые версии сортируются по приоритету источников из sources', () {
       final updates = [
-        u(
+        createUpdateData(
           '2.0.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
           source: UpdateSourceName.gitHub,
         ),
-        u(
+        createUpdateData(
           '2.0.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
           source: UpdateSourceName.googlePlay,
         ),
-        u(
+        createUpdateData(
           '2.0.0',
           date: DateTime(2024, 10, 10),
           platform: UpdatePlatform.android,
@@ -255,10 +268,12 @@ void main() {
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay, UpdateSource.ruStore, UpdateSource.gitHub],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay, UpdateSource.ruStore, UpdateSource.gitHub],
+        ),
         updates: updates,
       );
 
@@ -270,21 +285,23 @@ void main() {
 
     test('источники, отсутствующие в списке sources, отфильтровываются', () {
       final updates = [
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: const UpdateSourceName.custom('custom')), // нет в списке
-        u('2.0.0',
+        createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
       ];
 
       final res = finder.findAvailableUpdates(
-        currentDate: currentDate,
-        localVersion: Version.parse('1.0.0'),
-        platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay],
+        findData: UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay],
+        ),
         updates: updates,
       );
 

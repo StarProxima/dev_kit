@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:pub_semver/pub_semver.dart';
 
 import '../../shared/mergeable.dart';
 import '../../shared/models/release/release_config.dart';
@@ -78,7 +77,7 @@ class UpdateReleaseLinker {
     required ReleaseSourceConfig source,
     required ReleasePlatformConfig platform,
   }) {
-    final finalRerelase = release
+    final finalRelease = release
         .overrideBy(
           source.releaseOverride,
           customData: source.customData,
@@ -120,17 +119,15 @@ class UpdateReleaseLinker {
       linkRules(platform.appSettingsRules),
     );
 
-    final finalVersion = finalRerelase.version ?? Version.none;
-
     return UpdateData(
-      version: finalVersion,
-      date: finalRerelase.date,
+      version: finalRelease.version,
+      date: finalRelease.date,
       sourceName: source.sourceName,
       platform: platform.platformName,
       contentRules: contentRules,
       settingsRules: settingsRules,
       appSettingsRules: appSettingsRules,
-      customData: finalRerelase.customData,
+      customData: finalRelease.customData,
     );
   }
 

@@ -52,6 +52,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   late final UpdateControllerBase _controller;
   late UpdateResult _updateResult = const UpdateResult(
     update: null,
+    searchData: null,
     updateStatus: UpdateInitialStatus(),
   );
 

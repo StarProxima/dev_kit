@@ -32,9 +32,17 @@ class ReleaseConfigParser {
     final versionValue = map.remove('version');
     final version = _versionParser.parse(versionValue);
 
+    if (version == null) {
+      throw const UpdateConfigException();
+    }
+
     // date
     final dateValue = map.remove('date');
     final date = _dateTimeParser.parse(dateValue);
+
+    if (date == null) {
+      throw const UpdateConfigException();
+    }
 
     // sources
     final sourcesRawValue = map.remove('sources');

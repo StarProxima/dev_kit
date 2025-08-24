@@ -17,6 +17,7 @@ import '../shared/models/update_content/update_content_data.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_rule/update_rules_container.dart';
+import '../shared/models/update_search/update_find_data.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
 import '../shared/models/update_settings/update_settings_config.dart';
@@ -65,6 +66,8 @@ class UpdateController extends UpdateControllerBase {
     bool shouldFetchGlobalSources = true,
     bool shouldFetchConfig = true,
   }) async {
+    await init();
+
     if (shouldFetchGlobalSources) {
       await _fetchGlobalSourceReleases(locale: locale);
     }
@@ -98,50 +101,62 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   UpdateResult findUpdate(UpdateSearchConfig searchConfig) {
-    var searchData = UpdateSearchData(
+    final findData = UpdateFindData(
       currentDate: searchConfig.currentDate ?? DateTime.now(),
       localVersion: searchConfig.localVersion ?? Version.parse(_packageInfo.version),
       platform: searchConfig.platform ?? UpdatePlatform.current(),
       sources: searchConfig.sources ?? [],
-      locale: searchConfig.locale ?? UpdateLocale.any,
-      appStatus: searchConfig.appStatus,
-      customData: searchConfig.customData,
-      displayTarget: searchConfig.displayTarget ?? UpdateViewTarget.any,
-      rolloutPointer: searchConfig.rolloutPointer ?? 0.5,
-      segmentationPointer: searchConfig.segmentationPointer ?? 0.5,
-      localReleaseDate: null,
-      updateReleaseDate: null,
     );
 
     final updateData = _updateFinder.findMostRelevantUpdate(
-      currentDate: searchData.currentDate,
-      localVersion: searchData.localVersion,
-      platform: searchData.platform,
-      sources: searchData.sources,
+      findData: findData,
       updates: _updates,
     );
 
+    final currentUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
+      findData: findData,
+      updates: _updates,
+    );
+
+    var searchData = UpdateSearchData(
+      currentDate: findData.currentDate,
+      localVersion: findData.localVersion,
+      platform: findData.platform,
+      sources: findData.sources,
+      appStatus: searchConfig.appStatus,
+      locale: searchConfig.locale ?? UpdateLocale.any,
+      displayTarget: searchConfig.displayTarget ?? UpdateViewTarget.any,
+      rolloutPointer: searchConfig.rolloutPointer ?? 0.5,
+      segmentationPointer: searchConfig.segmentationPointer ?? 0.5,
+      localReleaseDate: searchConfig.localReleaseDate ?? currentUpdateData?.date,
+      updateReleaseDate: searchConfig.updateReleaseDate ?? updateData?.date,
+      customData: searchConfig.customData,
+    );
+
     if (updateData == null) {
-      const result = UpdateResult(
+      final result = UpdateResult(
         update: null,
-        updateStatus: UpdateNotFoundException(),
+        searchData: searchData,
+        updateStatus: const UpdateNotFoundException(),
       );
 
       return result;
     }
 
-    final currentUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
-      currentDate: searchData.currentDate,
-      localVersion: searchData.localVersion,
-      platform: searchData.platform,
-      sources: searchData.sources,
-      updates: _updates,
+    final resolvedAppSettingsConfig = _updateRuleResolver.resolve<UpdateAppSettingsConfig>(
+      searchData: searchData,
+      rules: updateData.appSettingsRules!
+          .whereType<UpdateRuleConfig<UpdateAppSettingsConfig>>()
+          .toList(),
     );
 
-    searchData = searchData.copyWith(
-      localReleaseDate: currentUpdateData?.date,
-      updateReleaseDate: updateData.date,
-    );
+    final resolvedAppSettings = UpdateAppSettingsData.fromConfig(resolvedAppSettingsConfig);
+
+    if (searchData.appStatus == null) {
+      searchData = searchData.copyWith(
+        appStatus: resolvedAppSettings.appStatus,
+      );
+    }
 
     final resolvedContentConfig = _updateRuleResolver.resolve<UpdateContentConfig>(
       searchData: searchData,
@@ -157,20 +172,12 @@ class UpdateController extends UpdateControllerBase {
 
     final resolvedSettings = UpdateSettingsData.fromConfig(resolvedSettingsConfig);
 
-    final resolvedAppSettingsConfig = _updateRuleResolver.resolve<UpdateAppSettingsConfig>(
-      searchData: searchData,
-      rules: updateData.appSettingsRules!
-          .whereType<UpdateRuleConfig<UpdateAppSettingsConfig>>()
-          .toList(),
-    );
-
-    final resolvedAppSettings = UpdateAppSettingsData.fromConfig(resolvedAppSettingsConfig);
-
     final mostRelevantUpdate = Update(
       version: updateData.version,
       date: updateData.date,
       sourceName: updateData.sourceName,
       platform: updateData.platform,
+      rawContent: resolvedContent,
       content: resolvedContent,
       settings: resolvedSettings,
       appSettings: resolvedAppSettings,
@@ -178,8 +185,9 @@ class UpdateController extends UpdateControllerBase {
     );
 
     final result = UpdateResult(
-      update: mostRelevantUpdate,
       updateStatus: const UpdateAvailableStatus(),
+      searchData: searchData,
+      update: mostRelevantUpdate,
     );
 
     return result;

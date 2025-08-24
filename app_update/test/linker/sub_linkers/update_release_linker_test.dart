@@ -28,7 +28,7 @@ void main() {
 
     // Хелперы для создания тестовых данных
     ReleaseConfig createRelease({
-      Version? version,
+      required Version version,
       DateTime? date,
       List<ReleaseSourceConfig>? sources,
       List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
@@ -38,7 +38,7 @@ void main() {
     }) {
       return ReleaseConfig(
         version: version,
-        date: date,
+        date: date ?? DateTime.now(),
         sources: sources,
         contentRules: contentRules,
         settingsRules: settingsRules,
@@ -421,22 +421,22 @@ void main() {
               'platformOverride'); // платформа override имеет высший приоритет
         });
 
-        test('использует Version.none если никакая версия не задана', () {
-          final release = createRelease(
-            version: null,
-            sources: [
-              createSource(
-                sourceName: UpdateSourceName.googlePlay,
-                platforms: [createPlatform(platformName: UpdatePlatform.android)],
-              ),
-            ],
-          );
+        // test('использует Version.none если никакая версия не задана', () {
+        //   final release = createRelease(
+        //     version: null,
+        //     sources: [
+        //       createSource(
+        //         sourceName: UpdateSourceName.googlePlay,
+        //         platforms: [createPlatform(platformName: UpdatePlatform.android)],
+        //       ),
+        //     ],
+        //   );
 
-          final result = linker.link(release: release, sources: sources);
+        //   final result = linker.link(release: release, sources: sources);
 
-          expect(result, hasLength(1));
-          expect(result[0].version, Version.none);
-        });
+        //   expect(result, hasLength(1));
+        //   expect(result[0].version, Version.none);
+        // });
       });
 
       group('объединение правил', () {

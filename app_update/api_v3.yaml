@@ -134,15 +134,15 @@ app_settings:
       app_status: outdated
 
   # Sets the lifecycle of the application updates.
-  # The `date: app_release` parameter calculates the release of 
-  # the current or nearest  version and uses it instead of `date`.
-  # If the date is not found in the `releases` list,
+  # The `date: $localReleaseDate` parameter calculates the release of 
+  # the current version and uses it instead of `date`.
+  # If the current version is not found in the `releases` list,
   # then rule is not applied.
   #
   # any matched versions are:
   # outdated if is older than 10 days
-  # deprecated if is older than 144 days
-  # unsupported if is older than 278 days
+  # deprecated if is older than 127 days
+  # unsupported if is older than 247 days
   - versions: any
     date: $localReleaseDate
     delay_hours: 168 # 7 days

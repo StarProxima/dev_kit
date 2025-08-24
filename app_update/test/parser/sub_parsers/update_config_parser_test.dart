@@ -34,7 +34,7 @@ void main() {
       // Проверка settings_rules
       expect(result?.settingsRules?.any((r) => r.data?.shouldShow == false), isTrue);
       // Проверка sources
-      expect(result?.sources?.any((s) => s.sourceName?.name == 'appstore'), isTrue);
+      expect(result?.sources?.any((s) => s.sourceName.name == 'appstore'), isTrue);
       expect(
           result?.sources
               ?.any((s) => s.platforms?.any((p) => p.platformName.name == 'macos') ?? false),
@@ -50,7 +50,7 @@ void main() {
               .any((r) => r.customData?.containsKey('is_super_ultra_mega_release') ?? false),
           isTrue);
       // Проверка вложенных источников и платформ
-      final githubSource = result?.sources?.firstWhere((s) => s.sourceName?.name == 'github');
+      final githubSource = result?.sources?.firstWhere((s) => s.sourceName.name == 'github');
       expect(githubSource?.platforms, isNotNull);
       expect(githubSource?.platforms?.any((p) => p.platformName.name == 'android'), isTrue);
       // Проверка вложенного release в source

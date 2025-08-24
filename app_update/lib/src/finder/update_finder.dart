@@ -1,9 +1,7 @@
 import 'package:collection/collection.dart';
-import 'package:pub_semver/pub_semver.dart';
 
 import '../shared/models/release/update_data.dart';
-import '../shared/update_entities/update_platform.dart';
-import '../shared/update_entities/update_source.dart';
+import '../shared/models/update_search/update_find_data.dart';
 
 class UpdateFinder {
   const UpdateFinder();
@@ -11,25 +9,12 @@ class UpdateFinder {
   /// Ищет последние подходящие обновления для конкретной платформы и источника,
   /// учитывая фильтры по версии и дате.
   ///
-  /// При одинаковой версии сортирует по приоритету источника согласно порядку в [sources].
+  /// При одинаковой версии сортирует по приоритету источника согласно порядку в [UpdateFindData.sources].
   List<UpdateData> findAvailableUpdates({
-    required DateTime currentDate,
-    required Version localVersion,
-    required UpdatePlatform platform,
-    required List<UpdateSource> sources,
+    required UpdateFindData findData,
     required List<UpdateData> updates,
   }) {
-    // Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [sources]
-    final sortedUpdates = updates.sorted((a, b) {
-      final byVersionDesc = b.version.compareTo(a.version);
-      if (byVersionDesc != 0) return byVersionDesc;
-
-      final aIdx = sources.indexWhere((e) => e.sourceName == a.sourceName);
-      final bIdx = sources.indexWhere((e) => e.sourceName == b.sourceName);
-      final aSafe = aIdx < 0 ? sources.length : aIdx;
-      final bSafe = bIdx < 0 ? sources.length : bIdx;
-      return aSafe.compareTo(bSafe);
-    });
+    final sortedUpdates = _sortUpdates(updates, findData);
 
     final result = <UpdateData>[];
 
@@ -38,10 +23,10 @@ class UpdateFinder {
         continue;
       }
 
-      if (update.version <= localVersion) break;
-      if (update.date?.isAfter(currentDate) ?? false) continue;
-      if (update.platform != platform) continue;
-      if (!sources.any((source) =>
+      if (update.version <= findData.localVersion) break;
+      if (update.date.isAfter(findData.currentDate)) continue;
+      if (update.platform != findData.platform) continue;
+      if (!findData.sources.any((source) =>
           source.sourceName == update.sourceName &&
           (source.platforms?.contains(update.platform) ?? false))) {
         continue;
@@ -54,17 +39,11 @@ class UpdateFinder {
   }
 
   UpdateData? findMostRelevantUpdate({
-    required DateTime currentDate,
-    required Version localVersion,
-    required UpdatePlatform platform,
-    required List<UpdateSource> sources,
+    required UpdateFindData findData,
     required List<UpdateData> updates,
   }) {
     final availableUpdates = findAvailableUpdates(
-      currentDate: currentDate,
-      localVersion: localVersion,
-      platform: platform,
-      sources: sources,
+      findData: findData,
       updates: updates,
     );
 
@@ -72,23 +51,10 @@ class UpdateFinder {
   }
 
   List<UpdateData> findCurrentUpdates({
-    required DateTime currentDate,
-    required Version localVersion,
-    required UpdatePlatform platform,
-    required List<UpdateSource> sources,
+    required UpdateFindData findData,
     required List<UpdateData> updates,
   }) {
-    // Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [sources]
-    final sortedUpdates = updates.sorted((a, b) {
-      final byVersionDesc = b.version.compareTo(a.version);
-      if (byVersionDesc != 0) return byVersionDesc;
-
-      final aIdx = sources.indexWhere((e) => e.sourceName == a.sourceName);
-      final bIdx = sources.indexWhere((e) => e.sourceName == b.sourceName);
-      final aSafe = aIdx < 0 ? sources.length : aIdx;
-      final bSafe = bIdx < 0 ? sources.length : bIdx;
-      return aSafe.compareTo(bSafe);
-    });
+    final sortedUpdates = _sortUpdates(updates, findData);
 
     final result = <UpdateData>[];
 
@@ -97,11 +63,11 @@ class UpdateFinder {
         continue;
       }
 
-      if (update.version < localVersion) break;
-      if (update.version > localVersion) continue;
-      if (update.date?.isAfter(currentDate) ?? false) continue;
-      if (update.platform != platform) continue;
-      if (!sources.any((source) =>
+      if (update.version < findData.localVersion) break;
+      if (update.version > findData.localVersion) continue;
+      if (update.date.isAfter(findData.currentDate)) continue;
+      if (update.platform != findData.platform) continue;
+      if (!findData.sources.any((source) =>
           source.sourceName == update.sourceName &&
           (source.platforms?.contains(update.platform) ?? false))) {
         continue;
@@ -114,20 +80,28 @@ class UpdateFinder {
   }
 
   UpdateData? findMostRelevantCurrentUpdate({
-    required DateTime currentDate,
-    required Version localVersion,
-    required UpdatePlatform platform,
-    required List<UpdateSource> sources,
+    required UpdateFindData findData,
     required List<UpdateData> updates,
   }) {
     final currentUpdates = findCurrentUpdates(
-      currentDate: currentDate,
-      localVersion: localVersion,
-      platform: platform,
-      sources: sources,
+      findData: findData,
       updates: updates,
     );
 
     return currentUpdates.firstOrNull;
+  }
+
+  /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateFindData.sources]
+  List<UpdateData> _sortUpdates(List<UpdateData> updates, UpdateFindData findData) {
+    return updates.sorted((a, b) {
+      final byVersionDesc = b.version.compareTo(a.version);
+      if (byVersionDesc != 0) return byVersionDesc;
+
+      final aIdx = findData.sources.indexWhere((e) => e.sourceName == a.sourceName);
+      final bIdx = findData.sources.indexWhere((e) => e.sourceName == b.sourceName);
+      final aSafe = aIdx < 0 ? findData.sources.length : aIdx;
+      final bSafe = bIdx < 0 ? findData.sources.length : bIdx;
+      return aSafe.compareTo(bSafe);
+    });
   }
 }

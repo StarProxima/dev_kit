@@ -1,8 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
 import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/sub_parsers/global_source_config_parser.dart';
 import 'package:app_update/src/shared/models/global_source/global_source_config.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:yaml/yaml.dart';
 
 void main() {
   group('GlobalSourceConfigParser', () {
@@ -31,7 +31,7 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<GlobalSourceConfig>());
-      expect(result?.sourceName?.name, 'github');
+      expect(result?.sourceName.name, 'github');
       expect(result?.platforms?.length, 2);
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
