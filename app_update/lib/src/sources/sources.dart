@@ -28,14 +28,16 @@ enum Sources {
       );
 
   static Future<Sources?> checkAppSource() async {
-    final installationSource = await checker.StoreChecker.getSource.onError((_, __) => checker.Source.UNKNOWN);
+    final installationSource =
+        await checker.StoreChecker.getSource.onError((_, __) => checker.Source.UNKNOWN);
     final sourceCheckerName = switch (installationSource) {
       checker.Source.IS_INSTALLED_FROM_PLAY_STORE => Sources.googlePlay,
       checker.Source.IS_INSTALLED_FROM_PLAY_PACKAGE_INSTALLER => Sources.googlePlayPackageInstaller,
       checker.Source.IS_INSTALLED_FROM_AMAZON_APP_STORE => Sources.amazonAppStore,
       checker.Source.IS_INSTALLED_FROM_HUAWEI_APP_GALLERY => Sources.huaweiAppGallery,
       checker.Source.IS_INSTALLED_FROM_SAMSUNG_GALAXY_STORE => Sources.samsungGalaxyStore,
-      checker.Source.IS_INSTALLED_FROM_SAMSUNG_SMART_SWITCH_MOBILE => Sources.samsungSmartSwitchMobile,
+      checker.Source.IS_INSTALLED_FROM_SAMSUNG_SMART_SWITCH_MOBILE =>
+        Sources.samsungSmartSwitchMobile,
       checker.Source.IS_INSTALLED_FROM_XIAOMI_GET_APPS => Sources.xiaomiGetApps,
       checker.Source.IS_INSTALLED_FROM_OPPO_APP_MARKET => Sources.oppoAppMarket,
       checker.Source.IS_INSTALLED_FROM_VIVO_APP_STORE => Sources.vivoAppStore,

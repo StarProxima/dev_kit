@@ -23,7 +23,7 @@ class UpdateConfigFetcherCoordinator {
   }) async {
     final configs = <UpdateConfig>[];
 
-    final searchData = _updateSearcher.searchDataFromConfig(
+    final searchData = _updateSearcher.getSearchDataWithDefaults(
       searchConfig: searchConfig,
       packageInfo: packageInfo,
     );

@@ -13,6 +13,7 @@ import '../shared/models/release/update_data.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_status/update_status.dart';
+import '../source/update_source_checker.dart';
 import 'update_config_fetcher_coordinator.dart';
 import 'update_contoller_base.dart';
 import 'update_data_resolver.dart';
@@ -35,6 +36,7 @@ class UpdateController extends UpdateControllerBase {
   late final UpdateDataResolver _updateDataResolver;
   late final UpdateLinker _updateLinker;
   late final UpdateSearcher _updateSearcher;
+  late final UpdateSourceChecker _updateSourceChecker;
 
   UpdateController({
     List<UpdateConfigFetcherBase> fetchers = const [
@@ -43,14 +45,18 @@ class UpdateController extends UpdateControllerBase {
     ],
     UpdateConfigFetcherCoordinator? fetcherCoordinator,
     UpdateDataResolver? updateDataResolver,
+    UpdateSourceChecker? updateSourceChecker,
     UpdateLinker? linker,
     UpdateSearcher? searcher,
   }) {
     _fetchers = fetchers;
 
+    _updateSourceChecker = updateSourceChecker ?? UpdateSourceChecker();
+
     _updateSearcher = searcher ??
-        const UpdateSearcher(
-          updateFinder: UpdateFinder(),
+        UpdateSearcher(
+          updateFinder: const UpdateFinder(),
+          updateSourceChecker: _updateSourceChecker,
         );
 
     _fetcherCoordinator = fetcherCoordinator ??
@@ -60,10 +66,7 @@ class UpdateController extends UpdateControllerBase {
 
     _fetcherCoordinator = fetcherCoordinator ??
         UpdateConfigFetcherCoordinator(
-          updateSearcher: searcher ??
-              const UpdateSearcher(
-                updateFinder: UpdateFinder(),
-              ),
+          updateSearcher: _updateSearcher,
         );
 
     _updateDataResolver = updateDataResolver ??
@@ -78,6 +81,7 @@ class UpdateController extends UpdateControllerBase {
     if (_initCompleter.isCompleted) return;
 
     _packageInfo = await PackageInfo.fromPlatform();
+    await _updateSourceChecker.init();
 
     if (_initCompleter.isCompleted) return;
 

@@ -9,23 +9,31 @@ import '../shared/models/update_search/update_search_data.dart';
 import '../shared/update_entities/update_locale.dart';
 import '../shared/update_entities/update_platform.dart';
 import '../shared/update_entities/update_view_target.dart';
+import '../source/update_source_checker.dart';
 
 class UpdateSearcher {
   final UpdateFinder _updateFinder;
+  final UpdateSourceChecker _updateSourceChecker;
 
   const UpdateSearcher({
     required UpdateFinder updateFinder,
-  }) : _updateFinder = updateFinder;
+    required UpdateSourceChecker updateSourceChecker,
+  })  : _updateFinder = updateFinder,
+        _updateSourceChecker = updateSourceChecker;
 
-  UpdateSearchData searchDataFromConfig({
+  UpdateSearchData getSearchDataWithDefaults({
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
   }) {
+    final defaultSources = _updateSourceChecker.getDefaultSupportedSources(
+      platform: searchConfig.platform ?? UpdatePlatform.current(),
+    );
+
     final defaultSearchData = UpdateSearchData(
       currentDate: DateTime.now(),
       localVersion: Version.parse(packageInfo.version),
       platform: UpdatePlatform.current(),
-      sources: [],
+      sources: defaultSources,
       appStatus: null,
       locale: UpdateLocale.any,
       displayTarget: UpdateViewTarget.any,
@@ -60,7 +68,7 @@ class UpdateSearcher {
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
   }) {
-    var searchData = searchDataFromConfig(
+    var searchData = getSearchDataWithDefaults(
       searchConfig: searchConfig,
       packageInfo: packageInfo,
     );

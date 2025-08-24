@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 void main() async {
   final controller = UpdateController();
 
-  await controller.fetch();
+  await controller.fetch(const UpdateSearchConfig());
 
   // ignore: unused_local_variable
   final widget = Scaffold(

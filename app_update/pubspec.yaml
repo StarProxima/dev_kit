@@ -19,7 +19,7 @@ dependencies:
   html: ^0.15.4
   shared_preferences: ^2.2.2
   url_launcher: ^6.1.14
-  store_checker: ^1.6.0
+  store_checker: ^1.8.0
   collection: ^1.18.0
   http: ^1.2.2
 
