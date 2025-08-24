@@ -5,7 +5,7 @@ enum UpdateStatusType {
   initial,
 
   /// Обновление доступно.
-  available,
+  found,
 
   /// Не получилось получить обновления ни с конфига, ни с фетчеров.
   failedToFetch,
@@ -38,8 +38,8 @@ sealed class UpdateStatus {
   });
 }
 
-class UpdateAvailableStatus extends UpdateStatus {
-  const UpdateAvailableStatus() : super(type: UpdateStatusType.available);
+class UpdateFoundStatus extends UpdateStatus {
+  const UpdateFoundStatus() : super(type: UpdateStatusType.found);
 }
 
 class UpdateInitialStatus extends UpdateStatus {

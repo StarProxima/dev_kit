@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pub_semver/pub_semver.dart';
 
 import '../fetcher/update_config_fetcher.dart';
 import '../finder/update_finder.dart';
@@ -10,23 +9,13 @@ import '../linker/update_inker.dart';
 import '../rule_resolver/update_rule_resolver.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/release/update_data.dart';
-import '../shared/models/update_app_settings/update_app_settings_config.dart';
-import '../shared/models/update_app_settings/update_app_settings_data.dart';
-import '../shared/models/update_content/update_content_config.dart';
-import '../shared/models/update_content/update_content_data.dart';
 import '../shared/models/update_result/update_result.dart';
-import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_rule/update_rules_container.dart';
-import '../shared/models/update_search/update_find_data.dart';
 import '../shared/models/update_search/update_search_config.dart';
-import '../shared/models/update_search/update_search_data.dart';
-import '../shared/models/update_settings/update_settings_config.dart';
-import '../shared/models/update_settings/update_settings_data.dart';
 import '../shared/models/update_status/update_status.dart';
-import '../shared/update_entities/update_locale.dart';
-import '../shared/update_entities/update_platform.dart';
-import '../shared/update_entities/update_view_target.dart';
 import 'update_contoller_base.dart';
+import 'update_data_resolver.dart';
+import 'update_searcher.dart';
 
 class UpdateController extends UpdateControllerBase {
   final _initCompleter = Completer<void>();
@@ -36,19 +25,25 @@ class UpdateController extends UpdateControllerBase {
   List<UpdateData> _updates = [];
 
   final UpdateConfigFetcher? _updateConfigFetcher;
-  final UpdateRuleResolver _updateRuleResolver;
+  final UpdateDataResolver _updateDataResolver;
   final UpdateLinker _updateLinker;
-  final UpdateFinder _updateFinder;
+  final UpdateSearcher _updateSearcher;
 
   UpdateController({
     UpdateConfigFetcher? fetcher,
-    UpdateRuleResolver? ruleResolver,
+    UpdateDataResolver? updateDataResolver,
     UpdateLinker? linker,
-    UpdateFinder? finder,
+    UpdateSearcher? searcher,
   })  : _updateConfigFetcher = fetcher,
-        _updateRuleResolver = ruleResolver ?? const UpdateRuleResolver(),
-        _updateLinker = linker ?? const UpdateLinker(),
-        _updateFinder = finder ?? const UpdateFinder();
+        _updateDataResolver = updateDataResolver ??
+            const UpdateDataResolver(
+              ruleResolver: UpdateRuleResolver(),
+            ),
+        _updateSearcher = searcher ??
+            const UpdateSearcher(
+              updateFinder: UpdateFinder(),
+            ),
+        _updateLinker = linker ?? const UpdateLinker();
 
   Future<void> init() async {
     if (_initCompleter.isCompleted) return;
@@ -105,36 +100,10 @@ class UpdateController extends UpdateControllerBase {
       throw Exception('UpdateController is not initialized');
     }
 
-    final findData = UpdateFindData(
-      currentDate: searchConfig.currentDate ?? DateTime.now(),
-      localVersion: searchConfig.localVersion ?? Version.parse(_packageInfo.version),
-      platform: searchConfig.platform ?? UpdatePlatform.current(),
-      sources: searchConfig.sources ?? [],
-    );
-
-    final updateData = _updateFinder.findMostRelevantUpdate(
-      findData: findData,
+    final (:updateData, :searchData) = _updateSearcher.search(
       updates: _updates,
-    );
-
-    final currentUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
-      findData: findData,
-      updates: _updates,
-    );
-
-    var searchData = UpdateSearchData(
-      currentDate: findData.currentDate,
-      localVersion: findData.localVersion,
-      platform: findData.platform,
-      sources: findData.sources,
-      appStatus: searchConfig.appStatus,
-      locale: searchConfig.locale ?? UpdateLocale.any,
-      displayTarget: searchConfig.displayTarget ?? UpdateViewTarget.any,
-      rolloutPointer: searchConfig.rolloutPointer ?? 0.5,
-      segmentationPointer: searchConfig.segmentationPointer ?? 0.5,
-      localReleaseDate: searchConfig.localReleaseDate ?? currentUpdateData?.date,
-      updateReleaseDate: searchConfig.updateReleaseDate ?? updateData?.date,
-      customData: searchConfig.customData,
+      packageInfo: _packageInfo,
+      searchConfig: searchConfig,
     );
 
     if (updateData == null) {
@@ -147,51 +116,9 @@ class UpdateController extends UpdateControllerBase {
       return result;
     }
 
-    final resolvedAppSettingsConfig = _updateRuleResolver.resolve<UpdateAppSettingsConfig>(
+    final result = _updateDataResolver.resolve(
+      updateData: updateData,
       searchData: searchData,
-      rules: updateData.appSettingsRules!
-          .whereType<UpdateRuleConfig<UpdateAppSettingsConfig>>()
-          .toList(),
-    );
-
-    final resolvedAppSettings = UpdateAppSettingsData.fromConfig(resolvedAppSettingsConfig);
-
-    if (searchData.appStatus == null) {
-      searchData = searchData.copyWith(
-        appStatus: resolvedAppSettings.appStatus,
-      );
-    }
-
-    final resolvedContentConfig = _updateRuleResolver.resolve<UpdateContentConfig>(
-      searchData: searchData,
-      rules: updateData.contentRules!.whereType<UpdateRuleConfig<UpdateContentConfig>>().toList(),
-    );
-
-    final resolvedContent = UpdateContentData.fromConfig(resolvedContentConfig);
-
-    final resolvedSettingsConfig = _updateRuleResolver.resolve<UpdateSettingsConfig>(
-      searchData: searchData,
-      rules: updateData.settingsRules!.whereType<UpdateRuleConfig<UpdateSettingsConfig>>().toList(),
-    );
-
-    final resolvedSettings = UpdateSettingsData.fromConfig(resolvedSettingsConfig);
-
-    final mostRelevantUpdate = Update(
-      version: updateData.version,
-      date: updateData.date,
-      sourceName: updateData.sourceName,
-      platform: updateData.platform,
-      rawContent: resolvedContent,
-      content: resolvedContent,
-      settings: resolvedSettings,
-      appSettings: resolvedAppSettings,
-      customData: updateData.customData,
-    );
-
-    final result = UpdateResult(
-      updateStatus: const UpdateAvailableStatus(),
-      searchData: searchData,
-      update: mostRelevantUpdate,
     );
 
     return result;
