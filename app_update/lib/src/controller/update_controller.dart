@@ -1,49 +1,78 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../fetcher/update_config_fetcher.dart';
+import '../fetcher/source_fetchers/app_store_update_config_fetcher.dart';
+import '../fetcher/source_fetchers/google_play_update_config_fetcher.dart';
+import '../fetcher/update_config_fetcher_base.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_inker.dart';
 import '../rule_resolver/update_rule_resolver.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/release/update_data.dart';
 import '../shared/models/update_result/update_result.dart';
-import '../shared/models/update_rule/update_rules_container.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_status/update_status.dart';
+import 'update_config_fetcher_coordinator.dart';
 import 'update_contoller_base.dart';
 import 'update_data_resolver.dart';
 import 'update_searcher.dart';
 
 class UpdateController extends UpdateControllerBase {
+  @override
+  Stream<void> get onFetch => _onFetchStreamController.stream;
+
+  final _onFetchStreamController = StreamController<void>.broadcast();
+
   final _initCompleter = Completer<void>();
 
   late PackageInfo _packageInfo;
 
   List<UpdateData> _updates = [];
 
-  final UpdateConfigFetcher? _updateConfigFetcher;
-  final UpdateDataResolver _updateDataResolver;
-  final UpdateLinker _updateLinker;
-  final UpdateSearcher _updateSearcher;
+  late final List<UpdateConfigFetcherBase> _fetchers;
+  late final UpdateConfigFetcherCoordinator _fetcherCoordinator;
+  late final UpdateDataResolver _updateDataResolver;
+  late final UpdateLinker _updateLinker;
+  late final UpdateSearcher _updateSearcher;
 
   UpdateController({
-    UpdateConfigFetcher? fetcher,
+    List<UpdateConfigFetcherBase> fetchers = const [
+      GooglePlayUpdateConfigFetcher(),
+      AppStoreUpdateConfigFetcher(),
+    ],
+    UpdateConfigFetcherCoordinator? fetcherCoordinator,
     UpdateDataResolver? updateDataResolver,
     UpdateLinker? linker,
     UpdateSearcher? searcher,
-  })  : _updateConfigFetcher = fetcher,
-        _updateDataResolver = updateDataResolver ??
-            const UpdateDataResolver(
-              ruleResolver: UpdateRuleResolver(),
-            ),
-        _updateSearcher = searcher ??
-            const UpdateSearcher(
-              updateFinder: UpdateFinder(),
-            ),
-        _updateLinker = linker ?? const UpdateLinker();
+  }) {
+    _fetchers = fetchers;
+
+    _updateSearcher = searcher ??
+        const UpdateSearcher(
+          updateFinder: UpdateFinder(),
+        );
+
+    _fetcherCoordinator = fetcherCoordinator ??
+        UpdateConfigFetcherCoordinator(
+          updateSearcher: _updateSearcher,
+        );
+
+    _fetcherCoordinator = fetcherCoordinator ??
+        UpdateConfigFetcherCoordinator(
+          updateSearcher: searcher ??
+              const UpdateSearcher(
+                updateFinder: UpdateFinder(),
+              ),
+        );
+
+    _updateDataResolver = updateDataResolver ??
+        const UpdateDataResolver(
+          ruleResolver: UpdateRuleResolver(),
+        );
+
+    _updateLinker = linker ?? const UpdateLinker();
+  }
 
   Future<void> init() async {
     if (_initCompleter.isCompleted) return;
@@ -56,42 +85,23 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<void> fetch({
-    Locale? locale,
+  Future<void> fetch(
+    UpdateSearchConfig searchConfig, {
     bool shouldFetchGlobalSources = true,
     bool shouldFetchConfig = true,
   }) async {
     await init();
 
-    if (shouldFetchGlobalSources) {
-      await _fetchGlobalSourceReleases(locale: locale);
-    }
-
-    if (shouldFetchConfig) {
-      await _fetchUpdateConfig();
-    }
-  }
-
-  Future<void> _fetchGlobalSourceReleases({Locale? locale}) async {
-    // TODO: implement fetchGlobalSourceReleases
-  }
-
-  Future<void> _fetchUpdateConfig() async {
-    final fetcher = _updateConfigFetcher;
-
-    if (fetcher == null) return;
-
-    final config = await fetcher.fetch();
-
-    _updates = _updateLinker.linkAll(
-      releases: config.releases,
-      rulesContainer: UpdateRulesContainer(
-        contentRules: config.contentRules,
-        settingsRules: config.settingsRules,
-        appSettingsRules: config.appSettingsRules,
-      ),
-      globalSources: config.sources ?? [],
+    final configs = await _fetcherCoordinator.fetch(
+      fetchers: _fetchers,
+      searchConfig: searchConfig,
+      packageInfo: _packageInfo,
     );
+
+    final updates = _updateLinker.linkAllConfigs(configs);
+
+    _updates = updates;
+    _onFetchStreamController.add(null);
   }
 
   @override

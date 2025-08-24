@@ -79,12 +79,18 @@ class UpdateReleaseLinker {
   }) {
     final finalRelease = release
         .overrideBy(
+          ReleaseOverrideConfig(
+            customData: Mergeable.mergeCustomData(
+              source.customData,
+              platform.customData,
+            ),
+          ),
+        )
+        .overrideBy(
           source.releaseOverride,
-          customData: source.customData,
         )
         .overrideBy(
           platform.releaseOverride,
-          customData: platform.customData,
         );
 
     List<UpdateRuleConfig<T>>? linkRules<T>(

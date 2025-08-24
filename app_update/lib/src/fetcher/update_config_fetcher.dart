@@ -2,13 +2,16 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:yaml/yaml.dart';
 
 import '../parser/common.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/models/update/update_config.dart';
+import 'update_config_fetcher_base.dart';
 
-class UpdateConfigFetcher {
+class UpdateConfigFetcher implements UpdateConfigFetcherGlobal {
   final UpdateConfigParser _updateConfigParser;
 
   final Future<Map<String, dynamic>> Function()? _fetchRawConfig;
@@ -36,7 +39,11 @@ class UpdateConfigFetcher {
         () => _defaultFetchByFile(file),
       );
 
-  Future<UpdateConfig> fetch() async {
+  @override
+  Future<UpdateConfig> fetch({
+    required Locale locale,
+    required PackageInfo packageInfo,
+  }) async {
     final fetchRawConfig = _fetchRawConfig;
     if (fetchRawConfig != null) {
       final result = await fetchRawConfig();

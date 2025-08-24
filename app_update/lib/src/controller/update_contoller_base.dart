@@ -1,16 +1,17 @@
 // ignore_for_file: unused_field
 
 import 'dart:async';
-import 'dart:ui';
 
 import '../shared/models/release/update.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
 
 abstract class UpdateControllerBase {
+  Stream<void> get onFetch;
+
   /// Going to network to get the UpdateConfig and Releses from global sources to get the latest updates.
-  Future<void> fetch({
-    Locale locale,
+  Future<void> fetch(
+    UpdateSearchConfig searchConfig, {
     bool shouldFetchGlobalSources = true,
     bool shouldFetchConfig = true,
   });

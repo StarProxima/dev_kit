@@ -1,7 +1,12 @@
 import '../shared/models/global_source/global_source_config.dart';
 import '../shared/models/release/release_config.dart';
 import '../shared/models/release/update_data.dart';
+import '../shared/models/update/update_config.dart';
+import '../shared/models/update_app_settings/update_app_settings_config.dart';
+import '../shared/models/update_content/update_content_config.dart';
+import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_rule/update_rules_container.dart';
+import '../shared/models/update_settings/update_settings_config.dart';
 import '../shared/update_entities/update_source.dart';
 import 'sub_linkers/update_data_linker.dart';
 import 'sub_linkers/update_release_linker.dart';
@@ -11,6 +16,36 @@ class UpdateLinker {
 
   static const _updateReleaseLinker = UpdateReleaseLinker();
   static const _updateDataLinker = UpdateDataLinker();
+
+  List<UpdateData> linkAllConfigs(
+    List<UpdateConfig> configs,
+  ) {
+    final globalSources = <GlobalSourceConfig>[];
+    final releases = <ReleaseConfig>[];
+    final contentRules = <UpdateRuleConfig<UpdateContentConfig?>>[];
+    final settingsRules = <UpdateRuleConfig<UpdateSettingsConfig?>>[];
+    final appSettingsRules = <UpdateRuleConfig<UpdateAppSettingsConfig?>>[];
+
+    for (final config in configs) {
+      globalSources.addAll(config.sources ?? []);
+      releases.addAll(config.releases);
+      contentRules.addAll(config.contentRules ?? []);
+      settingsRules.addAll(config.settingsRules ?? []);
+      appSettingsRules.addAll(config.appSettingsRules ?? []);
+    }
+
+    final finalUpdates = linkAll(
+      globalSources: globalSources,
+      releases: releases,
+      rulesContainer: UpdateRulesContainer(
+        contentRules: contentRules,
+        settingsRules: settingsRules,
+        appSettingsRules: appSettingsRules,
+      ),
+    );
+
+    return finalUpdates;
+  }
 
   /// Преобразует релизы в конкретные обновления с источником и платформой
   /// и мержит все правила.

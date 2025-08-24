@@ -17,8 +17,7 @@ class UpdateSearcher {
     required UpdateFinder updateFinder,
   }) : _updateFinder = updateFinder;
 
-  ({UpdateData? updateData, UpdateSearchData searchData}) search({
-    required List<UpdateData> updates,
+  UpdateSearchData searchDataFromConfig({
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
   }) {
@@ -37,23 +36,6 @@ class UpdateSearcher {
       customData: null,
     );
 
-    final findData = UpdateFindData(
-      currentDate: searchConfig.currentDate ?? defaultSearchData.currentDate,
-      localVersion: searchConfig.localVersion ?? defaultSearchData.localVersion,
-      platform: searchConfig.platform ?? defaultSearchData.platform,
-      sources: searchConfig.sources ?? defaultSearchData.sources,
-    );
-
-    final updateData = _updateFinder.findMostRelevantUpdate(
-      findData: findData,
-      updates: updates,
-    );
-
-    final currentUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
-      findData: findData,
-      updates: updates,
-    );
-
     final searchData = UpdateSearchData(
       currentDate: searchConfig.currentDate ?? defaultSearchData.currentDate,
       localVersion: searchConfig.localVersion ?? defaultSearchData.localVersion,
@@ -65,9 +47,44 @@ class UpdateSearcher {
       rolloutPointer: searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
       segmentationPointer:
           searchConfig.segmentationPointer ?? defaultSearchData.segmentationPointer,
-      localReleaseDate: searchConfig.localReleaseDate ?? currentUpdateData?.date,
-      updateReleaseDate: searchConfig.updateReleaseDate ?? updateData?.date,
-      customData: searchConfig.customData,
+      localReleaseDate: searchConfig.localReleaseDate ?? defaultSearchData.localReleaseDate,
+      updateReleaseDate: searchConfig.updateReleaseDate ?? defaultSearchData.updateReleaseDate,
+      customData: searchConfig.customData ?? defaultSearchData.customData,
+    );
+
+    return searchData;
+  }
+
+  ({UpdateData? updateData, UpdateSearchData searchData}) search({
+    required List<UpdateData> updates,
+    required UpdateSearchConfig searchConfig,
+    required PackageInfo packageInfo,
+  }) {
+    var searchData = searchDataFromConfig(
+      searchConfig: searchConfig,
+      packageInfo: packageInfo,
+    );
+
+    final findData = UpdateFindData(
+      currentDate: searchData.currentDate,
+      localVersion: searchData.localVersion,
+      platform: searchData.platform,
+      sources: searchData.sources,
+    );
+
+    final updateData = _updateFinder.findMostRelevantUpdate(
+      findData: findData,
+      updates: updates,
+    );
+
+    final localUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
+      findData: findData,
+      updates: updates,
+    );
+
+    searchData = searchData.copyWith(
+      localReleaseDate: localUpdateData?.date,
+      updateReleaseDate: updateData?.date,
     );
 
     return (updateData: updateData, searchData: searchData);

@@ -49,7 +49,10 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   Locale get _locale => Localizations.localeOf(context);
 
   late final AppLifecycleListener _appLifecycleListener;
+  late final StreamSubscription<void> _onFetchSubscription;
   late final UpdateControllerBase _controller;
+  late UpdateSearchConfig _searchConfig;
+
   late UpdateResult _updateResult = const UpdateResult(
     update: null,
     searchData: null,
@@ -60,31 +63,53 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   Future<void> initState() async {
     super.initState();
     _controller = widget.controller ?? UpdateController();
+    _searchConfig = widget.searchConfig ?? const UpdateSearchConfig();
+
+    _onFetchSubscription = _controller.onFetch.listen((_) {
+      checkUpdate();
+    });
 
     _appLifecycleListener = AppLifecycleListener(
       onRestart: () async {
         if (!widget.shouldCheckUpdateAfterAppResume) return;
 
-        await _controller.fetch(locale: _locale);
-        _check();
+        await fetch();
       },
     );
 
-    await _controller.fetch(locale: _locale);
-    _check();
+    await fetch();
   }
 
-  void _check() {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final locale = UpdateLocale(_locale);
+
+    final searchConfig = widget.searchConfig;
+
+    if (searchConfig != null) {
+      _searchConfig = searchConfig;
+
+      if (_searchConfig.locale == null) {
+        _searchConfig = _searchConfig.copyWith(locale: locale);
+      }
+    } else {
+      if (locale != _searchConfig.locale) {
+        _searchConfig = _searchConfig.copyWith(locale: locale);
+      }
+    }
+  }
+
+  Future<void> fetch() async {
+    await _controller.fetch(_searchConfig);
+  }
+
+  void checkUpdate() {
     if (!widget.enabled) return;
     if (!mounted) return;
 
-    var searchConfig = widget.searchConfig ?? const UpdateSearchConfig();
-
-    if (searchConfig.locale == null) {
-      searchConfig = searchConfig.copyWith(locale: UpdateLocale(_locale));
-    }
-
-    final updateResult = _controller.findUpdate(searchConfig);
+    final updateResult = _controller.findUpdate(_searchConfig);
 
     setState(() {
       _updateResult = updateResult;
@@ -101,6 +126,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   void dispose() {
     _controller.dispose();
     _appLifecycleListener.dispose();
+    _onFetchSubscription.cancel();
     super.dispose();
   }
 
