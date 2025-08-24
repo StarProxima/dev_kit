@@ -1,11 +1,11 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/update/update_config.dart';
-import '../base_parsers/update_rules_container_parser.dart';
-import '../common.dart';
-import '../primitive_parsers/list_or_value_parser.dart';
-import 'global_source_config_parser.dart';
-import 'release_config_parser.dart';
+import '../shared/models/update/update_config.dart';
+import 'base_parsers/update_rules_container_parser.dart';
+import 'common.dart';
+import 'primitive_parsers/list_or_value_parser.dart';
+import 'sub_parsers/global_source_config_parser.dart';
+import 'sub_parsers/release_config_parser.dart';
 
 class UpdateConfigParser {
   static const _releaseConfigParser = ReleaseConfigParser();

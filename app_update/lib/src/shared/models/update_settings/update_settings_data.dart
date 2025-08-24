@@ -1,5 +1,6 @@
+import 'update_settings_config.dart';
+
 class UpdateSettingsData {
-  final Uri updateUrl;
   final bool shouldShow;
   final bool canSkip;
   final bool canPostpone;
@@ -10,7 +11,6 @@ class UpdateSettingsData {
   final Map<String, dynamic>? customData;
 
   const UpdateSettingsData({
-    required this.updateUrl,
     required this.shouldShow,
     required this.canSkip,
     required this.canPostpone,
@@ -20,4 +20,21 @@ class UpdateSettingsData {
     required this.postponeAllReleasesDelay,
     required this.customData,
   });
+
+  factory UpdateSettingsData.fromConfig(UpdateSettingsConfig config) {
+    return UpdateSettingsData(
+      shouldShow: config.shouldShow ?? (throw ArgumentError('shouldShow is required')),
+      canSkip: config.canSkip ?? (throw ArgumentError('canSkip is required')),
+      canPostpone: config.canPostpone ?? (throw ArgumentError('canPostpone is required')),
+      skipReleaseDelay:
+          config.skipReleaseDelay ?? (throw ArgumentError('skipReleaseDelay is required')),
+      skipAllReleasesDelay:
+          config.skipAllReleasesDelay ?? (throw ArgumentError('skipAllReleasesDelay is required')),
+      postponeReleaseDelay:
+          config.postponeReleaseDelay ?? (throw ArgumentError('postponeReleaseDelay is required')),
+      postponeAllReleasesDelay: config.postponeAllReleasesDelay ??
+          (throw ArgumentError('postponeAllReleasesDelay is required')),
+      customData: config.customData,
+    );
+  }
 }

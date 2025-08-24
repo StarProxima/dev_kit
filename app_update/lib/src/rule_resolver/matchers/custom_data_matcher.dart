@@ -3,7 +3,7 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import 'rule_matcher.dart';
 
-class CustomDataMatcher<T extends Mergeable> implements RuleMatcher<T> {
+class CustomDataMatcher<T extends Mergeable?> implements RuleMatcher<T> {
   const CustomDataMatcher();
 
   @override

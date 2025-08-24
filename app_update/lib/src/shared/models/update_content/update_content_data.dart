@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart';
+
+import 'update_content_config.dart';
+
 class UpdateContentData {
   final Uri updateUrl;
   final String title;
@@ -20,6 +24,21 @@ class UpdateContentData {
     required this.updateButton,
     required this.customData,
   });
+
+  factory UpdateContentData.fromConfig(UpdateContentConfig config) {
+    return UpdateContentData(
+      updateUrl: config.updateUrl ?? (throw ArgumentError('updateUrl is required')),
+      title: config.title ?? (throw ArgumentError('title is required')),
+      description: config.description ?? (throw ArgumentError('description is required')),
+      releaseNotesTitle:
+          config.releaseNotesTitle ?? (throw ArgumentError('releaseNotesTitle is required')),
+      releaseNotes: config.releaseNotes,
+      skipButton: config.skipButton ?? (throw ArgumentError('skipButton is required')),
+      postponeButton: config.postponeButton ?? (throw ArgumentError('postponeButton is required')),
+      updateButton: config.updateButton ?? (throw ArgumentError('updateButton is required')),
+      customData: config.customData,
+    );
+  }
 
   UpdateContentData interpolate(Map<String, String> interpolateData) {
     final interpolatedCustomData = customData?.map(

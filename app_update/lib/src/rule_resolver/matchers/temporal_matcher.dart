@@ -4,7 +4,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../../shared/update_entities/update_date.dart';
 import 'rule_matcher.dart';
 
-class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
+class TemporalMatcher<T extends Mergeable?> implements RuleMatcher<T> {
   const TemporalMatcher();
 
   @override

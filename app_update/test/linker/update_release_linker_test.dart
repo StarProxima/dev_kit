@@ -1,4 +1,4 @@
-import 'package:app_update/src/linker/update_release_linker.dart';
+import 'package:app_update/src/linker/sub_linkers/update_release_linker.dart';
 import 'package:app_update/src/shared/models/release/release_config.dart';
 import 'package:app_update/src/shared/models/release/release_override_config.dart';
 import 'package:app_update/src/shared/models/release_platrform/release_platrform_config.dart';

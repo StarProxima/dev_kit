@@ -8,6 +8,7 @@ class UpdateSourceName extends UpdateEntityName {
   static const appStore = UpdateSourceName._('appStore');
   static const testFlight = UpdateSourceName._('testFlight');
   static const gitHub = UpdateSourceName._('gitHub');
+  static const ruStore = UpdateSourceName._('ruStore');
   static const any = UpdateSourceName._('any');
 
   const UpdateSourceName._(super._name);
@@ -19,6 +20,7 @@ class UpdateSourceName extends UpdateEntityName {
     appStore,
     testFlight,
     gitHub,
+    ruStore,
     any,
   ];
 }

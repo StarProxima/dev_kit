@@ -23,6 +23,11 @@ class UpdateSource extends UpdateEntityBase {
     platforms: [UpdatePlatform.ios, UpdatePlatform.macos],
   );
 
+  static const ruStore = UpdateSource._(
+    UpdateSourceName.ruStore,
+    platforms: [UpdatePlatform.android],
+  );
+
   static const gitHub = UpdateSource._(
     UpdateSourceName.gitHub,
     platforms: [
@@ -50,6 +55,7 @@ class UpdateSource extends UpdateEntityBase {
     appStore,
     testFlight,
     gitHub,
+    ruStore,
     any,
   ];
 

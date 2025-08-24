@@ -4,7 +4,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../../shared/update_entities/update_view_target.dart';
 import 'rule_matcher.dart';
 
-class ViewTargetMatcher<T extends Mergeable> implements RuleMatcher<T> {
+class ViewTargetMatcher<T extends Mergeable?> implements RuleMatcher<T> {
   const ViewTargetMatcher();
 
   @override

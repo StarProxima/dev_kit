@@ -4,10 +4,8 @@ import '../../shared/mergeable.dart';
 import '../../shared/models/global_platform/global_platform_config.dart';
 import '../../shared/models/global_source/global_source_config.dart';
 import '../../shared/models/release/update_data.dart';
-import '../../shared/models/update_app_settings/update_app_settings_config.dart';
-import '../../shared/models/update_content/update_content_config.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
-import '../../shared/models/update_settings/update_settings_config.dart';
+import '../../shared/models/update_rule/update_rules_container.dart';
 import '../../shared/update_entities/update_source.dart';
 
 class UpdateDataLinker {
@@ -16,18 +14,14 @@ class UpdateDataLinker {
   /// Добавляет в обновления переданные правила и правила из глобальных источников.
   List<UpdateData> linkAll({
     required List<UpdateData> updates,
-    required List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-    required List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-    required List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+    required UpdateRulesContainer rulesContainer,
     required List<GlobalSourceConfig> globalSources,
   }) {
     final finalUpdates = updates
         .map(
           (update) => link(
             update: update,
-            contentRules: contentRules,
-            settingsRules: settingsRules,
-            appSettingsRules: appSettingsRules,
+            rulesContainer: rulesContainer,
             globalSources: globalSources,
           ),
         )
@@ -43,9 +37,7 @@ class UpdateDataLinker {
   /// в общий список правил в [UpdateData].
   UpdateData link({
     required UpdateData update,
-    required List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-    required List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-    required List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+    required UpdateRulesContainer rulesContainer,
     required List<GlobalSourceConfig> globalSources,
   }) {
     final globalSource = globalSources.firstWhereOrNull(
@@ -70,21 +62,21 @@ class UpdateDataLinker {
             .toList();
 
     final finalContentRules = Mergeable.mergeRules(
-      contentRules,
+      rulesContainer.contentRules,
       linkRules(globalSource?.contentRules),
       linkRules(globalSourcePlatform?.contentRules),
       update.contentRules,
     );
 
     final finalSettingsRules = Mergeable.mergeRules(
-      settingsRules,
+      rulesContainer.settingsRules,
       linkRules(globalSource?.settingsRules),
       linkRules(globalSourcePlatform?.settingsRules),
       update.settingsRules,
     );
 
     final finalAppSettingsRules = Mergeable.mergeRules(
-      appSettingsRules,
+      rulesContainer.appSettingsRules,
       linkRules(globalSource?.appSettingsRules),
       linkRules(globalSourcePlatform?.appSettingsRules),
       update.appSettingsRules,

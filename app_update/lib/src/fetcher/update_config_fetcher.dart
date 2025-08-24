@@ -4,29 +4,62 @@ import 'dart:async';
 import 'dart:io';
 import 'package:yaml/yaml.dart';
 
-import '../shared/raw_update_config.dart';
+import '../parser/common.dart';
+import '../parser/update_config_parser.dart';
+import '../shared/models/update/update_config.dart';
 
 class UpdateConfigFetcher {
-  final Future<RawUpdateConfig> Function() _onFetch;
+  final UpdateConfigParser _updateConfigParser;
 
-  const UpdateConfigFetcher.custom({
-    required Future<RawUpdateConfig> Function() onFetch,
-  }) : _onFetch = onFetch;
+  final Future<Map<String, dynamic>> Function()? _fetchRawConfig;
+  final Future<UpdateConfig> Function()? _fetchConfig;
 
-  factory UpdateConfigFetcher.byUrl({required Uri uri}) {
-    return UpdateConfigFetcher.custom(onFetch: () => _defaultFetchByUrl(uri));
-  }
+  const UpdateConfigFetcher.custom(
+    Future<UpdateConfig> Function() fetchConfig, {
+    UpdateConfigParser? updateConfigParser,
+  })  : _fetchConfig = fetchConfig,
+        _fetchRawConfig = null,
+        _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
 
-  factory UpdateConfigFetcher.byFile({required File file}) {
-    return UpdateConfigFetcher.custom(onFetch: () => _defaultFetchByFile(file));
-  }
+  const UpdateConfigFetcher.customRaw(
+    Future<Map<String, dynamic>> Function() fetchRawConfig, {
+    UpdateConfigParser? updateConfigParser,
+  })  : _fetchRawConfig = fetchRawConfig,
+        _fetchConfig = null,
+        _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
 
-  Future<RawUpdateConfig> fetch() {
-    return _onFetch();
+  factory UpdateConfigFetcher.byUrl({required Uri uri}) => UpdateConfigFetcher.customRaw(
+        () => _defaultFetchByUrl(uri),
+      );
+
+  factory UpdateConfigFetcher.byFile({required File file}) => UpdateConfigFetcher.customRaw(
+        () => _defaultFetchByFile(file),
+      );
+
+  Future<UpdateConfig> fetch() async {
+    final fetchRawConfig = _fetchRawConfig;
+    if (fetchRawConfig != null) {
+      final result = await fetchRawConfig();
+      final config = _updateConfigParser.parse(result);
+
+      if (config == null) {
+        throw const UpdateConfigException();
+      }
+
+      return config;
+    }
+
+    final fetchConfig = _fetchConfig;
+    if (fetchConfig != null) {
+      final config = await fetchConfig();
+      return config;
+    }
+
+    throw const UpdateConfigException();
   }
 }
 
-Future<RawUpdateConfig> _defaultFetchByUrl(Uri uri) async {
+Future<Map<String, dynamic>> _defaultFetchByUrl(Uri uri) async {
   final file = File.fromUri(uri);
   final fileText = await file.readAsString();
   final config = await loadYaml(fileText);
@@ -36,7 +69,7 @@ Future<RawUpdateConfig> _defaultFetchByUrl(Uri uri) async {
   throw ArgumentError('Wrong yaml format file on $uri');
 }
 
-Future<RawUpdateConfig> _defaultFetchByFile(File file) async {
+Future<Map<String, dynamic>> _defaultFetchByFile(File file) async {
   final fileText = await file.readAsString();
   final config = await loadYaml(fileText);
   if (config is YamlMap) {
