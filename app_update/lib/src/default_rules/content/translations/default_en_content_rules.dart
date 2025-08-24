@@ -20,7 +20,7 @@ final List<UpdateRuleConfig<UpdateContentConfig?>> defaultEnContentRules = [
     ),
   ),
   const UpdateRuleConfig(
-    locales: [UpdateLocale.en],
+    locales: [UpdateLocale.en, UpdateLocale.any],
     appStatuses: [AppStatus.unsupported],
     data: UpdateContentConfig(
       title: r'Update $appName',

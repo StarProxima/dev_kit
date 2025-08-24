@@ -39,7 +39,7 @@ class UpdateSearcher {
       displayTarget: UpdateViewTarget.any,
       rolloutPointer: 0.5,
       segmentationPointer: 0.5,
-      localReleaseDate: null,
+      localReleaseDate: packageInfo.updateTime ?? packageInfo.installTime,
       updateReleaseDate: null,
       customData: null,
     );
