@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import 'update_content_config.dart';
 
 class UpdateContentData {

@@ -8,10 +8,6 @@ import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
 
 abstract class UpdateControllerBase {
-  Stream<UpdateResult> get updateResultStream;
-
-  UpdateResult? get updateResult;
-
   /// Going to network to get the UpdateConfig and Releses from global sources to get the latest updates.
   Future<void> fetch({
     Locale locale,
@@ -20,7 +16,6 @@ abstract class UpdateControllerBase {
   });
 
   /// Finds an update from fetched UpdateConfig and global sources releases data.
-  /// If update founded add data to [updateResultStream]
   ///
   /// Does not make a new request if the data already exists.
   UpdateResult findUpdate(UpdateSearchConfig searchConfig);
@@ -29,10 +24,7 @@ abstract class UpdateControllerBase {
   Future<void> skipUpdate(Update update);
 
   /// Postpone the update, it will display later after a set amount of time.
-  Future<void> postponeUpdate({
-    required Update update,
-    required Duration postponeDuration,
-  });
+  Future<void> postponeUpdate(Update update);
 
   /// Launches a link to the correct store to update the app.
   Future<void> launchUpdateUrl(Update update);

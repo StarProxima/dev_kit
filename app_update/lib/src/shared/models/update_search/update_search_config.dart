@@ -1,5 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
+import '../../mergeable.dart';
 import '../../update_entities/app_status.dart';
 import '../../update_entities/update_locale.dart';
 import '../../update_entities/update_platform.dart';
@@ -46,4 +47,33 @@ class UpdateSearchConfig {
     this.rolloutPointer,
     this.customData,
   });
+
+  UpdateSearchConfig copyWith({
+    UpdatePlatform? platform,
+    List<UpdateSource>? sources,
+    Version? localVersion,
+    UpdateViewTarget? displayTarget,
+    UpdateLocale? locale,
+    DateTime? currentDate,
+    DateTime? localReleaseDate,
+    DateTime? updateReleaseDate,
+    AppStatus? appStatus,
+    double? segmentationPointer,
+    double? rolloutPointer,
+    Map<String, dynamic>? customData,
+  }) =>
+      UpdateSearchConfig(
+        platform: platform ?? this.platform,
+        sources: sources ?? this.sources,
+        localVersion: localVersion ?? this.localVersion,
+        displayTarget: displayTarget ?? this.displayTarget,
+        locale: locale ?? this.locale,
+        currentDate: currentDate ?? this.currentDate,
+        localReleaseDate: localReleaseDate ?? this.localReleaseDate,
+        updateReleaseDate: updateReleaseDate ?? this.updateReleaseDate,
+        appStatus: appStatus ?? this.appStatus,
+        segmentationPointer: segmentationPointer ?? this.segmentationPointer,
+        rolloutPointer: rolloutPointer ?? this.rolloutPointer,
+        customData: Mergeable.mergeCustomData(this.customData, customData),
+      );
 }

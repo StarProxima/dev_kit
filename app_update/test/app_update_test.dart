@@ -1,71 +1,33 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion, avoid-missing-enum-constant-in-map
 
 import 'package:app_update/src/controller/update_controller.dart';
-import 'package:app_update/src/linker/models/release_settings_data.dart';
-import 'package:app_update/src/linker/models/update_settings_data_container.dart';
-import 'package:app_update/src/shared/update_alert_type.dart';
-import 'package:app_update/src/shared/version_status.dart';
-import 'package:app_update/src/widgets/update_alert.dart';
-import 'package:app_update/src/widgets/update_alert_handler.dart';
+import 'package:app_update/src/shared/models/update_search/update_search_config.dart';
+import 'package:app_update/src/shared/update_entities/update_view_target.dart';
+import 'package:app_update/src/widgets/update_handler.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
-  final controller = UpdateController(
-    updateSettings: const UpdateSettingsConfigContainer({
-      UpdateAlertTypeBase.base: {
-        VersionStatusBase.base: UpdateSettingsConfig(),
-      },
-    }),
-  );
+  final controller = UpdateController();
 
-  await controller.fetchUpdateConfig();
+  await controller.fetch();
 
   // ignore: unused_local_variable
   final widget = Scaffold(
-    body: UpdateHandler(
+    body: UpdateHandler.alert(
       controller: controller,
-      onUpdateAvailable: (context, update, controller) {
+      onUpdateResult: (context, controller, result) {
         // ignore: avoid-unsafe-collection-methods
-        final releaseData = update.config.releases.first;
+        final update = result.update;
 
-        // ignore: unused_local_variable
-        final settings = update.release.settings.getBy(
-          type: UpdateAlertType.dialog,
-          status: update.appStatus,
-        );
+        if (update == null || !result.shouldShow) return;
 
-        // final texts = update.release.texts.getBy(
-        //   type: UpdateAlertType.dialog,
-        //   status: update.appVersionStatus,
-        //   locale:  const Locale('en'),
-        // );
+        controller.skipUpdate(update);
 
-        // final settings = update.release.settings.getBy(
-        //   type: UpdateAlertType.adaptiveDialog,
-        //   status: VersionStatus.updatable,
-        // );
-
-        // final text = settings.translations.byLocale(const Locale('en'));
-
-        // Release.localizedFromReleaseData(
-        //   releaseData: releaseData,
-        //   locale: update.appLocale,
-        //   appName: update.appName,
-        //   appVersion: update.appVersion,
-        // );
-
-        controller.skipRelease(releaseData);
-
-        final release = update.release;
-
-        // Skip
-        controller.skipRelease(release);
-
-        // Later
-        // controller.postponeRelease(release,);
+        // Postpone
+        controller.postponeUpdate(update);
 
         // Update
-        controller.launchReleaseSource(release);
+        controller.launchUpdateUrl(update);
       },
       child: const SizedBox(),
     ),
@@ -81,25 +43,48 @@ void main() async {
   //   ),
   // );
 
-  UpdateHandler(
-    onUpdateAvailable: (context, update, controller) {
-      switch (update.appStatus) {
-        case VersionStatus.unsupported:
-          UpdateAlertHandler.screen(context, update, controller);
+  UpdateHandler.builder(
+    controller: controller,
+    searchConfig: const UpdateSearchConfig(
+      displayTarget: UpdateViewTarget.card,
+    ),
+    builder: (context, controller, result, child) {
+      final update = result.update;
 
-        case VersionStatus.deprecated:
-          UpdateAlertHandler.adaptiveDialog(context, update, controller);
+      final finalChild = child ?? const SizedBox();
 
-        case VersionStatus.updatable:
-          if (DateTime.now().difference(update.release.date!) > const Duration(days: 7)) {
-            // Show custom dialog
-            return;
-          }
+      if (update == null || !result.shouldShow) return finalChild;
 
-          UpdateAlertHandler.snackbar(context, update, controller);
+      controller.skipUpdate(update);
 
-        default:
-      }
+      return Column(
+        children: [
+          Text(update.content.title),
+          Text(update.content.description),
+          if (update.content.releaseNotes case final String releaseNotes) ...[
+            Text(update.content.releaseNotesTitle),
+            Text(releaseNotes),
+          ],
+          Row(
+            children: [
+              if (update.settings.canSkip)
+                ElevatedButton(
+                  onPressed: () => controller.skipUpdate(update),
+                  child: Text(update.content.skipButton),
+                ),
+              if (update.settings.canPostpone)
+                ElevatedButton(
+                  onPressed: () => controller.postponeUpdate(update),
+                  child: Text(update.content.postponeButton),
+                ),
+              ElevatedButton(
+                onPressed: () => controller.launchUpdateUrl(update),
+                child: Text(update.content.updateButton),
+              ),
+            ],
+          ),
+        ],
+      );
     },
     child: const SizedBox(),
   );

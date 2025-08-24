@@ -28,25 +28,19 @@ import '../shared/update_entities/update_view_target.dart';
 import 'update_contoller_base.dart';
 
 class UpdateController extends UpdateControllerBase {
-  @override
-  UpdateResult? get updateResult => _updateResult;
-
-  @override
-  Stream<UpdateResult> get updateResultStream => throw UnimplementedError();
-
   final _initCompleter = Completer<void>();
 
   late PackageInfo _packageInfo;
-  UpdateResult? _updateResult;
+
   List<UpdateData> _updates = [];
 
-  final UpdateConfigFetcher _updateConfigFetcher;
+  final UpdateConfigFetcher? _updateConfigFetcher;
   final UpdateRuleResolver _updateRuleResolver;
   final UpdateLinker _updateLinker;
   final UpdateFinder _updateFinder;
 
   UpdateController({
-    required UpdateConfigFetcher fetcher,
+    UpdateConfigFetcher? fetcher,
     UpdateRuleResolver? ruleResolver,
     UpdateLinker? linker,
     UpdateFinder? finder,
@@ -85,7 +79,11 @@ class UpdateController extends UpdateControllerBase {
   }
 
   Future<void> _fetchUpdateConfig() async {
-    final config = await _updateConfigFetcher.fetch();
+    final fetcher = _updateConfigFetcher;
+
+    if (fetcher == null) return;
+
+    final config = await fetcher.fetch();
 
     _updates = _updateLinker.linkAll(
       releases: config.releases,
@@ -124,10 +122,12 @@ class UpdateController extends UpdateControllerBase {
     );
 
     if (updateData == null) {
-      return const UpdateResult(
+      const result = UpdateResult(
         update: null,
         updateStatus: UpdateNotFoundException(),
       );
+
+      return result;
     }
 
     final currentUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
@@ -192,7 +192,7 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<void> postponeUpdate({required Update update, required Duration postponeDuration}) {
+  Future<void> postponeUpdate(Update update) {
     // TODO: implement postponeUpdate
     throw UnimplementedError();
   }

@@ -1,6 +1,9 @@
 import '../update_rule/update_rule_config.dart';
 
 enum UpdateStatusType {
+  /// Поиск обновления еще не выполнялся.
+  initial,
+
   /// Обновление доступно.
   available,
 
@@ -37,6 +40,10 @@ sealed class UpdateStatus {
 
 class UpdateAvailableStatus extends UpdateStatus {
   const UpdateAvailableStatus() : super(type: UpdateStatusType.available);
+}
+
+class UpdateInitialStatus extends UpdateStatus {
+  const UpdateInitialStatus() : super(type: UpdateStatusType.initial);
 }
 
 abstract class UpdateException extends UpdateStatus implements Exception {
