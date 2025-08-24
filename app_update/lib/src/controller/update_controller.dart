@@ -101,6 +101,10 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   UpdateResult findUpdate(UpdateSearchConfig searchConfig) {
+    if (!_initCompleter.isCompleted) {
+      throw Exception('UpdateController is not initialized');
+    }
+
     final findData = UpdateFindData(
       currentDate: searchConfig.currentDate ?? DateTime.now(),
       localVersion: searchConfig.localVersion ?? Version.parse(_packageInfo.version),

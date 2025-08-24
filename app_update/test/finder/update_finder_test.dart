@@ -82,37 +82,6 @@ void main() {
       expect(res.every((e) => !e.date.isAfter(currentDate)), isTrue);
     });
 
-    // test('учитывает null дату как допустимую (не фильтрует)', () {
-    //   final updates = [
-    //     createUpdateData(
-    //       '2.0.0',
-    //       date: null,
-    //       platform: UpdatePlatform.android,
-    //       source: UpdateSourceName.googlePlay,
-    //     ),
-    //     createUpdateData(
-    //       '1.5.0',
-    //       date: DateTime(2024, 10, 10),
-    //       platform: UpdatePlatform.android,
-    //       source: UpdateSourceName.googlePlay,
-    //     ),
-    //   ];
-
-    //   final res = finder.findAvailableUpdates(
-    //     findData: UpdateFindData(
-    //       currentDate: currentDate,
-    //       localVersion: Version.parse('1.0.0'),
-    //       platform: UpdatePlatform.android,
-    //       sources: const [UpdateSource.googlePlay],
-    //     ),
-    //     updates: updates,
-    //   );
-
-    //   // Одна запись на пару → берется максимальная (2.0.0)
-    //   expect(res.length, 1);
-    //   expect(res.first.version, Version.parse('2.0.0'));
-    // });
-
     test('возвращает пусто, если ни один источник не совпал', () {
       final updates = [
         createUpdateData('2.0.0',
@@ -307,6 +276,430 @@ void main() {
 
       expect(res.length, 1);
       expect(res.first.sourceName, UpdateSourceName.googlePlay);
+    });
+
+    group('findMostRelevantUpdate', () {
+      test('возвращает самое релевантное обновление (первое из доступных)', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('1.5.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore),
+        ];
+
+        final result = finder.findMostRelevantUpdate(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+          ),
+          updates: updates,
+        );
+
+        expect(result, isNotNull);
+        expect(result!.version, Version.parse('2.0.0'));
+        expect(result.sourceName, UpdateSourceName.googlePlay);
+      });
+
+      test('возвращает null если нет доступных обновлений', () {
+        final updates = [
+          createUpdateData('0.9.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay), // меньше локальной версии
+        ];
+
+        final result = finder.findMostRelevantUpdate(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay],
+          ),
+          updates: updates,
+        );
+
+        expect(result, isNull);
+      });
+
+      test('учитывает приоритет источников при одинаковой версии', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.ruStore),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+        ];
+
+        final result = finder.findMostRelevantUpdate(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.ruStore, UpdateSource.googlePlay], // ruStore первый
+          ),
+          updates: updates,
+        );
+
+        expect(result, isNotNull);
+        expect(result!.sourceName.name, UpdateSourceName.ruStore.name);
+      });
+    });
+
+    group('findCurrentUpdates', () {
+      test('находит обновления равные локальной версии', () {
+        final updates = [
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore), // больше локальной → skip
+          createUpdateData('0.9.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.ruStore), // меньше локальной → break
+        ];
+
+        final result = finder.findCurrentUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay, UpdateSource.appStore, UpdateSource.ruStore],
+          ),
+          updates: updates,
+        );
+
+        expect(result, hasLength(1));
+        expect(result[0].version, Version.parse('1.0.0'));
+        expect(result[0].sourceName, UpdateSourceName.googlePlay);
+      });
+
+      test('возвращает пустой список если нет текущих обновлений', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay), // больше локальной
+          createUpdateData('0.9.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore), // меньше локальной
+        ];
+
+        final result = finder.findCurrentUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+          ),
+          updates: updates,
+        );
+
+        expect(result, isEmpty);
+      });
+
+      test('фильтрует по дате, платформе и источникам', () {
+        final updates = [
+          createUpdateData('1.0.0',
+              date: DateTime(2025, 01, 01), // будущая дата → skip
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.ios, // другая платформа → skip
+              source: UpdateSourceName.appStore),
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.ruStore), // не в списке источников → skip
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay), // подходит
+        ];
+
+        final result = finder.findCurrentUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+          ),
+          updates: updates,
+        );
+
+        expect(result, hasLength(1));
+        expect(result[0].sourceName, UpdateSourceName.googlePlay);
+      });
+
+      test('возвращает одно обновление на пару source+platform', () {
+        final updates = [
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 09), // более ранняя дата, но та же пара source+platform
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+        ];
+
+        final result = finder.findCurrentUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay],
+          ),
+          updates: updates,
+        );
+
+        expect(result, hasLength(1));
+        expect(result[0].date, DateTime(2024, 10, 10)); // первое найденное
+      });
+    });
+
+    group('findMostRelevantCurrentUpdate', () {
+      test('возвращает самое релевантное текущее обновление', () {
+        final updates = [
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore),
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+        ];
+
+        final result = finder.findMostRelevantCurrentUpdate(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay, UpdateSource.appStore], // googlePlay первый
+          ),
+          updates: updates,
+        );
+
+        expect(result, isNotNull);
+        expect(result!.sourceName, UpdateSourceName.googlePlay);
+      });
+
+      test('возвращает null если нет текущих обновлений', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay), // больше локальной
+        ];
+
+        final result = finder.findMostRelevantCurrentUpdate(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay],
+          ),
+          updates: updates,
+        );
+
+        expect(result, isNull);
+      });
+    });
+
+    group('sortUpdates', () {
+      test('сортирует по версии по убыванию', () {
+        final updates = [
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('1.5.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+        ];
+
+        final findData = UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay],
+        );
+
+        final result = finder.sortUpdates(updates, findData);
+
+        expect(result.map((e) => e.version.toString()).toList(), ['2.0.0', '1.5.0', '1.0.0']);
+      });
+
+      test('при одинаковой версии сортирует по приоритету источника', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.ruStore),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore),
+        ];
+
+        final findData = UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.appStore, UpdateSource.googlePlay, UpdateSource.ruStore],
+        );
+
+        final result = finder.sortUpdates(updates, findData);
+
+        expect(result.map((e) => e.sourceName).toList(),
+            [UpdateSourceName.appStore, UpdateSourceName.googlePlay, UpdateSourceName.ruStore]);
+      });
+
+      test('источники не в списке sources помещаются в конец', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: const UpdateSourceName.custom('unknown')), // не в sources
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay), // в sources
+        ];
+
+        final findData = UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay],
+        );
+
+        final result = finder.sortUpdates(updates, findData);
+
+        expect(result.map((e) => e.sourceName).toList(),
+            [UpdateSourceName.googlePlay, const UpdateSourceName.custom('unknown')]);
+      });
+
+      test('комбинированная сортировка: версия + приоритет источника', () {
+        final updates = [
+          createUpdateData('1.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore),
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+        ];
+
+        final findData = UpdateFindData(
+          currentDate: currentDate,
+          localVersion: Version.parse('1.0.0'),
+          platform: UpdatePlatform.android,
+          sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+        );
+
+        final result = finder.sortUpdates(updates, findData);
+
+        // Сначала версия 2.0.0 (googlePlay имеет приоритет над appStore)
+        // Затем версия 1.0.0
+        expect(result.map((e) => '${e.version}-${e.sourceName.name}').toList(),
+            ['2.0.0-googleplay', '2.0.0-appstore', '1.0.0-googleplay']);
+      });
+    });
+
+    group('дополнительные edge cases для findAvailableUpdates', () {
+      test('пустой список обновлений возвращает пустой результат', () {
+        final result = finder.findAvailableUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay],
+          ),
+          updates: [],
+        );
+
+        expect(result, isEmpty);
+      });
+
+      test('все обновления с будущими датами отфильтровываются', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2025, 01, 01),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.googlePlay),
+          createUpdateData('1.5.0',
+              date: DateTime(2025, 02, 01),
+              platform: UpdatePlatform.android,
+              source: UpdateSourceName.appStore),
+        ];
+
+        final result = finder.findAvailableUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+          ),
+          updates: updates,
+        );
+
+        expect(result, isEmpty);
+      });
+
+      test('все обновления для других платформ отфильтровываются', () {
+        final updates = [
+          createUpdateData('2.0.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.ios,
+              source: UpdateSourceName.appStore),
+          createUpdateData('1.5.0',
+              date: DateTime(2024, 10, 10),
+              platform: UpdatePlatform.macos,
+              source: UpdateSourceName.appStore),
+        ];
+
+        final result = finder.findAvailableUpdates(
+          findData: UpdateFindData(
+            currentDate: currentDate,
+            localVersion: Version.parse('1.0.0'),
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.appStore],
+          ),
+          updates: updates,
+        );
+
+        expect(result, isEmpty);
+      });
     });
   });
 }

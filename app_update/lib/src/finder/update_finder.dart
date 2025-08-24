@@ -14,7 +14,7 @@ class UpdateFinder {
     required UpdateFindData findData,
     required List<UpdateData> updates,
   }) {
-    final sortedUpdates = _sortUpdates(updates, findData);
+    final sortedUpdates = sortUpdates(updates, findData);
 
     final result = <UpdateData>[];
 
@@ -54,7 +54,7 @@ class UpdateFinder {
     required UpdateFindData findData,
     required List<UpdateData> updates,
   }) {
-    final sortedUpdates = _sortUpdates(updates, findData);
+    final sortedUpdates = sortUpdates(updates, findData);
 
     final result = <UpdateData>[];
 
@@ -92,7 +92,7 @@ class UpdateFinder {
   }
 
   /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateFindData.sources]
-  List<UpdateData> _sortUpdates(List<UpdateData> updates, UpdateFindData findData) {
+  List<UpdateData> sortUpdates(List<UpdateData> updates, UpdateFindData findData) {
     return updates.sorted((a, b) {
       final byVersionDesc = b.version.compareTo(a.version);
       if (byVersionDesc != 0) return byVersionDesc;
