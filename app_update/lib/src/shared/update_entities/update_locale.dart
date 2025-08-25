@@ -15,6 +15,12 @@ class UpdateLocale extends UpdateEntityName {
   List<Object?> get params => [name, locale];
 
   static const values = [
+    ru,
+    en,
+  ];
+
+  static const allValues = [
+    ...values,
     any,
   ];
 }

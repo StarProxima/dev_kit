@@ -17,6 +17,10 @@ class AppStatus extends UpdateEntityName {
     unsupported,
     outdated,
     active,
+  ];
+
+  static const allValues = [
+    ...values,
     any,
   ];
 }

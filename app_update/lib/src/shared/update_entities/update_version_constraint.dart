@@ -11,7 +11,10 @@ class UpdateVersionConstraint extends UpdateEntityName {
   @override
   List<Object?> get params => [name, versionConstraint];
 
-  static const values = [
+  static const values = [];
+
+  static const allValues = [
+    ...values,
     any,
   ];
 }

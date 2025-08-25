@@ -27,6 +27,10 @@ class UpdatePlatform extends UpdateEntityName {
     macos,
     windows,
     web,
+  ];
+
+  static const allValues = [
+    ...values,
     any,
   ];
 

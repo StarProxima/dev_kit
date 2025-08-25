@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/global_platform/global_platform_config.dart';
 import '../models/global_source/global_source_config.dart';
+import '../models/release_platrform/release_platrform_config.dart';
 import '../models/release_source/release_source_config.dart';
 import 'update_entity.dart';
 import 'update_platform.dart';
@@ -56,6 +58,10 @@ class UpdateSource extends UpdateEntityBase {
     testFlight,
     gitHub,
     ruStore,
+  ];
+
+  static const allValues = [
+    ...values,
     any,
   ];
 
@@ -74,5 +80,25 @@ extension GlobalSourceConfigToUpdateSourceX on GlobalSourceConfig {
   UpdateSource toUpdateSource() => UpdateSource.custom(
         sourceName,
         platforms: platforms?.map((e) => e.platformName).toList(),
+      );
+}
+
+extension UpdateSourceX on UpdateSource {
+  GlobalSourceConfig toGlobalSourceConfig() => GlobalSourceConfig(
+        sourceName: sourceName,
+        platforms: platforms
+            ?.map(
+              (platform) => GlobalPlatformConfig(platformName: platform),
+            )
+            .toList(),
+      );
+
+  ReleaseSourceConfig toReleaseSourceConfig() => ReleaseSourceConfig(
+        sourceName: sourceName,
+        platforms: platforms
+            ?.map(
+              (platform) => ReleasePlatformConfig(platformName: platform),
+            )
+            .toList(),
       );
 }

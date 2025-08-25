@@ -21,6 +21,10 @@ class UpdateSourceName extends UpdateEntityName {
     testFlight,
     gitHub,
     ruStore,
+  ];
+
+  static const allValues = [
+    ...values,
     any,
   ];
 }

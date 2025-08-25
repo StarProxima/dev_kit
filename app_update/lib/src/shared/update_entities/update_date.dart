@@ -16,8 +16,12 @@ class UpdateDate extends UpdateEntityName {
   List<Object?> get params => [name, date];
 
   static const values = [
-    any,
     localReleaseDate,
     updateReleaseDate,
+  ];
+
+  static const allValues = [
+    ...values,
+    any,
   ];
 }

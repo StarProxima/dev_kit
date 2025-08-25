@@ -16,4 +16,18 @@ class UpdateViewTarget extends UpdateEntityName {
   const UpdateViewTarget._(super._name);
 
   factory UpdateViewTarget.custom(String name) => UpdateViewTarget._(name);
+
+  static const values = [
+    card,
+    dialog,
+    adaptiveDialog,
+    materialDialog,
+    cupertinoDialog,
+    screen,
+  ];
+
+  static const allValues = [
+    ...values,
+    any,
+  ];
 }
