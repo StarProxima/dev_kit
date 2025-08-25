@@ -4,9 +4,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../shared/models/release/update_data.dart';
 import '../../shared/update_entities/update_source.dart';
-import '../update_config_fetcher_base.dart';
+import '../update_config_source_fetcher.dart';
 
-class RuStoreFetcher extends UpdateConfigFetcherBySource {
+class RuStoreFetcher extends UpdateConfigSourceFetcher {
   const RuStoreFetcher();
 
   @override

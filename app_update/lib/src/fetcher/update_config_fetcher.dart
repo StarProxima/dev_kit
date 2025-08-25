@@ -11,7 +11,7 @@ import '../parser/update_config_parser.dart';
 import '../shared/models/update/update_config.dart';
 import 'update_config_fetcher_base.dart';
 
-class UpdateConfigFetcher implements UpdateConfigFetcherGlobal {
+class UpdateConfigFetcher implements UpdateConfigFetcherBase {
   final UpdateConfigParser _updateConfigParser;
 
   final Future<Map<String, dynamic>> Function()? _fetchRawConfig;

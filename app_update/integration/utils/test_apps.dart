@@ -7,6 +7,12 @@ class TestApps {
     iosPackageId: 'ru.yandex.ytaxi',
   );
 
+  // static const multiStoreApp = TestAppData(
+  //   name: 'Max',
+  //   androidPackageId: 'ru.oneme.app',
+  //   iosPackageId: 'ru.oneme.app',
+  // );
+
   /// Региональное приложение (доступно только в Корее)
   static const onlyKoreanApp = TestAppData(
     name: 'Melon',

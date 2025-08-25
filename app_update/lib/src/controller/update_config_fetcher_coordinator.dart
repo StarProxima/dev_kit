@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../default_rules/default_update_config.dart';
 import '../fetcher/update_config_fetcher_base.dart';
+import '../fetcher/update_config_source_fetcher.dart';
 import '../shared/models/update/update_config.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import 'update_searcher.dart';
@@ -23,6 +24,7 @@ class UpdateConfigFetcherCoordinator {
     bool shouldFetchConfig = true,
   }) async {
     final configs = <UpdateConfig>[
+      // Default config from app_update package
       defaultUpdateConfig,
     ];
 
@@ -35,16 +37,7 @@ class UpdateConfigFetcherCoordinator {
       final locale = searchData.locale.locale ?? const Locale('en');
 
       switch (fetcher) {
-        case UpdateConfigFetcherGlobal():
-          if (!shouldFetchConfig) continue;
-
-          final config = await fetcher.fetch(
-            locale: locale,
-            packageInfo: packageInfo,
-          );
-          configs.add(config);
-
-        case UpdateConfigFetcherBySource(source: final source):
+        case UpdateConfigSourceFetcher(source: final source):
           if (!shouldFetchGlobalSources) continue;
 
           if (!searchData.sources.contains(source)) {
@@ -65,6 +58,15 @@ class UpdateConfigFetcherCoordinator {
           } on UnimplementedError catch (_) {
             continue;
           }
+
+        case UpdateConfigFetcherBase():
+          if (!shouldFetchConfig) continue;
+
+          final config = await fetcher.fetch(
+            locale: locale,
+            packageInfo: packageInfo,
+          );
+          configs.add(config);
       }
     }
 

@@ -13,5 +13,5 @@
 ## 🚀 Запуск тестов
 
 ```bash
-flutter test test_fetcher/fetchers_integration_test.dart
+flutter test integration/app_store_api_test.dart
 ```

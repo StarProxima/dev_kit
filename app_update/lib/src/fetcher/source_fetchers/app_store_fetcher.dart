@@ -4,10 +4,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../shared/models/release/update_data.dart';
 import '../../shared/update_entities/update_source.dart';
-import '../update_config_fetcher_base.dart';
-import '../api/app_store_api.dart';
+import '../data/app_store_api.dart';
+import '../update_config_source_fetcher.dart';
 
-class AppStoreFetcher extends UpdateConfigFetcherBySource {
+class AppStoreFetcher extends UpdateConfigSourceFetcher {
   final AppStoreApi _api;
 
   const AppStoreFetcher({AppStoreApi api = const AppStoreApi()}) : _api = api;

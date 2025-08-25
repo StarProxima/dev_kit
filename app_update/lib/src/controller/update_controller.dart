@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../fetcher/source_fetchers/app_store_fetcher.dart';
-import '../fetcher/source_fetchers/google_play_fetcher.dart';
 import '../fetcher/update_config_fetcher_base.dart';
+import '../fetcher/update_config_source_fetcher.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_inker.dart';
 import '../rule_resolver/update_rule_resolver.dart';
@@ -35,11 +34,20 @@ class UpdateController extends UpdateControllerBase {
   late final UpdateSearcher _updateSearcher;
   late final UpdateSourceChecker _updateSourceChecker;
 
+  /// Контроллер для поиска обновлений
+  ///
+  /// You can add custom fetchers
+  /// ```dart
+  /// UpdateController(
+  ///   fetchers: [
+  ///     ...UpdateConfigSourceFetcher.defaultFetchers,
+  ///     UpdateConfigFetchercher.byUrl(...),
+  ///   ],
+  /// )
+  /// ```
+  ///
   UpdateController({
-    List<UpdateConfigFetcherBase> fetchers = const [
-      GooglePlayFetcher(),
-      AppStoreFetcher(),
-    ],
+    List<UpdateConfigFetcherBase> fetchers = UpdateConfigSourceFetcher.defaultFetchers,
     UpdateConfigFetcherCoordinator? fetcherCoordinator,
     UpdateDataResolver? updateDataResolver,
     UpdateSourceChecker? updateSourceChecker,

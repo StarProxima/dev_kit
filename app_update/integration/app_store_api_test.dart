@@ -2,7 +2,7 @@
 
 import 'dart:ui';
 
-import 'package:app_update/src/fetcher/api/app_store_api.dart';
+import 'package:app_update/src/fetcher/data/app_store_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_apps.dart';
