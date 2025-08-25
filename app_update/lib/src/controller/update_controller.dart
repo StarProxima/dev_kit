@@ -24,11 +24,8 @@ class UpdateController extends UpdateControllerBase {
   Stream<void> get onFetch => _onFetchStreamController.stream;
 
   final _onFetchStreamController = StreamController<void>.broadcast();
-
   final _initCompleter = Completer<void>();
-
   late PackageInfo _packageInfo;
-
   List<UpdateData> _updates = [];
 
   late final List<UpdateConfigFetcherBase> _fetchers;
@@ -64,11 +61,6 @@ class UpdateController extends UpdateControllerBase {
           updateSearcher: _updateSearcher,
         );
 
-    _fetcherCoordinator = fetcherCoordinator ??
-        UpdateConfigFetcherCoordinator(
-          updateSearcher: _updateSearcher,
-        );
-
     _updateDataResolver = updateDataResolver ??
         const UpdateDataResolver(
           ruleResolver: UpdateRuleResolver(),
@@ -77,6 +69,7 @@ class UpdateController extends UpdateControllerBase {
     _updateLinker = linker ?? const UpdateLinker();
   }
 
+  @override
   Future<void> init() async {
     if (_initCompleter.isCompleted) return;
 
@@ -157,8 +150,7 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
-  Future<void> dispose() {
-    // TODO: implement dispose
-    throw UnimplementedError();
+  void dispose() {
+    _onFetchStreamController.close();
   }
 }

@@ -16,6 +16,9 @@ abstract class UpdateControllerBase {
     bool shouldFetchConfig = true,
   });
 
+  /// Dispose controller.
+  FutureOr<void> init();
+
   /// Finds an update from fetched UpdateConfig and global sources releases data.
   ///
   /// Does not make a new request if the data already exists.
@@ -31,5 +34,5 @@ abstract class UpdateControllerBase {
   Future<void> launchUpdateUrl(Update update);
 
   /// Dispose controller.
-  Future<void> dispose();
+  FutureOr<void> dispose();
 }

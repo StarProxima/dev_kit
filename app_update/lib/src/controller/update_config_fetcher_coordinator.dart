@@ -47,12 +47,16 @@ class UpdateConfigFetcherCoordinator {
 
       final locale = searchData.locale.locale ?? const Locale('en');
 
-      final config = await fetcher.fetch(
-        locale: locale,
-        packageInfo: packageInfo,
-      );
-
-      configs.add(config);
+      try {
+        final config = await fetcher.fetch(
+          locale: locale,
+          packageInfo: packageInfo,
+        );
+        configs.add(config);
+        // ignore: avoid_catching_errors
+      } on UnimplementedError catch (_) {
+        continue;
+      }
     }
 
     return configs;
