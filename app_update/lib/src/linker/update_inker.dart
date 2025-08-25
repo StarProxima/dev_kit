@@ -1,6 +1,3 @@
-import '../default_rules/app_settings/default_update_app_settings.dart';
-import '../default_rules/content/default_update_content.dart';
-import '../default_rules/settings/default_update_settings_rules.dart';
 import '../shared/models/global_source/global_source_config.dart';
 import '../shared/models/release/release_config.dart';
 import '../shared/models/release/update_data.dart';
@@ -23,12 +20,6 @@ class UpdateLinker {
   List<UpdateData> linkAllConfigs(
     List<UpdateConfig> configs,
   ) {
-    final defaultConfig = UpdateConfig(
-      contentRules: defaultUpdateContentRules,
-      settingsRules: defaultUpdateSettingsRules,
-      appSettingsRules: defaultUpdateAppSettingsRules,
-    );
-
     final globalSources = <GlobalSourceConfig>[];
     final releases = <ReleaseConfig>[];
     final contentRules = <UpdateRuleConfig<UpdateContentConfig?>>[];

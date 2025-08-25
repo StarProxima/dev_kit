@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../default_rules/default_update_config.dart';
 import '../fetcher/update_config_fetcher_base.dart';
 import '../shared/models/update/update_config.dart';
 import '../shared/models/update_search/update_search_config.dart';
@@ -21,7 +22,9 @@ class UpdateConfigFetcherCoordinator {
     bool shouldFetchGlobalSources = true,
     bool shouldFetchConfig = true,
   }) async {
-    final configs = <UpdateConfig>[];
+    final configs = <UpdateConfig>[
+      defaultUpdateConfig,
+    ];
 
     final searchData = _updateSearcher.getSearchDataWithDefaults(
       searchConfig: searchConfig,
@@ -29,9 +32,17 @@ class UpdateConfigFetcherCoordinator {
     );
 
     for (final fetcher in fetchers) {
+      final locale = searchData.locale.locale ?? const Locale('en');
+
       switch (fetcher) {
         case UpdateConfigFetcherGlobal():
           if (!shouldFetchConfig) continue;
+
+          final config = await fetcher.fetch(
+            locale: locale,
+            packageInfo: packageInfo,
+          );
+          configs.add(config);
 
         case UpdateConfigFetcherBySource(source: final source):
           if (!shouldFetchGlobalSources) continue;
@@ -43,19 +54,17 @@ class UpdateConfigFetcherCoordinator {
           if (!(source.platforms?.contains(searchData.platform) ?? false)) {
             continue;
           }
-      }
 
-      final locale = searchData.locale.locale ?? const Locale('en');
-
-      try {
-        final config = await fetcher.fetch(
-          locale: locale,
-          packageInfo: packageInfo,
-        );
-        configs.add(config);
-        // ignore: avoid_catching_errors
-      } on UnimplementedError catch (_) {
-        continue;
+          try {
+            final config = await fetcher.fetch(
+              locale: locale,
+              packageInfo: packageInfo,
+            );
+            configs.add(config);
+            // ignore: avoid_catching_errors
+          } on UnimplementedError catch (_) {
+            continue;
+          }
       }
     }
 

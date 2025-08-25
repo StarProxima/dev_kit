@@ -2,11 +2,15 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../mergeable.dart';
 import '../../update_entities/update_platform.dart';
+import '../../update_entities/update_source.dart';
 import '../../update_entities/update_source_name.dart';
+import '../release_platrform/release_platrform_config.dart';
+import '../release_source/release_source_config.dart';
 import '../update_app_settings/update_app_settings_config.dart';
 import '../update_content/update_content_config.dart';
 import '../update_rule/update_rule_config.dart';
 import '../update_settings/update_settings_config.dart';
+import 'release_config.dart';
 
 class UpdateData {
   final Version version;
@@ -48,5 +52,24 @@ class UpdateData {
         contentRules: contentRules ?? this.contentRules,
         settingsRules: settingsRules ?? this.settingsRules,
         customData: Mergeable.mergeCustomData(this.customData, customData),
+      );
+}
+
+extension UpdateDataToReleaseConfig on UpdateData {
+  ReleaseConfig toReleaseConfig() => ReleaseConfig.byRequired(
+        version: version,
+        date: date,
+        sources: [
+          ReleaseSourceConfig(
+            sourceName: sourceName,
+            platforms: [
+              ReleasePlatformConfig(platformName: platform),
+            ],
+          ),
+        ],
+        contentRules: contentRules,
+        settingsRules: settingsRules,
+        appSettingsRules: appSettingsRules,
+        customData: customData,
       );
 }

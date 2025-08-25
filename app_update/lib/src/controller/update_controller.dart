@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../fetcher/source_fetchers/app_store_update_config_fetcher.dart';
-import '../fetcher/source_fetchers/google_play_update_config_fetcher.dart';
+import '../fetcher/source_fetchers/app_store_fetcher.dart';
+import '../fetcher/source_fetchers/google_play_fetcher.dart';
 import '../fetcher/update_config_fetcher_base.dart';
 import '../finder/update_finder.dart';
 import '../linker/update_inker.dart';
@@ -37,8 +37,8 @@ class UpdateController extends UpdateControllerBase {
 
   UpdateController({
     List<UpdateConfigFetcherBase> fetchers = const [
-      GooglePlayUpdateConfigFetcher(),
-      AppStoreUpdateConfigFetcher(),
+      GooglePlayFetcher(),
+      AppStoreFetcher(),
     ],
     UpdateConfigFetcherCoordinator? fetcherCoordinator,
     UpdateDataResolver? updateDataResolver,
