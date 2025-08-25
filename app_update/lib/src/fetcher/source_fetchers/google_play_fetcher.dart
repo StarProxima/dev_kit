@@ -16,9 +16,24 @@ class GooglePlayFetcher extends UpdateConfigFetcherBySource {
   Future<Uri?> getSourceAppUrl({
     required Locale locale,
     required PackageInfo packageInfo,
-  }) {
-    // TODO: implement fetchUrl
-    throw UnimplementedError();
+  }) async {
+    final countryCode = locale.countryCode;
+    final languageCode = locale.languageCode;
+
+    final parameters = <String, String>{'id': packageInfo.packageName};
+
+    if (countryCode != null && countryCode.isNotEmpty) {
+      parameters['gl'] = countryCode;
+    }
+    if (languageCode.isNotEmpty) {
+      parameters['hl'] = languageCode;
+    }
+
+    return Uri.https(
+      'play.google.com',
+      'store/apps/details',
+      parameters,
+    );
   }
 
   @override

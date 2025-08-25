@@ -14,7 +14,8 @@ class LocaleParser {
 
     if (value is! String) throw const UpdateConfigException();
 
-    final list = value.split('_');
+    // split by _ or -
+    final list = value.split(RegExp('[-_]'));
 
     final (languageCode, countryCode) = (list.first, list.lastOrNull);
 

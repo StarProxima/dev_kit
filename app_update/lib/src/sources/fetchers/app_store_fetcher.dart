@@ -60,7 +60,11 @@ class AppStoreFetcher extends SourceReleaseFetcher {
 
   /// Look up URL by QSP.
   Uri _lookupURL(String bundleId, Locale locale, {bool useCacheBuster = true}) {
-    final qsp = {'bundleId': bundleId, 'country': locale.countryCode?.toUpperCase(), 'lang': locale.languageCode};
+    final qsp = {
+      'bundleId': bundleId,
+      'country': locale.countryCode?.toUpperCase(),
+      'lang': locale.languageCode
+    };
     if (useCacheBuster) {
       qsp.addAll({'_cb': DateTime.now().microsecondsSinceEpoch.toString()});
     }
@@ -101,7 +105,8 @@ class AppStoreFetcher extends SourceReleaseFetcher {
       if (appStoreUrl == null) return null;
 
       final languageCode = locale.languageCode;
-      appStoreUrl = appStoreUrl.replaceFirst(RegExp(r'apps\.apple\.com\/.*\/app'), 'apps.apple.com/$languageCode/app');
+      appStoreUrl = appStoreUrl.replaceFirst(
+          RegExp(r'apps\.apple\.com\/.*\/app'), 'apps.apple.com/$languageCode/app');
 
       return appStoreUrl;
     } catch (_) {}

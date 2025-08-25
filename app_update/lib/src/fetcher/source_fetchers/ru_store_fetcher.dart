@@ -16,9 +16,11 @@ class RuStoreFetcher extends UpdateConfigFetcherBySource {
   Future<Uri?> getSourceAppUrl({
     required Locale locale,
     required PackageInfo packageInfo,
-  }) {
-    // TODO: implement fetchUrl
-    throw UnimplementedError();
+  }) async {
+    return Uri.https(
+      'apps.rustore.ru',
+      'app/${packageInfo.packageName}',
+    );
   }
 
   @override
