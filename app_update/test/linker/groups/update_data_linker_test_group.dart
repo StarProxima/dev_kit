@@ -1,19 +1,6 @@
-import 'package:app_update/src/linker/sub_linkers/update_data_linker.dart';
-import 'package:app_update/src/shared/entities/app_status.dart';
-import 'package:app_update/src/shared/entities/update_platform.dart';
-import 'package:app_update/src/shared/entities/update_source_name.dart';
-import 'package:app_update/src/shared/models/global_platform/global_platform_config.dart';
-import 'package:app_update/src/shared/models/global_source/global_source_config.dart';
-import 'package:app_update/src/shared/models/release/update_data.dart';
-import 'package:app_update/src/shared/models/update_app_settings/update_app_settings_config.dart';
-import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
-import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
-import 'package:app_update/src/shared/models/update_rule/update_rules_container.dart';
-import 'package:app_update/src/shared/models/update_settings/update_settings_config.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:pub_semver/pub_semver.dart';
+part of '../linker_test.dart';
 
-void main() {
+void runUpdateDataLinkerTests() {
   group('UpdateDataLinker', () {
     const linker = UpdateDataLinker();
 

@@ -1,4 +1,4 @@
-part of '../update_rule_resolver_test.dart';
+part of '../resolver_test.dart';
 
 void runSourcesPlatformsMatchingTests() {
   group('UpdateRuleResolver - Sources/Platforms matching', () {

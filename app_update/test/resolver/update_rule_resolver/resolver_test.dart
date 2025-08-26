@@ -34,9 +34,11 @@ part 'groups/sources_platforms_matching_test_group.dart';
 part 'groups/temporal_matching_test_group.dart';
 
 void main() {
-  runBasicResolverTests();
-  runCustomDataMatchingTests();
-  runInstallDateMatcherTests();
-  runSourcesPlatformsMatchingTests();
-  runTemporalMatchingTests();
+  group('Resolver', () {
+    runBasicResolverTests();
+    runCustomDataMatchingTests();
+    runInstallDateMatcherTests();
+    runSourcesPlatformsMatchingTests();
+    runTemporalMatchingTests();
+  });
 }

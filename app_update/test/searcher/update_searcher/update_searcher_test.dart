@@ -21,9 +21,11 @@ part 'groups/sort_test_group.dart';
 part 'helpers/test_utils.dart';
 
 void main() {
-  runFindAvailableUpdatesTests();
-  runFindRelevantTests();
-  runFindCurrentTests();
-  runSortTests();
-  runSearchFullTests();
+  group('Searcher', () {
+    runFindAvailableUpdatesTests();
+    runFindRelevantTests();
+    runFindCurrentTests();
+    runSortTests();
+    runSearchFullTests();
+  });
 }

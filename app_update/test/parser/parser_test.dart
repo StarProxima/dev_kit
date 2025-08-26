@@ -51,14 +51,16 @@ Object? deepConvert(Object? node) {
 }
 
 void main() {
-  runGlobalPlatformConfigParserTests();
-  runGlobalSourceConfigParserTests();
-  runReleaseConfigParserTests();
-  runReleasePlatformConfigParserTests();
-  runReleaseSourceConfigParserTests();
-  runUpdateAppStatusConfigParserTests();
-  runUpdateContentConfigParserTests();
-  runUpdateRuleConfigParserTests();
-  runUpdateSettingsConfigParserTests();
-  runUpdateConfigParserIntegrationTests();
+  group('Parser', () {
+    runGlobalPlatformConfigParserTests();
+    runGlobalSourceConfigParserTests();
+    runReleaseConfigParserTests();
+    runReleasePlatformConfigParserTests();
+    runReleaseSourceConfigParserTests();
+    runUpdateAppStatusConfigParserTests();
+    runUpdateContentConfigParserTests();
+    runUpdateRuleConfigParserTests();
+    runUpdateSettingsConfigParserTests();
+    runUpdateConfigParserIntegrationTests();
+  });
 }

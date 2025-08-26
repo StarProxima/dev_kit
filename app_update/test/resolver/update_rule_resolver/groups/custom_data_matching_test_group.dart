@@ -1,6 +1,6 @@
 // ignore_for_file: unnecessary_raw_strings
 
-part of '../update_rule_resolver_test.dart';
+part of '../resolver_test.dart';
 
 void runCustomDataMatchingTests() {
   group('UpdateRuleResolver - CustomData matching', () {
