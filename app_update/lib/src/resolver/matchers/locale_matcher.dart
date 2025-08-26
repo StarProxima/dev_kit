@@ -10,7 +10,7 @@ class LocaleMatcher<T extends Mergeable> implements RuleMatcher<T> {
   @override
   bool matches(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
-    final locales = rule.locales ?? [UpdateLocale.any];
+    final locales = rule.localeIs ?? [UpdateLocale.any];
     final locale = search.locale;
     return locales.contains(UpdateLocale.any) || locales.contains(locale);
   }

@@ -15,15 +15,15 @@ void main() {
           - name: android
           - name: ios
         content:
-          - locales: ru
+          - locale_is: ru
             data:
               title: 'Заголовок'
         settings:
-          - app_statuses: outdated
+          - app_status_is: outdated
             data:
               can_skip: true
         app_settings:
-          - versions: any
+          - version_is: any
             data:
               app_status: active
         custom_field: 42

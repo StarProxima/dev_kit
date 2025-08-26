@@ -5,20 +5,20 @@ releases:
     release_notes: Improvements
     date: 2014-10-17 23:00:00
     status: required
-    sources:
+    source_is:
      - name: googlePlay
        url: https://play.google.com/store/apps/details?id=app.hiddify.com
   - version: 0.0.2-windows
     ref_version: 0.0.2-android
     date: 2014-10-20 12:00:00
     status: recommended
-    sources:
+    source_is:
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
         platforms: windows
   - version: 0.0.2-macoslinux
     ref_version: 0.0.2-android
-    sources:
+    source_is:
       - name: github
         url: https://github.com/hiddify/hiddify-next/releases/
         platforms: [macos, linux]
@@ -28,7 +28,7 @@ releases2:
   - version: 0.0.2
     release_notes: Improvements
     
-    sources:
+    source_is:
      - name: googlePlay
        url: https://play.google.com/store/apps/details?id=app.hiddify.com
 

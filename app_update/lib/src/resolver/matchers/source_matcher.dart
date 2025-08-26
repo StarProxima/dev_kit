@@ -12,7 +12,7 @@ class SourceMatcher<T extends Mergeable> implements RuleMatcher<T> {
   bool matches(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchBySources(
-      rule.sources ?? [UpdateSource.any],
+      rule.sourceIs ?? [UpdateSource.any],
       search.sources,
       search.platform,
     );

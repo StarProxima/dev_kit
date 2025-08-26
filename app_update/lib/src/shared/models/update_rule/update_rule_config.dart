@@ -7,11 +7,11 @@ import '../../entities/update_view_target.dart';
 import '../mergeable.dart';
 
 class UpdateRuleConfig<T extends Mergeable> {
-  final List<AppStatus>? appStatuses;
-  final List<UpdateLocale>? locales;
-  final List<UpdateViewTarget>? viewTargets;
-  final List<UpdateVersionConstraint>? versions;
-  final List<UpdateSource>? sources;
+  final List<AppStatus>? appStatusIs;
+  final List<UpdateLocale>? localeIs;
+  final List<UpdateViewTarget>? viewTargetIs;
+  final List<UpdateVersionConstraint>? versionIs;
+  final List<UpdateSource>? sourceIs;
   final UpdateDate? date;
   final Duration? delay;
   final Duration? rollout;
@@ -20,11 +20,11 @@ class UpdateRuleConfig<T extends Mergeable> {
   final T data;
 
   const UpdateRuleConfig({
-    this.appStatuses,
-    this.locales,
-    this.viewTargets,
-    this.versions,
-    this.sources,
+    this.appStatusIs,
+    this.localeIs,
+    this.viewTargetIs,
+    this.versionIs,
+    this.sourceIs,
     this.date,
     this.delay,
     this.rollout,
@@ -34,11 +34,11 @@ class UpdateRuleConfig<T extends Mergeable> {
   });
 
   const UpdateRuleConfig.byRequired({
-    required this.appStatuses,
-    required this.locales,
-    required this.viewTargets,
-    required this.versions,
-    required this.sources,
+    required this.appStatusIs,
+    required this.localeIs,
+    required this.viewTargetIs,
+    required this.versionIs,
+    required this.sourceIs,
     required this.date,
     required this.delay,
     required this.rollout,
@@ -48,11 +48,11 @@ class UpdateRuleConfig<T extends Mergeable> {
   });
 
   UpdateRuleConfig<T> copyWith({
-    List<AppStatus>? appStatuses,
-    List<UpdateLocale>? locales,
-    List<UpdateViewTarget>? viewTargets,
-    List<UpdateVersionConstraint>? versions,
-    List<UpdateSource>? sources,
+    List<AppStatus>? appStatusIs,
+    List<UpdateLocale>? localeIs,
+    List<UpdateViewTarget>? viewTargetIs,
+    List<UpdateVersionConstraint>? versionIs,
+    List<UpdateSource>? sourceIs,
     UpdateDate? date,
     Duration? delay,
     Duration? rollout,
@@ -61,11 +61,11 @@ class UpdateRuleConfig<T extends Mergeable> {
     T? data,
   }) =>
       UpdateRuleConfig.byRequired(
-        appStatuses: appStatuses ?? this.appStatuses,
-        locales: locales ?? this.locales,
-        viewTargets: viewTargets ?? this.viewTargets,
-        versions: versions ?? this.versions,
-        sources: sources ?? this.sources,
+        appStatusIs: appStatusIs ?? this.appStatusIs,
+        localeIs: localeIs ?? this.localeIs,
+        viewTargetIs: viewTargetIs ?? this.viewTargetIs,
+        versionIs: versionIs ?? this.versionIs,
+        sourceIs: sourceIs ?? this.sourceIs,
         date: date ?? this.date,
         delay: delay ?? this.delay,
         rollout: rollout ?? this.rollout,

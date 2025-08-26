@@ -20,15 +20,15 @@ void main() {
                   version: '1.2.4'
           - appStore
         content:
-          - locales: ru
+          - locale_is: ru
             data:
               title: 'Заголовок'
         settings:
-          - app_statuses: outdated
+          - app_status_is: outdated
             data:
               can_skip: true
         app_settings:
-          - versions: any
+          - version_is: any
             data:
               app_status: active
         custom_field: 123

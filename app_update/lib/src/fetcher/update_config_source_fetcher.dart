@@ -60,7 +60,7 @@ abstract class UpdateConfigSourceFetcher extends UpdateConfigFetcherBase {
     final urlContentRules = url != null
         ? [
             UpdateRuleConfig(
-              sources: [source],
+              sourceIs: [source],
               data: UpdateContentConfig(
                 updateUrl: url,
               ),

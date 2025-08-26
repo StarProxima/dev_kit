@@ -17,14 +17,14 @@ final List<UpdateRuleConfig<UpdateSettingsConfig>> defaultUpdateSettingsRules =
     ),
   ),
   const UpdateRuleConfig(
-    appStatuses: [AppStatus.unsupported],
+    appStatusIs: [AppStatus.unsupported],
     data: UpdateSettingsConfig(
       canSkip: false,
       canPostpone: false,
     ),
   ),
   const UpdateRuleConfig(
-    appStatuses: [AppStatus.outdated],
+    appStatusIs: [AppStatus.outdated],
     data: UpdateSettingsConfig(
       canSkip: false,
       canPostpone: true,

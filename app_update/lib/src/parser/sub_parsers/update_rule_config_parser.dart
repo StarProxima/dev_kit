@@ -48,35 +48,35 @@ class UpdateRuleConfigParser {
     }
 
     // appStatuses
-    final appStatusesRawValue = map.remove('app_statuses');
+    final appStatusesRawValue = map.remove('app_status_is');
     final appStatusesValue = _listOrValueParser.parse(appStatusesRawValue);
-    final appStatuses =
+    final appStatusIs =
         appStatusesValue?.map(_appStatusParser.parse).nonNulls.toList();
 
     // locales
-    final localesRawValue = map.remove('locales');
+    final localesRawValue = map.remove('locale_is');
     final localesValue = _listOrValueParser.parse(localesRawValue);
-    final locales =
+    final localeIs =
         localesValue?.map(_updateLocaleParser.parse).nonNulls.toList();
 
     // viewTargets
-    final viewTargetsRawValue = map.remove('view_targets');
+    final viewTargetsRawValue = map.remove('view_target_is');
     final viewTargetsValue = _listOrValueParser.parse(viewTargetsRawValue);
-    final viewTargets =
+    final viewTargetIs =
         viewTargetsValue?.map(_updateViewTargetParser.parse).nonNulls.toList();
 
     // versions
-    final versionsRawValue = map.remove('versions');
+    final versionsRawValue = map.remove('version_is');
     final versionsValue = _listOrValueParser.parse(versionsRawValue);
-    final versions = versionsValue
+    final versionIs = versionsValue
         ?.map(_updateVersionConstraintParser.parse)
         .nonNulls
         .toList();
 
     // sources
-    final sourcesRawValue = map.remove('sources');
+    final sourcesRawValue = map.remove('source_is');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
-    final sources =
+    final sourceIs =
         sourcesValue?.map(_updateSourceParser.parse).nonNulls.toList();
 
     // date
@@ -97,11 +97,11 @@ class UpdateRuleConfigParser {
         _doubleParser.parse(value: segmentationPercentValue);
 
     final config = UpdateRuleConfig<T>.byRequired(
-      appStatuses: appStatuses,
-      locales: locales,
-      viewTargets: viewTargets,
-      versions: versions,
-      sources: sources,
+      appStatusIs: appStatusIs,
+      localeIs: localeIs,
+      viewTargetIs: viewTargetIs,
+      versionIs: versionIs,
+      sourceIs: sourceIs,
       date: date,
       delay: delay,
       rollout: rollout,

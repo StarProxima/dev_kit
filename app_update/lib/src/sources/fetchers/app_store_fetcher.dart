@@ -52,7 +52,7 @@ class AppStoreFetcher extends SourceReleaseFetcher {
     return ReleaseConfig(
       version: sourceVersion,
       text: UpdateTextConfigContainer.fromBase(updateTextConfig),
-      sources: [
+      sourceIs: [
         ReleaseSourceConfig(
           name: source?.name ?? Sources.appStore.name,
           url: source?.url ??

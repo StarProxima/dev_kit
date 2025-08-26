@@ -58,7 +58,7 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     return ReleaseConfig(
       version: sourceVersion,
       // text: UpdateTextConfigContainer.fromBase(updateTextConfig),
-      sources: [
+      sourceIs: [
         ReleaseSourceConfig(
           name: source?.name ?? Sources.googlePlay.name,
           url: source?.url ?? url,

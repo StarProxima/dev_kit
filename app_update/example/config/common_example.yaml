@@ -3,14 +3,14 @@ releases:
   - version: 1.1.0
     release_notes: Improvements release
     date: 2014-10-17 23:00:00
-    sources:
+    source_is:
       - googlePlay
       - appStore
 
   - version: 1.1.0
     release_notes: Improvements release
     date: 2014-10-17 23:00:00
-    sources:
+    source_is:
       - googlePlay
       - appStore
 
@@ -18,7 +18,7 @@ releases:
   # - version: 1.0.0
   #   release_notes: Improvements release
   #   date: 2014-10-10 23:00:00
-  #   sources:
+  #   source_is:
   #     - name: googlePlay
   #       url: https://play.google.com/store/apps/details?id=app.hiddify.com
   #       date: 2014-10-17 23:00:00

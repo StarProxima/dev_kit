@@ -83,10 +83,10 @@ settings:
     can_skip_release: true
 
 version_settings:
-  unsupported_versions: ["<=4.2.0", 0.3.4]
-  deprecated_versions: ["<=5.1.0 >=4.2.0 ", ">5.6.0 <5.6.7"]
+  unsupported_version_is: ["<=4.2.0", 0.3.4]
+  deprecated_version_is: ["<=5.1.0 >=4.2.0 ", ">5.6.0 <5.6.7"]
 
-sources:
+source_is:
   - name: appStore
     url: https://example.com
     platforms:
@@ -94,7 +94,7 @@ sources:
       - name: ios
         source:
           version_settings:
-            unsupported_versions: ["1.8.3"]
+            unsupported_version_is: ["1.8.3"]
 
   - name: appGallery
     url: https://example.com
@@ -105,7 +105,7 @@ sources:
     text:
       title: Title
     version_settings:
-      unsupported_versions: ["<=4.2.0"]
+      unsupported_version_is: ["<=4.2.0"]
 
   - name: gitHub
     url: https://example.com
@@ -117,7 +117,7 @@ sources:
           text:
             title: Title
           version_settings:
-            deprecated_versions: [">5.6.0 <5.6.7"]
+            deprecated_version_is: [">5.6.0 <5.6.7"]
       # Short syntax
       - windows
       - macos
@@ -141,7 +141,7 @@ releases:
       can_skip_release: true
       reminder_period_hours: 48
       release_delay_hours: 48
-    sources:
+    source_is:
       - googlePlay
       - appStore
       - ruStore
@@ -153,25 +153,25 @@ releases:
   - version: 0.3.8+10-beta
     text:
       release_notes: Minor Improvements
-    sources: []
+    source_is: []
     is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
     text:
       release_notes: Improvements
-    sources:
+    source_is:
       - name: googlePlay
         date: 2014-10-17 23:00:00
 
   - version: 0.0.2+30
-    sources: []
+    source_is: []
 
   - version: 1.2.0
     text:
       release_notes: Improvements
     settings:
       can_skip_release: true
-    sources:
+    source_is:
       - appStore
       - name: googlePlay
       - name: ruStore
@@ -207,7 +207,7 @@ releases:
       release_notes: Note
     settings:
       can_skip_release: true
-    sources:
+    source_is:
       - name: googlePlay
         url: www.example.com
         release:
@@ -236,7 +236,7 @@ releases:
       description: Description
     settings:
       can_skip_release: true
-    sources:
+    source_is:
       - name: googlePlay
         url: null
         platforms: []
@@ -246,7 +246,7 @@ releases:
       title: Title
       description: Description
       release_notes: Note
-    sources:
+    source_is:
       - googlePlay
       - name: appStore
         platforms: ['ios']

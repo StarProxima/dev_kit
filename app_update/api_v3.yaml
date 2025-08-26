@@ -3,15 +3,15 @@
 # переопределяя параметры в data, если они подходят под условия.
 # Т.е. для релиза может примениться несколько правил, последние более приоритетны.
 content:
-  - view_targets: card
-    app_statuses: any
-    locales: any
-    sources:
+  - view_target_is: card
+    app_status_is: any
+    locale_is: any
+    source_is:
       - name: gitHub
         platforms:
           - android
           - ios
-    versions: any
+    version_is: any
     date: 2020-01-01
     data:
       title: Обновите приложение
@@ -20,9 +20,9 @@ content:
         update_url: https://example.com
         border_radius: 10
 
-  - view_targets: any
-    locales: ru
-    app_statuses: 
+  - view_target_is: any
+    locale_is: ru
+    app_status_is: 
       - outdated
       - deprecated
     data:
@@ -33,8 +33,8 @@ content:
 # Действует такая же логика применения правил.
 settings:
   # Задаем настройки по умолчанию для всех релизов
-  - app_statuses: any
-    view_targets: any
+  - app_status_is: any
+    view_target_is: any
     data:
       # Выключаем отображение по умолчанию,
       # чтобы включить для конкретных таргетов
@@ -50,24 +50,24 @@ settings:
 
   # Настраиваем actions для статусов
   
-  - app_statuses: unsupported
-    view_targets: any
+  - app_status_is: unsupported
+    view_target_is: any
     data:   
       can_skip: false
       can_postpone: false
 
-  - app_statuses: deprecated
-    view_targets: any
+  - app_status_is: deprecated
+    view_target_is: any
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
       postpone_any_releases_delay_hours: 24
   
-  - app_statuses: 
+  - app_status_is: 
       - outdated
       - updateable
       - active
-    view_targets: any
+    view_target_is: any
     data:   
       can_skip: true
       can_postpone: true
@@ -75,20 +75,20 @@ settings:
   # Настраиваем отображение по каждому статусу для конкретных таргетов,
   # чтобы настроить гибкое отображение в зависимости от статуса
 
-  - app_statuses: active
-    view_targets: aboutScreen
+  - app_status_is: active
+    view_target_is: aboutScreen
     data:
       should_show: true
   
-  - app_statuses: updateable
-    view_targets: 
+  - app_status_is: updateable
+    view_target_is: 
       - aboutScreen
       - card
     data:
       should_show: true
 
-  - app_statuses: outdated
-    view_targets: 
+  - app_status_is: outdated
+    view_target_is: 
       - aboutScreen
       - card
       - profileBadge
@@ -96,8 +96,8 @@ settings:
     data:
       should_show: true
 
-  - app_statuses: deprecated
-    view_targets: 
+  - app_status_is: deprecated
+    view_target_is: 
       - aboutScreen
       - card
       - profileBadge
@@ -105,8 +105,8 @@ settings:
     data:
       should_show: true
 
-  - app_statuses: unsupported
-    view_targets: screen
+  - app_status_is: unsupported
+    view_target_is: screen
     data:
       should_show: true
 
@@ -114,19 +114,19 @@ settings:
 # Позволяет гибко задать настройки и распределить версии по статусам,
 # Действует такая же логика применения правил.
 app_settings:
-  - versions: any
+  - version_is: any
     data:
       app_status: active
 
   # Задает жизненный цикл релизов
   # The `date: update_release` parameter take date from 
   # latest matched release and uses it instead of `date`.
-  - versions: any
+  - version_is: any
     date: $updateReleaseDate
     data:
       app_status: active
 
-  - versions: any
+  - version_is: any
     date: $updateReleaseDate
     delay_hours: 48  # 2 days
     rollout_hours: 72 # 3 days
@@ -143,19 +143,19 @@ app_settings:
   # outdated if is older than 10 days
   # deprecated if is older than 127 days
   # unsupported if is older than 247 days
-  - versions: any
+  - version_is: any
     date: $localReleaseDate
     delay_hours: 168 # 7 days
     rollout_hours: 72 # 3 days
     data:
       app_status: outdated
-  - versions: any
+  - version_is: any
     date: $localReleaseDate
     delay_hours: 2880 # 120 days
     rollout_hours: 168 # 7 days
     data:
       app_status: deprecated
-  - versions: any
+  - version_is: any
     date: $localReleaseDate
     delay_hours: 6760 # 240 days
     rollout_hours: 168 # 7 days
@@ -163,7 +163,7 @@ app_settings:
       app_status: unsupported
 
   # any matched versions are deprecated
-  - versions: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+  - version_is: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
     data:
       app_status: deprecated 
 
@@ -171,27 +171,27 @@ app_settings:
   # outdated after 2014-10-17 + 10 days 
   # deprecated after 2014-10-17 + 127 days
   # unsupported after 2014-10-17 + 294 days
-  - versions: '<4.0.0'
+  - version_is: '<4.0.0'
     date: 2014-10-17 00:00:00
     delay_hours: 168 # 7 days
     rollout_hours: 72 # 3 days
     data:
       app_status: outdated
-  - versions: '<4.0.0'
+  - version_is: '<4.0.0'
     date: 2014-10-17 00:00:00
     delay_hours: 2880 # 120 days
     rollout_hours: 168 # 7 days
     data:
       app_status: deprecated
-  - versions: '<4.0.0'
+  - version_is: '<4.0.0'
     date: 2015-01-01 00:00:00
     delay_hours: 6720 # 280 days
     rollout_hours: 336 # 14 days
 
   # any versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
-  - versions: '<=2.0.0'
+  - version_is: '<=2.0.0'
     date: 2014-10-17 23:00:00
-    sources:
+    source_is:
       - GooglePlay
       - name: AppStore
         platforms:
@@ -200,13 +200,13 @@ app_settings:
       app_status: unsupported
 
   # any versions after 6.0.0 are active
-  - versions: '>=6.0.0'
+  - version_is: '>=6.0.0'
     data:
       app_status: active
 
   # any versions before 3.0.0 are: 
   # unsupported after 2014-10-17 + 168+72 hours
-  - versions: '<=3.0.0'
+  - version_is: '<=3.0.0'
     date: 2014-10-17
     delay_hours: 12
     rollout_hours: 72
@@ -214,7 +214,7 @@ app_settings:
     data:
       app_status: unsupported
 
-  - versions: '<=3.0.0'
+  - version_is: '<=3.0.0'
     date: 2014-10-17
     rollout_hours: 72
     segmentation_percent: 50
@@ -222,7 +222,7 @@ app_settings:
       app_status: unsupported
 
   # any versions before 1.0.0 are unsupported
-  - versions: '<=1.0.0'
+  - version_is: '<=1.0.0'
     data:
       app_status: unsupported
 
@@ -239,10 +239,10 @@ sources:
     content:
       - data:
           update_url: https://example.com
-      - locales: ru
+      - locale_is: ru
         data:
           update_button: Перейти в AppGallery
-      - locales: en
+      - locale_is: en
         data:
           update_button: Go to AppGallery
 
@@ -299,10 +299,10 @@ releases:
 
   - version: 0.0.3+80
     content:
-      - locales: ru
+      - locale_is: ru
         data:
           release_notes: Improvements
-      - locales: en
+      - locale_is: en
         data:
           release_notes: Improvements
     sources:
@@ -338,7 +338,7 @@ releases:
           - name: windows
             content:
               - update_url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
-              - locales: ru
+              - locale_is: ru
                 data:
                   release_notes: Windows Github release notes              
             settings:
@@ -366,7 +366,7 @@ releases:
           - name: android
             settings:
               - target: dialog
-                app_statuses: outdated
+                app_status_is: outdated
                 data:
                   can_skip: true
                   can_postpone: true

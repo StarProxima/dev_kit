@@ -5,7 +5,7 @@ import '../../../shared/models/update_rule/update_rule_config.dart';
 
 final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
   const UpdateRuleConfig(
-    locales: [UpdateLocale.ru],
+    localeIs: [UpdateLocale.ru],
     data: UpdateContentConfig.byRequired(
       updateUrl: null,
       title: r'Обновите $appName',
@@ -20,8 +20,8 @@ final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
     ),
   ),
   const UpdateRuleConfig(
-    locales: [UpdateLocale.ru],
-    appStatuses: [AppStatus.unsupported],
+    localeIs: [UpdateLocale.ru],
+    appStatusIs: [AppStatus.unsupported],
     data: UpdateContentConfig(
       title: r'Обновите $appName',
       description:

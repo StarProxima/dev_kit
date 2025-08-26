@@ -8,16 +8,16 @@ App Update — система конфигураций для управлени
 
 ```yaml
 content:
-  - view_targets: card
-    app_statuses: any
-    locales: any
+  - view_target_is: card
+    app_status_is: any
+    locale_is: any
     data:
       title: Обновление доступно
       description: Новая версия с улучшениями
 
 settings:
-  - app_statuses: any
-    view_targets: any
+  - app_status_is: any
+    view_target_is: any
     data:
       should_show: true
 
@@ -51,7 +51,7 @@ releases:
 content:    # Текст/контент для UI по контекстам
 settings:   # Поведение UI и доступные действия
 app_settings: # Жизненный цикл версий (статусы, выкатывание)
-sources:          # Источники дистрибуции (сторы/платформы)
+source_is:          # Источники дистрибуции (сторы/платформы)
 releases:         # Конкретные релизы приложения
 ```
 
@@ -72,16 +72,16 @@ releases:         # Конкретные релизы приложения
 
 ```yaml
 content:
-  - view_targets: card
-    app_statuses: any
-    locales: any
+  - view_target_is: card
+    app_status_is: any
+    locale_is: any
     data:
       title: Обновите приложение
       description: Описание
 
-  - view_targets: any
-    locales: ru
-    app_statuses: [outdated, deprecated]
+  - view_target_is: any
+    locale_is: ru
+    app_status_is: [outdated, deprecated]
     data:
       title: Обновите приложение (важно)
 ```
@@ -104,8 +104,8 @@ data:
 ```yaml
 settings:
   # База: по умолчанию скрыто, явно включаем нужные места
-  - app_statuses: any
-    view_targets: any
+  - app_status_is: any
+    view_target_is: any
     data:
       should_show: false
       can_skip: false
@@ -116,50 +116,50 @@ settings:
       postpone_any_releases_delay_hours: 24
 
   # Unsupported — блокирующее обновление
-  - app_statuses: unsupported
-    view_targets: any
+  - app_status_is: unsupported
+    view_target_is: any
     data:
       can_skip: false
       can_postpone: false
 
   # Deprecated — разрешаем отложить на короткий срок
-  - app_statuses: deprecated
-    view_targets: any
+  - app_status_is: deprecated
+    view_target_is: any
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
       postpone_any_releases_delay_hours: 24
 
   # Optional — полная свобода
-  - app_statuses: [outdated, updateable, active]
-    view_targets: any
+  - app_status_is: [outdated, updateable, active]
+    view_target_is: any
     data:
       can_skip: true
       can_postpone: true
 
   # Точечное включение UI по таргетам
-  - app_statuses: active
-    view_targets: aboutScreen
+  - app_status_is: active
+    view_target_is: aboutScreen
     data:
       should_show: true
 
-  - app_statuses: updateable
-    view_targets: [aboutScreen, card]
+  - app_status_is: updateable
+    view_target_is: [aboutScreen, card]
     data:
       should_show: true
 
-  - app_statuses: outdated
-    view_targets: [aboutScreen, card, profileBadge, toast]
+  - app_status_is: outdated
+    view_target_is: [aboutScreen, card, profileBadge, toast]
     data:
       should_show: true
 
-  - app_statuses: deprecated
-    view_targets: [aboutScreen, card, profileBadge, screen]
+  - app_status_is: deprecated
+    view_target_is: [aboutScreen, card, profileBadge, screen]
     data:
       should_show: true
 
-  - app_statuses: unsupported
-    view_targets: screen
+  - app_status_is: unsupported
+    view_target_is: screen
     data:
       should_show: true
 ```
@@ -235,7 +235,7 @@ app_settings:
 
   - version: "<=2.0.0"
     date: 2014-10-17 23:00:00
-    sources:
+    source_is:
       - GooglePlay
       - name: AppStore
         platforms: [ios]
@@ -273,9 +273,9 @@ sources:
   - name: appGallery
     url: https://example.com
     content:
-      - locales: ru
+      - locale_is: ru
         data: { update_button: Перейти в AppGallery }
-      - locales: en
+      - locale_is: en
         data: { update_button: Go to AppGallery }
 
   - name: ruStore
@@ -322,9 +322,9 @@ releases:
 
   - version: 0.0.3+80
     content:
-      - locales: ru
+      - locale_is: ru
         data: { release_notes: Improvements }
-      - locales: en
+      - locale_is: en
         data: { release_notes: Improvements }
     sources:
       - name: googlePlay
@@ -354,7 +354,7 @@ releases:
               url: https://github.com/hiddify/hiddify-next/releases/download/v0.14.0/hiddify-windows-x64-setup.zip
               release:
                 content:
-                  - locales: ru
+                  - locale_is: ru
                     data: { release_notes: Windows Github release notes }
                 settings:
                   can_postpone: true
@@ -381,7 +381,7 @@ releases:
               release:
                 settings:
                   - target: dialog
-                    app_statuses: outdated
+                    app_status_is: outdated
                     data: { can_skip: true, can_postpone: true }
 
       - name: appStore

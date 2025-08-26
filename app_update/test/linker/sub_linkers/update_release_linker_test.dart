@@ -494,40 +494,40 @@ void main() {
 
           final firstRule = result[0].contentRules![0];
           expect(firstRule.data.title, releaseRule.data.title);
-          expect(firstRule.versions,
+          expect(firstRule.versionIs,
               contains(UpdateVersionConstraint(release.version)));
           expect(
-            firstRule.sources?.firstOrNull?.sourceName,
+            firstRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstRule.sources?.firstOrNull?.platforms,
+            firstRule.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
 
           final secondRule = result[0].contentRules![1];
           expect(secondRule.data.description, sourceRule.data.description);
-          expect(secondRule.versions,
+          expect(secondRule.versionIs,
               contains(UpdateVersionConstraint(release.version)));
           expect(
-            secondRule.sources?.firstOrNull?.sourceName,
+            secondRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            secondRule.sources?.firstOrNull?.platforms,
+            secondRule.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
 
           final thirdRule = result[0].contentRules![2];
           expect(thirdRule.data.title, platformRule.data.title);
-          expect(thirdRule.versions,
+          expect(thirdRule.versionIs,
               contains(UpdateVersionConstraint(release.version)));
           expect(
-            thirdRule.sources?.firstOrNull?.sourceName,
+            thirdRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            thirdRule.sources?.firstOrNull?.platforms,
+            thirdRule.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
         });
@@ -558,40 +558,40 @@ void main() {
           expect(result, hasLength(1));
           final firstContentRule = result[0].contentRules![0];
           expect(firstContentRule.data.title, equals('Title'));
-          expect(firstContentRule.versions,
+          expect(firstContentRule.versionIs,
               contains(UpdateVersionConstraint(release.version)));
           expect(
-            firstContentRule.sources?.firstOrNull?.sourceName,
+            firstContentRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstContentRule.sources?.firstOrNull?.platforms,
+            firstContentRule.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
 
           final firstSettingsRule = result[0].settingsRules![0];
           expect(firstSettingsRule.data.shouldShow, equals(true));
-          expect(firstSettingsRule.versions,
+          expect(firstSettingsRule.versionIs,
               contains(UpdateVersionConstraint(release.version)));
           expect(
-            firstSettingsRule.sources?.firstOrNull?.sourceName,
+            firstSettingsRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstSettingsRule.sources?.firstOrNull?.platforms,
+            firstSettingsRule.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
 
           final firstAppSettingsRule = result[0].appSettingsRules![0];
           expect(firstAppSettingsRule.data.appStatus, equals(AppStatus.active));
-          expect(firstAppSettingsRule.versions,
+          expect(firstAppSettingsRule.versionIs,
               contains(UpdateVersionConstraint(release.version)));
           expect(
-            firstAppSettingsRule.sources?.firstOrNull?.sourceName,
+            firstAppSettingsRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstAppSettingsRule.sources?.firstOrNull?.platforms,
+            firstAppSettingsRule.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
         });

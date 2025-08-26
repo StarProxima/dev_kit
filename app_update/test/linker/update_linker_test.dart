@@ -214,7 +214,7 @@ void main() {
 
         // Проверяем что правила связаны с версией релиза
         expect(
-          result[0].contentRules![2].versions,
+          result[0].contentRules![2].versionIs,
           contains(UpdateVersionConstraint(release.version)),
         );
       });

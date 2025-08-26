@@ -12,7 +12,7 @@ class VersionMatcher<T extends Mergeable> implements RuleMatcher<T> {
   @override
   bool matches(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
-    final constraints = rule.versions ?? [UpdateVersionConstraint.any];
+    final constraints = rule.versionIs ?? [UpdateVersionConstraint.any];
     if (constraints.contains(UpdateVersionConstraint.any)) return true;
     final Version local = search.localVersion;
     for (final c in constraints) {

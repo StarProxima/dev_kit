@@ -22,7 +22,7 @@ void main() {
 
     test('Базовое правило с data', () {
       const yamlStr = '''
-        app_statuses: outdated
+        app_status_is: outdated
         data:
           title: "Заголовок"
       ''';
@@ -30,28 +30,28 @@ void main() {
       final result = parser.parse<MergeableMapAdapter>(map,
           dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
       expect(result, isA<UpdateRuleConfig<MergeableMapAdapter>>());
-      expect(result?.appStatuses?.first.name, 'outdated');
+      expect(result?.appStatusIs?.first.name, 'outdated');
       expect(result?.data.map['title'], 'Заголовок');
     });
 
     test('Массивы значений', () {
       const yamlStr = '''
-        app_statuses: [outdated, active]
-        locales: [ru, en]
-        view_targets: [card, dialog]
-        versions: [">=1.0.0", "<2.0.0"]
-        sources: [googlePlay, appStore]
+        app_status_is: [outdated, active]
+        locale_is: [ru, en]
+        view_target_is: [card, dialog]
+        version_is: [">=1.0.0", "<2.0.0"]
+        source_is: [googlePlay, appStore]
         data:
           title: test
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse<MergeableMapAdapter>(map,
           dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
-      expect(result?.appStatuses?.length, 2);
-      expect(result?.locales?.length, 2);
-      expect(result?.viewTargets?.length, 2);
-      expect(result?.versions?.length, 2);
-      expect(result?.sources?.length, 2);
+      expect(result?.appStatusIs?.length, 2);
+      expect(result?.localeIs?.length, 2);
+      expect(result?.viewTargetIs?.length, 2);
+      expect(result?.versionIs?.length, 2);
+      expect(result?.sourceIs?.length, 2);
     });
 
     test('null возвращает null', () {
@@ -75,7 +75,7 @@ void main() {
 
     test('customData содержит неиспользованные поля', () {
       const yamlStr = '''
-        app_statuses: outdated
+        app_status_is: outdated
         custom_field: 42
         data:
           title: test
@@ -88,7 +88,7 @@ void main() {
 
     test('Парсит delay_hours, rollout_hours, segmentation_percent', () {
       const yamlStr = '''
-        app_statuses: deprecated
+        app_status_is: deprecated
         delay_hours: 12
         rollout_hours: 72
         segmentation_percent: 12.5

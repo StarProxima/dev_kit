@@ -185,7 +185,7 @@ void main() {
             result.contentRules![0].data.title, equals('Global Source Title'));
         // Проверяем что правило было связано с источником
         expect(
-          result.contentRules![0].sources?.firstOrNull?.sourceName,
+          result.contentRules![0].sourceIs?.firstOrNull?.sourceName,
           equals(UpdateSourceName.googlePlay),
         );
       });
@@ -221,11 +221,11 @@ void main() {
             equals('Global Platform Title'));
         // Проверяем что правило было связано с источником и платформой
         expect(
-          result.contentRules![0].sources?.firstOrNull?.sourceName,
+          result.contentRules![0].sourceIs?.firstOrNull?.sourceName,
           equals(UpdateSourceName.googlePlay),
         );
         expect(
-          result.contentRules![0].sources?.firstOrNull?.platforms,
+          result.contentRules![0].sourceIs?.firstOrNull?.platforms,
           contains(UpdatePlatform.android),
         );
       });

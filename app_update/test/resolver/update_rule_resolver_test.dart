@@ -65,11 +65,11 @@ void main() {
       Map<String, dynamic>? custom,
     }) {
       return UpdateRuleConfig<UpdateContentConfig>.byRequired(
-        appStatuses: statuses,
-        locales: locales,
-        viewTargets: targets,
-        versions: versions,
-        sources: sources,
+        appStatusIs: statuses,
+        localeIs: locales,
+        viewTargetIs: targets,
+        versionIs: versions,
+        sourceIs: sources,
         date: date,
         delay: delay,
         rollout: rollout,

@@ -111,7 +111,7 @@ class UpdateDataLinker {
         : null;
 
     final finalRule = rule.copyWith(
-      sources: finalSource != null ? [finalSource] : null,
+      sourceIs: finalSource != null ? [finalSource] : null,
     );
 
     return finalRule;

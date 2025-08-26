@@ -79,11 +79,11 @@ release_settings:
   # Duration over which the release visibility will gradually increase from 0% to 100% of users.
   progressive_rollout_hours: 48
 
-unsupported_versions: ['<=4.2.0', 0.3.4]
-deprecated_versions: ['<=5.1.0 >=4.2.0', '>5.6.0 <5.6.7']
+unsupported_version_is: ['<=4.2.0', 0.3.4]
+deprecated_version_is: ['<=5.1.0 >=4.2.0', '>5.6.0 <5.6.7']
 
 # Optional, will be set based on the platform and app ID
-sources:
+source_is:
   - name: googlePlay 
     url: https://example.com
   - name: appStore
@@ -116,7 +116,7 @@ releases:
     # Optional. Time is also optional.
     date: '2024-08-24 15:35:00Z'
     # Required. Support custom stores
-    sources:
+    source_is:
         # Supports short syntax
       - googlePlay
       - appStore
