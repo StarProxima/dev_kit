@@ -22,6 +22,9 @@ class UpdateSearchData {
   final DateTime? localReleaseDate;
   final DateTime? updateReleaseDate;
 
+  /// Дата установки приложения для проверки условий времени использования
+  final DateTime? appInstallDate;
+
   /// From 0.0 to 1.0, uses for calculate user segmentation compliance.
   final double segmentationPointer;
 
@@ -44,6 +47,7 @@ class UpdateSearchData {
     required this.segmentationPointer,
     required this.rolloutPointer,
     required this.customData,
+    this.appInstallDate,
   });
 
   UpdateSearchData copyWith({
@@ -59,6 +63,7 @@ class UpdateSearchData {
     double? segmentationPointer,
     double? rolloutPointer,
     Map<String, dynamic>? customData,
+    DateTime? appInstallDate,
   }) =>
       UpdateSearchData(
         platform: platform ?? this.platform,
@@ -73,5 +78,6 @@ class UpdateSearchData {
         segmentationPointer: segmentationPointer ?? this.segmentationPointer,
         rolloutPointer: rolloutPointer ?? this.rolloutPointer,
         customData: Mergeable.mergeCustomData(this.customData, customData),
+        appInstallDate: appInstallDate ?? this.appInstallDate,
       );
 }

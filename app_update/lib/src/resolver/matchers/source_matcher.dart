@@ -5,11 +5,12 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import 'rule_matcher.dart';
 
-class SourceMatcher<T extends Mergeable> implements RuleMatcher<T> {
+/// Матчер для проверки соответствия источника дистрибуции и платформы
+class SourceMatcher implements RuleMatcher {
   const SourceMatcher();
 
   @override
-  bool matches(
+  bool matches<T extends Mergeable>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchBySources(
       rule.sourceIs ?? [UpdateSource.any],

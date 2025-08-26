@@ -6,11 +6,12 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import 'rule_matcher.dart';
 
-class VersionMatcher<T extends Mergeable> implements RuleMatcher<T> {
+/// Матчер для проверки соответствия версии приложения semver-ограничениям
+class VersionMatcher implements RuleMatcher {
   const VersionMatcher();
 
   @override
-  bool matches(
+  bool matches<T extends Mergeable>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final constraints = rule.versionIs ?? [UpdateVersionConstraint.any];
     if (constraints.contains(UpdateVersionConstraint.any)) return true;

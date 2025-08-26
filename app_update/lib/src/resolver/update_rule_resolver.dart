@@ -7,13 +7,29 @@ import '../shared/models/update_search/update_search_data.dart';
 import 'matchers/app_status_matcher.dart';
 import 'matchers/custom_data_matcher.dart';
 import 'matchers/locale_matcher.dart';
+import 'matchers/rule_matcher.dart';
 import 'matchers/source_matcher.dart';
 import 'matchers/temporal_matcher.dart';
 import 'matchers/version_matcher.dart';
 import 'matchers/view_target_matcher.dart';
 
+/// Резолвер правил обновлений с настраиваемыми матчерами.
+/// Применяет список матчеров для фильтрации и объединения правил.
 class UpdateRuleResolver {
-  const UpdateRuleResolver();
+  /// Стандартный набор матчеров для всех типов правил
+  static const defaultMatchers = <RuleMatcher>[
+    ViewTargetMatcher(),
+    LocaleMatcher(),
+    SourceMatcher(),
+    VersionMatcher(),
+    AppStatusMatcher(),
+    TemporalMatcher(),
+    CustomDataMatcher(),
+  ];
+
+  final List<RuleMatcher> matchers;
+
+  const UpdateRuleResolver({this.matchers = defaultMatchers});
 
   /// Резолвит список правил в одно значение типа [T], применяя:
   /// - фильтрацию по контексту (таргет, локаль, источники, версии, статусы)
@@ -52,24 +68,10 @@ class UpdateRuleResolver {
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData searchData,
   }) {
-    final viewTargetMatcher = ViewTargetMatcher<T>();
-    final localeMatcher = LocaleMatcher<T>();
-    final sourceMatcher = SourceMatcher<T>();
-    final versionMatcher = VersionMatcher<T>();
-    final appStatusMatcher = AppStatusMatcher<T>();
-    final temporalMatcher = TemporalMatcher<T>();
-    final customDataMatcher = CustomDataMatcher<T>();
-
-    if (!viewTargetMatcher.matches(rule: rule, search: searchData)) {
-      return false;
-    }
-    if (!localeMatcher.matches(rule: rule, search: searchData)) return false;
-    if (!sourceMatcher.matches(rule: rule, search: searchData)) return false;
-    if (!versionMatcher.matches(rule: rule, search: searchData)) return false;
-    if (!appStatusMatcher.matches(rule: rule, search: searchData)) return false;
-    if (!temporalMatcher.matches(rule: rule, search: searchData)) return false;
-    if (!customDataMatcher.matches(rule: rule, search: searchData)) {
-      return false;
+    for (final matcher in matchers) {
+      if (!matcher.matches<T>(rule: rule, search: searchData)) {
+        return false;
+      }
     }
     return true;
   }

@@ -4,11 +4,12 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import 'rule_matcher.dart';
 
-class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
+/// Матчер для проверки временных условий: date, delay, rollout, segmentation
+class TemporalMatcher implements RuleMatcher {
   const TemporalMatcher();
 
   @override
-  bool matches(
+  bool matches<T extends Mergeable>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchByDateAndRollout(
       ruleDate: rule.date ?? UpdateDate.any,

@@ -4,11 +4,12 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import 'rule_matcher.dart';
 
-class LocaleMatcher<T extends Mergeable> implements RuleMatcher<T> {
+/// Матчер для проверки соответствия локали пользователя (ru, en, any)
+class LocaleMatcher implements RuleMatcher {
   const LocaleMatcher();
 
   @override
-  bool matches(
+  bool matches<T extends Mergeable>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final locales = rule.localeIs ?? [UpdateLocale.any];
     final locale = search.locale;

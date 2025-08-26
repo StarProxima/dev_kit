@@ -4,11 +4,12 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import 'rule_matcher.dart';
 
-class ViewTargetMatcher<T extends Mergeable> implements RuleMatcher<T> {
+/// Матчер для проверки соответствия целевого UI-элемента (card, dialog, screen и др.)
+class ViewTargetMatcher implements RuleMatcher {
   const ViewTargetMatcher();
 
   @override
-  bool matches(
+  bool matches<T extends Mergeable>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final targets = rule.viewTargetIs ?? [UpdateViewTarget.any];
     final target = search.displayTarget;

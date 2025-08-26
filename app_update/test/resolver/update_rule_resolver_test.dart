@@ -1,3 +1,11 @@
+import 'package:app_update/src/resolver/matchers/app_status_matcher.dart';
+import 'package:app_update/src/resolver/matchers/custom_data_matcher.dart';
+import 'package:app_update/src/resolver/matchers/install_date_matcher.dart';
+import 'package:app_update/src/resolver/matchers/locale_matcher.dart';
+import 'package:app_update/src/resolver/matchers/source_matcher.dart';
+import 'package:app_update/src/resolver/matchers/temporal_matcher.dart';
+import 'package:app_update/src/resolver/matchers/version_matcher.dart';
+import 'package:app_update/src/resolver/matchers/view_target_matcher.dart';
 import 'package:app_update/src/resolver/update_rule_resolver.dart';
 import 'package:app_update/src/shared/entities/app_status.dart';
 import 'package:app_update/src/shared/entities/update_date.dart';
@@ -31,6 +39,7 @@ void main() {
       double segmentationPointer = 0.0,
       double rolloutPointer = 0.0,
       Map<String, dynamic>? custom,
+      DateTime? appInstallDate,
     }) {
       return UpdateSearchData(
         platform: platform ?? UpdatePlatform.android,
@@ -45,6 +54,7 @@ void main() {
         segmentationPointer: segmentationPointer,
         rolloutPointer: rolloutPointer,
         customData: custom,
+        appInstallDate: appInstallDate,
       );
     }
 
@@ -190,7 +200,8 @@ void main() {
 
       final rules = [
         // 1. База, работает везде, задаём заглушки
-        rule(title: 'base', description: 'd0', custom: const {'env': 'prod'}),
+        rule(
+            title: 'base', description: 'd0', custom: const {'env_is': 'prod'}),
 
         // 2. Источник googlePlay + платформа android => мердж описания
         rule(
@@ -245,7 +256,7 @@ void main() {
           sources: const [UpdateSource.googlePlay],
           // теперь передаём customData для базового правила
           custom: const {
-            'ENV': 'PROD',
+            'env': 'PROD',
             'meta': {
               'tags': ['alpha', 'beta']
             }
@@ -272,7 +283,7 @@ void main() {
 
       test('rule map vs search map: кейсы ключей/значений игнорируются', () {
         final rules = [
-          rule(custom: const {'ENV': 'PROD'}, title: 'ok'),
+          rule(custom: const {'env_is': 'PROD'}, title: 'ok'),
         ];
 
         final res = resolver.resolve(
@@ -284,7 +295,7 @@ void main() {
 
       test("rule 'any' как строка — всегда true", () {
         final rules = [
-          rule(custom: const {'stage': 'ANY'}, title: 'ok'),
+          rule(custom: const {'stage_is': 'ANY'}, title: 'ok'),
         ];
 
         final res = resolver.resolve(
@@ -297,7 +308,7 @@ void main() {
       test('nested map: глубокое сравнение', () {
         final rules = [
           rule(custom: const {
-            'meta': {
+            'meta_is': {
               'Flag': 'On',
             }
           }, title: 'ok'),
@@ -305,7 +316,7 @@ void main() {
 
         final res = resolver.resolve(
           searchData: search(custom: const {
-            'META': {
+            'meta': {
               'fLaG': 'on',
             }
           }),
@@ -317,7 +328,7 @@ void main() {
       test('list any-of: достаточно совпадения хотя бы одного элемента', () {
         final rules = [
           rule(custom: const {
-            'tags': ['alpha', 'beta']
+            'tags_is': ['alpha', 'beta']
           }, title: 'ok'),
         ];
 
@@ -333,7 +344,7 @@ void main() {
       test("list 'any' в правиле — всегда true", () {
         final rules = [
           rule(custom: const {
-            'tags': ['any']
+            'tags_is': ['any']
           }, title: 'ok'),
         ];
 
@@ -346,7 +357,7 @@ void main() {
 
       test('scalar vs list: совпадает если элемент найден в списке', () {
         final rules = [
-          rule(custom: const {'tag': 'Alpha'}, title: 'ok'),
+          rule(custom: const {'tag_is': 'Alpha'}, title: 'ok'),
         ];
 
         final res = resolver.resolve(
@@ -361,7 +372,7 @@ void main() {
       test('list vs scalar: достаточно совпадения одного элемента', () {
         final rules = [
           rule(custom: const {
-            'tag': ['ALPHA', 'BETA']
+            'tag_is': ['ALPHA', 'BETA']
           }, title: 'ok'),
         ];
 
@@ -375,7 +386,7 @@ void main() {
       test('числа и булевы сравниваются по точному совпадению', () {
         // Позитивные
         var rules = [
-          rule(custom: const {'n': 5, 'b': true}, title: 'ok'),
+          rule(custom: const {'n_is': 5, 'b_is': true}, title: 'ok'),
         ];
         final res = resolver.resolve(
           searchData: search(custom: const {'n': 5, 'b': true}),
@@ -385,7 +396,7 @@ void main() {
 
         // Негативные
         rules = [
-          rule(custom: const {'n': 5}, title: 'bad'),
+          rule(custom: const {'n_is': 5}, title: 'bad'),
         ];
         expect(
           () => resolver.resolve(
@@ -394,7 +405,7 @@ void main() {
         );
 
         rules = [
-          rule(custom: const {'b': true}, title: 'bad'),
+          rule(custom: const {'b_is': true}, title: 'bad'),
         ];
         expect(
           () => resolver.resolve(
@@ -406,7 +417,7 @@ void main() {
       test('list any-of: числа', () {
         final rules = [
           rule(custom: const {
-            'nums': [5, 7]
+            'nums_is': [5, 7]
           }, title: 'ok'),
         ];
 
@@ -421,7 +432,7 @@ void main() {
 
       test('negative: отсутствие ключа в поиске — false', () {
         final rules = [
-          rule(custom: const {'env': 'prod'}, title: 'bad'),
+          rule(custom: const {'env_is': 'prod'}, title: 'bad'),
         ];
 
         expect(
@@ -434,7 +445,7 @@ void main() {
       test('negative: список не содержит ни одного совпадения', () {
         final rules = [
           rule(custom: const {
-            'tags': ['alpha']
+            'tags_is': ['alpha']
           }, title: 'bad'),
         ];
 
@@ -444,6 +455,106 @@ void main() {
                 'tags': ['beta']
               }),
               rules: rules),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('NEW: поля без суффикса "_is" игнорируются', () {
+        final rules = [
+          rule(custom: const {
+            'env_is': 'prod', // Проверяется
+            'version': '1.0.0', // Игнорируется
+            'debug_mode': true, // Игнорируется
+          }, title: 'ok'),
+        ];
+
+        final res = resolver.resolve(
+          searchData: search(custom: const {
+            'env': 'prod',
+            // version и debug_mode не нужны, так как они игнорируются
+          }),
+          rules: rules,
+        );
+        expect(res.title, 'ok');
+      });
+    });
+
+    group('custom InstallDateMatcher integration', () {
+      test('InstallDateMatcher: проверка времени после установки приложения',
+          () {
+        // Создаем резолвер только с InstallDateMatcher для демонстрации
+        const customResolver = UpdateRuleResolver(
+          matchers: [InstallDateMatcher()],
+        );
+
+        final installDate = DateTime(2024, 10, 1, 12);
+        final currentDate = DateTime(2024, 10, 15, 12); // 14 дней спустя
+
+        final rules = [
+          rule(
+            custom: const {
+              'min_delay_after_app_install_hours': 7 * 24
+            }, // 7 дней
+            title: 'Показать пользователю через неделю после установки',
+          ),
+        ];
+
+        final res = customResolver.resolve(
+          searchData: search(
+            appInstallDate: installDate,
+            currentDate: currentDate,
+          ),
+          rules: rules,
+        );
+        expect(res.title, 'Показать пользователю через неделю после установки');
+      });
+
+      test('InstallDateMatcher: слишком рано после установки', () {
+        const customResolver = UpdateRuleResolver(
+          matchers: [InstallDateMatcher()],
+        );
+
+        final installDate = DateTime(2024, 10, 1, 12);
+        final currentDate = DateTime(2024, 10, 3, 12); // 2 дня спустя
+
+        final rules = [
+          rule(
+            custom: const {
+              'min_delay_after_app_install_hours': 7 * 24
+            }, // 7 дней
+            title: 'bad',
+          ),
+        ];
+
+        expect(
+          () => customResolver.resolve(
+            searchData: search(
+              appInstallDate: installDate,
+              currentDate: currentDate,
+            ),
+            rules: rules,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('InstallDateMatcher: блокировка без даты установки', () {
+        const customResolver = UpdateRuleResolver(
+          matchers: [InstallDateMatcher()],
+        );
+
+        final rules = [
+          rule(
+            custom: const {'min_delay_after_app_install_hours': 24},
+            title: 'bad',
+          ),
+        ];
+
+        expect(
+          () => customResolver.resolve(
+            searchData: search(), // appInstallDate == null
+            rules: rules,
+          ),
           throwsA(isA<Exception>()),
         );
       });
