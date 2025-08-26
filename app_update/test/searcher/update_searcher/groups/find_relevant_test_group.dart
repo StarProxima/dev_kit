@@ -4,9 +4,9 @@ import 'package:app_update/src/shared/entities/update_source_name.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import 'helpers/test_utils.dart';
+import '../helpers/test_utils.dart';
 
-void main() {
+void runFindRelevantTests() {
   group('UpdateSearcher - findMostRelevantUpdate', () {
     final searcher = UpdateSearcherTestUtils.searcher;
     final currentDate = UpdateSearcherTestUtils.currentDate;
