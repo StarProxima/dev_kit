@@ -1,0 +1,83 @@
+import 'package:app_update/src/shared/entities/app_status.dart';
+import 'package:app_update/src/shared/entities/update_date.dart';
+import 'package:app_update/src/shared/entities/update_locale.dart';
+import 'package:app_update/src/shared/entities/update_platform.dart';
+import 'package:app_update/src/shared/entities/update_source.dart';
+import 'package:app_update/src/shared/entities/update_version_constraint.dart';
+import 'package:app_update/src/shared/entities/update_view_target.dart';
+import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
+import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
+import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
+import 'package:flutter/material.dart';
+import 'package:pub_semver/pub_semver.dart';
+
+/// Создает UpdateSearchData для тестов с настраиваемыми параметрами
+UpdateSearchData createTestSearchData({
+  UpdateViewTarget target = UpdateViewTarget.card,
+  UpdateLocale? locale,
+  List<UpdateSource>? sources,
+  String version = '1.0.0',
+  AppStatus? appStatus,
+  UpdatePlatform? platform,
+  DateTime? currentDate,
+  DateTime? localReleaseDate,
+  DateTime? updateReleaseDate,
+  double segmentationPointer = 0.0,
+  double rolloutPointer = 0.0,
+  Map<String, dynamic>? custom,
+  DateTime? appInstallDate,
+}) {
+  var customData = custom ?? <String, dynamic>{};
+
+  if (appInstallDate != null) {
+    customData = {...customData, 'app_install_date': appInstallDate};
+  }
+
+  return UpdateSearchData(
+    platform: platform ?? UpdatePlatform.android,
+    sources: sources ?? const [UpdateSource.googlePlay],
+    localVersion: Version.parse(version),
+    displayTarget: target,
+    appStatus: appStatus,
+    locale: locale ?? const UpdateLocale(Locale('ru')),
+    currentDate: currentDate ?? DateTime(2024, 10, 20, 12),
+    localReleaseDate: localReleaseDate,
+    updateReleaseDate: updateReleaseDate,
+    segmentationPointer: segmentationPointer,
+    rolloutPointer: rolloutPointer,
+    customData: customData.isNotEmpty ? customData : null,
+  );
+}
+
+/// Создает UpdateRuleConfig для тестов с настраиваемыми параметрами
+UpdateRuleConfig<UpdateContentConfig> createTestRule({
+  List<UpdateViewTarget> targets = const [UpdateViewTarget.any],
+  List<UpdateLocale> locales = const [UpdateLocale.any],
+  List<UpdateSource> sources = const [UpdateSource.any],
+  List<UpdateVersionConstraint> versions = const [UpdateVersionConstraint.any],
+  List<AppStatus> statuses = const [AppStatus.any],
+  UpdateDate date = UpdateDate.any,
+  Duration? delay,
+  Duration? rollout,
+  double? segmentation,
+  String? title,
+  String? description,
+  Map<String, dynamic>? custom,
+}) {
+  return UpdateRuleConfig<UpdateContentConfig>.byRequired(
+    appStatusIs: statuses,
+    localeIs: locales,
+    viewTargetIs: targets,
+    versionIs: versions,
+    sourceIs: sources,
+    date: date,
+    delay: delay,
+    rollout: rollout,
+    segmentationPercent: segmentation,
+    data: UpdateContentConfig(
+      title: title,
+      description: description,
+    ),
+    customData: custom,
+  );
+}

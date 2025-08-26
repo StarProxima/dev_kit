@@ -7,11 +7,11 @@ import '../shared/models/update_search/update_search_data.dart';
 import 'matchers/app_status_matcher.dart';
 import 'matchers/custom_data_matcher.dart';
 import 'matchers/locale_matcher.dart';
-import 'matchers/rule_matcher.dart';
 import 'matchers/source_matcher.dart';
 import 'matchers/temporal_matcher.dart';
 import 'matchers/version_matcher.dart';
 import 'matchers/view_target_matcher.dart';
+import 'rule_matcher.dart';
 
 /// Резолвер правил обновлений с настраиваемыми матчерами.
 /// Применяет список матчеров для фильтрации и объединения правил.
