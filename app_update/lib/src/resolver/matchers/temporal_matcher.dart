@@ -2,7 +2,7 @@ import '../../shared/entities/update_date.dart';
 import '../../shared/models/mergeable.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
-import '../rule_matcher.dart';
+import '../base/rule_matcher.dart';
 
 /// Матчер для проверки временных условий: date, delay, rollout, segmentation
 class TemporalMatcher extends RuleMatcher {

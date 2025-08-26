@@ -1,11 +1,13 @@
-import 'package:app_update/src/resolver/update_rule_resolver.dart';
-import 'package:app_update/src/resolver/matchers/view_target_matcher.dart';
+// ignore_for_file: unnecessary_raw_strings
+
+import 'package:app_update/src/resolver/matchers/app_status_matcher.dart';
+import 'package:app_update/src/resolver/matchers/custom_data_matcher.dart';
 import 'package:app_update/src/resolver/matchers/locale_matcher.dart';
 import 'package:app_update/src/resolver/matchers/source_matcher.dart';
-import 'package:app_update/src/resolver/matchers/version_matcher.dart';
-import 'package:app_update/src/resolver/matchers/app_status_matcher.dart';
 import 'package:app_update/src/resolver/matchers/temporal_matcher.dart';
-import 'package:app_update/src/resolver/matchers/custom_data_matcher.dart';
+import 'package:app_update/src/resolver/matchers/version_matcher.dart';
+import 'package:app_update/src/resolver/matchers/view_target_matcher.dart';
+import 'package:app_update/src/resolver/update_rule_resolver.dart';
 import 'package:app_update/src/shared/entities/app_status.dart';
 import 'package:app_update/src/shared/entities/update_locale.dart';
 import 'package:app_update/src/shared/entities/update_source.dart';
@@ -306,7 +308,7 @@ void main() {
         }, title: 'ok'),
       ];
 
-      var res = resolver.resolve(
+      final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {
           'nullable':
               'any_value', // null в правиле должен матчить любое значение
@@ -341,8 +343,8 @@ void main() {
 
     test('NEW: кастомные матчеры потребляют свои поля', () {
       // Создаем resolver с InstallDateMatcher ПЕРЕД CustomDataMatcher
-      final customResolver = UpdateRuleResolver(
-        matchers: const [
+      const customResolver = UpdateRuleResolver(
+        matchers: [
           ViewTargetMatcher(),
           LocaleMatcher(),
           SourceMatcher(),
@@ -443,6 +445,82 @@ void main() {
         rules: rules,
       );
       expect(res.title, 'single_match'); // Достаточно одного пересечения
+    });
+
+    test('NEW: поддержка регулярных выражений', () {
+      // Positive case: email проходит проверку по регулярке
+      var rules = [
+        createTestRule(custom: const {
+          'email_is':
+              r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', // Email regex
+        }, title: 'valid_email'),
+      ];
+
+      var res = resolver.resolve(
+        searchData: createTestSearchData(
+          appStatus:
+              AppStatus.active, // Добавляем appStatus для AppStatusMatcher
+          custom: const {
+            'email': 'user@example.com', // Валидный email
+          },
+        ),
+        rules: rules,
+      );
+      expect(res.title, 'valid_email');
+
+      // Negative case: невалидный email не проходит регулярку
+      rules = [
+        createTestRule(custom: const {
+          'email_is':
+              r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+        }, title: 'bad'),
+      ];
+
+      expect(
+        () => resolver.resolve(
+          searchData: createTestSearchData(
+            appStatus: AppStatus.active,
+            custom: const {
+              'email': 'not-an-email', // Невалидный email
+            },
+          ),
+          rules: rules,
+        ),
+        throwsA(isA<Exception>()),
+      );
+
+      // Edge case: смешивание обычных значений и регулярок в списке
+      rules = [
+        createTestRule(custom: const {
+          'user_type_is': [
+            'admin',
+            r'regexp:^premium_.*'
+          ], // Обычное + регулярка
+        }, title: 'mixed'),
+      ];
+
+      res = resolver.resolve(
+        searchData: createTestSearchData(
+          appStatus: AppStatus.active,
+          custom: const {
+            'user_type': 'premium_gold', // Попадает под регулярку
+          },
+        ),
+        rules: rules,
+      );
+      expect(res.title, 'mixed');
+
+      // Проверка обычного значения из того же списка
+      res = resolver.resolve(
+        searchData: createTestSearchData(
+          appStatus: AppStatus.active,
+          custom: const {
+            'user_type': 'admin', // Обычное значение
+          },
+        ),
+        rules: rules,
+      );
+      expect(res.title, 'mixed');
     });
   });
 }

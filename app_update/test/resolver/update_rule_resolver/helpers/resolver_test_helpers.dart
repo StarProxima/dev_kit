@@ -38,7 +38,7 @@ UpdateSearchData createTestSearchData({
     sources: sources ?? const [UpdateSource.googlePlay],
     localVersion: Version.parse(version),
     displayTarget: target,
-    appStatus: appStatus,
+    appStatus: appStatus ?? AppStatus.any,
     locale: locale ?? const UpdateLocale(Locale('ru')),
     currentDate: currentDate ?? DateTime(2024, 10, 20, 12),
     localReleaseDate: localReleaseDate,

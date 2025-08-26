@@ -1,4 +1,4 @@
-import 'package:app_update/src/resolver/rule_matcher.dart';
+import 'package:app_update/src/resolver/base/rule_matcher.dart';
 import 'package:app_update/src/shared/models/mergeable.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
 import 'package:app_update/src/shared/models/update_search/update_search_data.dart';

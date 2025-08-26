@@ -1,7 +1,8 @@
 import '../../shared/models/mergeable.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
-import '../rule_matcher.dart';
+import '../base/reg_exp_matcher_mixin.dart';
+import '../base/rule_matcher.dart';
 
 /// Матчер для проверки кастомных полей правила с суффиксом '_is'.
 ///
@@ -10,7 +11,7 @@ import '../rule_matcher.dart';
 ///
 /// Работает только с примитивными типами: null, String, num, bool и List примитивов.
 /// Поля с Map или List<Map> игнорируются для безопасности.
-class CustomDataMatcher extends RuleMatcher {
+class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
   const CustomDataMatcher();
 
   @override
@@ -83,52 +84,87 @@ class CustomDataMatcher extends RuleMatcher {
     return true;
   }
 
-  /// Сравнивает два примитивных значения или списка примитивов
+  /// Сравнивает два примитивных значения или списка примитивов с поддержкой регулярок
   bool _primitiveValuesMatch(dynamic rule, dynamic search) {
     if (rule == null) return true;
     if (search == null) return false;
 
-    if (rule is String) {
-      if (rule.toLowerCase() == 'any') return true;
-      if (search is String) {
-        return rule.toLowerCase() == search.toLowerCase();
-      }
-      if (search is List) {
-        return search
-            .any((s) => s is String && s.toLowerCase() == rule.toLowerCase());
-      }
-      return false;
+    // Обработка строк с поддержкой регулярок
+    if (rule is String && search is String) {
+      return matchesStringInListWithRegExp(search, [rule]);
     }
 
+    // Точное сравнение для чисел и булевых
     if (rule is num && search is num) return rule == search;
     if (rule is bool && search is bool) return rule == search;
 
+    // Обработка списков
     if (rule is List && search is List) {
-      // Пустой список в правиле означает "никто не разрешен"
-      if (rule.isEmpty) return false;
-
-      // Проверяем наличие 'any' в списке правила
-      final hasAny = rule.any((e) => e is String && e.toLowerCase() == 'any');
-      if (hasAny) return true;
-
-      // Ищем пересечение списков - хотя бы один элемент из search должен быть в rule
-      for (final searchItem in search) {
-        for (final ruleItem in rule) {
-          if (_primitiveValuesMatch(ruleItem, searchItem)) return true;
-        }
-      }
-      return false;
+      return _matchListToList(rule, search);
     }
 
     if (search is List) {
-      return search.any((s) => _primitiveValuesMatch(rule, s));
+      return _matchValueToList(rule, search);
     }
+
     if (rule is List) {
-      // Пустой список в правиле означает "никто не разрешен"
-      if (rule.isEmpty) return false;
-      return rule.any((r) => _primitiveValuesMatch(r, search));
+      return _matchListToValue(rule, search);
     }
 
     return rule == search;
+  }
+
+  /// Сравнивает список правил со списком поиска (пересечение)
+  bool _matchListToList(List<dynamic> ruleValues, List<dynamic> searchValues) {
+    if (ruleValues.isEmpty) return false; // Пустой список никого не пускает
+
+    // Проверка на 'any' в списке правил
+    if (ruleValues
+        .any((value) => value is String && value.toLowerCase() == 'any')) {
+      return true;
+    }
+
+    if (searchValues.isEmpty) return false;
+
+    // Проверяем пересечение списков
+    for (final searchValue in searchValues) {
+      for (final ruleValue in ruleValues) {
+        if (_primitiveValuesMatch(ruleValue, searchValue)) return true;
+      }
+    }
+
+    return false;
+  }
+
+  /// Сравнивает одно значение правила со списком поиска
+  bool _matchValueToList(dynamic ruleValue, List<dynamic> searchValues) {
+    if (searchValues.isEmpty) return false;
+
+    return searchValues
+        .any((searchValue) => _primitiveValuesMatch(ruleValue, searchValue));
+  }
+
+  /// Сравнивает список правил с одним значением поиска
+  bool _matchListToValue(List<dynamic> ruleValues, dynamic searchValue) {
+    if (ruleValues.isEmpty) return false; // Пустой список никого не пускает
+
+    // Проверка на 'any' в списке правил
+    if (ruleValues
+        .any((value) => value is String && value.toLowerCase() == 'any')) {
+      return true;
+    }
+
+    // Для строковых значений используем миксин
+    if (searchValue is String) {
+      final stringRules = ruleValues.whereType<String>().toList();
+      if (stringRules.isNotEmpty &&
+          matchesStringInListWithRegExp(searchValue, stringRules)) {
+        return true;
+      }
+    }
+
+    // Проверяем остальные типы
+    return ruleValues
+        .any((ruleValue) => _primitiveValuesMatch(ruleValue, searchValue));
   }
 }
