@@ -29,8 +29,11 @@ dev_dependencies:
     
   flutter_lints: ^3.0.0
 
+  mocktail: ^1.0.0
+
   project_kit:
     path: ../unpublished/project_kit
+    
   clock: ^1.1.1
   path: ^1.8.0
 

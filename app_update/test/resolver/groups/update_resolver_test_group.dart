@@ -1,67 +1,63 @@
 part of '../resolver_test.dart';
 
-// Mock classes для тестирования
-class MockUpdateRuleResolver implements UpdateRuleResolver {
-  final Map<Type, dynamic> _mockResults = {};
+// Mock classes
+class MockUpdateRuleResolver extends Mock implements UpdateRuleResolver {}
 
-  void mockResolve<T extends Mergeable>(T result) {
-    _mockResults[T] = result;
-  }
-
-  @override
-  T resolve<T extends Mergeable>({
-    required UpdateSearchData searchData,
-    required List<UpdateRuleConfig<T>> rules,
-  }) {
-    final result = _mockResults[T] as T?;
-    if (result == null) {
-      throw Exception('No mock result configured for type $T');
-    }
-    return result;
-  }
-
-  @override
-  List<RuleMatcher> get matchers => UpdateRuleResolver.defaultMatchers;
-}
-
-class MockUpdateContentInterpolator implements UpdateContentInterpolator {
-  UpdateContentData? _mockResult;
-
-  void mockInterpolate(UpdateContentData result) {
-    _mockResult = result;
-  }
-
-  @override
-  UpdateContentData interpolate({
-    required UpdateContentData updateContent,
-    required UpdateSearchData searchData,
-    required UpdateData updateData,
-  }) {
-    return _mockResult ?? updateContent;
-  }
-
-  @override
-  Map<String, String> buildInterpolateData({
-    required UpdateSearchData searchData,
-    required UpdateData updateData,
-  }) {
-    return const UpdateContentInterpolator().buildInterpolateData(
-      searchData: searchData,
-      updateData: updateData,
-    );
-  }
-
-  @override
-  String capitalize(String text) {
-    return const UpdateContentInterpolator().capitalize(text);
-  }
-}
+class MockUpdateContentInterpolator extends Mock
+    implements UpdateContentInterpolator {}
 
 void runUpdateResolverTests() {
   group('UpdateResolver', () {
     late MockUpdateRuleResolver mockRuleResolver;
     late MockUpdateContentInterpolator mockContentInterpolator;
     late UpdateResolver resolver;
+
+    setUpAll(() {
+      // Регистрируем fallback значения для mocktail
+      registerFallbackValue(UpdateSearchData(
+        currentDate: DateTime.now(),
+        localVersion: Version.parse('1.0.0'),
+        platform: UpdatePlatform.android,
+        sources: const [UpdateSource.googlePlay],
+        appName: 'Test',
+        appPackageName: 'com.test',
+        appStatus: AppStatus.active,
+        locale: UpdateLocale.any,
+        displayTarget: UpdateViewTarget.any,
+        rolloutPointer: 0.0,
+        segmentationPointer: 0.0,
+        localReleaseDate: null,
+        updateReleaseDate: null,
+        customData: null,
+      ));
+
+      registerFallbackValue(<UpdateRuleConfig<UpdateAppSettingsConfig>>[]);
+      registerFallbackValue(<UpdateRuleConfig<UpdateContentConfig>>[]);
+      registerFallbackValue(<UpdateRuleConfig<UpdateSettingsConfig>>[]);
+
+      registerFallbackValue(UpdateContentData(
+        updateUrl: Uri.parse('https://example.com'),
+        title: 'Title',
+        description: 'Description',
+        releaseNotesTitle: 'Release Notes',
+        releaseNotes: null,
+        skipButton: 'Skip',
+        postponeButton: 'Later',
+        updateButton: 'Update',
+        customData: null,
+      ));
+
+      registerFallbackValue(UpdateData(
+        version: Version.parse('1.0.0'),
+        date: DateTime.now(),
+        sourceName: UpdateSourceName.googlePlay,
+        platform: UpdatePlatform.android,
+        contentRules: [],
+        settingsRules: [],
+        appSettingsRules: [],
+        customData: null,
+      ));
+    });
 
     setUp(() {
       mockRuleResolver = MockUpdateRuleResolver();
@@ -149,11 +145,23 @@ void runUpdateResolverTests() {
         );
 
         // Setup mocks
-        mockRuleResolver
-            .mockResolve<UpdateAppSettingsConfig>(mockAppSettingsConfig);
-        mockRuleResolver.mockResolve<UpdateContentConfig>(mockContentConfig);
-        mockRuleResolver.mockResolve<UpdateSettingsConfig>(mockSettingsConfig);
-        mockContentInterpolator.mockInterpolate(mockInterpolatedContent);
+        when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(mockAppSettingsConfig);
+        when(() => mockRuleResolver.resolve<UpdateContentConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(mockContentConfig);
+        when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(mockSettingsConfig);
+        when(() => mockContentInterpolator.interpolate(
+              updateContent: any(named: 'updateContent'),
+              searchData: any(named: 'searchData'),
+              updateData: any(named: 'updateData'),
+            )).thenReturn(mockInterpolatedContent);
 
         // Act
         final result = resolver.resolve(
@@ -234,23 +242,28 @@ void runUpdateResolverTests() {
         );
 
         // Setup mocks
-        mockRuleResolver.mockResolve<UpdateAppSettingsConfig>(
-          UpdateAppSettingsConfig(appStatus: AppStatus.active), // Другой статус
-        );
-        mockRuleResolver.mockResolve<UpdateContentConfig>(
-          UpdateContentConfig.byRequired(
-            updateUrl: Uri.parse('https://example.com'),
-            title: 'Test Title',
-            description: 'Test Description',
-            releaseNotesTitle: 'Release Notes',
-            releaseNotes: null,
-            skipButton: 'Skip',
-            postponeButton: 'Later',
-            updateButton: 'Update',
-            customData: null,
-          ),
-        );
-        mockRuleResolver.mockResolve<UpdateSettingsConfig>(UpdateSettingsConfig(
+        when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateAppSettingsConfig(appStatus: AppStatus.active));
+        when(() => mockRuleResolver.resolve<UpdateContentConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateContentConfig.byRequired(
+          updateUrl: Uri.parse('https://example.com'),
+          title: 'Test Title',
+          description: 'Test Description',
+          releaseNotesTitle: 'Release Notes',
+          releaseNotes: null,
+          skipButton: 'Skip',
+          postponeButton: 'Later',
+          updateButton: 'Update',
+          customData: null,
+        ));
+        when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,
@@ -259,6 +272,15 @@ void runUpdateResolverTests() {
           postponeReleaseDelay: Duration(hours: 12),
           postponeAllReleasesDelay: Duration(days: 3),
         ));
+
+        // Setup mock for interpolator
+        when(() => mockContentInterpolator.interpolate(
+                  updateContent: any(named: 'updateContent'),
+                  searchData: any(named: 'searchData'),
+                  updateData: any(named: 'updateData'),
+                ))
+            .thenAnswer((invocation) =>
+                invocation.namedArguments[#updateContent] as UpdateContentData);
 
         // Act
         final result = resolver.resolve(
@@ -277,64 +299,86 @@ void runUpdateResolverTests() {
         var capturedSearchDataForSettings = <UpdateSearchData>[];
         var capturedInterpolateParams = <Map<String, dynamic>>[];
 
-        final testRuleResolver = TestUpdateRuleResolver(
-          onResolveAppSettings: (searchData, rules) {
-            capturedSearchDataForAppSettings.add(searchData);
-            return UpdateAppSettingsConfig(appStatus: AppStatus.active);
-          },
-          onResolveContent: (searchData, rules) {
-            capturedSearchDataForContent.add(searchData);
-            return UpdateContentConfig.byRequired(
-              updateUrl: Uri.parse('https://example.com'),
-              title: 'Test Content',
-              description: 'Description',
-              releaseNotesTitle: 'Release Notes',
-              releaseNotes: null,
-              skipButton: 'Skip',
-              postponeButton: 'Later',
-              updateButton: 'Update',
-              customData: null,
-            );
-          },
-          onResolveSettings: (searchData, rules) {
-            capturedSearchDataForSettings.add(searchData);
-            return UpdateSettingsConfig(
-              shouldShow: false,
-              canSkip: true,
-              canPostpone: false,
-              skipReleaseDelay: Duration(hours: 24),
-              skipAllReleasesDelay: Duration(days: 7),
-              postponeReleaseDelay: Duration(hours: 12),
-              postponeAllReleasesDelay: Duration(days: 3),
-            );
-          },
-        );
+        // Setup мок для app settings с захватом параметров
+        when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenAnswer((invocation) {
+          final searchData =
+              invocation.namedArguments[#searchData] as UpdateSearchData;
+          capturedSearchDataForAppSettings.add(searchData);
+          return UpdateAppSettingsConfig(appStatus: AppStatus.active);
+        });
 
-        final testContentInterpolator = TestUpdateContentInterpolator(
-          onInterpolate: (updateContent, searchData, updateData) {
-            capturedInterpolateParams.add({
-              'updateContent': updateContent,
-              'searchData': searchData,
-              'updateData': updateData,
-            });
-            return UpdateContentData(
-              updateUrl: Uri.parse('https://example.com'),
-              title: 'Interpolated',
-              description: 'Description',
-              releaseNotesTitle: 'Release Notes',
-              releaseNotes: null,
-              skipButton: 'Skip',
-              postponeButton: 'Later',
-              updateButton: 'Update',
-              customData: null,
-            );
-          },
-        );
+        // Setup мок для content с захватом параметров
+        when(() => mockRuleResolver.resolve<UpdateContentConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenAnswer((invocation) {
+          final searchData =
+              invocation.namedArguments[#searchData] as UpdateSearchData;
+          capturedSearchDataForContent.add(searchData);
+          return UpdateContentConfig.byRequired(
+            updateUrl: Uri.parse('https://example.com'),
+            title: 'Test Content',
+            description: 'Description',
+            releaseNotesTitle: 'Release Notes',
+            releaseNotes: null,
+            skipButton: 'Skip',
+            postponeButton: 'Later',
+            updateButton: 'Update',
+            customData: null,
+          );
+        });
 
-        final testResolver = UpdateResolver(
-          ruleResolver: testRuleResolver,
-          contentInterpolator: testContentInterpolator,
-        );
+        // Setup мок для settings с захватом параметров
+        when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenAnswer((invocation) {
+          final searchData =
+              invocation.namedArguments[#searchData] as UpdateSearchData;
+          capturedSearchDataForSettings.add(searchData);
+          return UpdateSettingsConfig(
+            shouldShow: false,
+            canSkip: true,
+            canPostpone: false,
+            skipReleaseDelay: Duration(hours: 24),
+            skipAllReleasesDelay: Duration(days: 7),
+            postponeReleaseDelay: Duration(hours: 12),
+            postponeAllReleasesDelay: Duration(days: 3),
+          );
+        });
+
+        // Setup мок для interpolator с захватом параметров
+        when(() => mockContentInterpolator.interpolate(
+              updateContent: any(named: 'updateContent'),
+              searchData: any(named: 'searchData'),
+              updateData: any(named: 'updateData'),
+            )).thenAnswer((invocation) {
+          final updateContent =
+              invocation.namedArguments[#updateContent] as UpdateContentData;
+          final searchData =
+              invocation.namedArguments[#searchData] as UpdateSearchData;
+          final updateData =
+              invocation.namedArguments[#updateData] as UpdateData;
+          capturedInterpolateParams.add({
+            'updateContent': updateContent,
+            'searchData': searchData,
+            'updateData': updateData,
+          });
+          return UpdateContentData(
+            updateUrl: Uri.parse('https://example.com'),
+            title: 'Interpolated',
+            description: 'Description',
+            releaseNotesTitle: 'Release Notes',
+            releaseNotes: null,
+            skipButton: 'Skip',
+            postponeButton: 'Later',
+            updateButton: 'Update',
+            customData: null,
+          );
+        });
 
         final searchData = UpdateSearchData(
           currentDate: DateTime(2024, 10, 15),
@@ -376,7 +420,7 @@ void runUpdateResolverTests() {
         );
 
         // Act
-        final result = testResolver.resolve(
+        final result = resolver.resolve(
           updateData: updateData,
           searchData: searchData,
         );
@@ -457,23 +501,28 @@ void runUpdateResolverTests() {
           customData: null, // null customData
         );
 
-        mockRuleResolver.mockResolve<UpdateAppSettingsConfig>(
-          UpdateAppSettingsConfig(appStatus: AppStatus.active),
-        );
-        mockRuleResolver.mockResolve<UpdateContentConfig>(
-          UpdateContentConfig.byRequired(
-            updateUrl: Uri.parse('https://example.com'),
-            title: 'Title',
-            description: 'Description',
-            releaseNotesTitle: 'Release Notes',
-            releaseNotes: null,
-            skipButton: 'Skip',
-            postponeButton: 'Later',
-            updateButton: 'Update',
-            customData: null,
-          ),
-        );
-        mockRuleResolver.mockResolve<UpdateSettingsConfig>(UpdateSettingsConfig(
+        when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateAppSettingsConfig(appStatus: AppStatus.active));
+        when(() => mockRuleResolver.resolve<UpdateContentConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateContentConfig.byRequired(
+          updateUrl: Uri.parse('https://example.com'),
+          title: 'Title',
+          description: 'Description',
+          releaseNotesTitle: 'Release Notes',
+          releaseNotes: null,
+          skipButton: 'Skip',
+          postponeButton: 'Later',
+          updateButton: 'Update',
+          customData: null,
+        ));
+        when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,
@@ -482,6 +531,15 @@ void runUpdateResolverTests() {
           postponeReleaseDelay: Duration(hours: 12),
           postponeAllReleasesDelay: Duration(days: 3),
         ));
+
+        // Setup mock for interpolator
+        when(() => mockContentInterpolator.interpolate(
+                  updateContent: any(named: 'updateContent'),
+                  searchData: any(named: 'searchData'),
+                  updateData: any(named: 'updateData'),
+                ))
+            .thenAnswer((invocation) =>
+                invocation.namedArguments[#updateContent] as UpdateContentData);
 
         final result = resolver.resolve(
           updateData: updateData,
@@ -531,23 +589,28 @@ void runUpdateResolverTests() {
           customData: {},
         );
 
-        mockRuleResolver.mockResolve<UpdateAppSettingsConfig>(
-          UpdateAppSettingsConfig(appStatus: AppStatus.active),
-        );
-        mockRuleResolver.mockResolve<UpdateContentConfig>(
-          UpdateContentConfig.byRequired(
-            updateUrl: Uri.parse('https://example.com'),
-            title: 'Title',
-            description: 'Description',
-            releaseNotesTitle: 'Release Notes',
-            releaseNotes: null,
-            skipButton: 'Skip',
-            postponeButton: 'Later',
-            updateButton: 'Update',
-            customData: null,
-          ),
-        );
-        mockRuleResolver.mockResolve<UpdateSettingsConfig>(UpdateSettingsConfig(
+        when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateAppSettingsConfig(appStatus: AppStatus.active));
+        when(() => mockRuleResolver.resolve<UpdateContentConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateContentConfig.byRequired(
+          updateUrl: Uri.parse('https://example.com'),
+          title: 'Title',
+          description: 'Description',
+          releaseNotesTitle: 'Release Notes',
+          releaseNotes: null,
+          skipButton: 'Skip',
+          postponeButton: 'Later',
+          updateButton: 'Update',
+          customData: null,
+        ));
+        when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,
@@ -556,6 +619,15 @@ void runUpdateResolverTests() {
           postponeReleaseDelay: Duration(hours: 12),
           postponeAllReleasesDelay: Duration(days: 3),
         ));
+
+        // Setup mock for interpolator
+        when(() => mockContentInterpolator.interpolate(
+                  updateContent: any(named: 'updateContent'),
+                  searchData: any(named: 'searchData'),
+                  updateData: any(named: 'updateData'),
+                ))
+            .thenAnswer((invocation) =>
+                invocation.namedArguments[#updateContent] as UpdateContentData);
 
         final result = resolver.resolve(
           updateData: updateData,
@@ -569,74 +641,4 @@ void runUpdateResolverTests() {
       });
     });
   });
-}
-
-// Тестовые реализации для проверки передачи параметров
-class TestUpdateRuleResolver implements UpdateRuleResolver {
-  final UpdateAppSettingsConfig Function(
-          UpdateSearchData, List<UpdateRuleConfig<UpdateAppSettingsConfig>>)?
-      onResolveAppSettings;
-  final UpdateContentConfig Function(
-          UpdateSearchData, List<UpdateRuleConfig<UpdateContentConfig>>)?
-      onResolveContent;
-  final UpdateSettingsConfig Function(
-          UpdateSearchData, List<UpdateRuleConfig<UpdateSettingsConfig>>)?
-      onResolveSettings;
-
-  TestUpdateRuleResolver({
-    this.onResolveAppSettings,
-    this.onResolveContent,
-    this.onResolveSettings,
-  });
-
-  @override
-  T resolve<T extends Mergeable>({
-    required UpdateSearchData searchData,
-    required List<UpdateRuleConfig<T>> rules,
-  }) {
-    if (T == UpdateAppSettingsConfig) {
-      return onResolveAppSettings?.call(searchData,
-          rules as List<UpdateRuleConfig<UpdateAppSettingsConfig>>) as T;
-    } else if (T == UpdateContentConfig) {
-      return onResolveContent?.call(
-              searchData, rules as List<UpdateRuleConfig<UpdateContentConfig>>)
-          as T;
-    } else if (T == UpdateSettingsConfig) {
-      return onResolveSettings?.call(
-              searchData, rules as List<UpdateRuleConfig<UpdateSettingsConfig>>)
-          as T;
-    }
-    throw UnimplementedError('Type $T not handled in test');
-  }
-
-  @override
-  List<RuleMatcher> get matchers => UpdateRuleResolver.defaultMatchers;
-}
-
-class TestUpdateContentInterpolator implements UpdateContentInterpolator {
-  final UpdateContentData Function(
-      UpdateContentData, UpdateSearchData, UpdateData)? onInterpolate;
-
-  TestUpdateContentInterpolator({this.onInterpolate});
-
-  @override
-  UpdateContentData interpolate({
-    required UpdateContentData updateContent,
-    required UpdateSearchData searchData,
-    required UpdateData updateData,
-  }) {
-    return onInterpolate?.call(updateContent, searchData, updateData) ??
-        updateContent;
-  }
-
-  @override
-  Map<String, String> buildInterpolateData({
-    required UpdateSearchData searchData,
-    required UpdateData updateData,
-  }) {
-    return {};
-  }
-
-  @override
-  String capitalize(String text) => text;
 }
