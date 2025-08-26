@@ -8,10 +8,10 @@ import 'package:app_update/src/resolver/matchers/view_target_matcher.dart';
 import 'package:app_update/src/resolver/update_rule_resolver.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/install_date_matcher.dart';
-import 'helpers/resolver_test_helpers.dart';
+import '../helpers/install_date_matcher.dart';
+import '../helpers/resolver_test_helpers.dart';
 
-void main() {
+void runInstallDateMatcherTests() {
   group('InstallDateMatcher integration tests', () {
     test('InstallDateMatcher: проверка времени после установки приложения', () {
       // Создаем резолвер только с InstallDateMatcher для демонстрации

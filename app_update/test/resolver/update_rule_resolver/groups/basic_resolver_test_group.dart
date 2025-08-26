@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import 'helpers/resolver_test_helpers.dart';
+import '../helpers/resolver_test_helpers.dart';
 
-void main() {
+void runBasicResolverTests() {
   group('UpdateRuleResolver - Basic functionality', () {
     const resolver = UpdateRuleResolver();
 

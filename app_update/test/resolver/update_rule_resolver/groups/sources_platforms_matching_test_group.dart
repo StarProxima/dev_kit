@@ -4,9 +4,9 @@ import 'package:app_update/src/shared/entities/update_source.dart';
 import 'package:app_update/src/shared/entities/update_source_name.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/resolver_test_helpers.dart';
+import '../helpers/resolver_test_helpers.dart';
 
-void main() {
+void runSourcesPlatformsMatchingTests() {
   group('UpdateRuleResolver - Sources/Platforms matching', () {
     const resolver = UpdateRuleResolver();
 

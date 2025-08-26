@@ -14,10 +14,10 @@ import 'package:app_update/src/shared/entities/update_source.dart';
 import 'package:app_update/src/shared/entities/update_view_target.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'helpers/install_date_matcher.dart';
-import 'helpers/resolver_test_helpers.dart';
+import '../helpers/install_date_matcher.dart';
+import '../helpers/resolver_test_helpers.dart';
 
-void main() {
+void runCustomDataMatchingTests() {
   group('UpdateRuleResolver - CustomData matching', () {
     const resolver = UpdateRuleResolver();
 
