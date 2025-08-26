@@ -9,14 +9,18 @@ import '../shared/models/update_search/update_search_data.dart';
 import '../shared/models/update_settings/update_settings_config.dart';
 import '../shared/models/update_settings/update_settings_data.dart';
 import '../shared/models/update_status/update_status.dart';
+import 'update_content_interpolator.dart';
 import 'update_rule_resolver.dart';
 
 class UpdateResolver {
   final UpdateRuleResolver _ruleResolver;
+  final UpdateContentInterpolator _contentInterpolator;
 
   const UpdateResolver({
     required UpdateRuleResolver ruleResolver,
-  }) : _ruleResolver = ruleResolver;
+    required UpdateContentInterpolator contentInterpolator,
+  })  : _ruleResolver = ruleResolver,
+        _contentInterpolator = contentInterpolator;
 
   UpdateResult resolve({
     required UpdateData updateData,
@@ -38,13 +42,19 @@ class UpdateResolver {
       );
     }
 
-    final resolvedContentConfig = _ruleResolver.resolve<UpdateContentConfig>(
+    final rawResolvedContentConfig = _ruleResolver.resolve<UpdateContentConfig>(
       searchData: searchData,
       rules: updateData.contentRules!,
     );
 
-    final resolvedContent = UpdateContentData.fromConfig(
-      resolvedContentConfig,
+    final rawResolvedContent = UpdateContentData.fromConfig(
+      rawResolvedContentConfig,
+    );
+
+    final resolvedContent = _contentInterpolator.interpolate(
+      updateContent: rawResolvedContent,
+      searchData: searchData,
+      updateData: updateData,
     );
 
     final resolvedSettingsConfig = _ruleResolver.resolve<UpdateSettingsConfig>(
@@ -61,7 +71,7 @@ class UpdateResolver {
       date: updateData.date,
       sourceName: updateData.sourceName,
       platform: updateData.platform,
-      rawContent: resolvedContent,
+      rawContent: rawResolvedContent,
       content: resolvedContent,
       settings: resolvedSettings,
       appSettings: resolvedAppSettings,

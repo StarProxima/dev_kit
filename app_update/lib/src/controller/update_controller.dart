@@ -6,6 +6,7 @@ import '../fetcher/update_config_fetcher_base.dart';
 import '../fetcher/update_config_fetcher_coordinator.dart';
 import '../fetcher/update_config_source_fetcher.dart';
 import '../linker/update_inker.dart';
+import '../resolver/update_content_interpolator.dart';
 import '../resolver/update_resolver.dart';
 import '../resolver/update_rule_resolver.dart';
 import '../searcher/update_search_data_defaulter.dart';
@@ -36,8 +37,9 @@ class UpdateController extends UpdateControllerBase {
     updateSourceChecker: _sourceSupportChecker,
   );
 
-  final _updateDataResolver = const UpdateResolver(
+  final _updateResolver = const UpdateResolver(
     ruleResolver: UpdateRuleResolver(),
+    contentInterpolator: UpdateContentInterpolator(),
   );
 
   late final _fetcherCoordinator = UpdateConfigFetcherCoordinator(
@@ -127,7 +129,7 @@ class UpdateController extends UpdateControllerBase {
       return result;
     }
 
-    final result = _updateDataResolver.resolve(
+    final result = _updateResolver.resolve(
       updateData: mostRelevantUpdate,
       searchData: searchData,
     );

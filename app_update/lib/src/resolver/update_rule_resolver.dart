@@ -4,6 +4,7 @@ import '../parser/common.dart';
 import '../shared/models/mergeable.dart';
 import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
+import 'base/rule_matcher.dart';
 import 'matchers/app_status_matcher.dart';
 import 'matchers/custom_data_matcher.dart';
 import 'matchers/locale_matcher.dart';
@@ -11,7 +12,6 @@ import 'matchers/source_matcher.dart';
 import 'matchers/temporal_matcher.dart';
 import 'matchers/version_matcher.dart';
 import 'matchers/view_target_matcher.dart';
-import 'base/rule_matcher.dart';
 
 /// Резолвер правил обновлений с настраиваемыми матчерами.
 /// Применяет список матчеров для фильтрации и объединения правил.

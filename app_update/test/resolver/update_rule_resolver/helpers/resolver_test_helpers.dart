@@ -17,6 +17,8 @@ UpdateSearchData createTestSearchData({
   UpdateLocale? locale,
   List<UpdateSource>? sources,
   String version = '1.0.0',
+  String appName = 'appName',
+  String appPackageName = 'appPackageName',
   AppStatus? appStatus,
   UpdatePlatform? platform,
   DateTime? currentDate,
@@ -45,6 +47,8 @@ UpdateSearchData createTestSearchData({
     updateReleaseDate: updateReleaseDate,
     segmentationPointer: segmentationPointer,
     rolloutPointer: rolloutPointer,
+    appName: appName,
+    appPackageName: appPackageName,
     customData: customData.isNotEmpty ? customData : null,
   );
 }

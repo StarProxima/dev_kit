@@ -25,9 +25,12 @@ class UpdateSearchDataDefaulter {
 
     final defaultSearchData = UpdateSearchData(
       currentDate: DateTime.now(),
-      localVersion: Version.parse(packageInfo.version),
+      localVersion:
+          Version.parse('${packageInfo.version}+${packageInfo.buildNumber}'),
       platform: UpdatePlatform.current(),
       sources: defaultSources,
+      appName: packageInfo.appName,
+      appPackageName: packageInfo.packageName,
       appStatus: null,
       locale: UpdateLocale.any,
       displayTarget: UpdateViewTarget.any,
@@ -43,6 +46,9 @@ class UpdateSearchDataDefaulter {
       localVersion: searchConfig.localVersion ?? defaultSearchData.localVersion,
       platform: searchConfig.platform ?? defaultSearchData.platform,
       sources: searchConfig.sources ?? defaultSearchData.sources,
+      appName: searchConfig.appName ?? defaultSearchData.appName,
+      appPackageName:
+          searchConfig.appPackageName ?? defaultSearchData.appPackageName,
       appStatus: searchConfig.appStatus ?? defaultSearchData.appStatus,
       locale: searchConfig.locale ?? defaultSearchData.locale,
       displayTarget:

@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 abstract class UpdateEntityName extends UpdateEntityBase {
   final String _name;
 
-  String get name => _name.toLowerCase();
+  String get name => _name.replaceAll(' ', '').toLowerCase();
+
+  String get originalName => _name;
 
   @override
   List<Object?> get params => [name];

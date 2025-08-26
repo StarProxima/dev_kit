@@ -14,6 +14,10 @@ class UpdateSearchData {
   final UpdateViewTarget displayTarget;
   final UpdateLocale locale;
 
+  /// Not used for search, but used for data and interpolation.
+  final String appName;
+  final String appPackageName;
+
   /// Null for search in app_settings_rules.
   final AppStatus? appStatus;
 
@@ -36,6 +40,8 @@ class UpdateSearchData {
     required this.sources,
     required this.localVersion,
     required this.displayTarget,
+    required this.appName,
+    required this.appPackageName,
     required this.appStatus,
     required this.locale,
     required this.currentDate,
@@ -52,6 +58,8 @@ class UpdateSearchData {
     Version? localVersion,
     UpdateViewTarget? displayTarget,
     UpdateLocale? locale,
+    String? appName,
+    String? appPackageName,
     AppStatus? appStatus,
     DateTime? currentDate,
     DateTime? localReleaseDate,
@@ -65,6 +73,8 @@ class UpdateSearchData {
         sources: sources ?? this.sources,
         localVersion: localVersion ?? this.localVersion,
         displayTarget: displayTarget ?? this.displayTarget,
+        appName: appName ?? this.appName,
+        appPackageName: appPackageName ?? this.appPackageName,
         locale: locale ?? this.locale,
         appStatus: appStatus ?? this.appStatus,
         currentDate: currentDate ?? this.currentDate,

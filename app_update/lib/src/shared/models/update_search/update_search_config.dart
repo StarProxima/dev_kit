@@ -16,6 +16,10 @@ class UpdateSearchConfig {
   final UpdateViewTarget? displayTarget;
   final UpdateLocale? locale;
 
+  /// Not used for search, but used for data and interpolation.
+  final String? appName;
+  final String? appPackageName;
+
   /// Uses for calculate rule date and delay compliance.
   final DateTime? currentDate;
   final DateTime? localReleaseDate;
@@ -39,6 +43,8 @@ class UpdateSearchConfig {
     this.localVersion,
     this.displayTarget,
     this.locale,
+    this.appName,
+    this.appPackageName,
     this.currentDate,
     this.localReleaseDate,
     this.updateReleaseDate,
@@ -54,6 +60,8 @@ class UpdateSearchConfig {
     Version? localVersion,
     UpdateViewTarget? displayTarget,
     UpdateLocale? locale,
+    String? appName,
+    String? appPackageName,
     DateTime? currentDate,
     DateTime? localReleaseDate,
     DateTime? updateReleaseDate,
@@ -68,6 +76,8 @@ class UpdateSearchConfig {
         localVersion: localVersion ?? this.localVersion,
         displayTarget: displayTarget ?? this.displayTarget,
         locale: locale ?? this.locale,
+        appName: appName ?? this.appName,
+        appPackageName: appPackageName ?? this.appPackageName,
         currentDate: currentDate ?? this.currentDate,
         localReleaseDate: localReleaseDate ?? this.localReleaseDate,
         updateReleaseDate: updateReleaseDate ?? this.updateReleaseDate,
