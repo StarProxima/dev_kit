@@ -3,6 +3,8 @@ import 'package:store_checker/store_checker.dart';
 import '../shared/entities/update_platform.dart';
 import '../shared/entities/update_source.dart';
 
+// Не тестим, т.к. внешнее апи.
+// coverage:ignore-file
 class UpdateSourceSupportChecker {
   UpdateSourceSupportChecker();
 

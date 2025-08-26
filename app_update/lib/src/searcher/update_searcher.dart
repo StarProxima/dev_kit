@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../shared/models/release/update_data.dart';
@@ -134,6 +135,8 @@ class UpdateSearcher {
   }
 
   /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateSearchData.sources]
+  @protected
+  @visibleForTesting
   List<UpdateData> sortUpdates(
       List<UpdateData> updates, UpdateSearchData searchData) {
     return updates.sorted((a, b) {
