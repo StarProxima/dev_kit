@@ -5,7 +5,7 @@ import '../../shared/update_entities/update_platform.dart';
 import '../../shared/update_entities/update_source.dart';
 import 'rule_matcher.dart';
 
-class SourceMatcher<T extends Mergeable?> implements RuleMatcher<T> {
+class SourceMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const SourceMatcher();
 
   @override

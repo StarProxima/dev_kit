@@ -2,7 +2,6 @@ import 'package:pub_semver/pub_semver.dart';
 
 import '../../mergeable.dart';
 import '../../update_entities/update_platform.dart';
-import '../../update_entities/update_source.dart';
 import '../../update_entities/update_source_name.dart';
 import '../release_platrform/release_platrform_config.dart';
 import '../release_source/release_source_config.dart';
@@ -17,9 +16,9 @@ class UpdateData {
   final DateTime date;
   final UpdateSourceName sourceName;
   final UpdatePlatform platform;
-  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
+  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
   final Map<String, dynamic>? customData;
 
   const UpdateData({
@@ -38,9 +37,9 @@ class UpdateData {
     DateTime? date,
     UpdateSourceName? sourceName,
     UpdatePlatform? platform,
-    List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
-    List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-    List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
+    List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
+    List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+    List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
     Map<String, dynamic>? customData,
   }) =>
       UpdateData(

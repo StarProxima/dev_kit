@@ -48,7 +48,7 @@ class UpdateDataLinker {
       (platform) => platform.platformName == update.platform,
     );
 
-    List<UpdateRuleConfig<T>>? linkRules<T>(
+    List<UpdateRuleConfig<T>>? linkRules<T extends Mergeable>(
       List<UpdateRuleConfig<T>>? rules,
     ) =>
         rules
@@ -92,7 +92,7 @@ class UpdateDataLinker {
   }
 
   /// Добавляет в правило источник и платформу.
-  UpdateRuleConfig<T> _linkRule<T>({
+  UpdateRuleConfig<T> _linkRule<T extends Mergeable>({
     required UpdateRuleConfig<T> rule,
     required GlobalSourceConfig? source,
     required GlobalPlatformConfig? platform,

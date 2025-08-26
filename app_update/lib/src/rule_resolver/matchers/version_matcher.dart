@@ -6,7 +6,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../../shared/update_entities/update_version_constraint.dart';
 import 'rule_matcher.dart';
 
-class VersionMatcher<T extends Mergeable?> implements RuleMatcher<T> {
+class VersionMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const VersionMatcher();
 
   @override

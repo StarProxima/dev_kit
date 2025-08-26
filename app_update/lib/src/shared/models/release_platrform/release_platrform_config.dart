@@ -9,9 +9,9 @@ import '../update_settings/update_settings_config.dart';
 class ReleasePlatformConfig {
   final UpdatePlatform platformName;
   final ReleaseOverrideConfig? releaseOverride;
-  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
+  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
   final Map<String, dynamic>? customData;
 
   const ReleasePlatformConfig({
@@ -35,9 +35,9 @@ class ReleasePlatformConfig {
   ReleasePlatformConfig copyWith({
     UpdatePlatform? platformName,
     ReleaseOverrideConfig? releaseOverride,
-    List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-    List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-    List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+    List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+    List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+    List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
     Map<String, dynamic>? customData,
   }) =>
       ReleasePlatformConfig.byRequired(

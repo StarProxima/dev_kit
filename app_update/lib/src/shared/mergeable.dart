@@ -21,7 +21,7 @@ abstract class Mergeable {
     return customData.isNotEmpty ? customData : null;
   }
 
-  static List<UpdateRuleConfig<T>>? mergeRules<T>(
+  static List<UpdateRuleConfig<T>>? mergeRules<T extends Mergeable>(
     List<UpdateRuleConfig<T>>? rules1,
     List<UpdateRuleConfig<T>>? rules2, [
     List<UpdateRuleConfig<T>>? rules3,

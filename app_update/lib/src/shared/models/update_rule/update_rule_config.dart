@@ -6,7 +6,7 @@ import '../../update_entities/update_source.dart';
 import '../../update_entities/update_version_constraint.dart';
 import '../../update_entities/update_view_target.dart';
 
-class UpdateRuleConfig<T> {
+class UpdateRuleConfig<T extends Mergeable> {
   final List<AppStatus>? appStatuses;
   final List<UpdateLocale>? locales;
   final List<UpdateViewTarget>? viewTargets;
@@ -16,21 +16,21 @@ class UpdateRuleConfig<T> {
   final Duration? delay;
   final Duration? rollout;
   final double? segmentationPercent;
-  final T data;
   final Map<String, dynamic>? customData;
+  final T data;
 
   const UpdateRuleConfig({
-    this.appStatuses = const [AppStatus.any],
-    this.locales = const [UpdateLocale.any],
-    this.viewTargets = const [UpdateViewTarget.any],
-    this.versions = const [UpdateVersionConstraint.any],
-    this.sources = const [UpdateSource.any],
-    this.date = UpdateDate.any,
+    this.appStatuses,
+    this.locales,
+    this.viewTargets,
+    this.versions,
+    this.sources,
+    this.date,
     this.delay,
     this.rollout,
     this.segmentationPercent,
-    required this.data,
     this.customData,
+    required this.data,
   });
 
   const UpdateRuleConfig.byRequired({
@@ -57,8 +57,8 @@ class UpdateRuleConfig<T> {
     Duration? delay,
     Duration? rollout,
     double? segmentationPercent,
-    T? data,
     Map<String, dynamic>? customData,
+    T? data,
   }) =>
       UpdateRuleConfig.byRequired(
         appStatuses: appStatuses ?? this.appStatuses,

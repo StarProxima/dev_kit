@@ -30,9 +30,9 @@ void main() {
       expect(result, isA<UpdateConfig>());
 
       // Проверка content_rules
-      expect(result?.contentRules?.any((r) => r.data?.title == 'Обновите приложение'), isTrue);
+      expect(result?.contentRules?.any((r) => r.data.title == 'Обновите приложение'), isTrue);
       // Проверка settings_rules
-      expect(result?.settingsRules?.any((r) => r.data?.shouldShow == false), isTrue);
+      expect(result?.settingsRules?.any((r) => r.data.shouldShow == false), isTrue);
       // Проверка sources
       expect(result?.sources?.any((s) => s.sourceName.name == 'appstore'), isTrue);
       expect(
@@ -43,7 +43,7 @@ void main() {
       expect(result?.releases.any((r) => r.version.toString() == '0.3.7'), isTrue);
       expect(
           result?.releases
-              .any((r) => r.contentRules?.any((cr) => cr.data?.releaseNotes != null) ?? false),
+              .any((r) => r.contentRules?.any((cr) => cr.data.releaseNotes != null) ?? false),
           isTrue);
       expect(
           result?.releases

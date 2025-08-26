@@ -31,9 +31,9 @@ void main() {
       required Version version,
       DateTime? date,
       List<ReleaseSourceConfig>? sources,
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
       Map<String, dynamic>? customData,
     }) {
       return ReleaseConfig(
@@ -51,9 +51,9 @@ void main() {
       required UpdateSourceName sourceName,
       List<ReleasePlatformConfig>? platforms,
       ReleaseOverrideConfig? releaseOverride,
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
       Map<String, dynamic>? customData,
     }) {
       return ReleaseSourceConfig(
@@ -70,9 +70,9 @@ void main() {
     ReleasePlatformConfig createPlatform({
       required UpdatePlatform platformName,
       ReleaseOverrideConfig? releaseOverride,
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
       Map<String, dynamic>? customData,
     }) {
       return ReleasePlatformConfig(

@@ -3,7 +3,7 @@ import '../../../shared/models/update_rule/update_rule_config.dart';
 import '../../../shared/update_entities/app_status.dart';
 import '../../../shared/update_entities/update_locale.dart';
 
-final List<UpdateRuleConfig<UpdateContentConfig?>> defaultRuContentRules = [
+final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
   const UpdateRuleConfig(
     locales: [UpdateLocale.ru],
     data: UpdateContentConfig.byRequired(

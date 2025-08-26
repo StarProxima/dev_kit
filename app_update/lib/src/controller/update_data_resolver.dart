@@ -6,7 +6,6 @@ import '../shared/models/update_app_settings/update_app_settings_data.dart';
 import '../shared/models/update_content/update_content_config.dart';
 import '../shared/models/update_content/update_content_data.dart';
 import '../shared/models/update_result/update_result.dart';
-import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
 import '../shared/models/update_settings/update_settings_config.dart';
 import '../shared/models/update_settings/update_settings_data.dart';
@@ -25,12 +24,12 @@ class UpdateDataResolver {
   }) {
     final resolvedAppSettingsConfig = _ruleResolver.resolve<UpdateAppSettingsConfig>(
       searchData: searchData,
-      rules: updateData.appSettingsRules!
-          .whereType<UpdateRuleConfig<UpdateAppSettingsConfig>>()
-          .toList(),
+      rules: updateData.appSettingsRules!,
     );
 
-    final resolvedAppSettings = UpdateAppSettingsData.fromConfig(resolvedAppSettingsConfig);
+    final resolvedAppSettings = UpdateAppSettingsData.fromConfig(
+      resolvedAppSettingsConfig,
+    );
 
     if (searchData.appStatus == null) {
       searchData = searchData.copyWith(
@@ -40,17 +39,21 @@ class UpdateDataResolver {
 
     final resolvedContentConfig = _ruleResolver.resolve<UpdateContentConfig>(
       searchData: searchData,
-      rules: updateData.contentRules!.whereType<UpdateRuleConfig<UpdateContentConfig>>().toList(),
+      rules: updateData.contentRules!,
     );
 
-    final resolvedContent = UpdateContentData.fromConfig(resolvedContentConfig);
+    final resolvedContent = UpdateContentData.fromConfig(
+      resolvedContentConfig,
+    );
 
     final resolvedSettingsConfig = _ruleResolver.resolve<UpdateSettingsConfig>(
       searchData: searchData,
-      rules: updateData.settingsRules!.whereType<UpdateRuleConfig<UpdateSettingsConfig>>().toList(),
+      rules: updateData.settingsRules!,
     );
 
-    final resolvedSettings = UpdateSettingsData.fromConfig(resolvedSettingsConfig);
+    final resolvedSettings = UpdateSettingsData.fromConfig(
+      resolvedSettingsConfig,
+    );
 
     final mostRelevantUpdate = Update(
       version: updateData.version,

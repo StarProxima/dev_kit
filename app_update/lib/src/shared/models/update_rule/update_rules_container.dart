@@ -4,9 +4,9 @@ import '../update_rule/update_rule_config.dart';
 import '../update_settings/update_settings_config.dart';
 
 class UpdateRulesContainer {
-  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
+  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
 
   const UpdateRulesContainer({
     required this.contentRules,

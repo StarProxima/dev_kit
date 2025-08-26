@@ -10,9 +10,9 @@ class ReleaseSourceConfig {
   final UpdateSourceName sourceName;
   final List<ReleasePlatformConfig>? platforms;
   final ReleaseOverrideConfig? releaseOverride;
-  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
+  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
   final Map<String, dynamic>? customData;
 
   const ReleaseSourceConfig({

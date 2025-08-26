@@ -12,9 +12,9 @@ class ReleaseConfig {
   final Version version;
   final DateTime date;
   final List<ReleaseSourceConfig>? sources;
-  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
+  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
   final Map<String, dynamic>? customData;
 
   const ReleaseConfig({

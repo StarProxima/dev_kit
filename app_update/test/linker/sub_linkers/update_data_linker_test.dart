@@ -23,9 +23,9 @@ void main() {
       DateTime? date,
       required UpdateSourceName sourceName,
       required UpdatePlatform platform,
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
       Map<String, dynamic>? customData,
     }) {
       return UpdateData(
@@ -41,9 +41,9 @@ void main() {
     }
 
     UpdateRulesContainer createRulesContainer({
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
     }) {
       return UpdateRulesContainer(
         contentRules: contentRules,
@@ -55,9 +55,9 @@ void main() {
     GlobalSourceConfig createGlobalSource({
       required UpdateSourceName sourceName,
       List<GlobalPlatformConfig>? platforms,
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
     }) {
       return GlobalSourceConfig(
         sourceName: sourceName,
@@ -70,9 +70,9 @@ void main() {
 
     GlobalPlatformConfig createGlobalPlatform({
       required UpdatePlatform platformName,
-      List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules,
-      List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules,
-      List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules,
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
     }) {
       return GlobalPlatformConfig(
         platformName: platformName,

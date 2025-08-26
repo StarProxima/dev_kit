@@ -22,9 +22,9 @@ class UpdateLinker {
   ) {
     final globalSources = <GlobalSourceConfig>[];
     final releases = <ReleaseConfig>[];
-    final contentRules = <UpdateRuleConfig<UpdateContentConfig?>>[];
-    final settingsRules = <UpdateRuleConfig<UpdateSettingsConfig?>>[];
-    final appSettingsRules = <UpdateRuleConfig<UpdateAppSettingsConfig?>>[];
+    final contentRules = <UpdateRuleConfig<UpdateContentConfig>>[];
+    final settingsRules = <UpdateRuleConfig<UpdateSettingsConfig>>[];
+    final appSettingsRules = <UpdateRuleConfig<UpdateAppSettingsConfig>>[];
 
     for (final config in configs) {
       globalSources.addAll(config.sources ?? []);

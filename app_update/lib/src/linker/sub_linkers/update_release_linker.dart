@@ -93,7 +93,7 @@ class UpdateReleaseLinker {
           platform.releaseOverride,
         );
 
-    List<UpdateRuleConfig<T>>? linkRules<T>(
+    List<UpdateRuleConfig<T>>? linkRules<T extends Mergeable>(
       List<UpdateRuleConfig<T>>? rules,
     ) =>
         rules
@@ -159,7 +159,7 @@ class UpdateReleaseLinker {
   }
 
   /// Добавляет в правило источник, платформу и версию релиза.
-  UpdateRuleConfig<T> _linkRule<T>({
+  UpdateRuleConfig<T> _linkRule<T extends Mergeable>({
     required UpdateRuleConfig<T> rule,
     required ReleaseConfig release,
     required ReleaseSourceConfig? source,

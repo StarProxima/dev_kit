@@ -8,9 +8,9 @@ import '../update_settings/update_settings_config.dart';
 class GlobalSourceConfig {
   final UpdateSourceName sourceName;
   final List<GlobalPlatformConfig>? platforms;
-  final List<UpdateRuleConfig<UpdateContentConfig?>>? contentRules;
-  final List<UpdateRuleConfig<UpdateSettingsConfig?>>? settingsRules;
-  final List<UpdateRuleConfig<UpdateAppSettingsConfig?>>? appSettingsRules;
+  final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
+  final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
+  final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
   final Map<String, dynamic>? customData;
 
   const GlobalSourceConfig({

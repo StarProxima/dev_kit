@@ -1,5 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
+import '../../shared/mergeable.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
 import '../base_parsers/app_status_parser.dart';
 import '../base_parsers/update_date_parser.dart';
@@ -25,9 +26,9 @@ class UpdateRuleConfigParser {
 
   const UpdateRuleConfigParser();
 
-  UpdateRuleConfig<T>? parse<T>(
+  UpdateRuleConfig<T>? parse<T extends Mergeable>(
     dynamic value, {
-    required T Function(dynamic) dataParser,
+    required T? Function(dynamic) dataParser,
   }) {
     if (value == null) return null;
 
@@ -36,6 +37,15 @@ class UpdateRuleConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
+
+    // data
+    // if not exists, use rule itself as data
+    final dataValue = map.remove('data') ?? value;
+    final data = dataParser(dataValue);
+
+    if (data == null) {
+      return null;
+    }
 
     // appStatuses
     final appStatusesRawValue = map.remove('app_statuses');
@@ -77,11 +87,6 @@ class UpdateRuleConfigParser {
     // segmentation_percent
     final segmentationPercentValue = map.remove('segmentation_percent');
     final segmentationPercent = _doubleParser.parse(value: segmentationPercentValue);
-
-    // data
-    // if not exists, use rule itself as data
-    final dataValue = map.remove('data') ?? value;
-    final data = dataParser(dataValue);
 
     final config = UpdateRuleConfig<T>.byRequired(
       appStatuses: appStatuses,

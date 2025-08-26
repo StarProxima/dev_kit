@@ -2,7 +2,7 @@ import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_settings/update_settings_config.dart';
 import '../../shared/update_entities/app_status.dart';
 
-final List<UpdateRuleConfig<UpdateSettingsConfig?>> defaultUpdateSettingsRules = [
+final List<UpdateRuleConfig<UpdateSettingsConfig>> defaultUpdateSettingsRules = [
   const UpdateRuleConfig(
     data: UpdateSettingsConfig.byRequired(
       shouldShow: true,
