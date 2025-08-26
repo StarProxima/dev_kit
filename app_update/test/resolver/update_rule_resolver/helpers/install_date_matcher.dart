@@ -1,7 +1,4 @@
-import 'package:app_update/src/resolver/base/rule_matcher.dart';
-import 'package:app_update/src/shared/models/mergeable.dart';
-import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
-import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
+part of '../update_rule_resolver_test.dart';
 
 /// Матчер для проверки времени, прошедшего с момента установки приложения.
 /// Использует поле 'min_delay_after_app_install_hours' в customData правила

@@ -1,10 +1,4 @@
-import 'package:app_update/src/resolver/update_rule_resolver.dart';
-import 'package:app_update/src/shared/entities/update_platform.dart';
-import 'package:app_update/src/shared/entities/update_source.dart';
-import 'package:app_update/src/shared/entities/update_source_name.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import '../helpers/resolver_test_helpers.dart';
+part of '../update_rule_resolver_test.dart';
 
 void runSourcesPlatformsMatchingTests() {
   group('UpdateRuleResolver - Sources/Platforms matching', () {

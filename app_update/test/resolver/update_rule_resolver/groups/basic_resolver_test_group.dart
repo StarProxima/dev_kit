@@ -1,14 +1,4 @@
-import 'package:app_update/src/resolver/update_rule_resolver.dart';
-import 'package:app_update/src/shared/entities/update_date.dart';
-import 'package:app_update/src/shared/entities/update_locale.dart';
-import 'package:app_update/src/shared/entities/update_source.dart';
-import 'package:app_update/src/shared/entities/update_version_constraint.dart';
-import 'package:app_update/src/shared/entities/update_view_target.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:pub_semver/pub_semver.dart';
-
-import '../helpers/resolver_test_helpers.dart';
+part of '../update_rule_resolver_test.dart';
 
 void runBasicResolverTests() {
   group('UpdateRuleResolver - Basic functionality', () {

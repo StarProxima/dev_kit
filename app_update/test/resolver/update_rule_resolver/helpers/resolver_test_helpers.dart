@@ -1,15 +1,4 @@
-import 'package:app_update/src/shared/entities/app_status.dart';
-import 'package:app_update/src/shared/entities/update_date.dart';
-import 'package:app_update/src/shared/entities/update_locale.dart';
-import 'package:app_update/src/shared/entities/update_platform.dart';
-import 'package:app_update/src/shared/entities/update_source.dart';
-import 'package:app_update/src/shared/entities/update_version_constraint.dart';
-import 'package:app_update/src/shared/entities/update_view_target.dart';
-import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
-import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
-import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
-import 'package:flutter/material.dart';
-import 'package:pub_semver/pub_semver.dart';
+part of '../update_rule_resolver_test.dart';
 
 /// Создает UpdateSearchData для тестов с настраиваемыми параметрами
 UpdateSearchData createTestSearchData({

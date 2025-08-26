@@ -1,12 +1,4 @@
-import 'package:app_update/src/shared/entities/update_platform.dart';
-import 'package:app_update/src/shared/entities/update_source.dart';
-import 'package:app_update/src/shared/entities/update_source_name.dart';
-import 'package:app_update/src/shared/models/update_search/update_search_config.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pub_semver/pub_semver.dart';
-
-import '../helpers/test_utils.dart';
+part of '../update_searcher_test.dart';
 
 void runSearchFullTests() {
   group('UpdateSearcher - searchFull', () {

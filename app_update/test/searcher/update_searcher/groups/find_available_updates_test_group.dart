@@ -1,10 +1,4 @@
-import 'package:app_update/src/shared/entities/update_platform.dart';
-import 'package:app_update/src/shared/entities/update_source.dart';
-import 'package:app_update/src/shared/entities/update_source_name.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:pub_semver/pub_semver.dart';
-
-import '../helpers/test_utils.dart';
+part of '../update_searcher_test.dart';
 
 void runFindAvailableUpdatesTests() {
   group('UpdateSearcher - findAvailableUpdates', () {

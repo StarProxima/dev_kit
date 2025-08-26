@@ -1,21 +1,6 @@
 // ignore_for_file: unnecessary_raw_strings
 
-import 'package:app_update/src/resolver/matchers/app_status_matcher.dart';
-import 'package:app_update/src/resolver/matchers/custom_data_matcher.dart';
-import 'package:app_update/src/resolver/matchers/locale_matcher.dart';
-import 'package:app_update/src/resolver/matchers/source_matcher.dart';
-import 'package:app_update/src/resolver/matchers/temporal_matcher.dart';
-import 'package:app_update/src/resolver/matchers/version_matcher.dart';
-import 'package:app_update/src/resolver/matchers/view_target_matcher.dart';
-import 'package:app_update/src/resolver/update_rule_resolver.dart';
-import 'package:app_update/src/shared/entities/app_status.dart';
-import 'package:app_update/src/shared/entities/update_locale.dart';
-import 'package:app_update/src/shared/entities/update_source.dart';
-import 'package:app_update/src/shared/entities/update_view_target.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import '../helpers/install_date_matcher.dart';
-import '../helpers/resolver_test_helpers.dart';
+part of '../update_rule_resolver_test.dart';
 
 void runCustomDataMatchingTests() {
   group('UpdateRuleResolver - CustomData matching', () {
