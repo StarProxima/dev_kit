@@ -1,4 +1,4 @@
-import '../../mergeable.dart';
+import '../mergeable.dart';
 import '../../update_entities/app_status.dart';
 import '../../update_entities/update_date.dart';
 import '../../update_entities/update_locale.dart';

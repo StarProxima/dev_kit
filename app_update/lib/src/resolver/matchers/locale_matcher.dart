@@ -1,4 +1,4 @@
-import '../../shared/mergeable.dart';
+import '../../shared/models/mergeable.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
 import '../../shared/update_entities/update_locale.dart';

@@ -1,4 +1,4 @@
-import 'models/update_rule/update_rule_config.dart';
+import 'update_rule/update_rule_config.dart';
 
 abstract class Mergeable {
   Mergeable merge(Mergeable other);

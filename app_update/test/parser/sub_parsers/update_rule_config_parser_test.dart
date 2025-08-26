@@ -1,6 +1,6 @@
 import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/sub_parsers/update_rule_config_parser.dart';
-import 'package:app_update/src/shared/mergeable.dart';
+import 'package:app_update/src/shared/models/mergeable.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';

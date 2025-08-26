@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-long-functions
 
-import 'package:app_update/src/utils/version_x.dart';
+import 'package:app_update/src/shared/utils/version_x.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 

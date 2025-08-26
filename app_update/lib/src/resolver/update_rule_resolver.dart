@@ -1,7 +1,7 @@
 // ignore_for_file: comment_references
 
 import '../parser/common.dart';
-import '../shared/mergeable.dart';
+import '../shared/models/mergeable.dart';
 import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
 import 'matchers/app_status_matcher.dart';

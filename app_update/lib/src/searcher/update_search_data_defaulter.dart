@@ -1,11 +1,11 @@
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../shared/entities/update_locale.dart';
+import '../shared/entities/update_platform.dart';
+import '../shared/entities/update_view_target.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
-import '../shared/update_entities/update_locale.dart';
-import '../shared/update_entities/update_platform.dart';
-import '../shared/update_entities/update_view_target.dart';
 import 'update_source_support_checker.dart';
 
 class UpdateSearchDataDefaulter {
@@ -31,9 +31,9 @@ class UpdateSearchDataDefaulter {
       appStatus: null,
       locale: UpdateLocale.any,
       displayTarget: UpdateViewTarget.any,
-      rolloutPointer: 0.5,
-      segmentationPointer: 0.5,
       localReleaseDate: packageInfo.updateTime ?? packageInfo.installTime,
+      rolloutPointer: 1, // TODO: default value
+      segmentationPointer: 1, // TODO: default value
       updateReleaseDate: null,
       customData: null,
     );

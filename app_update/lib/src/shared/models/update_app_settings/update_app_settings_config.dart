@@ -1,4 +1,4 @@
-import '../../mergeable.dart';
+import '../mergeable.dart';
 import '../../update_entities/app_status.dart';
 
 class UpdateAppSettingsConfig implements Mergeable {

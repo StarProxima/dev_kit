@@ -1,4 +1,4 @@
-import '../../mergeable.dart';
+import '../mergeable.dart';
 
 class UpdateContentConfig implements Mergeable {
   final Uri? updateUrl;
