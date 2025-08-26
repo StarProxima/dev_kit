@@ -19,20 +19,32 @@ import 'update_data_resolver.dart';
 import 'update_searcher.dart';
 
 class UpdateController extends UpdateControllerBase {
-  @override
-  Stream<void> get onFetch => _onFetchStreamController.stream;
+  // State
 
+  final List<UpdateConfigFetcherBase> _fetchers;
+  late PackageInfo _packageInfo;
   final _onFetchStreamController = StreamController<void>.broadcast();
   final _initCompleter = Completer<void>();
-  late PackageInfo _packageInfo;
   List<UpdateData> _updates = [];
 
-  late final List<UpdateConfigFetcherBase> _fetchers;
-  late final UpdateConfigFetcherCoordinator _fetcherCoordinator;
-  late final UpdateDataResolver _updateDataResolver;
-  late final UpdateLinker _updateLinker;
-  late final UpdateSearcher _updateSearcher;
-  late final UpdateSourceChecker _updateSourceChecker;
+  // Dependencies, can be overridden
+
+  final UpdateLinker _updateLinker = const UpdateLinker();
+
+  final UpdateSourceChecker _updateSourceChecker = UpdateSourceChecker();
+
+  final UpdateDataResolver _updateDataResolver = const UpdateDataResolver(
+    ruleResolver: UpdateRuleResolver(),
+  );
+
+  late final UpdateConfigFetcherCoordinator _fetcherCoordinator = UpdateConfigFetcherCoordinator(
+    updateSearcher: _updateSearcher,
+  );
+
+  late final UpdateSearcher _updateSearcher = UpdateSearcher(
+    updateFinder: const UpdateFinder(),
+    updateSourceChecker: _updateSourceChecker,
+  );
 
   /// Контроллер для поиска обновлений
   ///
@@ -48,34 +60,7 @@ class UpdateController extends UpdateControllerBase {
   ///
   UpdateController({
     List<UpdateConfigFetcherBase> fetchers = UpdateConfigSourceFetcher.defaultFetchers,
-    UpdateConfigFetcherCoordinator? fetcherCoordinator,
-    UpdateDataResolver? updateDataResolver,
-    UpdateSourceChecker? updateSourceChecker,
-    UpdateLinker? linker,
-    UpdateSearcher? searcher,
-  }) {
-    _fetchers = fetchers;
-
-    _updateSourceChecker = updateSourceChecker ?? UpdateSourceChecker();
-
-    _updateSearcher = searcher ??
-        UpdateSearcher(
-          updateFinder: const UpdateFinder(),
-          updateSourceChecker: _updateSourceChecker,
-        );
-
-    _fetcherCoordinator = fetcherCoordinator ??
-        UpdateConfigFetcherCoordinator(
-          updateSearcher: _updateSearcher,
-        );
-
-    _updateDataResolver = updateDataResolver ??
-        const UpdateDataResolver(
-          ruleResolver: UpdateRuleResolver(),
-        );
-
-    _updateLinker = linker ?? const UpdateLinker();
-  }
+  }) : _fetchers = fetchers;
 
   @override
   Future<void> init() async {
@@ -90,6 +75,9 @@ class UpdateController extends UpdateControllerBase {
   }
 
   @override
+  Stream<void> get onFetch => _onFetchStreamController.stream;
+
+  @override
   Future<void> fetch(
     UpdateSearchConfig searchConfig, {
     bool shouldFetchGlobalSources = true,
@@ -101,6 +89,8 @@ class UpdateController extends UpdateControllerBase {
       fetchers: _fetchers,
       searchConfig: searchConfig,
       packageInfo: _packageInfo,
+      shouldFetchGlobalSources: shouldFetchGlobalSources,
+      shouldFetchConfig: shouldFetchConfig,
     );
 
     final updates = _updateLinker.linkAllConfigs(configs);

@@ -20,8 +20,8 @@ class UpdateConfigFetcherCoordinator {
     required List<UpdateConfigFetcherBase> fetchers,
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
-    bool shouldFetchGlobalSources = true,
-    bool shouldFetchConfig = true,
+    required bool shouldFetchGlobalSources,
+    required bool shouldFetchConfig,
   }) async {
     final configs = <UpdateConfig>[
       // Default config from app_update package
