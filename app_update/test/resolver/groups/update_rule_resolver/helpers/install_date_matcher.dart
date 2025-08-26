@@ -1,4 +1,4 @@
-part of '../resolver_test.dart';
+part of '../rule_resolver_test_group.dart';
 
 /// Матчер для проверки времени, прошедшего с момента установки приложения.
 /// Использует поле 'min_delay_after_app_install_hours' в customData правила

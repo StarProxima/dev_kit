@@ -33,8 +33,8 @@ part 'groups/install_date_matcher_test_group.dart';
 part 'groups/sources_platforms_matching_test_group.dart';
 part 'groups/temporal_matching_test_group.dart';
 
-void main() {
-  group('Resolver', () {
+void runUpdateRuleResolverTests() {
+  group('UpdateRuleResolver', () {
     runBasicResolverTests();
     runCustomDataMatchingTests();
     runInstallDateMatcherTests();

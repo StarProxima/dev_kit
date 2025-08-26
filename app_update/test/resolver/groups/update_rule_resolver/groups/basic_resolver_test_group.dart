@@ -1,4 +1,4 @@
-part of '../resolver_test.dart';
+part of '../rule_resolver_test_group.dart';
 
 void runBasicResolverTests() {
   group('UpdateRuleResolver - Basic functionality', () {

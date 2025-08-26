@@ -1,6 +1,7 @@
 library parser_test;
 
 import 'dart:io';
+import 'package:app_update/src/fetcher/update_config_fetcher.dart';
 import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/sub_parsers/global_platform_config_parser.dart';
 import 'package:app_update/src/parser/sub_parsers/global_source_config_parser.dart';
@@ -36,19 +37,6 @@ part 'groups/update_content_config_parser_test_group.dart';
 part 'groups/update_rule_config_parser_test_group.dart';
 part 'groups/update_settings_config_parser_test_group.dart';
 part 'groups/update_config_parser_integration_test_group.dart';
-
-// Рекурсивно преобразует YamlMap/YamlList в обычные Map/List
-Object? deepConvert(Object? node) {
-  if (node is YamlMap) {
-    return Map<String, dynamic>.fromEntries(
-      node.entries.map((e) => MapEntry(e.key.toString(), deepConvert(e.value))),
-    );
-  } else if (node is YamlList) {
-    return node.map(deepConvert).toList();
-  } else {
-    return node;
-  }
-}
 
 void main() {
   group('Parser', () {

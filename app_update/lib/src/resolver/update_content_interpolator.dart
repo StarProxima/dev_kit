@@ -22,6 +22,7 @@ class UpdateContentInterpolator {
   }
 
   @protected
+  @visibleForTesting
   Map<String, String> buildInterpolateData({
     required UpdateSearchData searchData,
     required UpdateData updateData,

@@ -7,7 +7,7 @@ void runUpdateConfigParserIntegrationTests() {
     test('Парсинг большого конфига из api_v3.yaml', () async {
       final yamlStr =
           await File('test/parser/helpers/api_v3.yaml').readAsString();
-      final map = deepConvert(loadYaml(yamlStr))! as Map<String, dynamic>;
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
       final result = parser.parse(map);
       expect(result, isA<UpdateConfig>());
 
@@ -65,7 +65,7 @@ void runUpdateConfigParserIntegrationTests() {
       const yamlStr = '''
         releases: null
       ''';
-      final map = deepConvert(loadYaml(yamlStr))! as Map<String, dynamic>;
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
       expect(() => parser.parse(map), throwsA(isA<UpdateConfigException>()));
     });
   });
