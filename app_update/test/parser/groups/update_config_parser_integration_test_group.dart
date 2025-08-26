@@ -1,31 +1,12 @@
-import 'dart:io';
+part of '../parser_test.dart';
 
-import 'package:app_update/src/parser/common.dart';
-import 'package:app_update/src/parser/update_config_parser.dart';
-import 'package:app_update/src/shared/models/update/update_config.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
-
-// Рекурсивно преобразует YamlMap/YamlList в обычные Map/List
-Object? deepConvert(Object? node) {
-  if (node is YamlMap) {
-    return Map<String, dynamic>.fromEntries(
-      node.entries.map((e) => MapEntry(e.key.toString(), deepConvert(e.value))),
-    );
-  } else if (node is YamlList) {
-    return node.map(deepConvert).toList();
-  } else {
-    return node;
-  }
-}
-
-void main() {
+void runUpdateConfigParserIntegrationTests() {
   group('UpdateConfigParser (интеграционный)', () {
     const parser = UpdateConfigParser();
 
     test('Парсинг большого конфига из api_v3.yaml', () async {
       final yamlStr =
-          await File('test/parser/sub_parsers/api_v3.yaml').readAsString();
+          await File('test/parser/helpers/api_v3.yaml').readAsString();
       final map = deepConvert(loadYaml(yamlStr))! as Map<String, dynamic>;
       final result = parser.parse(map);
       expect(result, isA<UpdateConfig>());

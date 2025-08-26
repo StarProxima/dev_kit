@@ -1,10 +1,6 @@
-import 'package:app_update/src/parser/common.dart';
-import 'package:app_update/src/parser/sub_parsers/update_settings_config_parser.dart';
-import 'package:app_update/src/shared/models/update_settings/update_settings_config.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+part of '../parser_test.dart';
 
-void main() {
+void runUpdateSettingsConfigParserTests() {
   group('UpdateSettingsConfigParser', () {
     const parser = UpdateSettingsConfigParser();
 
