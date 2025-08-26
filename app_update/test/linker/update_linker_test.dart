@@ -10,6 +10,7 @@ import 'package:app_update/src/shared/models/release_source/release_source_confi
 import 'package:app_update/src/shared/models/update_app_settings/update_app_settings_config.dart';
 import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
+import 'package:app_update/src/shared/models/update/update_config.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rules_container.dart';
 import 'package:app_update/src/shared/models/update_settings/update_settings_config.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -123,6 +124,273 @@ void main() {
         ),
       );
     }
+
+    UpdateConfig createUpdateConfig({
+      List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
+      List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
+      List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
+      List<GlobalSourceConfig>? sources,
+      List<ReleaseConfig>? releases,
+      Map<String, dynamic>? customData,
+    }) {
+      return UpdateConfig(
+        contentRules: contentRules,
+        settingsRules: settingsRules,
+        appSettingsRules: appSettingsRules,
+        sources: sources,
+        releases: releases ?? [],
+        customData: customData,
+      );
+    }
+
+    group('linkAllConfigs', () {
+      test('обрабатывает пустой список конфигураций', () {
+        final result = linker.linkAllConfigs([]);
+
+        expect(result, isEmpty);
+      });
+
+      test('обрабатывает одну конфигурацию без релизов', () {
+        final config = createUpdateConfig();
+
+        final result = linker.linkAllConfigs([config]);
+
+        expect(result, isEmpty);
+      });
+
+      test('обрабатывает одну конфигурацию с релизом', () {
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [
+            createReleaseSource(
+              sourceName: UpdateSourceName.googlePlay,
+              platforms: [
+                createReleasePlatform(platformName: UpdatePlatform.android),
+              ],
+            ),
+          ],
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+        );
+
+        final config = createUpdateConfig(
+          sources: [globalSource],
+          releases: [release],
+        );
+
+        final result = linker.linkAllConfigs([config]);
+
+        expect(result, hasLength(1));
+        expect(result[0].version, Version.parse('1.0.0'));
+        expect(result[0].sourceName, UpdateSourceName.googlePlay);
+        expect(result[0].platform, UpdatePlatform.android);
+      });
+
+      test('объединяет правила из нескольких конфигураций', () {
+        final contentRule1 = createContentRule(title: 'Config 1 Rule');
+        final contentRule2 = createContentRule(title: 'Config 2 Rule');
+
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [
+            createReleaseSource(
+              sourceName: UpdateSourceName.googlePlay,
+              platforms: [
+                createReleasePlatform(platformName: UpdatePlatform.android),
+              ],
+            ),
+          ],
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+        );
+
+        final config1 = createUpdateConfig(
+          contentRules: [contentRule1],
+          sources: [globalSource],
+          releases: [release],
+        );
+
+        final config2 = createUpdateConfig(
+          contentRules: [contentRule2],
+        );
+
+        final result = linker.linkAllConfigs([config1, config2]);
+
+        expect(result, hasLength(1));
+        expect(result[0].contentRules, hasLength(2));
+        expect(result[0].contentRules![0].data.title, equals('Config 1 Rule'));
+        expect(result[0].contentRules![1].data.title, equals('Config 2 Rule'));
+      });
+
+      test('объединяет источники из нескольких конфигураций', () {
+        final release1 = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [
+            createReleaseSource(
+              sourceName: UpdateSourceName.googlePlay,
+              platforms: [
+                createReleasePlatform(platformName: UpdatePlatform.android),
+              ],
+            ),
+          ],
+        );
+
+        final release2 = createRelease(
+          version: Version.parse('2.0.0'),
+          sources: [
+            createReleaseSource(
+              sourceName: UpdateSourceName.appStore,
+              platforms: [
+                createReleasePlatform(platformName: UpdatePlatform.ios),
+              ],
+            ),
+          ],
+        );
+
+        final globalSource1 = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+        );
+
+        final globalSource2 = createGlobalSource(
+          sourceName: UpdateSourceName.appStore,
+        );
+
+        final config1 = createUpdateConfig(
+          sources: [globalSource1],
+          releases: [release1],
+        );
+
+        final config2 = createUpdateConfig(
+          sources: [globalSource2],
+          releases: [release2],
+        );
+
+        final result = linker.linkAllConfigs([config1, config2]);
+
+        expect(result, hasLength(2));
+        expect(
+            result.map((e) => e.sourceName),
+            containsAll(
+                [UpdateSourceName.googlePlay, UpdateSourceName.appStore]));
+        expect(result.map((e) => e.version),
+            containsAll([Version.parse('1.0.0'), Version.parse('2.0.0')]));
+      });
+
+      test('обрабатывает конфигурации с null полями', () {
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [
+            createReleaseSource(
+              sourceName: UpdateSourceName.googlePlay,
+              platforms: [
+                createReleasePlatform(platformName: UpdatePlatform.android),
+              ],
+            ),
+          ],
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+        );
+
+        final config1 = createUpdateConfig(
+          contentRules: null, // null поля
+          settingsRules: null,
+          appSettingsRules: null,
+          sources: [globalSource],
+          releases: [release],
+        );
+
+        final config2 = createUpdateConfig(
+          sources: null, // null источники
+          releases: [], // пустые релизы
+        );
+
+        final result = linker.linkAllConfigs([config1, config2]);
+
+        expect(result, hasLength(1));
+        expect(result[0].contentRules, isNull);
+        expect(result[0].settingsRules, isNull);
+        expect(result[0].appSettingsRules, isNull);
+      });
+
+      test('обрабатывает конфигурации с пустыми списками', () {
+        final contentRule = createContentRule(title: 'Test Rule');
+
+        final config1 = createUpdateConfig(
+          contentRules: [], // пустой список
+          sources: [],
+          releases: [],
+        );
+
+        final config2 = createUpdateConfig(
+          contentRules: [contentRule],
+          sources: [],
+          releases: [],
+        );
+
+        final result = linker.linkAllConfigs([config1, config2]);
+
+        expect(result, isEmpty); // нет релизов и источников
+      });
+
+      test('объединяет все типы правил из нескольких конфигураций', () {
+        final contentRule1 = createContentRule(title: 'Content 1');
+        final contentRule2 = createContentRule(title: 'Content 2');
+
+        // Создаем mock правила для других типов
+        final settingsRule1 = UpdateRuleConfig<UpdateSettingsConfig>(
+          data: const UpdateSettingsConfig(shouldShow: true),
+        );
+
+        final appSettingsRule1 = UpdateRuleConfig<UpdateAppSettingsConfig>(
+          data: const UpdateAppSettingsConfig(appStatus: null),
+        );
+
+        final release = createRelease(
+          version: Version.parse('1.0.0'),
+          sources: [
+            createReleaseSource(
+              sourceName: UpdateSourceName.googlePlay,
+              platforms: [
+                createReleasePlatform(platformName: UpdatePlatform.android),
+              ],
+            ),
+          ],
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+        );
+
+        final config1 = createUpdateConfig(
+          contentRules: [contentRule1],
+          settingsRules: [settingsRule1],
+          sources: [globalSource],
+          releases: [release],
+        );
+
+        final config2 = createUpdateConfig(
+          contentRules: [contentRule2],
+          appSettingsRules: [appSettingsRule1],
+        );
+
+        final result = linker.linkAllConfigs([config1, config2]);
+
+        expect(result, hasLength(1));
+        expect(result[0].contentRules, hasLength(2));
+        expect(result[0].settingsRules, hasLength(1));
+        expect(result[0].appSettingsRules, hasLength(1));
+
+        expect(result[0].contentRules![0].data.title, equals('Content 1'));
+        expect(result[0].contentRules![1].data.title, equals('Content 2'));
+        expect(result[0].settingsRules![0].data.shouldShow, equals(true));
+      });
+    });
 
     group('link', () {
       test('возвращает пустой список для релиза без источников', () {

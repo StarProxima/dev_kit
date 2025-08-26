@@ -506,5 +506,238 @@ void main() {
         expect(result[2].version, Version.parse('2.0.0'));
       });
     });
+
+    group('edge cases', () {
+      test('обрабатывает пустой UpdateRulesContainer корректно', () {
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+        );
+
+        /// Создаем контейнер с полностью null полями
+        final emptyContainer = UpdateRulesContainer(
+          contentRules: null,
+          settingsRules: null,
+          appSettingsRules: null,
+        );
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: emptyContainer,
+          globalSources: [],
+        );
+
+        expect(result.contentRules, isNull);
+        expect(result.settingsRules, isNull);
+        expect(result.appSettingsRules, isNull);
+        expect(result.version, equals(update.version));
+        expect(result.sourceName, equals(update.sourceName));
+        expect(result.platform, equals(update.platform));
+      });
+
+      test('обрабатывает глобальный источник без платформ', () {
+        final globalSourceRule = createContentRule(title: 'Global Rule');
+
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+          platforms: [],
+
+          /// Пустой список платформ
+          contentRules: [globalSourceRule],
+        );
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: createRulesContainer(),
+          globalSources: [globalSource],
+        );
+
+        /// Должно применить правило источника, но не правило платформы
+        expect(result.contentRules, hasLength(1));
+        expect(result.contentRules![0].data.title, equals('Global Rule'));
+      });
+
+      test(
+          'обрабатывает глобальный источник с платформами, не содержащими нужную платформу',
+          () {
+        final globalSourceRule = createContentRule(title: 'Source Rule');
+        final globalPlatformRule = createContentRule(title: 'Platform Rule');
+
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+
+          /// Ищем Android
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+          contentRules: [globalSourceRule],
+          platforms: [
+            createGlobalPlatform(
+              platformName: UpdatePlatform.ios,
+
+              /// Но есть только iOS платформа
+              contentRules: [globalPlatformRule],
+            ),
+          ],
+        );
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: createRulesContainer(),
+          globalSources: [globalSource],
+        );
+
+        /// Должно применить только правило источника, но не платформы
+        expect(result.contentRules, hasLength(1));
+        expect(result.contentRules![0].data.title, equals('Source Rule'));
+
+        /// Убеждаемся что правило платформы не применилось
+      });
+
+      test('обрабатывает null значения в UpdateData корректно', () {
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+          contentRules: null,
+          settingsRules: null,
+          appSettingsRules: null,
+          customData: null,
+        );
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: createRulesContainer(),
+          globalSources: [],
+        );
+
+        expect(result.contentRules, isNull);
+        expect(result.settingsRules, isNull);
+        expect(result.appSettingsRules, isNull);
+        expect(result.customData, isNull);
+      });
+
+      test(
+          'корректно связывает правила с источником когда платформы фильтруются',
+          () {
+        final globalSourceRule = createContentRule(title: 'Source Rule');
+
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+          contentRules: [globalSourceRule],
+          platforms: [
+            createGlobalPlatform(platformName: UpdatePlatform.android),
+            createGlobalPlatform(platformName: UpdatePlatform.ios),
+          ],
+        );
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: createRulesContainer(),
+          globalSources: [globalSource],
+        );
+
+        expect(result.contentRules, hasLength(1));
+        final linkedRule = result.contentRules![0];
+
+        /// Проверяем что правило связано с источником
+        expect(linkedRule.sourceIs?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay));
+
+        /// Проверяем что в список платформ включена только нужная платформа
+        expect(linkedRule.sourceIs?.firstOrNull?.platforms,
+            contains(UpdatePlatform.android));
+      });
+
+      test('обрабатывает множественные globalSources с одинаковым именем', () {
+        final firstSourceRule = createContentRule(title: 'First Source Rule');
+        final secondSourceRule = createContentRule(title: 'Second Source Rule');
+
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+        );
+
+        final globalSources = [
+          createGlobalSource(
+            sourceName: UpdateSourceName.googlePlay,
+            contentRules: [firstSourceRule],
+          ),
+          createGlobalSource(
+            sourceName: UpdateSourceName.googlePlay,
+
+            /// Такое же имя
+            contentRules: [secondSourceRule],
+          ),
+        ];
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: createRulesContainer(),
+          globalSources: globalSources,
+        );
+
+        /// Должен использовать только первый найденный источник (firstWhereOrNull)
+        expect(result.contentRules, hasLength(1));
+        expect(result.contentRules![0].data.title, equals('First Source Rule'));
+      });
+
+      test('обрабатывает глобальный источник без правил корректно', () {
+        final containerRule = createContentRule(title: 'Container Rule');
+        final updateRule = createContentRule(title: 'Update Rule');
+
+        final update = createUpdateData(
+          version: Version.parse('1.0.0'),
+          sourceName: UpdateSourceName.googlePlay,
+          platform: UpdatePlatform.android,
+          contentRules: [updateRule],
+        );
+
+        final globalSource = createGlobalSource(
+          sourceName: UpdateSourceName.googlePlay,
+          contentRules: null,
+
+          /// Нет правил в глобальном источнике
+          platforms: [
+            createGlobalPlatform(
+              platformName: UpdatePlatform.android,
+              contentRules: null,
+
+              /// И в платформе тоже нет правил
+            ),
+          ],
+        );
+
+        final result = linker.link(
+          update: update,
+          rulesContainer: createRulesContainer(
+            contentRules: [containerRule],
+          ),
+          globalSources: [globalSource],
+        );
+
+        /// Должно применить только правила из контейнера и самого update
+        expect(result.contentRules, hasLength(2));
+        expect(result.contentRules![0].data.title, equals('Container Rule'));
+        expect(result.contentRules![1].data.title, equals('Update Rule'));
+      });
+    });
   });
 }
