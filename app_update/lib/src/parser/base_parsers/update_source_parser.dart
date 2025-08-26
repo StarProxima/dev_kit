@@ -1,6 +1,6 @@
-import '../../shared/update_entities/update_source.dart';
-import '../primitive_parsers/string_parser.dart';
+import '../../shared/entities/update_source.dart';
 import '../common.dart';
+import '../primitive_parsers/string_parser.dart';
 import 'update_platform_parser.dart';
 import 'update_source_name_parser.dart';
 
@@ -36,7 +36,8 @@ class UpdateSourceParser {
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List?) throw const UpdateConfigException();
 
-    final platforms = platformsValue?.map(_updatePlatformParser.parse).nonNulls.toList();
+    final platforms =
+        platformsValue?.map(_updatePlatformParser.parse).nonNulls.toList();
 
     final source = UpdateSource.custom(sourceName, platforms: platforms);
 

@@ -27,7 +27,8 @@ class AppStoreApi {
   }
 
   /// Пытается найти приложение с определенной локалью
-  Future<Map<String, dynamic>?> _tryLookupApp(String bundleId, Locale locale) async {
+  Future<Map<String, dynamic>?> _tryLookupApp(
+      String bundleId, Locale locale) async {
     final url = _buildLookupUrl(bundleId, locale);
     final response = await http.get(url);
 

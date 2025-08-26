@@ -61,7 +61,8 @@ class UpdateController extends UpdateControllerBase {
   /// ```
   ///
   UpdateController({
-    List<UpdateConfigFetcherBase> fetchers = UpdateConfigSourceFetcher.defaultFetchers,
+    List<UpdateConfigFetcherBase> fetchers =
+        UpdateConfigSourceFetcher.defaultFetchers,
   }) : _fetchers = fetchers;
 
   @override

@@ -99,7 +99,8 @@ class UpdateDataLinker {
   }) {
     final finalPlatforms = source?.platforms
         ?.map((globalPlatformConfig) => globalPlatformConfig.platformName)
-        .where((platformName) => platform == null || platformName == platform.platformName)
+        .where((platformName) =>
+            platform == null || platformName == platform.platformName)
         .toList();
 
     final finalSource = source != null

@@ -36,7 +36,8 @@ class UpdateContentConfig implements Mergeable {
   });
 
   @override
-  UpdateContentConfig merge(covariant UpdateContentConfig other) => UpdateContentConfig.byRequired(
+  UpdateContentConfig merge(covariant UpdateContentConfig other) =>
+      UpdateContentConfig.byRequired(
         updateUrl: other.updateUrl ?? updateUrl,
         title: other.title ?? title,
         description: other.description ?? description,

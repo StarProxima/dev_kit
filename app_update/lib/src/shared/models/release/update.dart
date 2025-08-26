@@ -1,7 +1,7 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../update_entities/update_platform.dart';
-import '../../update_entities/update_source_name.dart';
+import '../../entities/update_platform.dart';
+import '../../entities/update_source_name.dart';
 import '../update_app_settings/update_app_settings_data.dart';
 import '../update_content/update_content_data.dart';
 import '../update_settings/update_settings_data.dart';

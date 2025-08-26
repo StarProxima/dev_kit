@@ -1,14 +1,15 @@
+import '../../shared/entities/update_date.dart';
 import '../../shared/models/mergeable.dart';
 import '../../shared/models/update_rule/update_rule_config.dart';
 import '../../shared/models/update_search/update_search_data.dart';
-import '../../shared/update_entities/update_date.dart';
 import 'rule_matcher.dart';
 
 class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const TemporalMatcher();
 
   @override
-  bool matches({required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
+  bool matches(
+      {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchByDateAndRollout(
       ruleDate: rule.date ?? UpdateDate.any,
       delay: rule.delay,
@@ -52,7 +53,8 @@ class TemporalMatcher<T extends Mergeable> implements RuleMatcher<T> {
 
     if (!hasTemporalConditions) {
       return baseDate != null &&
-          (currentDate.isAfter(baseDate) || currentDate.isAtSameMomentAs(baseDate));
+          (currentDate.isAfter(baseDate) ||
+              currentDate.isAtSameMomentAs(baseDate));
     }
 
     if (baseDate == null) return false;

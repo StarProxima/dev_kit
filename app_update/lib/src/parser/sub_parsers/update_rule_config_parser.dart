@@ -50,27 +50,34 @@ class UpdateRuleConfigParser {
     // appStatuses
     final appStatusesRawValue = map.remove('app_statuses');
     final appStatusesValue = _listOrValueParser.parse(appStatusesRawValue);
-    final appStatuses = appStatusesValue?.map(_appStatusParser.parse).nonNulls.toList();
+    final appStatuses =
+        appStatusesValue?.map(_appStatusParser.parse).nonNulls.toList();
 
     // locales
     final localesRawValue = map.remove('locales');
     final localesValue = _listOrValueParser.parse(localesRawValue);
-    final locales = localesValue?.map(_updateLocaleParser.parse).nonNulls.toList();
+    final locales =
+        localesValue?.map(_updateLocaleParser.parse).nonNulls.toList();
 
     // viewTargets
     final viewTargetsRawValue = map.remove('view_targets');
     final viewTargetsValue = _listOrValueParser.parse(viewTargetsRawValue);
-    final viewTargets = viewTargetsValue?.map(_updateViewTargetParser.parse).nonNulls.toList();
+    final viewTargets =
+        viewTargetsValue?.map(_updateViewTargetParser.parse).nonNulls.toList();
 
     // versions
     final versionsRawValue = map.remove('versions');
     final versionsValue = _listOrValueParser.parse(versionsRawValue);
-    final versions = versionsValue?.map(_updateVersionConstraintParser.parse).nonNulls.toList();
+    final versions = versionsValue
+        ?.map(_updateVersionConstraintParser.parse)
+        .nonNulls
+        .toList();
 
     // sources
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
-    final sources = sourcesValue?.map(_updateSourceParser.parse).nonNulls.toList();
+    final sources =
+        sourcesValue?.map(_updateSourceParser.parse).nonNulls.toList();
 
     // date
     final dateValue = map.remove('date');
@@ -86,7 +93,8 @@ class UpdateRuleConfigParser {
 
     // segmentation_percent
     final segmentationPercentValue = map.remove('segmentation_percent');
-    final segmentationPercent = _doubleParser.parse(value: segmentationPercentValue);
+    final segmentationPercent =
+        _doubleParser.parse(value: segmentationPercentValue);
 
     final config = UpdateRuleConfig<T>.byRequired(
       appStatuses: appStatuses,

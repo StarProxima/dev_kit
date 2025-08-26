@@ -27,7 +27,8 @@ class UpdateSearcher {
     final result = <UpdateData>[];
 
     for (final update in sortedUpdates) {
-      if (result.any((e) => e.sourceName == update.sourceName && e.platform == update.platform)) {
+      if (result.any((e) =>
+          e.sourceName == update.sourceName && e.platform == update.platform)) {
         continue;
       }
 
@@ -67,7 +68,8 @@ class UpdateSearcher {
     final result = <UpdateData>[];
 
     for (final update in sortedUpdates) {
-      if (result.any((e) => e.sourceName == update.sourceName && e.platform == update.platform)) {
+      if (result.any((e) =>
+          e.sourceName == update.sourceName && e.platform == update.platform)) {
         continue;
       }
 
@@ -132,13 +134,16 @@ class UpdateSearcher {
   }
 
   /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateSearchData.sources]
-  List<UpdateData> sortUpdates(List<UpdateData> updates, UpdateSearchData searchData) {
+  List<UpdateData> sortUpdates(
+      List<UpdateData> updates, UpdateSearchData searchData) {
     return updates.sorted((a, b) {
       final byVersionDesc = b.version.compareTo(a.version);
       if (byVersionDesc != 0) return byVersionDesc;
 
-      final aIdx = searchData.sources.indexWhere((e) => e.sourceName == a.sourceName);
-      final bIdx = searchData.sources.indexWhere((e) => e.sourceName == b.sourceName);
+      final aIdx =
+          searchData.sources.indexWhere((e) => e.sourceName == a.sourceName);
+      final bIdx =
+          searchData.sources.indexWhere((e) => e.sourceName == b.sourceName);
       final aSafe = aIdx < 0 ? searchData.sources.length : aIdx;
       final bSafe = bIdx < 0 ? searchData.sources.length : bIdx;
       return aSafe.compareTo(bSafe);

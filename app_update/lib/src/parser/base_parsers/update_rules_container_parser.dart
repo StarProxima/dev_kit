@@ -46,7 +46,8 @@ class UpdateRulesPartParser {
 
     // appSettingsRules
     final appSettingsRulesRawValue = map.remove('app_settings');
-    final appSettingsRulesValue = _listOrValueParser.parse(appSettingsRulesRawValue);
+    final appSettingsRulesValue =
+        _listOrValueParser.parse(appSettingsRulesRawValue);
     final appSettingsRules = appSettingsRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
               value,

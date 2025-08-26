@@ -1,6 +1,6 @@
-import '../../shared/update_entities/update_locale.dart';
-import '../primitive_parsers/locale_parser.dart';
+import '../../shared/entities/update_locale.dart';
 import '../common.dart';
+import '../primitive_parsers/locale_parser.dart';
 
 class UpdateLocaleParser {
   static const _localeParser = LocaleParser();

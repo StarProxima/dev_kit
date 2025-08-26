@@ -1,4 +1,4 @@
-import '../../update_entities/update_source_name.dart';
+import '../../entities/update_source_name.dart';
 import '../release/release_override_config.dart';
 import '../release_platrform/release_platrform_config.dart';
 import '../update_app_settings/update_app_settings_config.dart';

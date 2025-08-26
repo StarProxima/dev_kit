@@ -51,11 +51,15 @@ class ReleaseSourceConfigParser {
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List?) throw const UpdateConfigException();
 
-    final platforms = platformsValue?.map(_releasePlatformConfigParser.parse).nonNulls.toList();
+    final platforms = platformsValue
+        ?.map(_releasePlatformConfigParser.parse)
+        .nonNulls
+        .toList();
 
     // releaseOverride
     final releaseOverrideValue = map.remove('release_override');
-    final releaseOverride = _releaseOverrideConfigParser.parse(releaseOverrideValue);
+    final releaseOverride =
+        _releaseOverrideConfigParser.parse(releaseOverrideValue);
 
     // rules
     final rules = _updateRulesPartParser.parse(map);

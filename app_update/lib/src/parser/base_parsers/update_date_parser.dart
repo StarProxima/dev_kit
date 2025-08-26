@@ -1,6 +1,6 @@
-import '../../shared/update_entities/update_date.dart';
-import '../primitive_parsers/date_time_parser.dart';
+import '../../shared/entities/update_date.dart';
 import '../common.dart';
+import '../primitive_parsers/date_time_parser.dart';
 
 class UpdateDateParser {
   static const _dateParser = DateTimeParser();

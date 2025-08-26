@@ -1,8 +1,8 @@
 // ignore_for_file: avoid-unused-instances, avoid-non-null-assertion, avoid-missing-enum-constant-in-map
 
 import 'package:app_update/src/controller/update_controller.dart';
+import 'package:app_update/src/shared/entities/update_view_target.dart';
 import 'package:app_update/src/shared/models/update_search/update_search_config.dart';
-import 'package:app_update/src/shared/update_entities/update_view_target.dart';
 import 'package:app_update/src/widgets/update_handler.dart';
 import 'package:flutter/material.dart';
 

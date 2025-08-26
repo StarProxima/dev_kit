@@ -167,7 +167,8 @@ class UpdateReleaseLinker {
   }) {
     final finalPlatforms = source?.platforms
         ?.map((releasePlatformConfig) => releasePlatformConfig.platformName)
-        .where((platformName) => platform == null || platformName == platform.platformName)
+        .where((platformName) =>
+            platform == null || platformName == platform.platformName)
         .toList();
 
     final finalSource = source != null

@@ -1,11 +1,11 @@
 import 'package:pub_semver/pub_semver.dart';
 
+import '../../entities/app_status.dart';
+import '../../entities/update_locale.dart';
+import '../../entities/update_platform.dart';
+import '../../entities/update_source.dart';
+import '../../entities/update_view_target.dart';
 import '../mergeable.dart';
-import '../../update_entities/app_status.dart';
-import '../../update_entities/update_locale.dart';
-import '../../update_entities/update_platform.dart';
-import '../../update_entities/update_source.dart';
-import '../../update_entities/update_view_target.dart';
 
 class UpdateSearchConfig {
   /// Default [UpdatePlatform.current].

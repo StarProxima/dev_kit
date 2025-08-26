@@ -1,6 +1,6 @@
-import '../../shared/update_entities/update_version_constraint.dart';
-import '../primitive_parsers/version_constraint_parser.dart';
+import '../../shared/entities/update_version_constraint.dart';
 import '../common.dart';
+import '../primitive_parsers/version_constraint_parser.dart';
 
 class UpdateVersionConstraintParser {
   static const _versionConstraintParser = VersionConstraintParser();

@@ -25,15 +25,20 @@ class UpdateContentData {
 
   factory UpdateContentData.fromConfig(UpdateContentConfig config) {
     return UpdateContentData(
-      updateUrl: config.updateUrl ?? (throw ArgumentError('updateUrl is required')),
+      updateUrl:
+          config.updateUrl ?? (throw ArgumentError('updateUrl is required')),
       title: config.title ?? (throw ArgumentError('title is required')),
-      description: config.description ?? (throw ArgumentError('description is required')),
-      releaseNotesTitle:
-          config.releaseNotesTitle ?? (throw ArgumentError('releaseNotesTitle is required')),
+      description: config.description ??
+          (throw ArgumentError('description is required')),
+      releaseNotesTitle: config.releaseNotesTitle ??
+          (throw ArgumentError('releaseNotesTitle is required')),
       releaseNotes: config.releaseNotes,
-      skipButton: config.skipButton ?? (throw ArgumentError('skipButton is required')),
-      postponeButton: config.postponeButton ?? (throw ArgumentError('postponeButton is required')),
-      updateButton: config.updateButton ?? (throw ArgumentError('updateButton is required')),
+      skipButton:
+          config.skipButton ?? (throw ArgumentError('skipButton is required')),
+      postponeButton: config.postponeButton ??
+          (throw ArgumentError('postponeButton is required')),
+      updateButton: config.updateButton ??
+          (throw ArgumentError('updateButton is required')),
       customData: config.customData,
     );
   }
@@ -51,8 +56,9 @@ class UpdateContentData {
       title: _interpolateString(title, interpolateData),
       description: _interpolateString(description, interpolateData),
       releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
-      releaseNotes:
-          releaseNotes != null ? _interpolateString(releaseNotes!, interpolateData) : null,
+      releaseNotes: releaseNotes != null
+          ? _interpolateString(releaseNotes!, interpolateData)
+          : null,
       skipButton: _interpolateString(skipButton, interpolateData),
       postponeButton: _interpolateString(postponeButton, interpolateData),
       updateButton: _interpolateString(updateButton, interpolateData),

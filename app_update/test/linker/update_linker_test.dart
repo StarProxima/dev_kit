@@ -1,4 +1,7 @@
 import 'package:app_update/src/linker/update_inker.dart';
+import 'package:app_update/src/shared/entities/update_platform.dart';
+import 'package:app_update/src/shared/entities/update_source_name.dart';
+import 'package:app_update/src/shared/entities/update_version_constraint.dart';
 import 'package:app_update/src/shared/models/global_platform/global_platform_config.dart';
 import 'package:app_update/src/shared/models/global_source/global_source_config.dart';
 import 'package:app_update/src/shared/models/release/release_config.dart';
@@ -9,9 +12,6 @@ import 'package:app_update/src/shared/models/update_content/update_content_confi
 import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rules_container.dart';
 import 'package:app_update/src/shared/models/update_settings/update_settings_config.dart';
-import 'package:app_update/src/shared/update_entities/update_platform.dart';
-import 'package:app_update/src/shared/update_entities/update_source_name.dart';
-import 'package:app_update/src/shared/update_entities/update_version_constraint.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -128,7 +128,6 @@ void main() {
       test('возвращает пустой список для релиза без источников', () {
         final release = createRelease(
           version: Version.parse('1.0.0'),
-          sources: null,
         );
 
         final result = linker.link(
@@ -208,9 +207,10 @@ void main() {
         expect(result[0].contentRules, hasLength(3));
 
         // Проверяем порядок: container -> globalSource -> release
-        expect(result[0].contentRules![0].data?.title, equals('Container Rule'));
-        expect(result[0].contentRules![1].data?.title, equals('Global Source Rule'));
-        expect(result[0].contentRules![2].data?.title, equals('Release Rule'));
+        expect(result[0].contentRules![0].data.title, equals('Container Rule'));
+        expect(result[0].contentRules![1].data.title,
+            equals('Global Source Rule'));
+        expect(result[0].contentRules![2].data.title, equals('Release Rule'));
 
         // Проверяем что правила связаны с версией релиза
         expect(
@@ -219,13 +219,13 @@ void main() {
         );
       });
 
-      test('создает несколько UpdateData для релиза с несколькими платформами', () {
+      test('создает несколько UpdateData для релиза с несколькими платформами',
+          () {
         final release = createRelease(
           version: Version.parse('1.0.0'),
           sources: [
             createReleaseSource(
               sourceName: UpdateSourceName.appStore,
-              platforms: null, // Должны взяться из globalSources
             ),
           ],
         );
@@ -247,8 +247,8 @@ void main() {
         );
 
         expect(result, hasLength(2));
-        expect(
-            result.map((e) => e.platform), containsAll([UpdatePlatform.ios, UpdatePlatform.macos]));
+        expect(result.map((e) => e.platform),
+            containsAll([UpdatePlatform.ios, UpdatePlatform.macos]));
       });
 
       test('применяет правила платформы с правильным приоритетом', () {
@@ -301,12 +301,13 @@ void main() {
         expect(result[0].contentRules, hasLength(6));
 
         // Порядок: container -> globalSource -> globalPlatform -> release -> source -> platform
-        expect(result[0].contentRules![0].data?.title, equals('Container'));
-        expect(result[0].contentRules![1].data?.title, equals('Global Source'));
-        expect(result[0].contentRules![2].data?.title, equals('Global Platform'));
-        expect(result[0].contentRules![3].data?.title, equals('Release'));
-        expect(result[0].contentRules![4].data?.title, equals('Source'));
-        expect(result[0].contentRules![5].data?.title, equals('Platform'));
+        expect(result[0].contentRules![0].data.title, equals('Container'));
+        expect(result[0].contentRules![1].data.title, equals('Global Source'));
+        expect(
+            result[0].contentRules![2].data.title, equals('Global Platform'));
+        expect(result[0].contentRules![3].data.title, equals('Release'));
+        expect(result[0].contentRules![4].data.title, equals('Source'));
+        expect(result[0].contentRules![5].data.title, equals('Platform'));
       });
     });
 
@@ -413,8 +414,8 @@ void main() {
 
         for (final update in result) {
           expect(update.contentRules, hasLength(2));
-          expect(update.contentRules![0].data?.title, equals('Container Rule'));
-          expect(update.contentRules![1].data?.title, equals('Global Rule'));
+          expect(update.contentRules![0].data.title, equals('Container Rule'));
+          expect(update.contentRules![1].data.title, equals('Global Rule'));
         }
       });
 
@@ -471,7 +472,9 @@ void main() {
         expect(result[2].version, Version.parse('2.0.0'));
       });
 
-      test('обрабатывает сложный случай с множественными источниками и платформами', () {
+      test(
+          'обрабатывает сложный случай с множественными источниками и платформами',
+          () {
         final releases = [
           createRelease(
             version: Version.parse('1.0.0'),
@@ -484,7 +487,6 @@ void main() {
               ),
               createReleaseSource(
                 sourceName: UpdateSourceName.appStore,
-                platforms: null, // Должны взяться из globalSources
               ),
             ],
           ),
@@ -511,16 +513,21 @@ void main() {
 
         // 1 релиз: 1 Android (Google Play) + 2 (iOS + macOS для App Store) = 3
         expect(result, hasLength(3));
-        expect(result.map((e) => e.platform),
-            containsAll([UpdatePlatform.android, UpdatePlatform.ios, UpdatePlatform.macos]));
-        expect(result.where((e) => e.version == Version.parse('1.0.0')).length, 3);
+        expect(
+            result.map((e) => e.platform),
+            containsAll([
+              UpdatePlatform.android,
+              UpdatePlatform.ios,
+              UpdatePlatform.macos
+            ]));
+        expect(
+            result.where((e) => e.version == Version.parse('1.0.0')).length, 3);
       });
 
       test('пропускает релизы без источников', () {
         final releases = [
           createRelease(
             version: Version.parse('1.0.0'),
-            sources: null, // Без источников
           ),
           createRelease(
             version: Version.parse('2.0.0'),

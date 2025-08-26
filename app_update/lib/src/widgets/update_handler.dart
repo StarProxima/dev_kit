@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 
 import '../controller/update_contoller_base.dart';
 import '../controller/update_controller.dart';
+import '../shared/entities/update_locale.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_status/update_status.dart';
-import '../shared/update_entities/update_locale.dart';
 import 'update_alert_handler.dart';
 
 class UpdateHandler extends StatefulWidget {

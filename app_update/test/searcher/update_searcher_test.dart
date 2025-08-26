@@ -1,12 +1,12 @@
 import 'package:app_update/src/searcher/update_search_data_defaulter.dart';
 import 'package:app_update/src/searcher/update_searcher.dart';
 import 'package:app_update/src/searcher/update_source_support_checker.dart';
+import 'package:app_update/src/shared/entities/update_platform.dart';
+import 'package:app_update/src/shared/entities/update_source.dart';
+import 'package:app_update/src/shared/entities/update_source_name.dart';
 import 'package:app_update/src/shared/models/release/update_data.dart';
 import 'package:app_update/src/shared/models/update_search/update_search_config.dart';
 import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
-import 'package:app_update/src/shared/update_entities/update_platform.dart';
-import 'package:app_update/src/shared/update_entities/update_source.dart';
-import 'package:app_update/src/shared/update_entities/update_source_name.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -66,7 +66,9 @@ void main() {
 
     final currentDate = DateTime(2024, 10, 20, 12);
 
-    test('фильтрует по версии/дате/платформе/источнику; одна запись на пару source+platform', () {
+    test(
+        'фильтрует по версии/дате/платформе/источнику; одна запись на пару source+platform',
+        () {
       final updates = [
         createUpdateData('2.0.0',
             date: DateTime(2024, 10, 10),
@@ -112,7 +114,8 @@ void main() {
       // Теперь только одна запись на пару source+platform
       expect(res.map((e) => e.version.toString()).toList(), ['2.0.0']);
       expect(res.every((e) => e.platform == UpdatePlatform.android), isTrue);
-      expect(res.every((e) => e.sourceName == UpdateSourceName.googlePlay), isTrue);
+      expect(res.every((e) => e.sourceName == UpdateSourceName.googlePlay),
+          isTrue);
       expect(res.every((e) => !e.date.isAfter(currentDate)), isTrue);
     });
 
@@ -168,7 +171,9 @@ void main() {
       expect(res.length, 1);
     });
 
-    test('если максимальная версия пары в будущем, берется следующая допустимая', () {
+    test(
+        'если максимальная версия пары в будущем, берется следующая допустимая',
+        () {
       final updates = [
         createUpdateData('3.0.0',
             date: DateTime(2025),
@@ -198,7 +203,9 @@ void main() {
       expect(res.first.version, Version.parse('2.0.0'));
     });
 
-    test('учитывает несколько источников сразу и сортирует по версии по убыванию', () {
+    test(
+        'учитывает несколько источников сразу и сортирует по версии по убыванию',
+        () {
       final updates = [
         createUpdateData(
           '2.1.0',
@@ -231,12 +238,17 @@ void main() {
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay, UpdateSource.gitHub, UpdateSource.ruStore],
+          sources: const [
+            UpdateSource.googlePlay,
+            UpdateSource.gitHub,
+            UpdateSource.ruStore
+          ],
         ),
         updates: updates,
       );
 
-      expect(res.map((e) => e.version.toString()).toList(), ['2.1.0', '2.1.0', '1.9.0']);
+      expect(res.map((e) => e.version.toString()).toList(),
+          ['2.1.0', '2.1.0', '1.9.0']);
 
       expect(
         res.map((e) => e.sourceName).toList(),
@@ -248,7 +260,8 @@ void main() {
       );
     });
 
-    test('одинаковые версии сортируются по приоритету источников из sources', () {
+    test('одинаковые версии сортируются по приоритету источников из sources',
+        () {
       final updates = [
         createUpdateData(
           '2.0.0',
@@ -275,14 +288,22 @@ void main() {
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay, UpdateSource.ruStore, UpdateSource.gitHub],
+          sources: const [
+            UpdateSource.googlePlay,
+            UpdateSource.ruStore,
+            UpdateSource.gitHub
+          ],
         ),
         updates: updates,
       );
 
       expect(
         res.map((e) => e.sourceName).toList(),
-        [UpdateSourceName.googlePlay, UpdateSourceName.ruStore, UpdateSourceName.gitHub],
+        [
+          UpdateSourceName.googlePlay,
+          UpdateSourceName.ruStore,
+          UpdateSourceName.gitHub
+        ],
       );
     });
 
@@ -378,7 +399,10 @@ void main() {
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
-            sources: const [UpdateSource.ruStore, UpdateSource.googlePlay], // ruStore первый
+            sources: const [
+              UpdateSource.ruStore,
+              UpdateSource.googlePlay
+            ], // ruStore первый
           ),
           updates: updates,
         );
@@ -410,7 +434,11 @@ void main() {
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay, UpdateSource.appStore, UpdateSource.ruStore],
+            sources: const [
+              UpdateSource.googlePlay,
+              UpdateSource.appStore,
+              UpdateSource.ruStore
+            ],
           ),
           updates: updates,
         );
@@ -458,7 +486,8 @@ void main() {
           createUpdateData('1.0.0',
               date: DateTime(2024, 10, 10),
               platform: UpdatePlatform.android,
-              source: UpdateSourceName.ruStore), // не в списке источников → skip
+              source:
+                  UpdateSourceName.ruStore), // не в списке источников → skip
           createUpdateData('1.0.0',
               date: DateTime(2024, 10, 10),
               platform: UpdatePlatform.android,
@@ -486,7 +515,8 @@ void main() {
               platform: UpdatePlatform.android,
               source: UpdateSourceName.googlePlay),
           createUpdateData('1.0.0',
-              date: DateTime(2024, 10, 09), // более ранняя дата, но та же пара source+platform
+              date: DateTime(2024, 10,
+                  09), // более ранняя дата, но та же пара source+platform
               platform: UpdatePlatform.android,
               source: UpdateSourceName.googlePlay),
         ];
@@ -524,7 +554,10 @@ void main() {
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay, UpdateSource.appStore], // googlePlay первый
+            sources: const [
+              UpdateSource.googlePlay,
+              UpdateSource.appStore
+            ], // googlePlay первый
           ),
           updates: updates,
         );
@@ -581,7 +614,8 @@ void main() {
 
         final result = searcher.sortUpdates(updates, findData);
 
-        expect(result.map((e) => e.version.toString()).toList(), ['2.0.0', '1.5.0', '1.0.0']);
+        expect(result.map((e) => e.version.toString()).toList(),
+            ['2.0.0', '1.5.0', '1.0.0']);
       });
 
       test('при одинаковой версии сортирует по приоритету источника', () {
@@ -604,13 +638,20 @@ void main() {
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
-          sources: const [UpdateSource.appStore, UpdateSource.googlePlay, UpdateSource.ruStore],
+          sources: const [
+            UpdateSource.appStore,
+            UpdateSource.googlePlay,
+            UpdateSource.ruStore
+          ],
         );
 
         final result = searcher.sortUpdates(updates, findData);
 
-        expect(result.map((e) => e.sourceName).toList(),
-            [UpdateSourceName.appStore, UpdateSourceName.googlePlay, UpdateSourceName.ruStore]);
+        expect(result.map((e) => e.sourceName).toList(), [
+          UpdateSourceName.appStore,
+          UpdateSourceName.googlePlay,
+          UpdateSourceName.ruStore
+        ]);
       });
 
       test('источники не в списке sources помещаются в конец', () {
@@ -634,8 +675,10 @@ void main() {
 
         final result = searcher.sortUpdates(updates, findData);
 
-        expect(result.map((e) => e.sourceName).toList(),
-            [UpdateSourceName.googlePlay, const UpdateSourceName.custom('unknown')]);
+        expect(result.map((e) => e.sourceName).toList(), [
+          UpdateSourceName.googlePlay,
+          const UpdateSourceName.custom('unknown')
+        ]);
       });
 
       test('комбинированная сортировка: версия + приоритет источника', () {

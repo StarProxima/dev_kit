@@ -1,4 +1,4 @@
-import '../../update_entities/app_status.dart';
+import '../../entities/app_status.dart';
 import 'update_app_settings_config.dart';
 
 class UpdateAppSettingsData {
@@ -12,7 +12,8 @@ class UpdateAppSettingsData {
 
   factory UpdateAppSettingsData.fromConfig(UpdateAppSettingsConfig config) {
     return UpdateAppSettingsData(
-      appStatus: config.appStatus ?? (throw ArgumentError('appStatus is required')),
+      appStatus:
+          config.appStatus ?? (throw ArgumentError('appStatus is required')),
       customData: config.customData,
     );
   }

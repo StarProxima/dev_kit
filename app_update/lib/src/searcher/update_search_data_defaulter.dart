@@ -45,12 +45,16 @@ class UpdateSearchDataDefaulter {
       sources: searchConfig.sources ?? defaultSearchData.sources,
       appStatus: searchConfig.appStatus ?? defaultSearchData.appStatus,
       locale: searchConfig.locale ?? defaultSearchData.locale,
-      displayTarget: searchConfig.displayTarget ?? defaultSearchData.displayTarget,
-      rolloutPointer: searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
-      segmentationPointer:
-          searchConfig.segmentationPointer ?? defaultSearchData.segmentationPointer,
-      localReleaseDate: searchConfig.localReleaseDate ?? defaultSearchData.localReleaseDate,
-      updateReleaseDate: searchConfig.updateReleaseDate ?? defaultSearchData.updateReleaseDate,
+      displayTarget:
+          searchConfig.displayTarget ?? defaultSearchData.displayTarget,
+      rolloutPointer:
+          searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
+      segmentationPointer: searchConfig.segmentationPointer ??
+          defaultSearchData.segmentationPointer,
+      localReleaseDate:
+          searchConfig.localReleaseDate ?? defaultSearchData.localReleaseDate,
+      updateReleaseDate:
+          searchConfig.updateReleaseDate ?? defaultSearchData.updateReleaseDate,
       customData: searchConfig.customData ?? defaultSearchData.customData,
     );
 

@@ -36,19 +36,26 @@ class UpdateSettingsConfigParser {
 
     // skipReleaseDelay
     final skipReleaseDelayValue = map.remove('skip_release_delay_hours');
-    final skipReleaseDelay = _durationParser.parse(hours: skipReleaseDelayValue);
+    final skipReleaseDelay =
+        _durationParser.parse(hours: skipReleaseDelayValue);
 
     // skipAllReleasesDelay
-    final skipAllReleasesDelayValue = map.remove('skip_all_releases_delay_hours');
-    final skipAllReleasesDelay = _durationParser.parse(hours: skipAllReleasesDelayValue);
+    final skipAllReleasesDelayValue =
+        map.remove('skip_all_releases_delay_hours');
+    final skipAllReleasesDelay =
+        _durationParser.parse(hours: skipAllReleasesDelayValue);
 
     // postponeReleaseDelay
-    final postponeReleaseDelayValue = map.remove('postpone_release_delay_hours');
-    final postponeReleaseDelay = _durationParser.parse(hours: postponeReleaseDelayValue);
+    final postponeReleaseDelayValue =
+        map.remove('postpone_release_delay_hours');
+    final postponeReleaseDelay =
+        _durationParser.parse(hours: postponeReleaseDelayValue);
 
     // postponeAllReleasesDelay
-    final postponeAllReleasesDelayValue = map.remove('postpone_all_releases_delay_hours');
-    final postponeAllReleasesDelay = _durationParser.parse(hours: postponeAllReleasesDelayValue);
+    final postponeAllReleasesDelayValue =
+        map.remove('postpone_all_releases_delay_hours');
+    final postponeAllReleasesDelay =
+        _durationParser.parse(hours: postponeAllReleasesDelayValue);
 
     return UpdateSettingsConfig.byRequired(
       shouldShow: shouldShow,

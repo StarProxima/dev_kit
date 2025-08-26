@@ -39,9 +39,12 @@ class UpdateSettingsConfig implements Mergeable {
         canSkip: other.canSkip ?? canSkip,
         canPostpone: other.canPostpone ?? canPostpone,
         skipReleaseDelay: other.skipReleaseDelay ?? skipReleaseDelay,
-        skipAllReleasesDelay: other.skipAllReleasesDelay ?? skipAllReleasesDelay,
-        postponeReleaseDelay: other.postponeReleaseDelay ?? postponeReleaseDelay,
-        postponeAllReleasesDelay: other.postponeAllReleasesDelay ?? postponeAllReleasesDelay,
+        skipAllReleasesDelay:
+            other.skipAllReleasesDelay ?? skipAllReleasesDelay,
+        postponeReleaseDelay:
+            other.postponeReleaseDelay ?? postponeReleaseDelay,
+        postponeAllReleasesDelay:
+            other.postponeAllReleasesDelay ?? postponeAllReleasesDelay,
         customData: Mergeable.mergeCustomData(customData, other.customData),
       );
 }

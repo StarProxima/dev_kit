@@ -1,3 +1,4 @@
+import '../shared/entities/update_source.dart';
 import '../shared/models/global_source/global_source_config.dart';
 import '../shared/models/release/release_config.dart';
 import '../shared/models/release/update_data.dart';
@@ -7,7 +8,6 @@ import '../shared/models/update_content/update_content_config.dart';
 import '../shared/models/update_rule/update_rule_config.dart';
 import '../shared/models/update_rule/update_rules_container.dart';
 import '../shared/models/update_settings/update_settings_config.dart';
-import '../shared/update_entities/update_source.dart';
 import 'sub_linkers/update_data_linker.dart';
 import 'sub_linkers/update_release_linker.dart';
 

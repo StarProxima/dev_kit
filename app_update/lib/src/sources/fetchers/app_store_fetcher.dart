@@ -10,10 +10,10 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../parser/sub_parsers/release_config/release_config.dart';
-import '../../parser/sub_parsers/global_source_config/global_source_config.dart';
-import '../../parser/sub_parsers/update_content_config/update_content_config.dart';
 import '../../parser/models/update_text_config_container.dart';
+import '../../parser/sub_parsers/global_source_config/global_source_config.dart';
+import '../../parser/sub_parsers/release_config/release_config.dart';
+import '../../parser/sub_parsers/update_content_config/update_content_config.dart';
 import '../source.dart';
 import '../sources.dart';
 import 'source_fetcher.dart';
@@ -40,7 +40,10 @@ class AppStoreFetcher extends SourceReleaseFetcher {
 
     final releaseNotes = _releaseNotes(decodedResults);
     final sourceVersion = _version(decodedResults);
-    if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
+    if (sourceVersion == null ||
+        sourceVersion <= Version.parse(packageInfo.version)) {
+      return null;
+    }
 
     final updateTextConfig = UpdateContentConfig(
       releaseNotes: releaseNotes,
@@ -52,7 +55,8 @@ class AppStoreFetcher extends SourceReleaseFetcher {
       sources: [
         ReleaseSourceConfig(
           name: source?.name ?? Sources.appStore.name,
-          url: source?.url ?? Uri.tryParse(_appStoreUrl(decodedResults, locale) ?? ''),
+          url: source?.url ??
+              Uri.tryParse(_appStoreUrl(decodedResults, locale) ?? ''),
         ),
       ],
     );
@@ -106,7 +110,8 @@ class AppStoreFetcher extends SourceReleaseFetcher {
 
       final languageCode = locale.languageCode;
       appStoreUrl = appStoreUrl.replaceFirst(
-          RegExp(r'apps\.apple\.com\/.*\/app'), 'apps.apple.com/$languageCode/app');
+          RegExp(r'apps\.apple\.com\/.*\/app'),
+          'apps.apple.com/$languageCode/app');
 
       return appStoreUrl;
     } catch (_) {}

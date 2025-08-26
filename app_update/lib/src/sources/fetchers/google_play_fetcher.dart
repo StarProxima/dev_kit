@@ -10,8 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../parser/sub_parsers/release_config/release_config.dart';
 import '../../parser/sub_parsers/global_source_config/global_source_config.dart';
+import '../../parser/sub_parsers/release_config/release_config.dart';
 // import '../../parser/models/update_text_config.dart';
 // import '../../parser/models/update_text_config_container.dart';
 import '../source.dart';
@@ -46,7 +46,10 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
     // TODO разобраться почему не срабатывает _releaseNotes
     // final releaseNotes = _releaseNotes(decodedResults);
     final sourceVersion = _version(decodedResults);
-    if (sourceVersion == null || sourceVersion <= Version.parse(packageInfo.version)) return null;
+    if (sourceVersion == null ||
+        sourceVersion <= Version.parse(packageInfo.version)) {
+      return null;
+    }
 
     // final updateTextConfig = UpdateTextConfig(
     //   releaseNotes: releaseNotes,
@@ -85,15 +88,19 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
   String? _releaseNotes(Document pageBody) {
     try {
       final sectionElements = pageBody.getElementsByClassName('W4P4ne');
-      final releaseNotesElement = sectionElements
-          .firstWhere((elm) => elm.querySelector('.wSaTQd')!.text == "What's New", orElse: () => sectionElements.first);
-      final rawReleaseNotes = releaseNotesElement.querySelector('.PHBdkd')?.querySelector('.DWPxHb');
+      final releaseNotesElement = sectionElements.firstWhere(
+          (elm) => elm.querySelector('.wSaTQd')!.text == "What's New",
+          orElse: () => sectionElements.first);
+      final rawReleaseNotes = releaseNotesElement
+          .querySelector('.PHBdkd')
+          ?.querySelector('.DWPxHb');
 
       return _multilineReleaseNotes(rawReleaseNotes!);
     } catch (_) {}
 
     try {
-      final sectionElementsRedesigned = pageBody.querySelectorAll('[itemprop="description"]');
+      final sectionElementsRedesigned =
+          pageBody.querySelectorAll('[itemprop="description"]');
       final rawReleaseNotesRedesigned = sectionElementsRedesigned.lastOrNull;
 
       return _multilineReleaseNotes(rawReleaseNotesRedesigned!);
@@ -130,23 +137,32 @@ class GooglePlayFetcher extends SourceReleaseFetcher {
       const patternVersion = ',[[["';
 
       final scripts = pageBody.getElementsByTagName('script');
-      final infoElements = scripts.where((element) => element.text.contains(patternName));
-      final additionalInfoElements = scripts.where((element) => element.text.contains('AF_initDataCallback'));
-      final additionalInfoElementsFiltered =
-          additionalInfoElements.where((element) => element.text.contains(patternVersion));
+      final infoElements =
+          scripts.where((element) => element.text.contains(patternName));
+      final additionalInfoElements = scripts
+          .where((element) => element.text.contains('AF_initDataCallback'));
+      final additionalInfoElementsFiltered = additionalInfoElements
+          .where((element) => element.text.contains(patternVersion));
 
       final nameElement = infoElements.first.text;
-      final storeNameStartIndex = nameElement.indexOf(patternName) + patternName.length;
-      final storeNameEndIndex = storeNameStartIndex + nameElement.substring(storeNameStartIndex).indexOf('"');
-      final storeName = nameElement.substring(storeNameStartIndex, storeNameEndIndex);
+      final storeNameStartIndex =
+          nameElement.indexOf(patternName) + patternName.length;
+      final storeNameEndIndex = storeNameStartIndex +
+          nameElement.substring(storeNameStartIndex).indexOf('"');
+      final storeName =
+          nameElement.substring(storeNameStartIndex, storeNameEndIndex);
       final storeNameCleaned = storeName.replaceAll(r'\u0027', "'");
 
-      final versionElement =
-          additionalInfoElementsFiltered.where((element) => element.text.contains('"$storeNameCleaned"')).first.text;
-      final storeVersionStartIndex = versionElement.lastIndexOf(patternVersion) + patternVersion.length;
-      final storeVersionEndIndex =
-          storeVersionStartIndex + versionElement.substring(storeVersionStartIndex).indexOf('"');
-      final storeVersion = versionElement.substring(storeVersionStartIndex, storeVersionEndIndex);
+      final versionElement = additionalInfoElementsFiltered
+          .where((element) => element.text.contains('"$storeNameCleaned"'))
+          .first
+          .text;
+      final storeVersionStartIndex =
+          versionElement.lastIndexOf(patternVersion) + patternVersion.length;
+      final storeVersionEndIndex = storeVersionStartIndex +
+          versionElement.substring(storeVersionStartIndex).indexOf('"');
+      final storeVersion = versionElement.substring(
+          storeVersionStartIndex, storeVersionEndIndex);
 
       return Version.parse(storeVersion);
     } catch (_) {}

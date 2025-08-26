@@ -1,7 +1,7 @@
+import '../../../shared/entities/app_status.dart';
+import '../../../shared/entities/update_locale.dart';
 import '../../../shared/models/update_content/update_content_config.dart';
 import '../../../shared/models/update_rule/update_rule_config.dart';
-import '../../../shared/update_entities/app_status.dart';
-import '../../../shared/update_entities/update_locale.dart';
 
 final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
   const UpdateRuleConfig(

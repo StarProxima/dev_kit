@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../shared/entities/update_source.dart';
 import '../../shared/models/release/update_data.dart';
-import '../../shared/update_entities/update_source.dart';
 import '../update_config_source_fetcher.dart';
 
 class RuStoreFetcher extends UpdateConfigSourceFetcher {

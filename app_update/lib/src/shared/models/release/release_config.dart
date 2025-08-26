@@ -37,7 +37,8 @@ class ReleaseConfig {
     required this.customData,
   });
 
-  ReleaseConfig overrideBy(ReleaseOverrideConfig? overrideData) => ReleaseConfig.byRequired(
+  ReleaseConfig overrideBy(ReleaseOverrideConfig? overrideData) =>
+      ReleaseConfig.byRequired(
         version: overrideData?.version ?? version,
         date: overrideData?.date ?? date,
         sources: sources,

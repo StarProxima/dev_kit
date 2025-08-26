@@ -52,7 +52,8 @@ class ReleasePlatformConfigParser {
 
     // releaseOverride
     final releaseOverrideValue = map.remove('release_override');
-    final releaseOverride = _releaseOverrideConfigParser.parse(releaseOverrideValue);
+    final releaseOverride =
+        _releaseOverrideConfigParser.parse(releaseOverrideValue);
 
     // rules
     final rules = _updateRulesPartParser.parse(map);

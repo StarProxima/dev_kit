@@ -1,10 +1,10 @@
+import '../../entities/app_status.dart';
+import '../../entities/update_date.dart';
+import '../../entities/update_locale.dart';
+import '../../entities/update_source.dart';
+import '../../entities/update_version_constraint.dart';
+import '../../entities/update_view_target.dart';
 import '../mergeable.dart';
-import '../../update_entities/app_status.dart';
-import '../../update_entities/update_date.dart';
-import '../../update_entities/update_locale.dart';
-import '../../update_entities/update_source.dart';
-import '../../update_entities/update_version_constraint.dart';
-import '../../update_entities/update_view_target.dart';
 
 class UpdateRuleConfig<T extends Mergeable> {
   final List<AppStatus>? appStatuses;

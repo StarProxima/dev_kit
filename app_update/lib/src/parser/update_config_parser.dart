@@ -32,13 +32,15 @@ class UpdateConfigParser {
 
     if (releasesValue == null) throw const UpdateConfigException();
 
-    final releases = releasesValue.map(_releaseConfigParser.parse).nonNulls.toList();
+    final releases =
+        releasesValue.map(_releaseConfigParser.parse).nonNulls.toList();
 
     // sources
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
-    final sources = sourcesValue?.map(_globalSourceConfigParser.parse).nonNulls.toList();
+    final sources =
+        sourcesValue?.map(_globalSourceConfigParser.parse).nonNulls.toList();
 
     // rules
     final rules = _updateRulesPartParser.parse(map);

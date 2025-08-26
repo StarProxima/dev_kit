@@ -14,5 +14,6 @@ class UpdateResult {
   });
 
   bool get shouldShow =>
-      updateStatus.type == UpdateStatusType.found && (update?.settings.shouldShow ?? false);
+      updateStatus.type == UpdateStatusType.found &&
+      (update?.settings.shouldShow ?? false);
 }

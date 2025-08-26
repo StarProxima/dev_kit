@@ -48,7 +48,8 @@ class ReleaseConfigParser {
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
-    final sources = sourcesValue?.map(_releaseSourceConfigParser.parse).nonNulls.toList();
+    final sources =
+        sourcesValue?.map(_releaseSourceConfigParser.parse).nonNulls.toList();
 
     // rules
     final rules = _updateRulesPartParser.parse(map);

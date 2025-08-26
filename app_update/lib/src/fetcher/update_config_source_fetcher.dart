@@ -2,13 +2,14 @@
 
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../shared/entities/update_source.dart';
 import '../shared/models/release/update_data.dart';
 import '../shared/models/update/update_config.dart';
 import '../shared/models/update_content/update_content_config.dart';
 import '../shared/models/update_rule/update_rule_config.dart';
-import '../shared/update_entities/update_source.dart';
 import 'source_fetchers/app_store_fetcher.dart';
 import 'source_fetchers/google_play_fetcher.dart';
 import 'source_fetchers/ru_store_fetcher.dart';
@@ -47,7 +48,8 @@ abstract class UpdateConfigSourceFetcher extends UpdateConfigFetcherBase {
   }) async {
     final url = await getSourceAppUrl(locale: locale, packageInfo: packageInfo);
 
-    final updates = await fetchUpdates(locale: locale, packageInfo: packageInfo).onError<Object>(
+    final updates = await fetchUpdates(locale: locale, packageInfo: packageInfo)
+        .onError<Object>(
       (e, s) {
         Future.error(e, s);
 

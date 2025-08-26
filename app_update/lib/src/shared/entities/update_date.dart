@@ -3,7 +3,8 @@ import 'update_entity.dart';
 class UpdateDate extends UpdateEntityName {
   static const any = UpdateDate(null, name: 'any');
   static const localReleaseDate = UpdateDate(null, name: r'$localReleaseDate');
-  static const updateReleaseDate = UpdateDate(null, name: r'$updateReleaseDate');
+  static const updateReleaseDate =
+      UpdateDate(null, name: r'$updateReleaseDate');
 
   final DateTime? date;
 

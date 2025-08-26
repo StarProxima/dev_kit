@@ -40,7 +40,8 @@ class UpdateSource extends UpdateEntityBase {
     ],
   );
 
-  static const any = UpdateSource._(UpdateSourceName.any, platforms: [UpdatePlatform.any]);
+  static const any =
+      UpdateSource._(UpdateSourceName.any, platforms: [UpdatePlatform.any]);
 
   final List<UpdatePlatform>? platforms;
   final UpdateSourceName sourceName;

@@ -22,7 +22,8 @@ class UpdateStorage {
   }
 
   Future<void> addSkippedRelease(Version releaseVersion) async {
-    final skippedReleases = _prefs.getStringList(_kSkippedReleaseVersions) ?? [];
+    final skippedReleases =
+        _prefs.getStringList(_kSkippedReleaseVersions) ?? [];
     skippedReleases.add(releaseVersion.toString());
     await _prefs.setStringList(_kSkippedReleaseVersions, skippedReleases);
   }
@@ -32,27 +33,35 @@ class UpdateStorage {
     required Duration postponeDuration,
   }) async {
     final postponedDate = nowDateTime.add(postponeDuration).toIso8601String();
-    final releaseData = json.encode({'version': releaseVersion.toString(), 'date': postponedDate});
-    final postponedReleases = _prefs.getStringList(_kPostponedReleaseVersions) ?? [];
+    final releaseData = json
+        .encode({'version': releaseVersion.toString(), 'date': postponedDate});
+    final postponedReleases =
+        _prefs.getStringList(_kPostponedReleaseVersions) ?? [];
     postponedReleases.add(releaseData);
     await _prefs.setStringList(_kPostponedReleaseVersions, postponedReleases);
   }
 
   List<Version> getSkippedReleases() {
-    final skippedReleases = _prefs.getStringList(_kSkippedReleaseVersions) ?? [];
+    final skippedReleases =
+        _prefs.getStringList(_kSkippedReleaseVersions) ?? [];
 
     return skippedReleases.map(Version.parse).toList();
   }
 
   List<Map<String, dynamic>> getPostponedReleases() {
-    final postponedReleases = _prefs.getStringList(_kPostponedReleaseVersions) ?? [];
+    final postponedReleases =
+        _prefs.getStringList(_kPostponedReleaseVersions) ?? [];
 
-    return postponedReleases.map((e) => json.decode(e) as Map<String, dynamic>).toList();
+    return postponedReleases
+        .map((e) => json.decode(e) as Map<String, dynamic>)
+        .toList();
   }
 
   Future<void> clearOldReleases() async {
     final now = nowDateTime;
-    final postponedReleases = [...?_prefs.getStringList(_kPostponedReleaseVersions)];
+    final postponedReleases = [
+      ...?_prefs.getStringList(_kPostponedReleaseVersions)
+    ];
     final filteredReleases = postponedReleases.where((release) {
       final data = json.decode(release) as Map<String, dynamic>;
       final postponedDate = DateTime.parse(data['date']);
@@ -67,7 +76,9 @@ class UpdateStorage {
     Version triggeredVersion, {
     int maxStored = 5,
   }) async {
-    final skippedReleases = [...?_prefs.getStringList(_kSkippedReleaseVersions)];
+    final skippedReleases = [
+      ...?_prefs.getStringList(_kSkippedReleaseVersions)
+    ];
     if (skippedReleases.length > maxStored) {
       skippedReleases.removeWhere((releaseVersion) {
         try {

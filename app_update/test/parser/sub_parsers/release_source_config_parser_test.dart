@@ -1,8 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
 import 'package:app_update/src/parser/common.dart';
 import 'package:app_update/src/parser/sub_parsers/release_source_config_parser.dart';
 import 'package:app_update/src/shared/models/release_source/release_source_config.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:yaml/yaml.dart';
 
 void main() {
   group('ReleaseSourceConfigParser', () {

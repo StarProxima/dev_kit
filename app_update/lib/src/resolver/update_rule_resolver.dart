@@ -60,13 +60,17 @@ class UpdateRuleResolver {
     final temporalMatcher = TemporalMatcher<T>();
     final customDataMatcher = CustomDataMatcher<T>();
 
-    if (!viewTargetMatcher.matches(rule: rule, search: searchData)) return false;
+    if (!viewTargetMatcher.matches(rule: rule, search: searchData)) {
+      return false;
+    }
     if (!localeMatcher.matches(rule: rule, search: searchData)) return false;
     if (!sourceMatcher.matches(rule: rule, search: searchData)) return false;
     if (!versionMatcher.matches(rule: rule, search: searchData)) return false;
     if (!appStatusMatcher.matches(rule: rule, search: searchData)) return false;
     if (!temporalMatcher.matches(rule: rule, search: searchData)) return false;
-    if (!customDataMatcher.matches(rule: rule, search: searchData)) return false;
+    if (!customDataMatcher.matches(rule: rule, search: searchData)) {
+      return false;
+    }
     return true;
   }
 }

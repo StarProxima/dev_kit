@@ -63,11 +63,13 @@ void main() {
     test('Ошибка при неверном типе', () {
       expect(
           () => parser.parse<MergeableMapAdapter>(123,
-              dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v))),
+              dataParser: (v) =>
+                  MergeableMapAdapter(Map<String, dynamic>.from(v))),
           throwsA(isA<UpdateConfigException>()));
       expect(
           () => parser.parse<MergeableMapAdapter>([],
-              dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v))),
+              dataParser: (v) =>
+                  MergeableMapAdapter(Map<String, dynamic>.from(v))),
           throwsA(isA<UpdateConfigException>()));
     });
 

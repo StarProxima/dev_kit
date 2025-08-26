@@ -7,14 +7,16 @@ class CustomDataMatcher<T extends Mergeable> implements RuleMatcher<T> {
   const CustomDataMatcher();
 
   @override
-  bool matches({required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
+  bool matches(
+      {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchByCustomData(
       rule.customData,
       search.customData,
     );
   }
 
-  bool _matchByCustomData(Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {
+  bool _matchByCustomData(
+      Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {
     if (ruleCustom == null || ruleCustom.isEmpty) return true;
     if (searchCustom == null || searchCustom.isEmpty) return false;
     return _deepContainsCaseInsensitive(ruleCustom, searchCustom);
@@ -41,12 +43,16 @@ class CustomDataMatcher<T extends Mergeable> implements RuleMatcher<T> {
     if (rule is Map && search is Map) {
       final Map<String, dynamic> searchNormalized = {
         for (final e in search.entries)
-          (e.key is String ? (e.key as String) : e.key.toString()).toLowerCase(): e.value,
+          (e.key is String ? (e.key as String) : e.key.toString())
+              .toLowerCase(): e.value,
       };
       for (final e in rule.entries) {
-        final keyLc = (e.key is String ? (e.key as String) : e.key.toString()).toLowerCase();
+        final keyLc = (e.key is String ? (e.key as String) : e.key.toString())
+            .toLowerCase();
         if (!searchNormalized.containsKey(keyLc)) return false;
-        if (!_deepContainsCaseInsensitive(e.value, searchNormalized[keyLc])) return false;
+        if (!_deepContainsCaseInsensitive(e.value, searchNormalized[keyLc])) {
+          return false;
+        }
       }
       return true;
     }

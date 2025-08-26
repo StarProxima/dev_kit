@@ -31,11 +31,13 @@ class UpdateConfigFetcher implements UpdateConfigFetcherBase {
         _fetchConfig = null,
         _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
 
-  factory UpdateConfigFetcher.byUrl({required Uri uri}) => UpdateConfigFetcher.customRaw(
+  factory UpdateConfigFetcher.byUrl({required Uri uri}) =>
+      UpdateConfigFetcher.customRaw(
         () => _defaultFetchByUrl(uri),
       );
 
-  factory UpdateConfigFetcher.byFile({required File file}) => UpdateConfigFetcher.customRaw(
+  factory UpdateConfigFetcher.byFile({required File file}) =>
+      UpdateConfigFetcher.customRaw(
         () => _defaultFetchByFile(file),
       );
 

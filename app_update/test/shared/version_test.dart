@@ -52,7 +52,8 @@ void main() {
       expect(version.build.firstOrNull, 123);
     });
 
-    test('should throw FormatException version with missing minor or patch', () {
+    test('should throw FormatException version with missing minor or patch',
+        () {
       expect(() => Version.parse('2.0'), throwsFormatException);
     });
 
@@ -66,13 +67,16 @@ void main() {
   });
 
   group('VersionX Extension', () {
-    test('toOnlyNumbersString should return version without pre-release or build info', () {
+    test(
+        'toOnlyNumbersString should return version without pre-release or build info',
+        () {
       final version = Version.parse('1.2.3-beta+build123');
       final result = version.toOnlyNumbersString();
       expect(result, '1.2.3');
     });
 
-    test('toVersionWithBuildString should return version with build info but without pre-releases',
+    test(
+        'toVersionWithBuildString should return version with build info but without pre-releases',
         () {
       final version = Version.parse('1.2.3-beta+build123');
       final result = version.toVersionWithBuildString();
@@ -96,7 +100,8 @@ void main() {
       },
     );
 
-    test('toVersionWithBuildString should return version without pre-release and empty build info',
+    test(
+        'toVersionWithBuildString should return version without pre-release and empty build info',
         () {
       final version = Version.parse('1.2.3-beta');
       final result = version.toVersionWithBuildString();

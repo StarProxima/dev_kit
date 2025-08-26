@@ -1,8 +1,8 @@
 import 'package:pub_semver/pub_semver.dart';
 
+import '../../entities/update_platform.dart';
+import '../../entities/update_source_name.dart';
 import '../mergeable.dart';
-import '../../update_entities/update_platform.dart';
-import '../../update_entities/update_source_name.dart';
 import '../release_platrform/release_platrform_config.dart';
 import '../release_source/release_source_config.dart';
 import '../update_app_settings/update_app_settings_config.dart';

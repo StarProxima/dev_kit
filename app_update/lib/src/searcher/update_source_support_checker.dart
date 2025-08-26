@@ -1,7 +1,7 @@
 import 'package:store_checker/store_checker.dart';
 
-import '../shared/update_entities/update_platform.dart';
-import '../shared/update_entities/update_source.dart';
+import '../shared/entities/update_platform.dart';
+import '../shared/entities/update_source.dart';
 
 class UpdateSourceSupportChecker {
   UpdateSourceSupportChecker();

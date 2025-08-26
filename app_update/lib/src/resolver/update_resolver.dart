@@ -22,7 +22,8 @@ class UpdateResolver {
     required UpdateData updateData,
     required UpdateSearchData searchData,
   }) {
-    final resolvedAppSettingsConfig = _ruleResolver.resolve<UpdateAppSettingsConfig>(
+    final resolvedAppSettingsConfig =
+        _ruleResolver.resolve<UpdateAppSettingsConfig>(
       searchData: searchData,
       rules: updateData.appSettingsRules!,
     );
