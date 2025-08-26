@@ -5,7 +5,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../rule_matcher.dart';
 
 /// Матчер для проверки статуса приложения (active, outdated, deprecated и др.)
-class AppStatusMatcher implements RuleMatcher {
+class AppStatusMatcher extends RuleMatcher {
   const AppStatusMatcher();
 
   @override

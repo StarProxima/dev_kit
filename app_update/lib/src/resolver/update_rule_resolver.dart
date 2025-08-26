@@ -68,11 +68,18 @@ class UpdateRuleResolver {
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData searchData,
   }) {
+    // Делаем копию правила (и customData в частности)
+    // чтобы не модифицировать оригинальное правило
+    final finalRule = matchers.any((matcher) => matcher.canUseCustomData)
+        ? rule.copyWith()
+        : rule;
+
     for (final matcher in matchers) {
-      if (!matcher.matches<T>(rule: rule, search: searchData)) {
+      if (!matcher.matches<T>(rule: finalRule, search: searchData)) {
         return false;
       }
     }
+
     return true;
   }
 }

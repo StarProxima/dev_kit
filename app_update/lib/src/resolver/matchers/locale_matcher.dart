@@ -5,7 +5,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../rule_matcher.dart';
 
 /// Матчер для проверки соответствия локали пользователя (ru, en, any)
-class LocaleMatcher implements RuleMatcher {
+class LocaleMatcher extends RuleMatcher {
   const LocaleMatcher();
 
   @override

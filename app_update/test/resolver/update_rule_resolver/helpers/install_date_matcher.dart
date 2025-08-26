@@ -1,14 +1,17 @@
+import 'package:app_update/src/resolver/rule_matcher.dart';
 import 'package:app_update/src/shared/models/mergeable.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
 import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
-import 'package:app_update/src/resolver/rule_matcher.dart';
 
 /// Матчер для проверки времени, прошедшего с момента установки приложения.
 /// Использует поле 'min_delay_after_app_install_hours' в customData правила
 /// и поле 'app_install_date' в customData поиска для определения времени.
 /// Должен выполняться ПЕРЕД CustomDataMatcher, так как не использует суффикс '_is'.
-class InstallDateMatcher implements RuleMatcher {
+class InstallDateMatcher extends RuleMatcher {
   const InstallDateMatcher();
+
+  @override
+  bool get canUseCustomData => true;
 
   @override
   bool matches<T extends Mergeable>({
@@ -32,6 +35,13 @@ class InstallDateMatcher implements RuleMatcher {
     final minDelay = Duration(hours: delayHours);
     final elapsedTime = search.currentDate.difference(appInstallDate);
 
-    return elapsedTime >= minDelay;
+    final matched = elapsedTime >= minDelay;
+
+    // Удаляем обработанное поле из customData для последующих матчеров
+    if (matched) {
+      ruleCustomData.remove('min_delay_after_app_install_hours');
+    }
+
+    return matched;
   }
 }

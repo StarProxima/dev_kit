@@ -6,7 +6,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../rule_matcher.dart';
 
 /// Матчер для проверки соответствия источника дистрибуции и платформы
-class SourceMatcher implements RuleMatcher {
+class SourceMatcher extends RuleMatcher {
   const SourceMatcher();
 
   @override

@@ -5,7 +5,7 @@ import '../../shared/models/update_search/update_search_data.dart';
 import '../rule_matcher.dart';
 
 /// Матчер для проверки соответствия целевого UI-элемента (card, dialog, screen и др.)
-class ViewTargetMatcher implements RuleMatcher {
+class ViewTargetMatcher extends RuleMatcher {
   const ViewTargetMatcher();
 
   @override

@@ -1,6 +1,18 @@
 import 'package:app_update/src/resolver/update_rule_resolver.dart';
+import 'package:app_update/src/resolver/matchers/view_target_matcher.dart';
+import 'package:app_update/src/resolver/matchers/locale_matcher.dart';
+import 'package:app_update/src/resolver/matchers/source_matcher.dart';
+import 'package:app_update/src/resolver/matchers/version_matcher.dart';
+import 'package:app_update/src/resolver/matchers/app_status_matcher.dart';
+import 'package:app_update/src/resolver/matchers/temporal_matcher.dart';
+import 'package:app_update/src/resolver/matchers/custom_data_matcher.dart';
+import 'package:app_update/src/shared/entities/app_status.dart';
+import 'package:app_update/src/shared/entities/update_locale.dart';
+import 'package:app_update/src/shared/entities/update_source.dart';
+import 'package:app_update/src/shared/entities/update_view_target.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/install_date_matcher.dart';
 import 'helpers/resolver_test_helpers.dart';
 
 void main() {
@@ -201,23 +213,24 @@ void main() {
       );
     });
 
-    test('NEW: поля без суффикса "_is" игнорируются', () {
+    test('NEW: поля без суффикса "_is" блокируют правило', () {
       final rules = [
         createTestRule(custom: const {
           'env_is': 'prod', // Проверяется
-          'version': '1.0.0', // Игнорируется
-          'debug_mode': true, // Игнорируется
-        }, title: 'ok'),
+          'version': '1.0.0', // Неизвестное поле - блокирует
+          'debug_mode': true, // Неизвестное поле - блокирует
+        }, title: 'bad'),
       ];
 
-      final res = resolver.resolve(
-        searchData: createTestSearchData(custom: const {
-          'env': 'prod',
-          // version и debug_mode не нужны, так как они игнорируются
-        }),
-        rules: rules,
+      expect(
+        () => resolver.resolve(
+          searchData: createTestSearchData(custom: const {
+            'env': 'prod',
+          }),
+          rules: rules,
+        ),
+        throwsA(isA<Exception>()),
       );
-      expect(res.title, 'ok');
     });
 
     test('NEW: List с Map игнорируется', () {
@@ -324,6 +337,52 @@ void main() {
         ),
         throwsA(isA<Exception>()),
       );
+    });
+
+    test('NEW: кастомные матчеры потребляют свои поля', () {
+      // Создаем resolver с InstallDateMatcher ПЕРЕД CustomDataMatcher
+      final customResolver = UpdateRuleResolver(
+        matchers: const [
+          ViewTargetMatcher(),
+          LocaleMatcher(),
+          SourceMatcher(),
+          VersionMatcher(),
+          AppStatusMatcher(),
+          TemporalMatcher(),
+          InstallDateMatcher(), // ПЕРЕД CustomDataMatcher
+          CustomDataMatcher(),
+        ],
+      );
+
+      final rules = [
+        createTestRule(custom: const {
+          'min_delay_after_app_install_hours':
+              24, // Поле для InstallDateMatcher
+          'env_is': 'prod', // Поле для CustomDataMatcher
+        }, title: 'ok'),
+      ];
+
+      // InstallDateMatcher должен обработать и удалить свое поле,
+      // затем CustomDataMatcher увидит только env_is и пропустит правило
+      final currentDate = DateTime.now();
+      final installDate =
+          currentDate.subtract(const Duration(hours: 48)); // 48 часов назад
+
+      final res = customResolver.resolve(
+        searchData: createTestSearchData(
+          target: UpdateViewTarget.any,
+          locale: UpdateLocale.any,
+          sources: [UpdateSource.any],
+          appStatus: AppStatus.any,
+          currentDate: currentDate,
+          custom: {
+            'app_install_date': installDate,
+            'env': 'prod',
+          },
+        ),
+        rules: rules,
+      );
+      expect(res.title, 'ok');
     });
 
     test('NEW: логика сравнения списков - пересечение множеств', () {

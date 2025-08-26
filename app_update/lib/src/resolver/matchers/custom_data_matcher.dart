@@ -10,7 +10,7 @@ import '../rule_matcher.dart';
 ///
 /// Работает только с примитивными типами: null, String, num, bool и List примитивов.
 /// Поля с Map или List<Map> игнорируются для безопасности.
-class CustomDataMatcher implements RuleMatcher {
+class CustomDataMatcher extends RuleMatcher {
   const CustomDataMatcher();
 
   @override
@@ -26,6 +26,13 @@ class CustomDataMatcher implements RuleMatcher {
       Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {
     if (ruleCustom == null || ruleCustom.isEmpty) return true;
     if (searchCustom == null || searchCustom.isEmpty) return false;
+
+    // Проверяем наличие неизвестных полей (не заканчивающихся на '_is')
+    final hasUnknownFields =
+        ruleCustom.keys.any((key) => !key.toLowerCase().endsWith('_is'));
+    if (hasUnknownFields) {
+      return false; // Не понимаю неизвестные поля - не подходит
+    }
 
     // Фильтруем только поля правила, заканчивающиеся на '_is' и содержащие примитивы
     final filteredRuleCustom = <String, dynamic>{};
