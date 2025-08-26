@@ -1,15 +1,49 @@
-import 'package:app_update/src/finder/update_finder.dart';
+import 'package:app_update/src/searcher/update_search_data_defaulter.dart';
+import 'package:app_update/src/searcher/update_searcher.dart';
+import 'package:app_update/src/searcher/update_source_support_checker.dart';
 import 'package:app_update/src/shared/models/release/update_data.dart';
-import 'package:app_update/src/shared/models/update_search/update_find_data.dart';
+import 'package:app_update/src/shared/models/update_search/update_search_config.dart';
+import 'package:app_update/src/shared/models/update_search/update_search_data.dart';
 import 'package:app_update/src/shared/update_entities/update_platform.dart';
 import 'package:app_update/src/shared/update_entities/update_source.dart';
 import 'package:app_update/src/shared/update_entities/update_source_name.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 void main() {
   group('UpdateFinder', () {
-    const finder = UpdateFinder();
+    final searchDataDefaulter = UpdateSearchDataDefaulter(
+      updateSourceChecker: UpdateSourceSupportCheckerNoOp(),
+    );
+
+    UpdateSearchData createSearchData({
+      required DateTime currentDate,
+      required Version localVersion,
+      required UpdatePlatform platform,
+      required List<UpdateSource> sources,
+    }) {
+      final searchConfig = UpdateSearchConfig(
+        currentDate: currentDate,
+        localVersion: localVersion,
+        platform: platform,
+        sources: sources,
+      );
+
+      return searchDataDefaulter.getSearchDataWithDefaults(
+        searchConfig: searchConfig,
+        packageInfo: PackageInfo(
+          appName: 'test',
+          packageName: 'test',
+          version: '1.0.0',
+          buildNumber: '1',
+        ),
+      );
+    }
+
+    final searcher = UpdateSearcher(
+      searchDataDefaulter: searchDataDefaulter,
+    );
 
     // Хелпер для создания UpdateData
     UpdateData createUpdateData(
@@ -39,7 +73,7 @@ void main() {
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay),
         createUpdateData('2.1.0',
-            date: DateTime(2025, 01, 01),
+            date: DateTime(2025),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay), // будущая дата → skip
         createUpdateData('2.0.0',
@@ -65,8 +99,8 @@ void main() {
             source: UpdateSourceName.googlePlay), // не дойдет (после break)
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -90,8 +124,8 @@ void main() {
             source: UpdateSourceName.appStore),
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -119,8 +153,8 @@ void main() {
             source: UpdateSourceName.appStore),
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -137,7 +171,7 @@ void main() {
     test('если максимальная версия пары в будущем, берется следующая допустимая', () {
       final updates = [
         createUpdateData('3.0.0',
-            date: DateTime(2025, 01, 01),
+            date: DateTime(2025),
             platform: UpdatePlatform.android,
             source: UpdateSourceName.googlePlay), // future → skip
         createUpdateData('2.0.0',
@@ -150,8 +184,8 @@ void main() {
             source: UpdateSourceName.googlePlay),
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -192,8 +226,8 @@ void main() {
         ),
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -236,8 +270,8 @@ void main() {
         ),
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -264,8 +298,8 @@ void main() {
             source: UpdateSourceName.googlePlay),
       ];
 
-      final res = finder.findAvailableUpdates(
-        findData: UpdateFindData(
+      final res = searcher.findAvailableUpdates(
+        searchData: createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
@@ -291,8 +325,8 @@ void main() {
               source: UpdateSourceName.appStore),
         ];
 
-        final result = finder.findMostRelevantUpdate(
-          findData: UpdateFindData(
+        final result = searcher.findMostRelevantUpdate(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -314,8 +348,8 @@ void main() {
               source: UpdateSourceName.googlePlay), // меньше локальной версии
         ];
 
-        final result = finder.findMostRelevantUpdate(
-          findData: UpdateFindData(
+        final result = searcher.findMostRelevantUpdate(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -339,8 +373,8 @@ void main() {
               source: UpdateSourceName.googlePlay),
         ];
 
-        final result = finder.findMostRelevantUpdate(
-          findData: UpdateFindData(
+        final result = searcher.findMostRelevantUpdate(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -371,8 +405,8 @@ void main() {
               source: UpdateSourceName.ruStore), // меньше локальной → break
         ];
 
-        final result = finder.findCurrentUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findCurrentUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -398,8 +432,8 @@ void main() {
               source: UpdateSourceName.appStore), // меньше локальной
         ];
 
-        final result = finder.findCurrentUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findCurrentUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -414,7 +448,7 @@ void main() {
       test('фильтрует по дате, платформе и источникам', () {
         final updates = [
           createUpdateData('1.0.0',
-              date: DateTime(2025, 01, 01), // будущая дата → skip
+              date: DateTime(2025), // будущая дата → skip
               platform: UpdatePlatform.android,
               source: UpdateSourceName.googlePlay),
           createUpdateData('1.0.0',
@@ -431,8 +465,8 @@ void main() {
               source: UpdateSourceName.googlePlay), // подходит
         ];
 
-        final result = finder.findCurrentUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findCurrentUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -457,8 +491,8 @@ void main() {
               source: UpdateSourceName.googlePlay),
         ];
 
-        final result = finder.findCurrentUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findCurrentUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -485,8 +519,8 @@ void main() {
               source: UpdateSourceName.googlePlay),
         ];
 
-        final result = finder.findMostRelevantCurrentUpdate(
-          findData: UpdateFindData(
+        final result = searcher.findMostRelevantCurrentUpdate(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -507,8 +541,8 @@ void main() {
               source: UpdateSourceName.googlePlay), // больше локальной
         ];
 
-        final result = finder.findMostRelevantCurrentUpdate(
-          findData: UpdateFindData(
+        final result = searcher.findMostRelevantCurrentUpdate(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -538,14 +572,14 @@ void main() {
               source: UpdateSourceName.googlePlay),
         ];
 
-        final findData = UpdateFindData(
+        final findData = createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
         );
 
-        final result = finder.sortUpdates(updates, findData);
+        final result = searcher.sortUpdates(updates, findData);
 
         expect(result.map((e) => e.version.toString()).toList(), ['2.0.0', '1.5.0', '1.0.0']);
       });
@@ -566,14 +600,14 @@ void main() {
               source: UpdateSourceName.appStore),
         ];
 
-        final findData = UpdateFindData(
+        final findData = createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.appStore, UpdateSource.googlePlay, UpdateSource.ruStore],
         );
 
-        final result = finder.sortUpdates(updates, findData);
+        final result = searcher.sortUpdates(updates, findData);
 
         expect(result.map((e) => e.sourceName).toList(),
             [UpdateSourceName.appStore, UpdateSourceName.googlePlay, UpdateSourceName.ruStore]);
@@ -591,14 +625,14 @@ void main() {
               source: UpdateSourceName.googlePlay), // в sources
         ];
 
-        final findData = UpdateFindData(
+        final findData = createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
         );
 
-        final result = finder.sortUpdates(updates, findData);
+        final result = searcher.sortUpdates(updates, findData);
 
         expect(result.map((e) => e.sourceName).toList(),
             [UpdateSourceName.googlePlay, const UpdateSourceName.custom('unknown')]);
@@ -620,14 +654,14 @@ void main() {
               source: UpdateSourceName.googlePlay),
         ];
 
-        final findData = UpdateFindData(
+        final findData = createSearchData(
           currentDate: currentDate,
           localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
         );
 
-        final result = finder.sortUpdates(updates, findData);
+        final result = searcher.sortUpdates(updates, findData);
 
         // Сначала версия 2.0.0 (googlePlay имеет приоритет над appStore)
         // Затем версия 1.0.0
@@ -638,8 +672,8 @@ void main() {
 
     group('дополнительные edge cases для findAvailableUpdates', () {
       test('пустой список обновлений возвращает пустой результат', () {
-        final result = finder.findAvailableUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findAvailableUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -654,17 +688,17 @@ void main() {
       test('все обновления с будущими датами отфильтровываются', () {
         final updates = [
           createUpdateData('2.0.0',
-              date: DateTime(2025, 01, 01),
+              date: DateTime(2025),
               platform: UpdatePlatform.android,
               source: UpdateSourceName.googlePlay),
           createUpdateData('1.5.0',
-              date: DateTime(2025, 02, 01),
+              date: DateTime(2025, 02),
               platform: UpdatePlatform.android,
               source: UpdateSourceName.appStore),
         ];
 
-        final result = finder.findAvailableUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findAvailableUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,
@@ -688,8 +722,8 @@ void main() {
               source: UpdateSourceName.appStore),
         ];
 
-        final result = finder.findAvailableUpdates(
-          findData: UpdateFindData(
+        final result = searcher.findAvailableUpdates(
+          searchData: createSearchData(
             currentDate: currentDate,
             localVersion: Version.parse('1.0.0'),
             platform: UpdatePlatform.android,

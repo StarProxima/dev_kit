@@ -15,8 +15,8 @@ abstract class UpdateControllerBase {
   /// Going to network to get the UpdateConfig and Releses from global sources to get the latest updates.
   Future<void> fetch(
     UpdateSearchConfig searchConfig, {
-    bool shouldFetchGlobalSources = true,
-    bool shouldFetchConfig = true,
+    bool shouldFetchSourceFetchers = true,
+    bool shouldFetchFerchers = true,
   });
 
   /// Finds an update from fetched UpdateConfig and global sources releases data.

@@ -3,20 +3,20 @@ import 'dart:async';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../fetcher/update_config_fetcher_base.dart';
+import '../fetcher/update_config_fetcher_coordinator.dart';
 import '../fetcher/update_config_source_fetcher.dart';
-import '../finder/update_finder.dart';
 import '../linker/update_inker.dart';
-import '../rule_resolver/update_rule_resolver.dart';
+import '../resolver/update_resolver.dart';
+import '../resolver/update_rule_resolver.dart';
+import '../searcher/update_search_data_defaulter.dart';
+import '../searcher/update_searcher.dart';
+import '../searcher/update_source_support_checker.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/release/update_data.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_status/update_status.dart';
-import '../source/update_source_checker.dart';
-import 'update_config_fetcher_coordinator.dart';
 import 'update_contoller_base.dart';
-import 'update_data_resolver.dart';
-import 'update_searcher.dart';
 
 class UpdateController extends UpdateControllerBase {
   // State
@@ -31,19 +31,21 @@ class UpdateController extends UpdateControllerBase {
 
   final UpdateLinker _updateLinker = const UpdateLinker();
 
-  final UpdateSourceChecker _updateSourceChecker = UpdateSourceChecker();
+  final _sourceSupportChecker = UpdateSourceSupportChecker();
+  late final _searchDataDefaulter = UpdateSearchDataDefaulter(
+    updateSourceChecker: _sourceSupportChecker,
+  );
 
-  final UpdateDataResolver _updateDataResolver = const UpdateDataResolver(
+  final _updateDataResolver = const UpdateResolver(
     ruleResolver: UpdateRuleResolver(),
   );
 
-  late final UpdateConfigFetcherCoordinator _fetcherCoordinator = UpdateConfigFetcherCoordinator(
-    updateSearcher: _updateSearcher,
+  late final _fetcherCoordinator = UpdateConfigFetcherCoordinator(
+    updateSearchDataDefaulter: _searchDataDefaulter,
   );
 
-  late final UpdateSearcher _updateSearcher = UpdateSearcher(
-    updateFinder: const UpdateFinder(),
-    updateSourceChecker: _updateSourceChecker,
+  late final _updateSearcher = UpdateSearcher(
+    searchDataDefaulter: _searchDataDefaulter,
   );
 
   /// Контроллер для поиска обновлений
@@ -67,7 +69,7 @@ class UpdateController extends UpdateControllerBase {
     if (_initCompleter.isCompleted) return;
 
     _packageInfo = await PackageInfo.fromPlatform();
-    await _updateSourceChecker.init();
+    await _sourceSupportChecker.init();
 
     if (_initCompleter.isCompleted) return;
 
@@ -80,17 +82,17 @@ class UpdateController extends UpdateControllerBase {
   @override
   Future<void> fetch(
     UpdateSearchConfig searchConfig, {
-    bool shouldFetchGlobalSources = true,
-    bool shouldFetchConfig = true,
+    bool shouldFetchSourceFetchers = true,
+    bool shouldFetchFerchers = true,
   }) async {
     await init();
 
     final configs = await _fetcherCoordinator.fetch(
       fetchers: _fetchers,
-      searchConfig: searchConfig,
       packageInfo: _packageInfo,
-      shouldFetchGlobalSources: shouldFetchGlobalSources,
-      shouldFetchConfig: shouldFetchConfig,
+      searchConfig: searchConfig,
+      shouldFetchSourceFetchers: shouldFetchSourceFetchers,
+      shouldFetchFerchers: shouldFetchFerchers,
     );
 
     final updates = _updateLinker.linkAllConfigs(configs);
@@ -105,13 +107,16 @@ class UpdateController extends UpdateControllerBase {
       throw Exception('UpdateController is not initialized');
     }
 
-    final (:updateData, :searchData) = _updateSearcher.search(
+    final searchResult = _updateSearcher.searchFull(
       updates: _updates,
       packageInfo: _packageInfo,
       searchConfig: searchConfig,
     );
 
-    if (updateData == null) {
+    final searchData = searchResult.searchData;
+    final mostRelevantUpdate = searchResult.updateData;
+
+    if (mostRelevantUpdate == null) {
       final result = UpdateResult(
         update: null,
         searchData: searchData,
@@ -122,7 +127,7 @@ class UpdateController extends UpdateControllerBase {
     }
 
     final result = _updateDataResolver.resolve(
-      updateData: updateData,
+      updateData: mostRelevantUpdate,
       searchData: searchData,
     );
 

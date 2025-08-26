@@ -3,8 +3,8 @@ import 'package:store_checker/store_checker.dart';
 import '../shared/update_entities/update_platform.dart';
 import '../shared/update_entities/update_source.dart';
 
-class UpdateSourceChecker {
-  UpdateSourceChecker();
+class UpdateSourceSupportChecker {
+  UpdateSourceSupportChecker();
 
   Source _sourceFromStoreChecker = Source.UNKNOWN;
 
@@ -36,4 +36,19 @@ class UpdateSourceChecker {
 
     return sources;
   }
+}
+
+class UpdateSourceSupportCheckerNoOp implements UpdateSourceSupportChecker {
+  @override
+  Future<void> init() async {}
+
+  @override
+  List<UpdateSource> getDefaultSupportedSources({
+    required UpdatePlatform platform,
+  }) {
+    return [];
+  }
+
+  @override
+  Source _sourceFromStoreChecker = Source.UNKNOWN;
 }

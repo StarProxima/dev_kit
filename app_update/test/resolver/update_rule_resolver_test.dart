@@ -1,4 +1,4 @@
-import 'package:app_update/src/rule_resolver/update_rule_resolver.dart';
+import 'package:app_update/src/resolver/update_rule_resolver.dart';
 import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
 import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
 import 'package:app_update/src/shared/models/update_search/update_search_data.dart';

@@ -3,32 +3,32 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../default_rules/default_update_config.dart';
-import '../fetcher/update_config_fetcher_base.dart';
-import '../fetcher/update_config_source_fetcher.dart';
+import '../searcher/update_search_data_defaulter.dart';
 import '../shared/models/update/update_config.dart';
 import '../shared/models/update_search/update_search_config.dart';
-import 'update_searcher.dart';
+import 'update_config_fetcher_base.dart';
+import 'update_config_source_fetcher.dart';
 
 class UpdateConfigFetcherCoordinator {
   const UpdateConfigFetcherCoordinator({
-    required UpdateSearcher updateSearcher,
-  }) : _updateSearcher = updateSearcher;
+    required UpdateSearchDataDefaulter updateSearchDataDefaulter,
+  }) : _updateSearchDataDefaulter = updateSearchDataDefaulter;
 
-  final UpdateSearcher _updateSearcher;
+  final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
 
   Future<List<UpdateConfig>> fetch({
     required List<UpdateConfigFetcherBase> fetchers,
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
-    required bool shouldFetchGlobalSources,
-    required bool shouldFetchConfig,
+    required bool shouldFetchSourceFetchers,
+    required bool shouldFetchFerchers,
   }) async {
     final configs = <UpdateConfig>[
       // Default config from app_update package
       defaultUpdateConfig,
     ];
 
-    final searchData = _updateSearcher.getSearchDataWithDefaults(
+    final searchData = _updateSearchDataDefaulter.getSearchDataWithDefaults(
       searchConfig: searchConfig,
       packageInfo: packageInfo,
     );
@@ -38,7 +38,7 @@ class UpdateConfigFetcherCoordinator {
 
       switch (fetcher) {
         case UpdateConfigSourceFetcher(source: final source):
-          if (!shouldFetchGlobalSources) continue;
+          if (!shouldFetchSourceFetchers) continue;
 
           if (!searchData.sources.contains(source)) {
             continue;
@@ -60,7 +60,7 @@ class UpdateConfigFetcherCoordinator {
           }
 
         case UpdateConfigFetcherBase():
-          if (!shouldFetchConfig) continue;
+          if (!shouldFetchFerchers) continue;
 
           final config = await fetcher.fetch(
             locale: locale,

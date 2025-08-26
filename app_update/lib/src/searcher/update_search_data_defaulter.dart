@@ -1,25 +1,19 @@
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../finder/update_finder.dart';
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update_search/update_find_data.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
 import '../shared/update_entities/update_locale.dart';
 import '../shared/update_entities/update_platform.dart';
 import '../shared/update_entities/update_view_target.dart';
-import '../source/update_source_checker.dart';
+import 'update_source_support_checker.dart';
 
-class UpdateSearcher {
-  final UpdateFinder _updateFinder;
-  final UpdateSourceChecker _updateSourceChecker;
+class UpdateSearchDataDefaulter {
+  final UpdateSourceSupportChecker _updateSourceChecker;
 
-  const UpdateSearcher({
-    required UpdateFinder updateFinder,
-    required UpdateSourceChecker updateSourceChecker,
-  })  : _updateFinder = updateFinder,
-        _updateSourceChecker = updateSourceChecker;
+  const UpdateSearchDataDefaulter({
+    required UpdateSourceSupportChecker updateSourceChecker,
+  }) : _updateSourceChecker = updateSourceChecker;
 
   UpdateSearchData getSearchDataWithDefaults({
     required UpdateSearchConfig searchConfig,
@@ -61,40 +55,5 @@ class UpdateSearcher {
     );
 
     return searchData;
-  }
-
-  ({UpdateData? updateData, UpdateSearchData searchData}) search({
-    required List<UpdateData> updates,
-    required UpdateSearchConfig searchConfig,
-    required PackageInfo packageInfo,
-  }) {
-    var searchData = getSearchDataWithDefaults(
-      searchConfig: searchConfig,
-      packageInfo: packageInfo,
-    );
-
-    final findData = UpdateFindData(
-      currentDate: searchData.currentDate,
-      localVersion: searchData.localVersion,
-      platform: searchData.platform,
-      sources: searchData.sources,
-    );
-
-    final updateData = _updateFinder.findMostRelevantUpdate(
-      findData: findData,
-      updates: updates,
-    );
-
-    final localUpdateData = _updateFinder.findMostRelevantCurrentUpdate(
-      findData: findData,
-      updates: updates,
-    );
-
-    searchData = searchData.copyWith(
-      localReleaseDate: localUpdateData?.date,
-      updateReleaseDate: updateData?.date,
-    );
-
-    return (updateData: updateData, searchData: searchData);
   }
 }

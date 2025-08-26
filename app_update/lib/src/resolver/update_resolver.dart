@@ -1,4 +1,3 @@
-import '../rule_resolver/update_rule_resolver.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/release/update_data.dart';
 import '../shared/models/update_app_settings/update_app_settings_config.dart';
@@ -10,11 +9,12 @@ import '../shared/models/update_search/update_search_data.dart';
 import '../shared/models/update_settings/update_settings_config.dart';
 import '../shared/models/update_settings/update_settings_data.dart';
 import '../shared/models/update_status/update_status.dart';
+import 'update_rule_resolver.dart';
 
-class UpdateDataResolver {
+class UpdateResolver {
   final UpdateRuleResolver _ruleResolver;
 
-  const UpdateDataResolver({
+  const UpdateResolver({
     required UpdateRuleResolver ruleResolver,
   }) : _ruleResolver = ruleResolver;
 
