@@ -105,7 +105,7 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
 
     // Обработка строк с поддержкой регулярок
     if (rule is String && search is String) {
-      return matchesStringInListWithRegExp(search, [rule]);
+      return isMatchesStringInListWithRegExp(search, [rule]);
     }
 
     // Точное сравнение для чисел и булевых
@@ -175,7 +175,7 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
     if (searchValue is String) {
       final stringRules = ruleValues.whereType<String>().toList();
       if (stringRules.isNotEmpty &&
-          matchesStringInListWithRegExp(searchValue, stringRules)) {
+          isMatchesStringInListWithRegExp(searchValue, stringRules)) {
         return true;
       }
     }

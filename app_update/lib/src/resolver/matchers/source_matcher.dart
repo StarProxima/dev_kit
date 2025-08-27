@@ -14,14 +14,14 @@ class SourceMatcher extends RuleMatcher {
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData search,
   }) {
-    return _matchBySources(
+    return _isMatchBySources(
       rule.sourceIs ?? [UpdateSource.any],
       search.sources,
       search.platform,
     );
   }
 
-  bool _matchBySources(
+  bool _isMatchBySources(
     List<UpdateSource> ruleSources,
     List<UpdateSource> searchSources,
     UpdatePlatform platform,
@@ -30,7 +30,11 @@ class SourceMatcher extends RuleMatcher {
     for (final ruleSource in ruleSources) {
       final matchedSearchSource = _findSource(searchSources, ruleSource);
       if (matchedSearchSource == null) continue;
-      if (_sourceSupportsPlatform(ruleSource, platform, matchedSearchSource)) {
+      if (_isSourceSupportsPlatform(
+        ruleSource,
+        platform,
+        matchedSearchSource,
+      )) {
         return true;
       }
     }
@@ -49,7 +53,7 @@ class SourceMatcher extends RuleMatcher {
     return null;
   }
 
-  static bool _sourceSupportsPlatform(
+  static bool _isSourceSupportsPlatform(
     UpdateSource ruleSource,
     UpdatePlatform platform,
     UpdateSource searchSource,

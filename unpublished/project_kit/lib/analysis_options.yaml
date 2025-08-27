@@ -351,6 +351,7 @@ dart_code_metrics:
     - avoid-similar-names: false
     - prefer-widget-private-members: false
     - prefer-class-destructuring: false
+    - format-comment: false
 
     # Не думаю, что это читаемей
     - avoid-local-functions: false
@@ -435,11 +436,6 @@ dart_code_metrics:
           - body
           - onSuccess
           - onError
-
-    
-    - format-comment:
-        # Гемор для временно закоменченного кода
-        only-doc-comments: true
 
     - avoid-long-functions:
         exclude:

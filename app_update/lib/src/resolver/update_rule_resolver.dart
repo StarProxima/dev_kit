@@ -1,5 +1,3 @@
-// ignore_for_file: comment_references
-
 import '../models/update_rule/update_rule_config.dart';
 import '../models/update_search/update_search_data.dart';
 import '../parser/parse_config_exeption.dart';
@@ -33,8 +31,8 @@ class UpdateRuleResolver {
 
   /// Резолвит список правил в одно значение типа [T], применяя:
   /// - фильтрацию по контексту (таргет, локаль, источники, версии, статусы)
-  /// - временные условия: [date] + [delay] + [rollout]
-  /// - сегментацию пользователей: [segmentationPercent]
+  /// - временные условия: [UpdateRuleConfig.date] + [UpdateRuleConfig.delay] + [UpdateRuleConfig.rollout]
+  /// - сегментацию пользователей: [UpdateRuleConfig.segmentationPercent]
   ///
   /// Правила применяются по порядку. Последующие правила переопределяют поля предыдущих
   /// через реализацию [Mergeable.merge]. Если ни одно правило не подошло — кидает

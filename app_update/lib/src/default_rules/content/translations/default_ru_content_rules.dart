@@ -3,6 +3,7 @@ import '../../../entities/update_locale.dart';
 import '../../../models/update_content/update_content_config.dart';
 import '../../../models/update_rule/update_rule_config.dart';
 
+// ignore: prefer-static-class
 final defaultRuContentRules = [
   const UpdateRuleConfig(
     localeIs: [UpdateLocale.ru],

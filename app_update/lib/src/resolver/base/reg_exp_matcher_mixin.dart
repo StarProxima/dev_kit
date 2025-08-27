@@ -6,8 +6,8 @@ mixin RegExpMatcherMixin {
   /// Поддерживает:
   /// - Обычные строки: точное совпадение (case-insensitive)
   /// - 'any': всегда true
-  /// - 'regexp:pattern': проверка по регулярному выражению
-  bool matchesStringInListWithRegExp(
+  /// - 'regexp:pattern': проверка по регулярному выражению.
+  bool isMatchesStringInListWithRegExp(
     String searchValue,
     List<String> ruleValues,
   ) {

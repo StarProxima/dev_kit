@@ -2,6 +2,7 @@ import '../../entities/app_status.dart';
 import '../../models/update_rule/update_rule_config.dart';
 import '../../models/update_settings/update_settings_config.dart';
 
+// ignore: prefer-static-class
 final defaultUpdateSettingsRules = [
   const UpdateRuleConfig(
     data: UpdateSettingsConfig.byRequired(
