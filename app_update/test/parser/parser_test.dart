@@ -1,29 +1,6 @@
-library parser_test;
+import 'package:app_update/app_update.dart';
 
 import 'dart:io';
-import 'package:app_update/src/fetcher/update_config_fetcher.dart';
-import 'package:app_update/src/parser/common.dart';
-import 'package:app_update/src/parser/sub_parsers/global_platform_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/global_source_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/release_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/release_platrform_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/release_source_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/update_app_settings_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/update_content_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/update_rule_config_parser.dart';
-import 'package:app_update/src/parser/sub_parsers/update_settings_config_parser.dart';
-import 'package:app_update/src/parser/update_config_parser.dart';
-import 'package:app_update/src/shared/models/global_platform/global_platform_config.dart';
-import 'package:app_update/src/shared/models/global_source/global_source_config.dart';
-import 'package:app_update/src/shared/models/mergeable.dart';
-import 'package:app_update/src/shared/models/release/release_config.dart';
-import 'package:app_update/src/shared/models/release_platrform/release_platrform_config.dart';
-import 'package:app_update/src/shared/models/release_source/release_source_config.dart';
-import 'package:app_update/src/shared/models/update/update_config.dart';
-import 'package:app_update/src/shared/models/update_app_settings/update_app_settings_config.dart';
-import 'package:app_update/src/shared/models/update_content/update_content_config.dart';
-import 'package:app_update/src/shared/models/update_rule/update_rule_config.dart';
-import 'package:app_update/src/shared/models/update_settings/update_settings_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
