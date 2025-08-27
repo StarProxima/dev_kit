@@ -4,6 +4,7 @@ import 'package:app_update/app_update.dart';
 /// Использует поле 'min_delay_after_app_install_hours' в customData правила
 /// и поле 'app_install_date' в customData поиска для определения времени.
 /// Должен выполняться ПЕРЕД CustomDataMatcher, так как не использует суффикс '_is'.
+// ignore: avoid-top-level-members-in-tests
 class InstallDateMatcher extends RuleMatcher {
   const InstallDateMatcher();
 
@@ -11,7 +12,7 @@ class InstallDateMatcher extends RuleMatcher {
   bool get canUseCustomData => true;
 
   @override
-  bool isMatches<T extends Mergeable>({
+  bool isMatches<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData search,
   }) {
@@ -32,13 +33,13 @@ class InstallDateMatcher extends RuleMatcher {
     final minDelay = Duration(hours: delayHours);
     final elapsedTime = search.currentDate.difference(appInstallDate);
 
-    final matched = elapsedTime >= minDelay;
+    final isMatched = elapsedTime >= minDelay;
 
     // Удаляем обработанное поле из customData для последующих матчеров
-    if (matched) {
+    if (isMatched) {
       ruleCustomData.remove('min_delay_after_app_install_hours');
     }
 
-    return matched;
+    return isMatched;
   }
 }

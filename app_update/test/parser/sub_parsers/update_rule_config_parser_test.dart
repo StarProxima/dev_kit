@@ -1,15 +1,17 @@
+// ignore_for_file: cast_nullable_to_non_nullable, avoid-type-casts
+
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
-class MergeableMapAdapter implements Mergeable {
+class _MergeableMapAdapter implements Mergeable<_MergeableMapAdapter> {
   final Map<String, dynamic> map;
 
-  MergeableMapAdapter(this.map);
+  const _MergeableMapAdapter(this.map);
 
   @override
-  MergeableMapAdapter merge(covariant MergeableMapAdapter other) {
-    return MergeableMapAdapter({...map, ...other.map});
+  _MergeableMapAdapter merge(covariant _MergeableMapAdapter other) {
+    return _MergeableMapAdapter({...map, ...other.map});
   }
 }
 
@@ -23,10 +25,14 @@ void main() {
         data:
           title: "Заголовок"
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
-      final result = parser.parse<MergeableMapAdapter>(map,
-          dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
-      expect(result, isA<UpdateRuleConfig<MergeableMapAdapter>>());
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final result = parser.parse<_MergeableMapAdapter>(
+        map,
+        dataParser: (v) => _MergeableMapAdapter(
+          Map<String, dynamic>.of(v as Map<String, dynamic>),
+        ),
+      );
+      expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
       expect(result?.appStatusIs?.first.name, 'outdated');
       expect(result?.data.map['title'], 'Заголовок');
     });
@@ -41,9 +47,13 @@ void main() {
         data:
           title: test
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
-      final result = parser.parse<MergeableMapAdapter>(map,
-          dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final result = parser.parse<_MergeableMapAdapter>(
+        map,
+        dataParser: (v) => _MergeableMapAdapter(
+          Map<String, dynamic>.of(v as Map<String, dynamic>),
+        ),
+      );
       expect(result?.appStatusIs?.length, 2);
       expect(result?.localeIs?.length, 2);
       expect(result?.viewTargetIs?.length, 2);
@@ -52,22 +62,34 @@ void main() {
     });
 
     test('null возвращает null', () {
-      final result = parser.parse<MergeableMapAdapter>(null,
-          dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
+      final result = parser.parse<_MergeableMapAdapter>(
+        null,
+        dataParser: (v) => _MergeableMapAdapter(
+          Map<String, dynamic>.of(v as Map<String, dynamic>),
+        ),
+      );
       expect(result, isNull);
     });
 
     test('Ошибка при неверном типе', () {
       expect(
-          () => parser.parse<MergeableMapAdapter>(123,
-              dataParser: (v) =>
-                  MergeableMapAdapter(Map<String, dynamic>.from(v))),
-          throwsA(isA<ParseConfigException>()));
+        () => parser.parse<_MergeableMapAdapter>(
+          123,
+          dataParser: (v) => _MergeableMapAdapter(
+            Map<String, dynamic>.of(v as Map<String, dynamic>),
+          ),
+        ),
+        throwsA(isA<ParseConfigException>()),
+      );
       expect(
-          () => parser.parse<MergeableMapAdapter>([],
-              dataParser: (v) =>
-                  MergeableMapAdapter(Map<String, dynamic>.from(v))),
-          throwsA(isA<ParseConfigException>()));
+        () => parser.parse<_MergeableMapAdapter>(
+          [],
+          dataParser: (v) => _MergeableMapAdapter(
+            Map<String, dynamic>.of(v as Map<String, dynamic>),
+          ),
+        ),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
 
     test('customData содержит неиспользованные поля', () {
@@ -77,9 +99,13 @@ void main() {
         data:
           title: test
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
-      final result = parser.parse<MergeableMapAdapter>(map,
-          dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final result = parser.parse<_MergeableMapAdapter>(
+        map,
+        dataParser: (v) => _MergeableMapAdapter(
+          Map<String, dynamic>.of(v as Map<String, dynamic>),
+        ),
+      );
       expect(result?.customData, containsPair('custom_field', 42));
     });
 
@@ -92,10 +118,14 @@ void main() {
         data:
           title: test
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
-      final result = parser.parse<MergeableMapAdapter>(map,
-          dataParser: (v) => MergeableMapAdapter(Map<String, dynamic>.from(v)));
-      expect(result, isA<UpdateRuleConfig<MergeableMapAdapter>>());
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final result = parser.parse<_MergeableMapAdapter>(
+        map,
+        dataParser: (v) => _MergeableMapAdapter(
+          Map<String, dynamic>.of(v as Map<String, dynamic>),
+        ),
+      );
+      expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
       expect(result?.delay?.inHours, 12);
       expect(result?.rollout?.inHours, 72);
       expect(result?.segmentationPercent, closeTo(12.5, 0.0001));

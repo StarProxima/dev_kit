@@ -230,10 +230,7 @@ root:
     - item1
     - item2
         ''';
-        final yamlMap = loadYaml(yamlContent) as YamlMap;
-
-        // Act
-        final result = yamlMap.toMap();
+        final result = (loadYaml(yamlContent) as YamlMap).toMap();
 
         // Assert
         expect(result['root'], isA<Map<String, dynamic>>());

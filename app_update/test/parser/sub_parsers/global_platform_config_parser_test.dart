@@ -28,7 +28,7 @@ void main() {
           app_status: active
         custom_field: 42
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = (loadYaml(yamlStr) as YamlMap).toMap();
       final result = parser.parse(map);
       expect(result, isA<GlobalPlatformConfig>());
       expect(result?.platformName.name, 'ios');
