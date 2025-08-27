@@ -11,9 +11,7 @@ void main() {
   group('UpdateConfigFetcherCoordinator - базовая логика', () {
     late CoordinatorTestSetup setup;
 
-    setUpAll(() {
-      CoordinatorTestSetup.setUpAll();
-    });
+    setUpAll(CoordinatorTestSetup.setUpAll);
 
     setUp(() {
       setup = CoordinatorTestSetup();
@@ -56,7 +54,7 @@ void main() {
           )).thenReturn(expectedSearchData);
 
       // Act
-      await setup.coordinator.fetch(
+      final result = await setup.coordinator.fetch(
         fetchers: [],
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
@@ -65,6 +63,7 @@ void main() {
       );
 
       // Assert
+      expect(result, hasLength(1)); // Проверяем что вернулся default config
       verify(() => setup.mockDefaulter.getSearchDataWithDefaults(
             searchConfig: setup.baseSearchConfig,
             packageInfo: setup.packageInfo,
@@ -89,7 +88,7 @@ void main() {
           )).thenAnswer((_) async => expectedConfig);
 
       // Act
-      await setup.coordinator.fetch(
+      final result = await setup.coordinator.fetch(
         fetchers: [setup.mockSourceFetcher],
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
@@ -98,6 +97,7 @@ void main() {
       );
 
       // Assert
+      expect(result, hasLength(2)); // default + source config
       verify(() => setup.mockSourceFetcher.fetch(
             locale: const Locale('ru', 'RU'),
             packageInfo: setup.packageInfo,
@@ -122,7 +122,7 @@ void main() {
           )).thenAnswer((_) async => expectedConfig);
 
       // Act
-      await setup.coordinator.fetch(
+      final result = await setup.coordinator.fetch(
         fetchers: [setup.mockSourceFetcher],
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
@@ -131,6 +131,7 @@ void main() {
       );
 
       // Assert
+      expect(result, hasLength(2)); // default + source config
       verify(() => setup.mockSourceFetcher.fetch(
             locale: const Locale('en'),
             packageInfo: setup.packageInfo,

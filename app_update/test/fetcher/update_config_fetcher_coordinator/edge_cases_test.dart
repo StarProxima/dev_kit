@@ -10,9 +10,7 @@ void main() {
   group('UpdateConfigFetcherCoordinator - edge cases', () {
     late CoordinatorTestSetup setup;
 
-    setUpAll(() {
-      CoordinatorTestSetup.setUpAll();
-    });
+    setUpAll(CoordinatorTestSetup.setUpAll);
 
     setUp(() {
       setup = CoordinatorTestSetup();
@@ -25,10 +23,10 @@ void main() {
             searchConfig: any(named: 'searchConfig'),
             packageInfo: any(named: 'packageInfo'),
           )).thenReturn(setup.createSearchData(
-        platform: UpdatePlatform.android,
+        
       ));
 
-      final sourceWithEmptyPlatforms = const UpdateSource.custom(
+      const sourceWithEmptyPlatforms = UpdateSource.custom(
         UpdateSourceName.custom('empty_platforms'),
         platforms: [], // Пустой список платформ
       );
@@ -39,7 +37,7 @@ void main() {
       // Act
       final result = await setup.coordinator.fetch(
         fetchers: [setup.mockSourceFetcher],
-        searchConfig: UpdateSearchConfig(
+        searchConfig: const UpdateSearchConfig(
           platform: UpdatePlatform.android,
           sources: [sourceWithEmptyPlatforms],
         ),
@@ -59,7 +57,7 @@ void main() {
     test('обрабатывает источник с null platforms (универсальный)', () async {
       // Arrange
       const expectedConfig = UpdateConfig();
-      final universalSource = const UpdateSource.custom(
+      const universalSource = UpdateSource.custom(
         UpdateSourceName.custom('universal'),
         platforms: [UpdatePlatform.any], // any = поддерживает все платформы
       );
@@ -68,7 +66,6 @@ void main() {
             searchConfig: any(named: 'searchConfig'),
             packageInfo: any(named: 'packageInfo'),
           )).thenReturn(setup.createSearchData(
-        platform: UpdatePlatform.android,
         sources: [universalSource],
       ));
 
@@ -81,7 +78,7 @@ void main() {
       // Act
       final result = await setup.coordinator.fetch(
         fetchers: [setup.mockSourceFetcher],
-        searchConfig: UpdateSearchConfig(
+        searchConfig: const UpdateSearchConfig(
           platform: UpdatePlatform.android,
           sources: [universalSource],
         ),
@@ -197,9 +194,12 @@ void main() {
       // Assert
       expect(result, hasLength(fetcherCount + 1)); // default + все fetchers
 
-      // Проверяем, что все конфигурации на месте
-      for (int i = 0; i < fetcherCount; i++) {
-        expect(result[i + 1].customData?['index'], i);
+      // Проверяем, что все конфигурации на месте (пропускаем default config)
+      final nonDefaultConfigs = result.skip(1);
+      int expectedIndex = 0;
+      for (final config in nonDefaultConfigs) {
+        expect(config.customData?['index'], expectedIndex);
+        expectedIndex++;
       }
     });
 
@@ -251,11 +251,11 @@ void main() {
       const config1 = UpdateConfig(customData: {'source': 1});
       const config2 = UpdateConfig(customData: {'source': 2});
 
-      final customSource1 = const UpdateSource.custom(
+      const customSource1 = UpdateSource.custom(
         UpdateSourceName.custom('custom'),
         platforms: [UpdatePlatform.android],
       );
-      final customSource2 = const UpdateSource.custom(
+      const customSource2 = UpdateSource.custom(
         UpdateSourceName.custom('custom'), // Такое же имя!
         platforms: [UpdatePlatform.android],
       );
@@ -282,7 +282,7 @@ void main() {
       // Act
       final result = await setup.coordinator.fetch(
         fetchers: [setup.mockSourceFetcher, setup.mockSourceFetcher2],
-        searchConfig: UpdateSearchConfig(
+        searchConfig: const UpdateSearchConfig(
           platform: UpdatePlatform.android,
           sources: [customSource1, customSource2],
         ),
@@ -313,7 +313,6 @@ void main() {
             searchConfig: any(named: 'searchConfig'),
             packageInfo: any(named: 'packageInfo'),
           )).thenReturn(setup.createSearchData(
-        platform: UpdatePlatform.android, // Только четные источники подойдут
         sources: sources,
       ));
 

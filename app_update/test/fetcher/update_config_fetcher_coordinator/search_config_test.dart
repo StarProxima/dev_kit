@@ -11,9 +11,7 @@ void main() {
   group('UpdateConfigFetcherCoordinator - разные UpdateSearchConfig', () {
     late CoordinatorTestSetup setup;
 
-    setUpAll(() {
-      CoordinatorTestSetup.setUpAll();
-    });
+    setUpAll(CoordinatorTestSetup.setUpAll);
 
     setUp(() {
       setup = CoordinatorTestSetup();
@@ -38,7 +36,7 @@ void main() {
             packageInfo: any(named: 'packageInfo'),
           )).thenAnswer((_) async => expectedConfig);
 
-      final iosConfig = const UpdateSearchConfig(
+      const iosConfig = UpdateSearchConfig(
         platform: UpdatePlatform.ios,
         sources: [UpdateSource.appStore],
       );
@@ -66,7 +64,7 @@ void main() {
           UpdateConfig(customData: {'source': 'googlePlay'});
 
       // Создаем кастомный Android-совместимый источник
-      final customAndroidSource = const UpdateSource.custom(
+      const customAndroidSource = UpdateSource.custom(
         UpdateSourceName.custom('custom_android'),
         platforms: [UpdatePlatform.android],
       );
@@ -75,7 +73,6 @@ void main() {
             searchConfig: any(named: 'searchConfig'),
             packageInfo: any(named: 'packageInfo'),
           )).thenReturn(setup.createSearchData(
-        platform: UpdatePlatform.android,
         sources: [UpdateSource.googlePlay, customAndroidSource],
       ));
 
@@ -86,7 +83,7 @@ void main() {
             packageInfo: any(named: 'packageInfo'),
           )).thenAnswer((_) async => googlePlayConfig);
 
-      final androidConfig = UpdateSearchConfig(
+      const androidConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: [UpdateSource.googlePlay, customAndroidSource],
       );
@@ -102,9 +99,9 @@ void main() {
 
       // Assert
       expect(
-          result,
-          hasLength(
-              2)); // default + googlePlay (customAndroidSource не матчится без второго fetcher)
+        result,
+        hasLength(2),
+      ); // default + googlePlay (customAndroidSource не матчится без второго fetcher)
       verify(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
             packageInfo: setup.packageInfo,
@@ -124,7 +121,7 @@ void main() {
         appStatus: const AppStatus.custom('updateable'),
         locale: const UpdateLocale(Locale('fr', 'FR')),
         currentDate: DateTime(2024, 12, 25),
-        localReleaseDate: DateTime(2024, 10, 1),
+        localReleaseDate: DateTime(2024, 10),
         updateReleaseDate: DateTime(2024, 11, 15),
         segmentationPointer: 0.75,
         rolloutPointer: 0.9,
@@ -192,7 +189,7 @@ void main() {
         );
 
         // Act
-        await setup.coordinator.fetch(
+        final result = await setup.coordinator.fetch(
           fetchers: [setup.mockSourceFetcher],
           searchConfig: config,
           packageInfo: setup.packageInfo,
@@ -201,6 +198,7 @@ void main() {
         );
 
         // Assert
+        expect(result, hasLength(2)); // default + source config
         final expectedLocale = locale.locale ?? const Locale('en');
         verify(() => setup.mockSourceFetcher.fetch(
               locale: expectedLocale,
@@ -244,9 +242,19 @@ void main() {
       ];
 
       for (final test in platformTests) {
-        final platform = test['platform'] as UpdatePlatform;
-        final source = test['source'] as UpdateSource;
-        final shouldMatch = test['shouldMatch'] as bool;
+        final platformValue = test['platform'];
+        final sourceValue = test['source'];
+        final shouldMatchValue = test['shouldMatch'];
+
+        if (platformValue is! UpdatePlatform ||
+            sourceValue is! UpdateSource ||
+            shouldMatchValue is! bool) {
+          continue;
+        }
+
+        final platform = platformValue;
+        final source = sourceValue;
+        final shouldMatch = shouldMatchValue;
 
         when(() => setup.mockDefaulter.getSearchDataWithDefaults(
               searchConfig: any(named: 'searchConfig'),
@@ -281,7 +289,8 @@ void main() {
           expect(
             result,
             hasLength(2),
-            reason: '$platform should work with $source',
+            reason:
+                '${platform.name} should work with ${source.sourceName.name}',
           );
           verify(() => setup.mockSourceFetcher.fetch(
                 locale: any(named: 'locale'),
@@ -291,7 +300,8 @@ void main() {
           expect(
             result,
             hasLength(1),
-            reason: '$platform should NOT work with $source',
+            reason:
+                '${platform.name} should NOT work with ${source.sourceName.name}',
           );
           verifyNever(() => setup.mockSourceFetcher.fetch(
                 locale: any(named: 'locale'),
@@ -355,7 +365,7 @@ void main() {
         {'region': 'eu', 'language': 'en'},
         {
           'features': ['feature1', 'feature2'],
-          'version_code': 123
+          'version_code': 123,
         },
       ];
 

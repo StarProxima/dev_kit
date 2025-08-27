@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,9 +11,7 @@ void main() {
   group('UpdateConfigFetcherCoordinator - regular fetchers', () {
     late CoordinatorTestSetup setup;
 
-    setUpAll(() {
-      CoordinatorTestSetup.setUpAll();
-    });
+    setUpAll(CoordinatorTestSetup.setUpAll);
 
     setUp(() {
       setup = CoordinatorTestSetup();
@@ -119,7 +116,7 @@ void main() {
             packageInfo: any(named: 'packageInfo'),
           )).thenReturn(setup.createSearchData());
 
-      final expectedConfig = UpdateConfig(
+      const expectedConfig = UpdateConfig(
         customData: {'custom_field': 'custom_value'},
       );
 
@@ -236,7 +233,7 @@ invalid_yaml: [unclosed bracket
 
     test('смешанные source и regular fetchers', () async {
       // Arrange
-      final sourceConfig = const UpdateConfig();
+      const sourceConfig = UpdateConfig();
       final regularConfig = UpdateConfig(
         releases: [setup.createReleaseConfig('1.0.0')],
       );

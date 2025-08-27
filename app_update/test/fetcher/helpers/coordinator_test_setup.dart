@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:app_update/app_update.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -57,8 +55,10 @@ class CoordinatorTestSetup {
   }
 
   /// Создает простой UpdateConfig с релизом
-  UpdateConfig createSimpleConfig(String version,
-      {Map<String, dynamic>? customData}) {
+  UpdateConfig createSimpleConfig(
+    String version, {
+    Map<String, dynamic>? customData,
+  }) {
     return UpdateConfig(
       releases: [createReleaseConfig(version)],
       customData: customData,

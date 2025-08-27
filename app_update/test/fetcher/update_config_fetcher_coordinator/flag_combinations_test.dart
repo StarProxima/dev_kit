@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,9 +8,7 @@ void main() {
   group('UpdateConfigFetcherCoordinator - комбинации флагов', () {
     late CoordinatorTestSetup setup;
 
-    setUpAll(() {
-      CoordinatorTestSetup.setUpAll();
-    });
+    setUpAll(CoordinatorTestSetup.setUpAll);
 
     setUp(() {
       setup = CoordinatorTestSetup();
@@ -173,8 +169,10 @@ void main() {
       );
 
       // Assert
-      expect(result,
-          hasLength(2)); // default + 1 source (только GooglePlay матчится)
+      expect(
+        result,
+        hasLength(2),
+      ); // default + 1 source (только GooglePlay матчится)
     });
 
     test('только regular fetchers с shouldFetchFerchers=true', () async {
@@ -203,8 +201,8 @@ void main() {
 
     test('смешанный список с разными флагами - все включены', () async {
       // Arrange
-      final sourceConfig = const UpdateConfig(customData: {'type': 'source'});
-      final regularConfig = const UpdateConfig(customData: {'type': 'regular'});
+      const sourceConfig = UpdateConfig(customData: {'type': 'source'});
+      const regularConfig = UpdateConfig(customData: {'type': 'regular'});
 
       when(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
@@ -230,7 +228,7 @@ void main() {
 
     test('смешанный список с разными флагами - только regular', () async {
       // Arrange
-      final regularConfig = const UpdateConfig(customData: {'type': 'regular'});
+      const regularConfig = UpdateConfig(customData: {'type': 'regular'});
       final regularFetcher = setup.createSimpleFetcher(regularConfig);
 
       // Act
