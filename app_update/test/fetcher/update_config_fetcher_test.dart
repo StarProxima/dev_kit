@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:yaml/yaml.dart';
 
-import '../helpers/mock_source_fetchers.dart';
+import 'helpers/mock_source_fetchers.dart';
 
 void main() {
   group('UpdateConfigFetcher', () {

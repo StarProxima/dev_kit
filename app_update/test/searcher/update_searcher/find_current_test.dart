@@ -2,7 +2,7 @@ import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../helpers/test_utils.dart';
+import 'helpers/test_utils.dart';
 
 void main() {
   group('UpdateSearcher - findCurrentUpdates', () {

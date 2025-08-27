@@ -6,7 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../helpers/mock_source_fetchers.dart';
+import 'helpers/mock_source_fetchers.dart';
 
 void main() {
   group('UpdateConfigFetcherCoordinator', () {

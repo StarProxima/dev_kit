@@ -1,7 +1,7 @@
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/resolver_test_helpers.dart';
+import 'helpers/resolver_test_helpers.dart';
 
 void main() {
   group('UpdateRuleResolver - Temporal matching', () {
