@@ -1,6 +1,16 @@
-part of '../linker_test.dart';
+import 'dart:io';
+import 'dart:ui';
 
-void runUpdateLinkerIntegrationTests() {
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:app_update/app_update.dart';
+
+import '../helpers/linker_helper.dart';
+
+void main() {
   group('UpdateLinker', () {
     const linker = UpdateLinker();
 

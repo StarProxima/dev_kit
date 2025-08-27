@@ -1,4 +1,8 @@
-part of '../fetcher_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:app_update/app_update.dart';
+
 
 // Mock classes для source fetchers (так как они ходят в сеть)
 class MockGooglePlayFetcher extends Mock implements GooglePlayFetcher {}

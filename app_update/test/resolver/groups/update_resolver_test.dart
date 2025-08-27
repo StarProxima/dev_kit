@@ -1,4 +1,12 @@
-part of '../resolver_test.dart';
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:app_update/app_update.dart';
 
 // Mock classes
 class MockUpdateRuleResolver extends Mock implements UpdateRuleResolver {}
@@ -6,7 +14,7 @@ class MockUpdateRuleResolver extends Mock implements UpdateRuleResolver {}
 class MockUpdateContentInterpolator extends Mock
     implements UpdateContentInterpolator {}
 
-void runUpdateResolverTests() {
+void main() {
   group('UpdateResolver', () {
     late MockUpdateRuleResolver mockRuleResolver;
     late MockUpdateContentInterpolator mockContentInterpolator;

@@ -63,3 +63,47 @@ dart run tools/refactor_imports.dart test/
 📊 Обработано файлов: 39
 🔧 Изменено файлов: 6
 ```
+
+## refactor_tests.dart
+
+Dart скрипт для полного рефакторинга структуры тестов с part/part of на независимые модули.
+
+Скрипт:
+- Рекурсивно анализирует структуру тестов в указанной директории
+- Переименовывает файлы `*_group.dart` в `*_test.dart`
+- Удаляет все `part`/`part of` директивы
+- Заменяет их на соответствующие `import`
+- Заменяет методы `run**Tests()` на `main()`
+- Обновляет основные тестовые файлы
+
+### Использование
+
+```bash
+# Dry-run для просмотра планируемых изменений
+dart run tools/refactor_tests.dart --dry-run
+
+# Выполнение рефакторинга для всех тестов
+dart run tools/refactor_tests.dart
+
+# Рефакторинг конкретной директории
+dart run tools/refactor_tests.dart test/parser
+
+# Через shell обертку
+./tools/refactor_tests.sh
+```
+
+### Пример вывода
+
+```
+🔧 Рефакторинг структуры тестов в директории: test
+📁 Найдено:
+   Основных файлов с part: 6
+   Файлов с part of: 32
+📝 Переименование: test/parser/groups/release_config_parser_test_group.dart -> test/parser/groups/release_config_parser_test.dart
+✏️ test/parser/groups/release_config_parser_test.dart: заменено 1 метод на main()
+✅ Рефакторинг завершен!
+🔄 Переименовано файлов: 26
+🔧 Обработано файлов: 38
+```
+
+⚠️ **Внимание:** Этот скрипт кардинально изменяет структуру тестов. Рекомендуется сделать резервную копию перед использованием.

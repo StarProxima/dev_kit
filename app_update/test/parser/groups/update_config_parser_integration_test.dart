@@ -1,6 +1,14 @@
-part of '../parser_test.dart';
+import 'dart:io';
+import 'dart:ui';
 
-void runUpdateConfigParserIntegrationTests() {
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:app_update/app_update.dart';
+
+void main() {
   group('UpdateConfigParser (интеграционный)', () {
     const parser = UpdateConfigParser();
 

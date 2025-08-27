@@ -1,4 +1,8 @@
-part of '../rule_resolver_test_group.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:app_update/app_update.dart';
+
 
 /// Матчер для проверки времени, прошедшего с момента установки приложения.
 /// Использует поле 'min_delay_after_app_install_hours' в customData правила

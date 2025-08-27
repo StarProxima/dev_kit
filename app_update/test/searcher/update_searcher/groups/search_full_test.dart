@@ -1,6 +1,17 @@
-part of '../update_searcher_test.dart';
+import 'dart:io';
+import 'dart:ui';
 
-void runSearchFullTests() {
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:app_update/app_update.dart';
+
+import '../helpers/test_utils.dart';
+
+void main() {
   group('UpdateSearcher - searchFull', () {
     final searcher = UpdateSearcherTestUtils.searcher;
     final currentDate = UpdateSearcherTestUtils.currentDate;

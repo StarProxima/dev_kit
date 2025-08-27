@@ -1,6 +1,16 @@
-part of '../update_searcher_test.dart';
+import 'dart:io';
+import 'dart:ui';
 
-void runFindCurrentTests() {
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:app_update/app_update.dart';
+
+import '../helpers/test_utils.dart';
+
+void main() {
   group('UpdateSearcher - findCurrentUpdates', () {
     final searcher = UpdateSearcherTestUtils.searcher;
     final currentDate = UpdateSearcherTestUtils.currentDate;

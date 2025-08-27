@@ -1,6 +1,14 @@
-part of '../fetcher_test.dart';
+import 'dart:ui';
 
-void runUpdateConfigFetcherCoordinatorTests() {
+import 'package:app_update/app_update.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pub_semver/pub_semver.dart';
+
+import '../helpers/mock_source_fetchers.dart';
+
+void main() {
   group('UpdateConfigFetcherCoordinator', () {
     late UpdateConfigFetcherCoordinator coordinator;
     late MockUpdateSearchDataDefaulter mockDefaulter;

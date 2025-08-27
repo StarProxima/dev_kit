@@ -1,6 +1,14 @@
-part of '../fetcher_test.dart';
+import 'dart:io';
+import 'dart:ui';
 
-void runUpdateConfigFetcherTests() {
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:yaml/yaml.dart';
+
+import '../helpers/mock_source_fetchers.dart';
+
+void main() {
   group('UpdateConfigFetcher', () {
     late MockUpdateConfigParser mockParser;
 

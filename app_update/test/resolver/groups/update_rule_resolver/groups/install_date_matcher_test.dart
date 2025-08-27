@@ -1,6 +1,17 @@
-part of '../rule_resolver_test_group.dart';
+import 'dart:io';
+import 'dart:ui';
 
-void runInstallDateMatcherTests() {
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:app_update/app_update.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:app_update/app_update.dart';
+
+import '../helpers/install_date_matcher.dart';
+import '../helpers/resolver_test_helpers.dart';
+
+void main() {
   group('InstallDateMatcher integration tests', () {
     test('InstallDateMatcher: проверка времени после установки приложения', () {
       // Создаем резолвер только с InstallDateMatcher для демонстрации
