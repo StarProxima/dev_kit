@@ -20,6 +20,8 @@ class TemporalMatcher extends RuleMatcher {
       currentDate: search.currentDate,
       localReleaseDate: search.localReleaseDate,
       updateReleaseDate: search.updateReleaseDate,
+      appUpdateDate: search.appUpdateDate,
+      appInstallDate: search.appInstallDate,
       rolloutPointer: search.rolloutPointer,
       segmentationPointer: search.segmentationPointer,
     );
@@ -34,6 +36,8 @@ class TemporalMatcher extends RuleMatcher {
     required DateTime currentDate,
     required DateTime? localReleaseDate,
     required DateTime? updateReleaseDate,
+    required DateTime? appUpdateDate,
+    required DateTime? appInstallDate,
     required double rolloutPointer,
     required double segmentationPointer,
   }) {
@@ -42,37 +46,30 @@ class TemporalMatcher extends RuleMatcher {
       if (segmentationPointer > threshold) return false;
     }
 
-    final hasTemporalConditions = delay != null || rollout != null;
-    if (ruleDate == UpdateDate.any && !hasTemporalConditions) return true;
+    if (ruleDate == UpdateDate.any) return true;
 
     DateTime? baseDate = ruleDate.date;
-    if (baseDate == null && ruleDate != UpdateDate.any) {
-      if (ruleDate == UpdateDate.localReleaseDate) {
-        baseDate = localReleaseDate;
-      } else if (ruleDate == UpdateDate.updateReleaseDate) {
-        baseDate = updateReleaseDate;
-      }
-    }
 
-    if (!hasTemporalConditions) {
-      return baseDate != null &&
-          (currentDate.isAfter(baseDate) ||
-              currentDate.isAtSameMomentAs(baseDate));
-    }
+    baseDate ??= switch (ruleDate) {
+      UpdateDate.localReleaseDate => localReleaseDate,
+      UpdateDate.updateReleaseDate => updateReleaseDate,
+      UpdateDate.appUpdateDate => appUpdateDate,
+      UpdateDate.appInstallDate => appInstallDate,
+      _ => null,
+    };
 
     if (baseDate == null) return false;
 
     if (delay != null) {
-      final start = baseDate.add(delay);
-      if (currentDate.isBefore(start)) return false;
+      baseDate = baseDate.add(delay);
     }
+
+    if (currentDate.isBefore(baseDate)) return false;
 
     if (rollout != null) {
       final elapsed = currentDate.difference(baseDate);
-      if (elapsed.isNegative) return false;
-      final totalMs = rollout.inMilliseconds;
-      if (totalMs <= 0) return false;
-      final fraction = (elapsed.inMilliseconds / totalMs).clamp(0.0, 1.0);
+      final fraction =
+          (elapsed.inMilliseconds / rollout.inMilliseconds).clamp(0.0, 1.0);
       if (rolloutPointer > fraction) return false;
     }
 

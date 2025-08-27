@@ -26,7 +26,7 @@ void main() {
       final res = customResolver.resolve(
         searchData: createTestSearchData(
           currentDate: currentDate,
-          appInstallDate: installDate,
+          customAppInstallDate: installDate,
         ),
         rules: rules,
       );
@@ -53,7 +53,7 @@ void main() {
         () => customResolver.resolve(
           searchData: createTestSearchData(
             currentDate: currentDate,
-            appInstallDate: installDate,
+            customAppInstallDate: installDate,
           ),
           rules: rules,
         ),
@@ -114,7 +114,7 @@ void main() {
         searchData: createTestSearchData(
           currentDate: currentDate,
           custom: const {'env': 'prod'}, // Для CustomDataMatcher
-          appInstallDate: installDate,
+          customAppInstallDate: installDate,
         ),
         rules: rules,
       );

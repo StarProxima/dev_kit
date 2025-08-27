@@ -38,12 +38,14 @@ class UpdateSearchDataDefaulter {
       appStatus: null,
       locale: UpdateLocale.any,
       currentDate: DateTime.now(),
-      localReleaseDate: packageInfo.updateTime ?? packageInfo.installTime,
+      localReleaseDate: null,
       updateReleaseDate: null,
+      appUpdateDate: packageInfo.updateTime,
+      appInstallDate: packageInfo.installTime,
       // TODO: default value
-      segmentationPointer: 1,
+      segmentationPointer: 0,
       // TODO: default value
-      rolloutPointer: 1,
+      rolloutPointer: 0,
       appName: packageInfo.appName,
       appPackageName: packageInfo.packageName,
       customData: null,
@@ -62,6 +64,10 @@ class UpdateSearchDataDefaulter {
           searchConfig.localReleaseDate ?? defaultSearchData.localReleaseDate,
       updateReleaseDate:
           searchConfig.updateReleaseDate ?? defaultSearchData.updateReleaseDate,
+      appUpdateDate:
+          searchConfig.appUpdateDate ?? defaultSearchData.appUpdateDate,
+      appInstallDate:
+          searchConfig.appInstallDate ?? defaultSearchData.appInstallDate,
       segmentationPointer: searchConfig.segmentationPointer ??
           defaultSearchData.segmentationPointer,
       rolloutPointer:

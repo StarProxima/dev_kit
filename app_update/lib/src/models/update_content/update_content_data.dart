@@ -51,16 +51,13 @@ class UpdateContentData {
       ),
     );
 
-    final releaseNotes = this.releaseNotes;
-
     return UpdateContentData(
-      updateUrl: updateUrl,
+      updateUrl:
+          Uri.parse(_interpolateString(updateUrl.toString(), interpolateData)),
       title: _interpolateString(title, interpolateData),
       description: _interpolateString(description, interpolateData),
       releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
-      releaseNotes: releaseNotes == null
-          ? null
-          : _interpolateString(releaseNotes, interpolateData),
+      releaseNotes: _interpolateString(releaseNotes, interpolateData),
       skipButton: _interpolateString(skipButton, interpolateData),
       postponeButton: _interpolateString(postponeButton, interpolateData),
       updateButton: _interpolateString(updateButton, interpolateData),
@@ -68,13 +65,20 @@ class UpdateContentData {
     );
   }
 
-  String _interpolateString(String text, Map<String, String> interpolateData) {
-    String result = text;
+  static T _interpolateString<T extends String?>(
+    T text,
+    Map<String, String> interpolateData,
+  ) {
+    if (text == null) return text;
+
+    String str = text;
+
     for (final entry in interpolateData.entries) {
-      result = result.replaceAll(_regExpForField(entry.key), entry.value);
+      str = str.replaceAll(_regExpForField(entry.key), entry.value);
     }
 
-    return result;
+    // ignore: avoid-type-casts
+    return str as T;
   }
 
   static RegExp _regExpForField(String name) =>

@@ -18,15 +18,15 @@ UpdateSearchData createTestSearchData({
   DateTime? currentDate,
   DateTime? localReleaseDate,
   DateTime? updateReleaseDate,
+  DateTime? appUpdateDate,
+  DateTime? appInstallDate,
   double segmentationPointer = 0.0,
   double rolloutPointer = 0.0,
+  DateTime? customAppInstallDate,
   Map<String, dynamic>? custom,
-  DateTime? appInstallDate,
 }) {
-  Map<String, dynamic> customData = custom ?? <String, dynamic>{};
-
-  if (appInstallDate != null) {
-    customData = {...customData, 'app_install_date': appInstallDate};
+  if (customAppInstallDate != null) {
+    custom = {...?custom, 'app_install_date': customAppInstallDate};
   }
 
   return UpdateSearchData(
@@ -39,11 +39,13 @@ UpdateSearchData createTestSearchData({
     currentDate: currentDate ?? DateTime(2024, 10, 20, 12),
     localReleaseDate: localReleaseDate,
     updateReleaseDate: updateReleaseDate,
+    appUpdateDate: appUpdateDate,
+    appInstallDate: appInstallDate,
     segmentationPointer: segmentationPointer,
     rolloutPointer: rolloutPointer,
     appName: appName,
     appPackageName: appPackageName,
-    customData: customData.isNotEmpty ? customData : null,
+    customData: custom,
   );
 }
 

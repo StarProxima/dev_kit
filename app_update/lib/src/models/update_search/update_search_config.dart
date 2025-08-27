@@ -25,6 +25,8 @@ class UpdateSearchConfig {
   final DateTime? currentDate;
   final DateTime? localReleaseDate;
   final DateTime? updateReleaseDate;
+  final DateTime? appUpdateDate;
+  final DateTime? appInstallDate;
 
   /// From 0.0 to 1.0, uses for calculate user segmentation compliance.
   final double? segmentationPointer;
@@ -48,6 +50,8 @@ class UpdateSearchConfig {
     this.currentDate,
     this.localReleaseDate,
     this.updateReleaseDate,
+    this.appUpdateDate,
+    this.appInstallDate,
     this.appStatus,
     this.segmentationPointer,
     this.rolloutPointer,
@@ -65,6 +69,8 @@ class UpdateSearchConfig {
     DateTime? currentDate,
     DateTime? localReleaseDate,
     DateTime? updateReleaseDate,
+    DateTime? appUpdateDate,
+    DateTime? appInstallDate,
     AppStatus? appStatus,
     double? segmentationPointer,
     double? rolloutPointer,
@@ -81,6 +87,8 @@ class UpdateSearchConfig {
         currentDate: currentDate ?? this.currentDate,
         localReleaseDate: localReleaseDate ?? this.localReleaseDate,
         updateReleaseDate: updateReleaseDate ?? this.updateReleaseDate,
+        appUpdateDate: appUpdateDate ?? this.appUpdateDate,
+        appInstallDate: appInstallDate ?? this.appInstallDate,
         appStatus: appStatus ?? this.appStatus,
         segmentationPointer: segmentationPointer ?? this.segmentationPointer,
         rolloutPointer: rolloutPointer ?? this.rolloutPointer,

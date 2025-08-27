@@ -23,7 +23,7 @@ class UpdateDateParser {
 
     final byName = UpdateDate(null, name: value);
 
-    if (UpdateDate.values.contains(byName)) {
+    if (UpdateDate.valuesWithAny.contains(byName)) {
       return byName;
     }
 
