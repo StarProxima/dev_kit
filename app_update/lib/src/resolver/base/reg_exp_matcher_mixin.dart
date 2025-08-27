@@ -11,10 +11,8 @@ mixin RegExpMatcherMixin {
     String searchValue,
     List<String> ruleValues,
   ) {
-    if (ruleValues.isEmpty) return false; // Пустой список никого не пускает
-
-    // Проверка на 'any' в списке
-    if (ruleValues.any((value) => value.toLowerCase() == 'any')) {
+    // Проверка на 'any' в списке правил
+    if (ruleValues.any((ruleValue) => ruleValue.toLowerCase() == 'any')) {
       return true;
     }
 
@@ -27,15 +25,12 @@ mixin RegExpMatcherMixin {
       // Проверка на регулярное выражение
       if (ruleStr.startsWith(_regexpPrefix)) {
         final pattern = ruleStr.substring(_regexpPrefix.length);
-        try {
-          final regex = RegExp(pattern, caseSensitive: false);
-          if (regex.hasMatch(searchStr)) return true;
-        } catch (e) {
-          // Если регулярка невалидная, пропускаем
-          continue;
-        }
-      } else if (ruleStr == searchStr) {
-        // Обычное сравнение строк
+
+        final regex = RegExp(pattern, caseSensitive: false);
+        if (regex.hasMatch(searchStr)) return true;
+      }
+      // Обычное сравнение строк
+      else if (ruleStr == searchStr) {
         return true;
       }
     }

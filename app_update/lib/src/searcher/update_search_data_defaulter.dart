@@ -1,8 +1,10 @@
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import '../entities/app_status.dart';
 import '../entities/update_locale.dart';
 import '../entities/update_platform.dart';
+import '../entities/update_source.dart';
 import '../entities/update_view_target.dart';
 import '../models/update_search/update_search_config.dart';
 import '../models/update_search/update_search_data.dart';
@@ -19,6 +21,10 @@ class UpdateSearchDataDefaulter {
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
   }) {
+    if (_hasAnyInSearch(searchConfig)) {
+      throw ArgumentError('Any value in search config is not allowed');
+    }
+
     final defaultSources = _updateSourceChecker.getDefaultSupportedSources(
       platform: searchConfig.platform ?? UpdatePlatform.current(),
     );
@@ -33,10 +39,12 @@ class UpdateSearchDataDefaulter {
       locale: UpdateLocale.any,
       currentDate: DateTime.now(),
       localReleaseDate: packageInfo.updateTime ?? packageInfo.installTime,
-      // TODO: default value
       updateReleaseDate: null,
       // TODO: default value
-      segmentationPointer: 1, rolloutPointer: 1, appName: packageInfo.appName,
+      segmentationPointer: 1,
+      // TODO: default value
+      rolloutPointer: 1,
+      appName: packageInfo.appName,
       appPackageName: packageInfo.packageName,
       customData: null,
     );
@@ -65,5 +73,13 @@ class UpdateSearchDataDefaulter {
     );
 
     return searchData;
+  }
+
+  static bool _hasAnyInSearch(UpdateSearchConfig searchConfig) {
+    return searchConfig.appStatus == AppStatus.any ||
+        searchConfig.locale == UpdateLocale.any ||
+        searchConfig.displayTarget == UpdateViewTarget.any ||
+        searchConfig.platform == UpdatePlatform.any ||
+        (searchConfig.sources ?? []).contains(UpdateSource.any);
   }
 }

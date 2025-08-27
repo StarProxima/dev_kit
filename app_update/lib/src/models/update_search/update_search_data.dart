@@ -8,14 +8,18 @@ import '../../entities/update_view_target.dart';
 import '../../utils/mergeable.dart';
 
 class UpdateSearchData {
-  final UpdatePlatform platform;
   final List<UpdateSource> sources;
-  final Version localVersion;
   final UpdateViewTarget displayTarget;
   final UpdateLocale locale;
 
   /// Null for search in app_settings_rules.
   final AppStatus? appStatus;
+
+  /// Default [UpdatePlatform.current].
+  final UpdatePlatform platform;
+
+  /// App version, uses for compare with rule version.
+  final Version localVersion;
 
   /// Uses for calculate rule date and delay compliance.
   final DateTime currentDate;

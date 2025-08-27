@@ -2,7 +2,6 @@ import '../../entities/update_platform.dart';
 import '../../entities/update_source.dart';
 import '../../models/update_rule/update_rule_config.dart';
 import '../../models/update_search/update_search_data.dart';
-import '../../utils/mergeable.dart';
 import '../base/rule_matcher.dart';
 
 /// Матчер для проверки соответствия источника дистрибуции и платформы.
@@ -10,29 +9,31 @@ class SourceMatcher extends RuleMatcher {
   const SourceMatcher();
 
   @override
-  bool isMatches<T extends Mergeable<T>>({
-    required UpdateRuleConfig<T> rule,
+  bool isMatches({
+    required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    return _isMatchBySources(
-      rule.sourceIs ?? [UpdateSource.any],
-      search.sources,
-      search.platform,
+    return isMatchBySources(
+      ruleSources: rule.sourceIs ?? [UpdateSource.any],
+      searchSources: search.sources,
+      searchPlatform: search.platform,
     );
   }
 
-  bool _isMatchBySources(
-    List<UpdateSource> ruleSources,
-    List<UpdateSource> searchSources,
-    UpdatePlatform platform,
-  ) {
+  bool isMatchBySources({
+    required List<UpdateSource> ruleSources,
+    required List<UpdateSource> searchSources,
+    required UpdatePlatform searchPlatform,
+  }) {
     if (ruleSources.contains(UpdateSource.any)) return true;
+    if (searchSources.contains(UpdateSource.any)) return true;
+
     for (final ruleSource in ruleSources) {
       final matchedSearchSource = _findSource(searchSources, ruleSource);
       if (matchedSearchSource == null) continue;
       if (_isSourceSupportsPlatform(
         ruleSource,
-        platform,
+        searchPlatform,
         matchedSearchSource,
       )) {
         return true;
@@ -55,19 +56,16 @@ class SourceMatcher extends RuleMatcher {
 
   static bool _isSourceSupportsPlatform(
     UpdateSource ruleSource,
-    UpdatePlatform platform,
+    UpdatePlatform searchPlatform,
     UpdateSource searchSource,
   ) {
-    final rulePlatforms = ruleSource.platforms;
-    if (rulePlatforms == null) {
-      final globalPlatforms = searchSource.platforms;
-      if (globalPlatforms == null || globalPlatforms.isEmpty) return true;
+    final rulePlatforms = ruleSource.platforms ?? searchSource.platforms;
 
-      return globalPlatforms
-          .any((p) => p == platform || p == UpdatePlatform.any);
-    }
-    if (rulePlatforms.isEmpty) return false;
+    if (rulePlatforms == null || rulePlatforms.isEmpty) return false;
 
-    return rulePlatforms.any((p) => p == platform || p == UpdatePlatform.any);
+    final isMatch = rulePlatforms.contains(UpdatePlatform.any) ||
+        rulePlatforms.contains(searchPlatform);
+
+    return isMatch;
   }
 }

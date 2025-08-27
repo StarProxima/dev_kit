@@ -1,6 +1,5 @@
 import '../../models/update_rule/update_rule_config.dart';
 import '../../models/update_search/update_search_data.dart';
-import '../../utils/mergeable.dart';
 
 /// Интерфейс матчера одного аспекта правила.
 /// Каждый матчер проверяет соответствие определенного аспекта правила поисковому контексту.
@@ -13,8 +12,8 @@ abstract class RuleMatcher {
 
   /// Проверяет соответствие правила поисковому контексту.
   /// Generic параметр позволяет одному матчеру работать с разными типами правил.
-  bool isMatches<T extends Mergeable<T>>({
-    required UpdateRuleConfig<T> rule,
+  bool isMatches({
+    required UpdateRuleConfig rule,
     required UpdateSearchData search,
   });
 }

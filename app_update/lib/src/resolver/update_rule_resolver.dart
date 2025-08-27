@@ -52,7 +52,7 @@ class UpdateRuleResolver {
     T? result;
 
     for (final rule in rules) {
-      if (!_isRuleMatched(rule: rule, searchData: searchData)) continue;
+      if (!isRuleMatched(rule: rule, searchData: searchData)) continue;
 
       final data = rule.data;
       result = result == null ? data : result.merge(data);
@@ -63,7 +63,7 @@ class UpdateRuleResolver {
     return result;
   }
 
-  bool _isRuleMatched<T extends Mergeable<T>>({
+  bool isRuleMatched<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData searchData,
   }) {
@@ -74,7 +74,7 @@ class UpdateRuleResolver {
         : rule;
 
     for (final matcher in matchers) {
-      if (!matcher.isMatches<T>(rule: finalRule, search: searchData)) {
+      if (!matcher.isMatches(rule: finalRule, search: searchData)) {
         return false;
       }
     }

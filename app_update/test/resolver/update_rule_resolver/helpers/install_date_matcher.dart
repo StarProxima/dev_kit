@@ -11,8 +11,8 @@ class InstallDateMatcher extends RuleMatcher {
   bool get canUseCustomData => true;
 
   @override
-  bool isMatches<T extends Mergeable<T>>({
-    required UpdateRuleConfig<T> rule,
+  bool isMatches({
+    required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
     final ruleCustomData = rule.customData;

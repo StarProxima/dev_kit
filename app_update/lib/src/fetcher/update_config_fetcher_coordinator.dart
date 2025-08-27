@@ -1,21 +1,28 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../default_rules/default_update_config.dart';
 import '../models/update_config/update_config.dart';
 import '../models/update_search/update_search_config.dart';
+import '../resolver/matchers/source_matcher.dart';
 import '../searcher/update_search_data_defaulter.dart';
 import 'update_config_fetcher.dart';
 import 'update_config_source_fetcher.dart';
 
 /// Координатор фетчеров.
 class UpdateConfigFetcherCoordinator {
-  final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
+  @protected
+  final UpdateSearchDataDefaulter updateSearchDataDefaulter;
+
+  @protected
+  final SourceMatcher sourceMatcher;
 
   const UpdateConfigFetcherCoordinator({
-    required UpdateSearchDataDefaulter updateSearchDataDefaulter,
-  }) : _updateSearchDataDefaulter = updateSearchDataDefaulter;
+    required this.updateSearchDataDefaulter,
+    required this.sourceMatcher,
+  });
 
   Future<List<UpdateConfig>> fetch({
     required List<UpdateConfigFetcher> fetchers,
@@ -29,7 +36,7 @@ class UpdateConfigFetcherCoordinator {
       defaultUpdateConfig,
     ];
 
-    final searchData = _updateSearchDataDefaulter.getSearchDataWithDefaults(
+    final searchData = updateSearchDataDefaulter.getSearchDataWithDefaults(
       searchConfig: searchConfig,
       packageInfo: packageInfo,
     );
@@ -41,11 +48,13 @@ class UpdateConfigFetcherCoordinator {
         case UpdateConfigSourceFetcher(:final source):
           if (!shouldFetchSourceFetchers) continue;
 
-          if (!searchData.sources.contains(source)) {
-            continue;
-          }
+          final isMatch = sourceMatcher.isMatchBySources(
+            ruleSources: [source],
+            searchSources: searchData.sources,
+            searchPlatform: searchData.platform,
+          );
 
-          if (!(source.platforms?.contains(searchData.platform) ?? false)) {
+          if (!isMatch) {
             continue;
           }
 

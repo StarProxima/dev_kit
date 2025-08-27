@@ -14,9 +14,35 @@ void main() {
     late MockUpdateSearchDataDefaulter mockDefaulter;
     late MockUpdateConfigFetcher mockFetcher;
     late MockUpdateConfigSourceFetcher mockSourceFetcher;
-    // late MockGooglePlayFetcher mockGooglePlayFetcher;
+    late MockUpdateConfigSourceFetcher mockSourceFetcher2;
+    late MockUpdateConfigFetcher mockFetcher2;
     late PackageInfo packageInfo;
-    late UpdateSearchConfig searchConfig;
+    late UpdateSearchConfig baseSearchConfig;
+
+    /// Создает базовый UpdateSearchData для тестов
+    UpdateSearchData createSearchData({
+      UpdatePlatform platform = UpdatePlatform.android,
+      List<UpdateSource> sources = const [UpdateSource.googlePlay],
+      UpdateLocale locale = UpdateLocale.en,
+      Version? localVersion,
+    }) {
+      return UpdateSearchData(
+        platform: platform,
+        sources: sources,
+        localVersion: localVersion ?? Version.parse('1.0.0'),
+        displayTarget: UpdateViewTarget.any,
+        appStatus: null,
+        locale: locale,
+        currentDate: DateTime(2024, 10, 15),
+        localReleaseDate: null,
+        updateReleaseDate: null,
+        segmentationPointer: 0,
+        rolloutPointer: 0,
+        appName: 'Test App',
+        appPackageName: 'com.test.app',
+        customData: null,
+      );
+    }
 
     setUpAll(() {
       // Регистрируем fallback значения
@@ -45,46 +71,33 @@ void main() {
       mockDefaulter = MockUpdateSearchDataDefaulter();
       coordinator = UpdateConfigFetcherCoordinator(
         updateSearchDataDefaulter: mockDefaulter,
+        sourceMatcher: const SourceMatcher(),
       );
 
       mockFetcher = MockUpdateConfigFetcher();
       mockSourceFetcher = MockUpdateConfigSourceFetcher();
-      // mockGooglePlayFetcher = MockGooglePlayFetcher();
+      mockSourceFetcher2 = MockUpdateConfigSourceFetcher();
+      mockFetcher2 = MockUpdateConfigFetcher();
 
       packageInfo = FakePackageInfo();
-      searchConfig = const UpdateSearchConfig(
+      baseSearchConfig = const UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: [UpdateSource.googlePlay],
       );
     });
 
-    group('основная логика fetch', () {
+    group('базовая логика', () {
       test('всегда включает defaultUpdateConfig в начало списка', () async {
         // Arrange
         when(() => mockDefaulter.getSearchDataWithDefaults(
               searchConfig: any(named: 'searchConfig'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenReturn(UpdateSearchData(
-          platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
-          locale: UpdateLocale.any,
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0,
-          rolloutPointer: 0,
-          appName: 'Test',
-          appPackageName: 'com.test',
-          customData: null,
-        ));
+            )).thenReturn(createSearchData());
 
         // Act
         final result = await coordinator.fetch(
           fetchers: [],
-          searchConfig: searchConfig,
+          searchConfig: baseSearchConfig,
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: false,
           shouldFetchFerchers: false,
@@ -92,30 +105,16 @@ void main() {
 
         // Assert
         expect(result, hasLength(1));
-        expect(
-          result.first.contentRules,
-          isNotNull,
-        ); // defaultUpdateConfig имеет content
+        expect(result.first.contentRules, isNotNull);
       });
 
-      // ignore: missing-test-assertion
       test('правильно получает searchData через defaulter', () async {
         // Arrange
-        final expectedSearchData = UpdateSearchData(
+        final expectedSearchData = createSearchData(
           platform: UpdatePlatform.ios,
           sources: const [UpdateSource.appStore],
-          localVersion: Version.parse('1.5.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
           locale: UpdateLocale.ru,
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0.3,
-          rolloutPointer: 0.8,
-          appName: 'Custom App',
-          appPackageName: 'com.custom.app',
-          customData: null,
+          localVersion: Version.parse('1.5.0'),
         );
 
         when(() => mockDefaulter.getSearchDataWithDefaults(
@@ -126,7 +125,7 @@ void main() {
         // Act
         await coordinator.fetch(
           fetchers: [],
-          searchConfig: searchConfig,
+          searchConfig: baseSearchConfig,
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: false,
           shouldFetchFerchers: false,
@@ -134,40 +133,22 @@ void main() {
 
         // Assert
         verify(() => mockDefaulter.getSearchDataWithDefaults(
-              searchConfig: searchConfig,
+              searchConfig: baseSearchConfig,
               packageInfo: packageInfo,
             )).called(1);
       });
     });
 
     group('обработка UpdateConfigSourceFetcher', () {
-      setUp(() {
-        when(() => mockDefaulter.getSearchDataWithDefaults(
-              searchConfig: any(named: 'searchConfig'),
-              packageInfo: any(named: 'packageInfo'),
-            )).thenReturn(UpdateSearchData(
-          platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
-          locale: UpdateLocale.en,
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0,
-          rolloutPointer: 0,
-          appName: 'Test',
-          appPackageName: 'com.test',
-          customData: null,
-        ));
-      });
-
       test(
-        'выполняет source fetcher если shouldFetchSourceFetchers = true',
+        'выполняет source fetcher при shouldFetchSourceFetchers = true',
         () async {
           // Arrange
           const expectedConfig = UpdateConfig();
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData());
 
           when(() => mockSourceFetcher.source)
               .thenReturn(UpdateSource.googlePlay);
@@ -179,14 +160,14 @@ void main() {
           // Act
           final result = await coordinator.fetch(
             fetchers: [mockSourceFetcher],
-            searchConfig: searchConfig,
+            searchConfig: baseSearchConfig,
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: true,
             shouldFetchFerchers: false,
           );
 
           // Assert
-          expect(result, hasLength(2)); // default + source fetcher
+          expect(result, hasLength(2));
           expect(result.last, expectedConfig);
           verify(() => mockSourceFetcher.fetch(
                 locale: const Locale('en'),
@@ -196,23 +177,28 @@ void main() {
       );
 
       test(
-        'пропускает source fetcher если shouldFetchSourceFetchers = false',
+        'пропускает source fetcher при shouldFetchSourceFetchers = false',
         () async {
           // Arrange
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData());
+
           when(() => mockSourceFetcher.source)
               .thenReturn(UpdateSource.googlePlay);
 
           // Act
           final result = await coordinator.fetch(
             fetchers: [mockSourceFetcher],
-            searchConfig: searchConfig,
+            searchConfig: baseSearchConfig,
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: false,
             shouldFetchFerchers: false,
           );
 
           // Assert
-          expect(result, hasLength(1)); // только default
+          expect(result, hasLength(1));
           verifyNever(() => mockSourceFetcher.fetch(
                 locale: any(named: 'locale'),
                 packageInfo: any(named: 'packageInfo'),
@@ -224,20 +210,26 @@ void main() {
         'пропускает source fetcher если его source не в searchData.sources',
         () async {
           // Arrange
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                    searchConfig: any(named: 'searchConfig'),
+                    packageInfo: any(named: 'packageInfo'),
+                  ))
+              .thenReturn(createSearchData(sources: [UpdateSource.googlePlay]));
+
           when(() => mockSourceFetcher.source)
-              .thenReturn(UpdateSource.appStore); // НЕ googlePlay
+              .thenReturn(UpdateSource.appStore);
 
           // Act
           final result = await coordinator.fetch(
             fetchers: [mockSourceFetcher],
-            searchConfig: searchConfig,
+            searchConfig: baseSearchConfig,
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: true,
             shouldFetchFerchers: false,
           );
 
           // Assert
-          expect(result, hasLength(1)); // только default
+          expect(result, hasLength(1));
           verifyNever(() => mockSourceFetcher.fetch(
                 locale: any(named: 'locale'),
                 packageInfo: any(named: 'packageInfo'),
@@ -246,29 +238,32 @@ void main() {
       );
 
       test(
-        'пропускает source fetcher если платформа не поддерживается',
+        'пропускает source fetcher если платформа не поддерживается (с platforms)',
         () async {
           // Arrange
-          final sourceWithIosPlatforms = MockUpdateConfigSourceFetcher();
-          when(() => sourceWithIosPlatforms.source).thenReturn(
-            const UpdateSource.custom(
-              UpdateSourceName.custom('test'),
-              platforms: [UpdatePlatform.ios],
-            ) // НЕ android
-            ,
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData(platform: UpdatePlatform.android));
+
+          final sourceWithIosPlatforms = const UpdateSource.custom(
+            UpdateSourceName.custom('test'),
+            platforms: [UpdatePlatform.ios],
           );
+          when(() => mockSourceFetcher.source)
+              .thenReturn(sourceWithIosPlatforms);
 
           // Act
           final result = await coordinator.fetch(
-            fetchers: [sourceWithIosPlatforms],
+            fetchers: [mockSourceFetcher],
             searchConfig: const UpdateSearchConfig(
-              platform: UpdatePlatform.android, // поиск android
+              platform: UpdatePlatform.android,
               sources: [
                 UpdateSource.custom(
                   UpdateSourceName.custom('test'),
                   platforms: [UpdatePlatform.ios],
                 ),
-              ], // но source только iOS
+              ],
             ),
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: true,
@@ -276,16 +271,68 @@ void main() {
           );
 
           // Assert
-          expect(result, hasLength(1)); // только default
-          verifyNever(() => sourceWithIosPlatforms.fetch(
+          expect(result, hasLength(1));
+          verifyNever(() => mockSourceFetcher.fetch(
                 locale: any(named: 'locale'),
                 packageInfo: any(named: 'packageInfo'),
               ));
         },
       );
 
+      test(
+        'НЕ пропускает source fetcher если platforms = null (поддерживает все платформы)',
+        () async {
+          // Arrange
+          const expectedConfig = UpdateConfig();
+          final sourceWithNullPlatforms = const UpdateSource.custom(
+            UpdateSourceName.custom('universal'),
+            platforms: null, // null = поддерживает все платформы
+          );
+
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData(
+            platform: UpdatePlatform.android,
+            sources: [sourceWithNullPlatforms], // Включаем source в список
+          ));
+
+          when(() => mockSourceFetcher.source)
+              .thenReturn(sourceWithNullPlatforms);
+          when(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenAnswer((_) async => expectedConfig);
+
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher],
+            searchConfig: UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: [sourceWithNullPlatforms],
+            ),
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: true,
+            shouldFetchFerchers: false,
+          );
+
+          // Assert
+          expect(result, hasLength(2)); // default + source config
+          expect(result.last, expectedConfig);
+          verify(() => mockSourceFetcher.fetch(
+                locale: const Locale('en'),
+                packageInfo: packageInfo,
+              )).called(1);
+        },
+      );
+
       test('обрабатывает UnimplementedError от source fetcher', () async {
         // Arrange
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData());
+
         when(() => mockSourceFetcher.source)
             .thenReturn(UpdateSource.googlePlay);
         when(() => mockSourceFetcher.fetch(
@@ -296,37 +343,23 @@ void main() {
         // Act
         final result = await coordinator.fetch(
           fetchers: [mockSourceFetcher],
-          searchConfig: searchConfig,
+          searchConfig: baseSearchConfig,
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: true,
           shouldFetchFerchers: false,
         );
 
         // Assert
-        expect(result, hasLength(1)); // только default, source fetcher пропущен
+        expect(result, hasLength(1)); // только default
       });
 
-      // ignore: missing-test-assertion
       test('правильно передает locale в source fetcher', () async {
         // Arrange
         when(() => mockDefaulter.getSearchDataWithDefaults(
               searchConfig: any(named: 'searchConfig'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenReturn(UpdateSearchData(
-          platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
+            )).thenReturn(createSearchData(
           locale: const UpdateLocale(Locale('ru', 'RU')),
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0,
-          rolloutPointer: 0,
-          appName: 'Test',
-          appPackageName: 'com.test',
-          customData: null,
         ));
 
         when(() => mockSourceFetcher.source)
@@ -339,7 +372,7 @@ void main() {
         // Act
         await coordinator.fetch(
           fetchers: [mockSourceFetcher],
-          searchConfig: searchConfig,
+          searchConfig: baseSearchConfig,
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: true,
           shouldFetchFerchers: false,
@@ -352,7 +385,6 @@ void main() {
             )).called(1);
       });
 
-      // ignore: missing-test-assertion
       test(
         'использует дефолтный locale EN если locale.locale = null',
         () async {
@@ -360,22 +392,7 @@ void main() {
           when(() => mockDefaulter.getSearchDataWithDefaults(
                 searchConfig: any(named: 'searchConfig'),
                 packageInfo: any(named: 'packageInfo'),
-              )).thenReturn(UpdateSearchData(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            localVersion: Version.parse('1.0.0'),
-            // locale.locale = null
-            displayTarget: UpdateViewTarget.any,
-            appStatus: null,
-            locale: UpdateLocale.any, currentDate: DateTime(2024, 10, 15),
-            localReleaseDate: null,
-            updateReleaseDate: null,
-            segmentationPointer: 0,
-            rolloutPointer: 0,
-            appName: 'Test',
-            appPackageName: 'com.test',
-            customData: null,
-          ));
+              )).thenReturn(createSearchData(locale: UpdateLocale.any));
 
           when(() => mockSourceFetcher.source)
               .thenReturn(UpdateSource.googlePlay);
@@ -387,7 +404,7 @@ void main() {
           // Act
           await coordinator.fetch(
             fetchers: [mockSourceFetcher],
-            searchConfig: searchConfig,
+            searchConfig: baseSearchConfig,
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: true,
             shouldFetchFerchers: false,
@@ -402,34 +419,16 @@ void main() {
       );
     });
 
-    group('обработка обычных UpdateConfigFetcherBase', () {
-      setUp(() {
-        when(() => mockDefaulter.getSearchDataWithDefaults(
-              searchConfig: any(named: 'searchConfig'),
-              packageInfo: any(named: 'packageInfo'),
-            )).thenReturn(UpdateSearchData(
-          platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
-          locale: UpdateLocale.en,
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0,
-          rolloutPointer: 0,
-          appName: 'Test',
-          appPackageName: 'com.test',
-          customData: null,
-        ));
-      });
-
+    group('обработка обычных UpdateConfigFetcher', () {
       test(
-        'выполняет обычный fetcher если shouldFetchFerchers = true',
+        'выполняет обычный fetcher при shouldFetchFerchers = true',
         () async {
           // Arrange
           const expectedConfig = UpdateConfig();
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData());
 
           when(() => mockFetcher.fetch(
                 locale: any(named: 'locale'),
@@ -439,14 +438,14 @@ void main() {
           // Act
           final result = await coordinator.fetch(
             fetchers: [mockFetcher],
-            searchConfig: searchConfig,
+            searchConfig: baseSearchConfig,
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: false,
             shouldFetchFerchers: true,
           );
 
           // Assert
-          expect(result, hasLength(2)); // default + fetcher
+          expect(result, hasLength(2));
           expect(result.last, expectedConfig);
           verify(() => mockFetcher.fetch(
                 locale: const Locale('en'),
@@ -456,19 +455,25 @@ void main() {
       );
 
       test(
-        'пропускает обычный fetcher если shouldFetchFerchers = false',
+        'пропускает обычный fetcher при shouldFetchFerchers = false',
         () async {
+          // Arrange
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData());
+
           // Act
           final result = await coordinator.fetch(
             fetchers: [mockFetcher],
-            searchConfig: searchConfig,
+            searchConfig: baseSearchConfig,
             packageInfo: packageInfo,
             shouldFetchSourceFetchers: false,
             shouldFetchFerchers: false,
           );
 
           // Assert
-          expect(result, hasLength(1)); // только default
+          expect(result, hasLength(1));
           verifyNever(() => mockFetcher.fetch(
                 locale: any(named: 'locale'),
                 packageInfo: any(named: 'packageInfo'),
@@ -477,121 +482,173 @@ void main() {
       );
     });
 
-    group('смешанные сценарии', () {
-      setUp(() {
+    group('тестирование разных UpdateSearchConfig', () {
+      test('обрабатывает iOS с AppStore источником', () async {
+        // Arrange
+        const expectedConfig = UpdateConfig();
         when(() => mockDefaulter.getSearchDataWithDefaults(
               searchConfig: any(named: 'searchConfig'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenReturn(UpdateSearchData(
-          platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
-          localVersion: Version.parse('1.0.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
-          locale: UpdateLocale.en,
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0,
-          rolloutPointer: 0,
-          appName: 'Test',
-          appPackageName: 'com.test',
-          customData: null,
+            )).thenReturn(createSearchData(
+          platform: UpdatePlatform.ios,
+          sources: const [UpdateSource.appStore],
         ));
+
+        when(() => mockSourceFetcher.source).thenReturn(UpdateSource.appStore);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => expectedConfig);
+
+        final iosConfig = const UpdateSearchConfig(
+          platform: UpdatePlatform.ios,
+          sources: [UpdateSource.appStore],
+        );
+
+        // Act
+        final result = await coordinator.fetch(
+          fetchers: [mockSourceFetcher],
+          searchConfig: iosConfig,
+          packageInfo: packageInfo,
+          shouldFetchSourceFetchers: true,
+          shouldFetchFerchers: false,
+        );
+
+        // Assert
+        expect(result, hasLength(2));
+        verify(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: packageInfo,
+            )).called(1);
+      });
+
+      test('обрабатывает множественные источники', () async {
+        // Arrange
+        const googlePlayConfig = UpdateConfig();
+        const appStoreConfig = UpdateConfig();
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData(
+          platform: UpdatePlatform
+              .android, // android platform поддерживает только googlePlay
+          sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
+        ));
+
+        when(() => mockSourceFetcher.source)
+            .thenReturn(UpdateSource.googlePlay);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => googlePlayConfig);
+
+        // AppStore не поддерживает Android платформу, поэтому он будет пропущен
+        when(() => mockSourceFetcher2.source).thenReturn(UpdateSource.appStore);
+        when(() => mockSourceFetcher2.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => appStoreConfig);
+
+        final multiSourceConfig = const UpdateSearchConfig(
+          platform: UpdatePlatform.android,
+          sources: [UpdateSource.googlePlay, UpdateSource.appStore],
+        );
+
+        // Act
+        final result = await coordinator.fetch(
+          fetchers: [mockSourceFetcher, mockSourceFetcher2],
+          searchConfig: multiSourceConfig,
+          packageInfo: packageInfo,
+          shouldFetchSourceFetchers: true,
+          shouldFetchFerchers: false,
+        );
+
+        // Assert
+        expect(
+          result,
+          hasLength(
+            2,
+          ),
+        ); // default + только googlePlay (appStore пропущен из-за платформы)
+        verify(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).called(1);
+        // AppStore не вызывается, так как не поддерживает Android
+        verifyNever(() => mockSourceFetcher2.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            ));
       });
 
       test(
-        'обрабатывает и source fetchers и обычные fetchers одновременно',
+        'обрабатывает кастомный UpdateSearchConfig с дополнительными полями',
         () async {
           // Arrange
-          const sourceConfig = UpdateConfig();
-          const regularConfig = UpdateConfig();
-
-          when(() => mockSourceFetcher.source)
-              .thenReturn(UpdateSource.googlePlay);
-          when(() => mockSourceFetcher.fetch(
-                locale: any(named: 'locale'),
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
                 packageInfo: any(named: 'packageInfo'),
-              )).thenAnswer((_) async => sourceConfig);
+              )).thenReturn(UpdateSearchData(
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay],
+            localVersion: Version.parse('2.5.0'),
+            displayTarget: UpdateViewTarget.card,
+            appStatus: const AppStatus.custom('updateable'),
+            locale: const UpdateLocale(Locale('fr', 'FR')),
+            currentDate: DateTime(2024, 12, 25),
+            localReleaseDate: DateTime(2024, 10, 1),
+            updateReleaseDate: DateTime(2024, 11, 15),
+            segmentationPointer: 0.75,
+            rolloutPointer: 0.9,
+            appName: 'Custom App',
+            appPackageName: 'com.custom.package',
+            customData: const {'theme': 'dark', 'region': 'eu'},
+          ));
 
-          when(() => mockFetcher.fetch(
-                locale: any(named: 'locale'),
-                packageInfo: any(named: 'packageInfo'),
-              )).thenAnswer((_) async => regularConfig);
-
-          // Act
-          final result = await coordinator.fetch(
-            fetchers: [mockSourceFetcher, mockFetcher],
-            searchConfig: const UpdateSearchConfig(
-              platform: UpdatePlatform.android,
-              sources: [UpdateSource.googlePlay],
-            ),
-            packageInfo: packageInfo,
-            shouldFetchSourceFetchers: true,
-            shouldFetchFerchers: true,
+          final complexConfig = UpdateSearchConfig(
+            platform: UpdatePlatform.android,
+            sources: const [UpdateSource.googlePlay],
+            localVersion: Version.parse('2.5.0'),
+            displayTarget: UpdateViewTarget.card,
+            locale: const UpdateLocale(Locale('fr', 'FR')),
+            currentDate: DateTime(2024, 12, 25),
+            appStatus: const AppStatus.custom('updateable'),
+            segmentationPointer: 0.75,
+            rolloutPointer: 0.9,
+            customData: const {'theme': 'dark', 'region': 'eu'},
           );
 
-          // Assert
-          expect(result, hasLength(3)); // default + source + regular
-          expect(result[1], sourceConfig);
-          expect(result[2], regularConfig);
-        },
-      );
-
-      test(
-        'правильно обрабатывает несколько source fetchers с разными условиями',
-        () async {
-          // Arrange
-          final mockAppStoreFetcher = MockUpdateConfigSourceFetcher();
-          const googlePlayConfig = UpdateConfig();
-
-          when(() => mockSourceFetcher.source)
-              .thenReturn(UpdateSource.googlePlay);
-          when(() => mockSourceFetcher.fetch(
-                locale: any(named: 'locale'),
-                packageInfo: any(named: 'packageInfo'),
-              )).thenAnswer((_) async => googlePlayConfig);
-
-          when(() => mockAppStoreFetcher.source)
-              .thenReturn(UpdateSource.appStore);
-          when(() => mockAppStoreFetcher.fetch(
-                locale: any(named: 'locale'),
-                packageInfo: any(named: 'packageInfo'),
-              )).thenAnswer((_) async => const UpdateConfig());
-
           // Act
           final result = await coordinator.fetch(
-            fetchers: [mockSourceFetcher, mockAppStoreFetcher],
-            searchConfig: const UpdateSearchConfig(
-              platform: UpdatePlatform.android,
-              sources: [UpdateSource.googlePlay], // только googlePlay в sources
-            ),
+            fetchers: [],
+            searchConfig: complexConfig,
             packageInfo: packageInfo,
-            shouldFetchSourceFetchers: true,
+            shouldFetchSourceFetchers: false,
             shouldFetchFerchers: false,
           );
 
           // Assert
-          expect(result, hasLength(2)); // default + только googlePlay
-          expect(result.last, googlePlayConfig);
-
-          verify(() => mockSourceFetcher.fetch(
-                locale: any(named: 'locale'),
-                packageInfo: any(named: 'packageInfo'),
+          expect(result, hasLength(1));
+          verify(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: complexConfig,
+                packageInfo: packageInfo,
               )).called(1);
-
-          verifyNever(() => mockAppStoreFetcher.fetch(
-                locale: any(named: 'locale'),
-                packageInfo: any(named: 'packageInfo'),
-              ));
         },
       );
+    });
 
-      test('обрабатывает пустой список fetchers', () async {
+    group('тестирование разного количества фетчеров', () {
+      test('обрабатывает пустой список фетчеров', () async {
+        // Arrange
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData());
+
         // Act
         final result = await coordinator.fetch(
           fetchers: [],
-          searchConfig: searchConfig,
+          searchConfig: baseSearchConfig,
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: true,
           shouldFetchFerchers: true,
@@ -601,31 +658,254 @@ void main() {
         expect(result, hasLength(1)); // только default
       });
 
-      test('обрабатывает все флаги отключенными', () async {
-        // Arrange - добавляем мок для source, чтобы избежать null subtype error
+      test('обрабатывает один source fetcher', () async {
+        // Arrange
+        const expectedConfig = UpdateConfig();
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData());
+
         when(() => mockSourceFetcher.source)
             .thenReturn(UpdateSource.googlePlay);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => expectedConfig);
 
         // Act
         final result = await coordinator.fetch(
-          fetchers: [mockSourceFetcher, mockFetcher],
-          searchConfig: searchConfig,
+          fetchers: [mockSourceFetcher],
+          searchConfig: baseSearchConfig,
           packageInfo: packageInfo,
-          shouldFetchSourceFetchers: false,
+          shouldFetchSourceFetchers: true,
           shouldFetchFerchers: false,
         );
 
         // Assert
-        expect(result, hasLength(1)); // только default
-        verifyNever(() => mockSourceFetcher.fetch(
-              locale: any(named: 'locale'),
-              packageInfo: any(named: 'packageInfo'),
-            ));
-        verifyNever(() => mockFetcher.fetch(
-              locale: any(named: 'locale'),
-              packageInfo: any(named: 'packageInfo'),
-            ));
+        expect(result, hasLength(2));
+        expect(result.last, expectedConfig);
       });
+
+      test(
+        'обрабатывает множественные source fetchers с совместимыми платформами',
+        () async {
+          // Arrange
+          const config1 = UpdateConfig();
+          const config2 = UpdateConfig();
+
+          // Создаем кастомные источники, которые поддерживают все платформы
+          final universalSource1 = const UpdateSource.custom(
+            UpdateSourceName.custom('universal1'),
+            platforms: null, // поддерживает все платформы
+          );
+          final universalSource2 = const UpdateSource.custom(
+            UpdateSourceName.custom('universal2'),
+            platforms: null, // поддерживает все платформы
+          );
+
+          when(() => mockDefaulter.getSearchDataWithDefaults(
+                searchConfig: any(named: 'searchConfig'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenReturn(createSearchData(
+            platform: UpdatePlatform.android,
+            sources: [universalSource1, universalSource2],
+          ));
+
+          when(() => mockSourceFetcher.source).thenReturn(universalSource1);
+          when(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenAnswer((_) async => config1);
+
+          when(() => mockSourceFetcher2.source).thenReturn(universalSource2);
+          when(() => mockSourceFetcher2.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenAnswer((_) async => config2);
+
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher, mockSourceFetcher2],
+            searchConfig: UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: [universalSource1, universalSource2],
+            ),
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: true,
+            shouldFetchFerchers: false,
+          );
+
+          // Assert
+          expect(result, hasLength(3)); // default + 2 configs
+          expect(result[1], config1);
+          expect(result[2], config2);
+        },
+      );
+
+      test('обрабатывает смешанные типы фетчеров', () async {
+        // Arrange
+        const sourceConfig = UpdateConfig();
+        const regularConfig1 = UpdateConfig();
+        const regularConfig2 = UpdateConfig();
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData());
+
+        when(() => mockSourceFetcher.source)
+            .thenReturn(UpdateSource.googlePlay);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => sourceConfig);
+
+        when(() => mockFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => regularConfig1);
+
+        when(() => mockFetcher2.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => regularConfig2);
+
+        // Act
+        final result = await coordinator.fetch(
+          fetchers: [mockSourceFetcher, mockFetcher, mockFetcher2],
+          searchConfig: baseSearchConfig,
+          packageInfo: packageInfo,
+          shouldFetchSourceFetchers: true,
+          shouldFetchFerchers: true,
+        );
+
+        // Assert
+        expect(result, hasLength(4)); // default + 1 source + 2 regular
+        expect(result[1], sourceConfig);
+        expect(result[2], regularConfig1);
+        expect(result[3], regularConfig2);
+      });
+    });
+
+    group('комбинации флагов shouldFetch', () {
+      setUp(() {
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData());
+
+        when(() => mockSourceFetcher.source)
+            .thenReturn(UpdateSource.googlePlay);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => const UpdateConfig());
+
+        when(() => mockFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => const UpdateConfig());
+      });
+
+      test(
+        'shouldFetchSourceFetchers=true, shouldFetchFerchers=true',
+        () async {
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher, mockFetcher],
+            searchConfig: baseSearchConfig,
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: true,
+            shouldFetchFerchers: true,
+          );
+
+          // Assert
+          expect(result, hasLength(3)); // default + source + regular
+          verify(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).called(1);
+          verify(() => mockFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).called(1);
+        },
+      );
+
+      test(
+        'shouldFetchSourceFetchers=false, shouldFetchFerchers=true',
+        () async {
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher, mockFetcher],
+            searchConfig: baseSearchConfig,
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: false,
+            shouldFetchFerchers: true,
+          );
+
+          // Assert
+          expect(result, hasLength(2)); // default + regular
+          verifyNever(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              ));
+          verify(() => mockFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).called(1);
+        },
+      );
+
+      test(
+        'shouldFetchSourceFetchers=true, shouldFetchFerchers=false',
+        () async {
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher, mockFetcher],
+            searchConfig: baseSearchConfig,
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: true,
+            shouldFetchFerchers: false,
+          );
+
+          // Assert
+          expect(result, hasLength(2)); // default + source
+          verify(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).called(1);
+          verifyNever(() => mockFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              ));
+        },
+      );
+
+      test(
+        'shouldFetchSourceFetchers=false, shouldFetchFerchers=false',
+        () async {
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher, mockFetcher],
+            searchConfig: baseSearchConfig,
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: false,
+            shouldFetchFerchers: false,
+          );
+
+          // Assert
+          expect(result, hasLength(1)); // только default
+          verifyNever(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              ));
+          verifyNever(() => mockFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              ));
+        },
+      );
     });
 
     group('обработка ошибок', () {
@@ -633,46 +913,28 @@ void main() {
         when(() => mockDefaulter.getSearchDataWithDefaults(
               searchConfig: any(named: 'searchConfig'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenReturn(UpdateSearchData(
-          platform: UpdatePlatform.android,
-          sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
-          displayTarget: UpdateViewTarget.any,
-          appStatus: null,
-          locale: UpdateLocale.en,
-          currentDate: DateTime(2024, 10, 15),
-          localReleaseDate: null,
-          updateReleaseDate: null,
-          segmentationPointer: 0,
-          rolloutPointer: 0,
-          appName: 'Test',
-          appPackageName: 'com.test',
-          customData: null,
-        ));
+            )).thenReturn(createSearchData());
       });
 
-      test(
-        'обычный fetcher бросает исключение - прокидывается дальше',
-        () {
-          // Arrange
-          when(() => mockFetcher.fetch(
-                locale: any(named: 'locale'),
-                packageInfo: any(named: 'packageInfo'),
-              )).thenThrow(Exception('Regular fetcher error'));
+      test('обычный fetcher бросает исключение - прокидывается дальше', () {
+        // Arrange
+        when(() => mockFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenThrow(Exception('Regular fetcher error'));
 
-          // Act & Assert
-          expect(
-            () => coordinator.fetch(
-              fetchers: [mockFetcher],
-              searchConfig: searchConfig,
-              packageInfo: packageInfo,
-              shouldFetchSourceFetchers: false,
-              shouldFetchFerchers: true,
-            ),
-            throwsA(isA<Exception>()),
-          );
-        },
-      );
+        // Act & Assert
+        expect(
+          () => coordinator.fetch(
+            fetchers: [mockFetcher],
+            searchConfig: baseSearchConfig,
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: false,
+            shouldFetchFerchers: true,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
 
       test(
         'source fetcher бросает не-UnimplementedError - прокидывается дальше',
@@ -689,7 +951,7 @@ void main() {
           expect(
             () => coordinator.fetch(
               fetchers: [mockSourceFetcher],
-              searchConfig: searchConfig,
+              searchConfig: baseSearchConfig,
               packageInfo: packageInfo,
               shouldFetchSourceFetchers: true,
               shouldFetchFerchers: false,
@@ -698,6 +960,174 @@ void main() {
           );
         },
       );
+
+      test(
+        'source fetcher бросает UnimplementedError - игнорируется',
+        () async {
+          // Arrange
+          when(() => mockSourceFetcher.source)
+              .thenReturn(UpdateSource.googlePlay);
+          when(() => mockSourceFetcher.fetch(
+                locale: any(named: 'locale'),
+                packageInfo: any(named: 'packageInfo'),
+              )).thenThrow(UnimplementedError());
+
+          // Act
+          final result = await coordinator.fetch(
+            fetchers: [mockSourceFetcher],
+            searchConfig: baseSearchConfig,
+            packageInfo: packageInfo,
+            shouldFetchSourceFetchers: true,
+            shouldFetchFerchers: false,
+          );
+
+          // Assert
+          expect(result, hasLength(1)); // только default
+        },
+      );
+    });
+
+    group('edge cases', () {
+      test('обрабатывает source с пустым списком platforms', () async {
+        // Arrange
+        const expectedConfig = UpdateConfig();
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData());
+
+        final sourceWithEmptyPlatforms = const UpdateSource.custom(
+          UpdateSourceName.custom('empty'),
+          platforms: [], // Пустой список
+        );
+        when(() => mockSourceFetcher.source)
+            .thenReturn(sourceWithEmptyPlatforms);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => expectedConfig);
+
+        // Act
+        final result = await coordinator.fetch(
+          fetchers: [mockSourceFetcher],
+          searchConfig: const UpdateSearchConfig(
+            platform: UpdatePlatform.android,
+            sources: [
+              UpdateSource.custom(
+                UpdateSourceName.custom('empty'),
+                platforms: [],
+              ),
+            ],
+          ),
+          packageInfo: packageInfo,
+          shouldFetchSourceFetchers: true,
+          shouldFetchFerchers: false,
+        );
+
+        // Assert
+        expect(
+          result,
+          hasLength(1),
+        ); // source пропускается из-за пустого списка platforms
+        verifyNever(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            ));
+      });
+
+      test('обрабатывает source с платформой "any"', () async {
+        // Arrange
+        const expectedConfig = UpdateConfig();
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(createSearchData(platform: UpdatePlatform.android));
+
+        final sourceWithAnyPlatform = const UpdateSource.custom(
+          UpdateSourceName.custom('any_platform'),
+          platforms: [UpdatePlatform.any],
+        );
+        when(() => mockSourceFetcher.source).thenReturn(sourceWithAnyPlatform);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => expectedConfig);
+
+        // Act
+        final result = await coordinator.fetch(
+          fetchers: [mockSourceFetcher],
+          searchConfig: const UpdateSearchConfig(
+            platform: UpdatePlatform.android,
+            sources: [
+              UpdateSource.custom(
+                UpdateSourceName.custom('any_platform'),
+                platforms: [UpdatePlatform.any],
+              ),
+            ],
+          ),
+          packageInfo: packageInfo,
+          shouldFetchSourceFetchers: true,
+          shouldFetchFerchers: false,
+        );
+
+        // Assert
+        expect(
+          result,
+          hasLength(1),
+        ); // any platform не матчится с конкретной платформой
+        verifyNever(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            ));
+      });
+
+      test('обрабатывает поиск с searchData.platform = any', () async {
+        // Arrange
+        const expectedConfig = UpdateConfig();
+        final testSource = const UpdateSource.custom(
+          UpdateSourceName.custom('test'),
+          platforms: [UpdatePlatform.android],
+        );
+
+        when(() => mockDefaulter.getSearchDataWithDefaults(
+              searchConfig: any(named: 'searchConfig'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenReturn(
+          createSearchData(
+            platform: UpdatePlatform.any,
+            sources: [testSource],
+          ),
+        );
+
+        when(() => mockSourceFetcher.source).thenReturn(testSource);
+        when(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => expectedConfig);
+
+        // Act
+        final result = await coordinator.fetch(
+          fetchers: [mockSourceFetcher],
+          searchConfig: UpdateSearchConfig(
+            platform: UpdatePlatform.any,
+            sources: [testSource],
+          ),
+          packageInfo: packageInfo,
+          shouldFetchSourceFetchers: true,
+          shouldFetchFerchers: false,
+        );
+
+        // Assert
+        expect(
+          result,
+          hasLength(2),
+        ); // any platform матчится с любой конкретной
+        expect(result.last, expectedConfig);
+        verify(() => mockSourceFetcher.fetch(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).called(1);
+      });
     });
   });
 }

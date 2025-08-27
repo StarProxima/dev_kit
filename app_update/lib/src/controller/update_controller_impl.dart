@@ -12,6 +12,7 @@ import '../models/release/update_data.dart';
 import '../models/update_result/update_result.dart';
 import '../models/update_search/update_search_config.dart';
 import '../models/update_status/update_status.dart';
+import '../resolver/matchers/source_matcher.dart';
 import '../resolver/update_content_interpolator.dart';
 import '../resolver/update_resolver.dart';
 import '../resolver/update_rule_resolver.dart';
@@ -39,25 +40,36 @@ class UpdateControllerImpl implements UpdateController {
 
   @protected
   final linker = const UpdateLinker();
+
   @protected
   final ruleResolver = const UpdateRuleResolver();
+
   @protected
   final contentInterpolator = const UpdateContentInterpolator();
+
   @protected
   final sourceSupportChecker = UpdateSupportedSourcesChecker();
+
+  @protected
+  final sourceMatcher = const SourceMatcher();
+
   @protected
   late final searchDataDefaulter = UpdateSearchDataDefaulter(
     updateSourceChecker: sourceSupportChecker,
   );
+
   @protected
   late final updateResolver = UpdateResolver(
     ruleResolver: ruleResolver,
     contentInterpolator: contentInterpolator,
   );
+
   @protected
   late final fetcherCoordinator = UpdateConfigFetcherCoordinator(
     updateSearchDataDefaulter: searchDataDefaulter,
+    sourceMatcher: sourceMatcher,
   );
+
   @protected
   late final updateSearcher = UpdateSearcher(
     searchDataDefaulter: searchDataDefaulter,
