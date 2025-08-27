@@ -1,12 +1,6 @@
-import 'dart:io';
-import 'dart:ui';
-
+import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:app_update/app_update.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:yaml/yaml.dart';
-import 'package:app_update/app_update.dart';
 
 void main() {
   group('UpdateContentInterpolator', () {
@@ -26,7 +20,7 @@ void main() {
           displayTarget: UpdateViewTarget.any,
           rolloutPointer: 0.5,
           segmentationPointer: 0.3,
-          localReleaseDate: DateTime(2024, 10, 1),
+          localReleaseDate: DateTime(2024, 10),
           updateReleaseDate: DateTime(2024, 10, 10),
           customData: null,
         );
@@ -204,7 +198,7 @@ void main() {
           updateUrl: Uri.parse('https://example.com'),
           title: 'Simple Title',
           description: 'Simple description without variables',
-          releaseNotesTitle: 'What\'s New',
+          releaseNotesTitle: "What's New",
           releaseNotes: 'No variables here',
           skipButton: 'Skip',
           postponeButton: 'Later',

@@ -1,12 +1,6 @@
-import 'dart:io';
-import 'dart:ui';
-
+import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:app_update/app_update.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:yaml/yaml.dart';
-import 'package:app_update/app_update.dart';
 
 void main() {
   group('UpdateDataLinker', () {
@@ -511,7 +505,7 @@ void main() {
         );
 
         /// Создаем контейнер с полностью null полями
-        final emptyContainer = UpdateRulesContainer(
+        const emptyContainer = UpdateRulesContainer(
           contentRules: null,
           settingsRules: null,
           appSettingsRules: null,
@@ -604,10 +598,6 @@ void main() {
           version: Version.parse('1.0.0'),
           sourceName: UpdateSourceName.googlePlay,
           platform: UpdatePlatform.android,
-          contentRules: null,
-          settingsRules: null,
-          appSettingsRules: null,
-          customData: null,
         );
 
         final result = linker.link(
@@ -707,13 +697,11 @@ void main() {
 
         final globalSource = createGlobalSource(
           sourceName: UpdateSourceName.googlePlay,
-          contentRules: null,
 
           /// Нет правил в глобальном источнике
           platforms: [
             createGlobalPlatform(
               platformName: UpdatePlatform.android,
-              contentRules: null,
 
               /// И в платформе тоже нет правил
             ),

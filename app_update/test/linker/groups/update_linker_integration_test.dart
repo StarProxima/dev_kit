@@ -1,12 +1,6 @@
-import 'dart:io';
-import 'dart:ui';
-
+import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:app_update/app_update.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:yaml/yaml.dart';
-import 'package:app_update/app_update.dart';
 
 import '../helpers/linker_helper.dart';
 
@@ -167,8 +161,8 @@ void main() {
       });
 
       test('обрабатывает конфигурации с null полями', () {
-        final config1 = createUpdateConfig(contentRules: null);
-        final config2 = createUpdateConfig(settingsRules: null);
+        final config1 = createUpdateConfig();
+        final config2 = createUpdateConfig();
 
         final result = linker.linkAllConfigs([config1, config2]);
 

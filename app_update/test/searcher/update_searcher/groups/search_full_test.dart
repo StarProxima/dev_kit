@@ -1,13 +1,7 @@
-import 'dart:io';
-import 'dart:ui';
-
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:app_update/app_update.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:yaml/yaml.dart';
-import 'package:app_update/app_update.dart';
 
 import '../helpers/test_utils.dart';
 
@@ -165,7 +159,7 @@ void main() {
       ];
 
       // Конфиг с минимальными параметрами
-      final searchConfig = UpdateSearchConfig();
+      const searchConfig = UpdateSearchConfig();
 
       final packageInfo = PackageInfo(
         appName: 'TestApp',
@@ -382,8 +376,8 @@ void main() {
         localVersion: Version.parse('1.0.0'),
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localReleaseDate: DateTime(2024, 7, 1), // исходное значение
-        updateReleaseDate: DateTime(2024, 6, 1), // исходное значение
+        localReleaseDate: DateTime(2024, 7), // исходное значение
+        updateReleaseDate: DateTime(2024, 6), // исходное значение
       );
 
       final packageInfo = UpdateSearcherTestUtils.createPackageInfo();

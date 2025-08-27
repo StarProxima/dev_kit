@@ -1,12 +1,7 @@
-import 'dart:io';
-import 'dart:ui';
-
+import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:app_update/app_update.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:yaml/yaml.dart';
-import 'package:app_update/app_update.dart';
 
 // Mock classes
 class MockUpdateRuleResolver extends Mock implements UpdateRuleResolver {}
@@ -32,8 +27,8 @@ void main() {
         appStatus: AppStatus.active,
         locale: UpdateLocale.any,
         displayTarget: UpdateViewTarget.any,
-        rolloutPointer: 0.0,
-        segmentationPointer: 0.0,
+        rolloutPointer: 0,
+        segmentationPointer: 0,
         localReleaseDate: null,
         updateReleaseDate: null,
         customData: null,
@@ -91,7 +86,7 @@ void main() {
           displayTarget: UpdateViewTarget.any,
           rolloutPointer: 0.5,
           segmentationPointer: 0.3,
-          localReleaseDate: DateTime(2024, 10, 1),
+          localReleaseDate: DateTime(2024, 10),
           updateReleaseDate: DateTime(2024, 10, 10),
           customData: null,
         );
@@ -102,19 +97,21 @@ void main() {
           sourceName: UpdateSourceName.googlePlay,
           platform: UpdatePlatform.android,
           contentRules: [
-            UpdateRuleConfig(data: UpdateContentConfig(title: 'Raw Title')),
+            const UpdateRuleConfig(
+                data: UpdateContentConfig(title: 'Raw Title')),
           ],
           settingsRules: [
-            UpdateRuleConfig(data: UpdateSettingsConfig(shouldShow: true)),
+            const UpdateRuleConfig(
+                data: UpdateSettingsConfig(shouldShow: true)),
           ],
           appSettingsRules: [
-            UpdateRuleConfig(
+            const UpdateRuleConfig(
                 data: UpdateAppSettingsConfig(appStatus: AppStatus.active)),
           ],
           customData: {'test': 'value'},
         );
 
-        final mockAppSettingsConfig = UpdateAppSettingsConfig(
+        const mockAppSettingsConfig = UpdateAppSettingsConfig(
           appStatus: AppStatus.outdated,
           customData: {'app': 'settings'},
         );
@@ -123,14 +120,13 @@ void main() {
           updateUrl: Uri.parse('https://example.com'),
           title: 'Update Available',
           description: 'New version available',
-          releaseNotesTitle: 'What\'s New',
-          releaseNotes: null,
+          releaseNotesTitle: "What's New",
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
         );
 
-        final mockSettingsConfig = UpdateSettingsConfig(
+        const mockSettingsConfig = UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,
@@ -144,7 +140,7 @@ void main() {
           updateUrl: Uri.parse('https://example.com'),
           title: 'Update Available - Interpolated',
           description: 'New version available - Interpolated',
-          releaseNotesTitle: 'What\'s New',
+          releaseNotesTitle: "What's New",
           releaseNotes: null,
           skipButton: 'Skip',
           postponeButton: 'Later',
@@ -180,7 +176,7 @@ void main() {
         // Assert
         expect(result, isA<UpdateResult>());
         expect(result.updateStatus, isA<UpdateFoundStatus>());
-        expect(result.searchData!.appStatus!,
+        expect(result.searchData!.appStatus,
             AppStatus.outdated); // Обновлен из appSettings
 
         final update = result.update!;
@@ -232,9 +228,9 @@ void main() {
           date: DateTime(2024, 10, 10),
           sourceName: UpdateSourceName.googlePlay,
           platform: UpdatePlatform.android,
-          contentRules: [UpdateRuleConfig(data: UpdateContentConfig())],
+          contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
-            UpdateRuleConfig(
+            const UpdateRuleConfig(
                 data: UpdateSettingsConfig(
               shouldShow: true,
               canSkip: false,
@@ -245,15 +241,19 @@ void main() {
               postponeAllReleasesDelay: Duration(days: 3),
             ))
           ],
-          appSettingsRules: [UpdateRuleConfig(data: UpdateAppSettingsConfig())],
+          appSettingsRules: [
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+          ],
           customData: null,
         );
 
         // Setup mocks
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
-              searchData: any(named: 'searchData'),
-              rules: any(named: 'rules'),
-            )).thenReturn(UpdateAppSettingsConfig(appStatus: AppStatus.active));
+                  searchData: any(named: 'searchData'),
+                  rules: any(named: 'rules'),
+                ))
+            .thenReturn(
+                const UpdateAppSettingsConfig(appStatus: AppStatus.active));
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
@@ -271,7 +271,7 @@ void main() {
         when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
-            )).thenReturn(UpdateSettingsConfig(
+            )).thenReturn(const UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,
@@ -297,15 +297,15 @@ void main() {
         );
 
         // Assert - appStatus должен остаться unsupported (исходный)
-        expect(result.searchData!.appStatus!, AppStatus.unsupported);
+        expect(result.searchData!.appStatus, AppStatus.unsupported);
       });
 
       test('правильно передает все данные в зависимости', () {
         // Arrange
-        var capturedSearchDataForAppSettings = <UpdateSearchData>[];
-        var capturedSearchDataForContent = <UpdateSearchData>[];
-        var capturedSearchDataForSettings = <UpdateSearchData>[];
-        var capturedInterpolateParams = <Map<String, dynamic>>[];
+        final capturedSearchDataForAppSettings = <UpdateSearchData>[];
+        final capturedSearchDataForContent = <UpdateSearchData>[];
+        final capturedSearchDataForSettings = <UpdateSearchData>[];
+        final capturedInterpolateParams = <Map<String, dynamic>>[];
 
         // Setup мок для app settings с захватом параметров
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
@@ -315,7 +315,7 @@ void main() {
           final searchData =
               invocation.namedArguments[#searchData] as UpdateSearchData;
           capturedSearchDataForAppSettings.add(searchData);
-          return UpdateAppSettingsConfig(appStatus: AppStatus.active);
+          return const UpdateAppSettingsConfig(appStatus: AppStatus.active);
         });
 
         // Setup мок для content с захватом параметров
@@ -347,7 +347,7 @@ void main() {
           final searchData =
               invocation.namedArguments[#searchData] as UpdateSearchData;
           capturedSearchDataForSettings.add(searchData);
-          return UpdateSettingsConfig(
+          return const UpdateSettingsConfig(
             shouldShow: false,
             canSkip: true,
             canPostpone: false,
@@ -410,9 +410,9 @@ void main() {
           date: DateTime(2024, 10, 10),
           sourceName: UpdateSourceName.googlePlay,
           platform: UpdatePlatform.android,
-          contentRules: [UpdateRuleConfig(data: UpdateContentConfig())],
+          contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
-            UpdateRuleConfig(
+            const UpdateRuleConfig(
                 data: UpdateSettingsConfig(
               shouldShow: true,
               canSkip: false,
@@ -423,7 +423,9 @@ void main() {
               postponeAllReleasesDelay: Duration(days: 3),
             ))
           ],
-          appSettingsRules: [UpdateRuleConfig(data: UpdateAppSettingsConfig())],
+          appSettingsRules: [
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+          ],
           customData: null,
         );
 
@@ -492,9 +494,9 @@ void main() {
           date: DateTime(2024, 10, 10),
           sourceName: UpdateSourceName.googlePlay,
           platform: UpdatePlatform.android,
-          contentRules: [UpdateRuleConfig(data: UpdateContentConfig())],
+          contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
-            UpdateRuleConfig(
+            const UpdateRuleConfig(
                 data: UpdateSettingsConfig(
               shouldShow: true,
               canSkip: false,
@@ -505,14 +507,18 @@ void main() {
               postponeAllReleasesDelay: Duration(days: 3),
             ))
           ],
-          appSettingsRules: [UpdateRuleConfig(data: UpdateAppSettingsConfig())],
+          appSettingsRules: [
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+          ],
           customData: null, // null customData
         );
 
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
-              searchData: any(named: 'searchData'),
-              rules: any(named: 'rules'),
-            )).thenReturn(UpdateAppSettingsConfig(appStatus: AppStatus.active));
+                  searchData: any(named: 'searchData'),
+                  rules: any(named: 'rules'),
+                ))
+            .thenReturn(
+                const UpdateAppSettingsConfig(appStatus: AppStatus.active));
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
@@ -530,7 +536,7 @@ void main() {
         when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
-            )).thenReturn(UpdateSettingsConfig(
+            )).thenReturn(const UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,
@@ -568,8 +574,8 @@ void main() {
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -580,9 +586,9 @@ void main() {
           date: DateTime(2024, 10, 10),
           sourceName: UpdateSourceName.googlePlay,
           platform: UpdatePlatform.android,
-          contentRules: [UpdateRuleConfig(data: UpdateContentConfig())],
+          contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
-            UpdateRuleConfig(
+            const UpdateRuleConfig(
                 data: UpdateSettingsConfig(
               shouldShow: true,
               canSkip: false,
@@ -593,14 +599,18 @@ void main() {
               postponeAllReleasesDelay: Duration(days: 3),
             ))
           ],
-          appSettingsRules: [UpdateRuleConfig(data: UpdateAppSettingsConfig())],
+          appSettingsRules: [
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+          ],
           customData: {},
         );
 
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
-              searchData: any(named: 'searchData'),
-              rules: any(named: 'rules'),
-            )).thenReturn(UpdateAppSettingsConfig(appStatus: AppStatus.active));
+                  searchData: any(named: 'searchData'),
+                  rules: any(named: 'rules'),
+                ))
+            .thenReturn(
+                const UpdateAppSettingsConfig(appStatus: AppStatus.active));
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
@@ -618,7 +628,7 @@ void main() {
         when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
-            )).thenReturn(UpdateSettingsConfig(
+            )).thenReturn(const UpdateSettingsConfig(
           shouldShow: true,
           canSkip: false,
           canPostpone: true,

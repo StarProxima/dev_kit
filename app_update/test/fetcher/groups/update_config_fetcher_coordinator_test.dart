@@ -14,7 +14,7 @@ void main() {
     late MockUpdateSearchDataDefaulter mockDefaulter;
     late MockUpdateConfigFetcher mockFetcher;
     late MockUpdateConfigSourceFetcher mockSourceFetcher;
-    late MockGooglePlayFetcher mockGooglePlayFetcher;
+    // late MockGooglePlayFetcher mockGooglePlayFetcher;
     late PackageInfo packageInfo;
     late UpdateSearchConfig searchConfig;
 
@@ -33,8 +33,8 @@ void main() {
         appStatus: null,
         locale: UpdateLocale.any,
         displayTarget: UpdateViewTarget.any,
-        rolloutPointer: 0.0,
-        segmentationPointer: 0.0,
+        rolloutPointer: 0,
+        segmentationPointer: 0,
         localReleaseDate: null,
         updateReleaseDate: null,
         customData: null,
@@ -49,12 +49,12 @@ void main() {
 
       mockFetcher = MockUpdateConfigFetcher();
       mockSourceFetcher = MockUpdateConfigSourceFetcher();
-      mockGooglePlayFetcher = MockGooglePlayFetcher();
+      // mockGooglePlayFetcher = MockGooglePlayFetcher();
 
       packageInfo = FakePackageInfo();
-      searchConfig = UpdateSearchConfig(
+      searchConfig = const UpdateSearchConfig(
         platform: UpdatePlatform.android,
-        sources: const [UpdateSource.googlePlay],
+        sources: [UpdateSource.googlePlay],
       );
     });
 
@@ -74,8 +74,8 @@ void main() {
           appStatus: null,
           locale: UpdateLocale.any,
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -152,8 +152,8 @@ void main() {
           appStatus: null,
           locale: UpdateLocale.en,
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -163,7 +163,7 @@ void main() {
       test('выполняет source fetcher если shouldFetchSourceFetchers = true',
           () async {
         // Arrange
-        final expectedConfig = UpdateConfig();
+        const expectedConfig = UpdateConfig();
 
         when(() => mockSourceFetcher.source)
             .thenReturn(UpdateSource.googlePlay);
@@ -241,14 +241,14 @@ void main() {
         // Arrange
         final sourceWithIosPlatforms = MockUpdateConfigSourceFetcher();
         when(() => sourceWithIosPlatforms.source).thenReturn(
-            UpdateSource.custom(UpdateSourceName.custom('test'),
+            const UpdateSource.custom(UpdateSourceName.custom('test'),
                 platforms: [UpdatePlatform.ios]) // НЕ android
             );
 
         // Act
         final result = await coordinator.fetch(
           fetchers: [sourceWithIosPlatforms],
-          searchConfig: UpdateSearchConfig(
+          searchConfig: const UpdateSearchConfig(
             platform: UpdatePlatform.android, // поиск android
             sources: [
               UpdateSource.custom(UpdateSourceName.custom('test'),
@@ -305,8 +305,8 @@ void main() {
           appStatus: null,
           locale: const UpdateLocale(Locale('ru', 'RU')),
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -317,7 +317,7 @@ void main() {
         when(() => mockSourceFetcher.fetch(
               locale: any(named: 'locale'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenAnswer((_) async => UpdateConfig());
+            )).thenAnswer((_) async => const UpdateConfig());
 
         // Act
         await coordinator.fetch(
@@ -351,8 +351,8 @@ void main() {
           appStatus: null,
           locale: UpdateLocale.any, // locale.locale = null
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -363,7 +363,7 @@ void main() {
         when(() => mockSourceFetcher.fetch(
               locale: any(named: 'locale'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenAnswer((_) async => UpdateConfig());
+            )).thenAnswer((_) async => const UpdateConfig());
 
         // Act
         await coordinator.fetch(
@@ -397,8 +397,8 @@ void main() {
           appStatus: null,
           locale: UpdateLocale.en,
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -408,7 +408,7 @@ void main() {
       test('выполняет обычный fetcher если shouldFetchFerchers = true',
           () async {
         // Arrange
-        final expectedConfig = UpdateConfig();
+        const expectedConfig = UpdateConfig();
 
         when(() => mockFetcher.fetch(
               locale: any(named: 'locale'),
@@ -468,8 +468,8 @@ void main() {
           appStatus: null,
           locale: UpdateLocale.en,
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,
@@ -479,8 +479,8 @@ void main() {
       test('обрабатывает и source fetchers и обычные fetchers одновременно',
           () async {
         // Arrange
-        final sourceConfig = UpdateConfig();
-        final regularConfig = UpdateConfig();
+        const sourceConfig = UpdateConfig();
+        const regularConfig = UpdateConfig();
 
         when(() => mockSourceFetcher.source)
             .thenReturn(UpdateSource.googlePlay);
@@ -497,9 +497,9 @@ void main() {
         // Act
         final result = await coordinator.fetch(
           fetchers: [mockSourceFetcher, mockFetcher],
-          searchConfig: UpdateSearchConfig(
+          searchConfig: const UpdateSearchConfig(
             platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
+            sources: [UpdateSource.googlePlay],
           ),
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: true,
@@ -517,7 +517,7 @@ void main() {
           () async {
         // Arrange
         final mockAppStoreFetcher = MockUpdateConfigSourceFetcher();
-        final googlePlayConfig = UpdateConfig();
+        const googlePlayConfig = UpdateConfig();
 
         when(() => mockSourceFetcher.source)
             .thenReturn(UpdateSource.googlePlay);
@@ -531,16 +531,14 @@ void main() {
         when(() => mockAppStoreFetcher.fetch(
               locale: any(named: 'locale'),
               packageInfo: any(named: 'packageInfo'),
-            )).thenAnswer((_) async => UpdateConfig());
+            )).thenAnswer((_) async => const UpdateConfig());
 
         // Act
         final result = await coordinator.fetch(
           fetchers: [mockSourceFetcher, mockAppStoreFetcher],
-          searchConfig: UpdateSearchConfig(
+          searchConfig: const UpdateSearchConfig(
             platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.googlePlay
-            ], // только googlePlay в sources
+            sources: [UpdateSource.googlePlay], // только googlePlay в sources
           ),
           packageInfo: packageInfo,
           shouldFetchSourceFetchers: true,
@@ -618,8 +616,8 @@ void main() {
           appStatus: null,
           locale: UpdateLocale.en,
           displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.0,
-          segmentationPointer: 0.0,
+          rolloutPointer: 0,
+          segmentationPointer: 0,
           localReleaseDate: null,
           updateReleaseDate: null,
           customData: null,

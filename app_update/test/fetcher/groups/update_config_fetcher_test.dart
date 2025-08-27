@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:app_update/app_update.dart';
 import 'package:yaml/yaml.dart';
 
 import '../helpers/mock_source_fetchers.dart';
@@ -26,7 +26,7 @@ void main() {
     group('custom constructor', () {
       test('успешно выполняет кастомную функцию fetch', () async {
         // Arrange
-        final expectedConfig = UpdateConfig();
+        const expectedConfig = UpdateConfig();
         final fetcher = UpdateConfigFetcher.custom(() async => expectedConfig);
 
         // Act
@@ -42,7 +42,7 @@ void main() {
       test('использует переданный parser', () async {
         final customParser = MockUpdateConfigParser();
         final fetcher = UpdateConfigFetcher.custom(
-          () async => UpdateConfig(),
+          () async => const UpdateConfig(),
           updateConfigParser: customParser,
         );
 
@@ -54,7 +54,7 @@ void main() {
       test('успешно парсит raw данные через parser', () async {
         // Arrange
         final rawData = <String, dynamic>{'test': 'data'};
-        final expectedConfig = UpdateConfig();
+        const expectedConfig = UpdateConfig();
 
         when(() => mockParser.parse(any())).thenReturn(expectedConfig);
 
