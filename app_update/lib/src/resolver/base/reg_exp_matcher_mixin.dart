@@ -7,32 +7,32 @@ mixin RegExpMatcherMixin {
   /// - Обычные строки: точное совпадение (case-insensitive)
   /// - 'any': всегда true
   /// - 'regexp:pattern': проверка по регулярному выражению.
-  bool isMatchesStringInListWithRegExp(
-    String searchValue,
-    List<String> ruleValues,
-  ) {
-    // Проверка на 'any' в списке правил
-    if (ruleValues.any((ruleValue) => ruleValue.toLowerCase() == 'any')) {
+  bool isMatchesStringWithRegExp({
+    String? searchValue,
+    String? ruleValue,
+  }) {
+    if (ruleValue == null) return false;
+
+    if (ruleValue.toLowerCase() == 'any') {
       return true;
     }
 
+    if (searchValue == null) return false;
+
     final searchStr = searchValue.toLowerCase();
 
-    // Проверяем каждое значение из списка правил
-    for (final ruleValue in ruleValues) {
-      final ruleStr = ruleValue.toLowerCase();
+    final ruleStr = ruleValue.toLowerCase();
 
-      // Проверка на регулярное выражение
-      if (ruleStr.startsWith(_regexpPrefix)) {
-        final pattern = ruleStr.substring(_regexpPrefix.length);
+    // Проверка на регулярное выражение
+    if (ruleStr.startsWith(_regexpPrefix)) {
+      final pattern = ruleStr.substring(_regexpPrefix.length);
 
-        final regex = RegExp(pattern, caseSensitive: false);
-        if (regex.hasMatch(searchStr)) return true;
-      }
-      // Обычное сравнение строк
-      else if (ruleStr == searchStr) {
-        return true;
-      }
+      final regex = RegExp(pattern, caseSensitive: false);
+      if (regex.hasMatch(searchStr)) return true;
+    }
+    // Обычное сравнение строк
+    else if (ruleStr == searchStr) {
+      return true;
     }
 
     return false;

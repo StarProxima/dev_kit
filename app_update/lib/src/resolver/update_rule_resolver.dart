@@ -55,10 +55,15 @@ class UpdateRuleResolver {
       if (!isRuleMatched(rule: rule, searchData: searchData)) continue;
 
       final data = rule.data;
-      result = result == null ? data : result.merge(data);
+      result = result?.merge(data) ?? data;
     }
 
-    if (result == null) throw const ParseConfigException();
+    if (result == null) {
+      throw UpdateRuleResolverException(
+        // ignore: avoid-default-tostring
+        'No rules matched for search data: $searchData',
+      );
+    }
 
     return result;
   }
@@ -81,4 +86,13 @@ class UpdateRuleResolver {
 
     return true;
   }
+}
+
+class UpdateRuleResolverException implements Exception {
+  final String message;
+
+  const UpdateRuleResolverException(this.message);
+
+  @override
+  String toString() => 'UpdateRuleResolverException: $message';
 }

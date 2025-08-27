@@ -95,16 +95,39 @@ void main() {
         createTestRule(
           title: 'ok',
           custom: const {
-            'tags_is': ['any'],
+            'tags_is': ['any', 'test'],
           },
         ),
       ];
 
-      final res = resolver.resolve(
+      final resEmptyList = resolver.resolve(
         searchData: createTestSearchData(custom: const {'tags': []}),
         rules: rules,
       );
-      expect(res.title, 'ok');
+      expect(resEmptyList.title, 'ok');
+
+      final resEmpty = resolver.resolve(
+        searchData: createTestSearchData(),
+        rules: rules,
+      );
+      expect(resEmpty.title, 'ok');
+
+      final resNull = resolver.resolve(
+        searchData: createTestSearchData(custom: {
+          'tags': null,
+        }),
+        rules: rules,
+      );
+      expect(resNull.title, 'ok');
+
+      final resSome = resolver.resolve(
+        searchData: createTestSearchData(custom: {
+          'tags': [1, true, 'aba'],
+        }),
+        rules: rules,
+      );
+
+      expect(resSome.title, 'ok');
     });
 
     test('scalar vs list: совпадает если элемент найден в списке', () {
@@ -423,7 +446,7 @@ void main() {
       expect(res.title, 'ok');
     });
 
-    test('NEW: логика сравнения списков - пересечение множеств', () {
+    test('Логика сравнения списков - пересечение множеств', () {
       List<UpdateRuleConfig<UpdateContentConfig>> rules = [
         createTestRule(
           title: 'ok',
@@ -493,90 +516,117 @@ void main() {
       expect(res.title, 'single_match'); // Достаточно одного пересечения
     });
 
-    test('NEW: поддержка регулярных выражений', () {
-      List<UpdateRuleConfig<UpdateContentConfig>> rules = [
-        createTestRule(
-          title: 'valid_email',
-          custom: const {
-            'email_is':
-                r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', // Email regex
-          },
-        ),
-      ];
-
-      UpdateContentConfig res = resolver.resolve(
-        searchData: createTestSearchData(
-          appStatus:
-              AppStatus.active, // Добавляем appStatus для AppStatusMatcher
-          custom: const {
-            'email': 'user@example.com', // Валидный email
-          },
-        ),
-        rules: rules,
-      );
-      expect(res.title, 'valid_email');
-
-      // Negative case: невалидный email не проходит регулярку
-      rules = [
-        createTestRule(
-          title: 'bad',
-          custom: const {
-            'email_is':
-                r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-          },
-        ),
-      ];
-
-      expect(
-        () => resolver.resolve(
-          searchData: createTestSearchData(
-            appStatus: AppStatus.active,
+    group('RegExp', () {
+      test('Поддержка регулярных выражений', () {
+        final rules = [
+          createTestRule(
+            title: 'valid_email',
             custom: const {
-              'email': 'not-an-email', // Невалидный email
+              'email_is':
+                  r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', // Email regex
+            },
+          ),
+        ];
+
+        final res = resolver.resolve(
+          searchData: createTestSearchData(
+            appStatus:
+                AppStatus.active, // Добавляем appStatus для AppStatusMatcher
+            custom: const {
+              'email': 'user@example.com', // Валидный email
             },
           ),
           rules: rules,
-        ),
-        throwsA(isA<Exception>()),
-      );
+        );
+        expect(res.title, 'valid_email');
+      });
+      test('Невалидный email не проходит регулярку', () {
+        // Negative case:
+        final rules = [
+          createTestRule(
+            title: 'bad',
+            custom: const {
+              'email_is':
+                  r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+            },
+          ),
+        ];
 
-      // Edge case: смешивание обычных значений и регулярок в списке
-      rules = [
-        createTestRule(
-          title: 'mixed',
-          custom: const {
-            'user_type_is': [
-              'admin',
-              r'regexp:^premium_.*',
-            ], // Обычное + регулярка
-          },
-        ),
-      ];
+        expect(
+          () => resolver.resolve(
+            searchData: createTestSearchData(
+              appStatus: AppStatus.active,
+              custom: const {
+                'email': 'not-an-email', // Невалидный email
+              },
+            ),
+            rules: rules,
+          ),
+          throwsA(isA<UpdateRuleResolverException>()),
+        );
+      });
 
-      res = resolver.resolve(
-        searchData: createTestSearchData(
-          appStatus: AppStatus.active,
-          custom: const {
-            'user_type': 'premium_gold', // Попадает под регулярку
-          },
-        ),
-        rules: rules,
-      );
-      expect(res.title, 'mixed');
+      test('Невалидная регулярка бросает ошибку', () {
+        final rules = [
+          createTestRule(
+            title: 'bad',
+            custom: const {
+              'email_is': r'regexp:]]', // Невалидная регулярка
+            },
+          ),
+        ];
 
-      // Проверка обычного значения из того же списка
-      res = resolver.resolve(
-        searchData: createTestSearchData(
-          appStatus: AppStatus.active,
-          custom: const {
-            'user_type': 'admin', // Обычное значение
-          },
-        ),
-        rules: rules,
-      );
+        expect(
+          () => resolver.resolve(
+            searchData: createTestSearchData(
+              appStatus: AppStatus.active,
+              custom: const {
+                'email': 'email@example.com',
+              },
+            ),
+            rules: rules,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
 
-      // ignore: avoid-duplicate-test-assertions
-      expect(res.title, 'mixed');
+      test('Смешивание обычных значений и регулярок в списке', () {
+        final rules = [
+          createTestRule(
+            title: 'mixed',
+            custom: const {
+              'user_type_is': [
+                'admin',
+                r'regexp:^premium_.*',
+              ], // Обычное + регулярка
+            },
+          ),
+        ];
+
+        final res = resolver.resolve(
+          searchData: createTestSearchData(
+            appStatus: AppStatus.active,
+            custom: const {
+              'user_type': 'premium_gold', // Попадает под регулярку
+            },
+          ),
+          rules: rules,
+        );
+        expect(res.title, 'mixed');
+
+        // Проверка обычного значения из того же списка
+        final res2 = resolver.resolve(
+          searchData: createTestSearchData(
+            appStatus: AppStatus.active,
+            custom: const {
+              'user_type': 'admin', // Обычное значение
+            },
+          ),
+          rules: rules,
+        );
+
+        expect(res2.title, 'mixed');
+      });
     });
   });
 }

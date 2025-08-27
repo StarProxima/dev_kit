@@ -31,7 +31,6 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
     Map<String, dynamic>? searchCustom,
   ) {
     if (ruleCustom == null || ruleCustom.isEmpty) return true;
-    if (searchCustom == null || searchCustom.isEmpty) return false;
 
     // Проверяем наличие неизвестных полей (не заканчивающихся на '_is')
     final hasUnknownFields =
@@ -77,21 +76,18 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
   /// Сравнение только примитивных типов с поддержкой case-insensitive для строк.
   bool _isPrimitiveContainsCaseInsensitive(
     Map<String, dynamic> ruleFields,
-    Map<String, dynamic> searchFields,
+    Map<String, dynamic>? searchFields,
   ) {
     for (final entry in ruleFields.entries) {
       final key = entry.key.toLowerCase();
       final ruleValue = entry.value;
 
       // Найти соответствующее поле в данных поиска (case-insensitive)
-      final searchEntry = searchFields.entries.firstWhereOrNull(
+      final searchEntry = searchFields?.entries.firstWhereOrNull(
         (e) => e.key.toLowerCase() == key,
       );
 
-      // Поле не найдено
-      if (searchEntry == null) return false;
-
-      final searchValue = searchEntry.value;
+      final searchValue = searchEntry?.value;
       if (!_isPrimitiveValuesMatch(ruleValue, searchValue)) {
         return false;
       }
@@ -103,11 +99,13 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
   /// Сравнивает два примитивных значения или списка примитивов с поддержкой регулярок.
   bool _isPrimitiveValuesMatch(Object? rule, Object? search) {
     if (rule == null) return true;
-    if (search == null) return false;
 
     // Обработка строк с поддержкой регулярок
-    if (rule is String && search is String) {
-      return isMatchesStringInListWithRegExp(search, [rule]);
+    if (rule is String && search is String?) {
+      return isMatchesStringWithRegExp(
+        searchValue: search,
+        ruleValue: rule,
+      );
     }
 
     // Точное сравнение для чисел и булевых
@@ -135,6 +133,8 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
     List<Object?> ruleValues,
     List<Object?> searchValues,
   ) {
+    if (ruleValues.contains('any')) return true;
+
     // Проверяем пересечение списков
     for (final searchValue in searchValues) {
       for (final ruleValue in ruleValues) {
@@ -147,15 +147,23 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
 
   /// Сравнивает одно значение правила со списком поиска.
   bool _isMatchValueToList(Object ruleValue, List<Object?> searchValues) {
-    return searchValues.any(
+    if (ruleValue == 'any') return true;
+
+    final isMatch = searchValues.any(
       (searchValue) => _isPrimitiveValuesMatch(ruleValue, searchValue),
     );
+
+    return isMatch;
   }
 
   /// Сравнивает список правил с одним значением поиска.
-  bool _isMatchListToValue(List<Object?> ruleValues, Object searchValue) {
-    return ruleValues.any(
+  bool _isMatchListToValue(List<Object?> ruleValues, Object? searchValue) {
+    if (ruleValues.contains('any')) return true;
+
+    final isMatch = ruleValues.any(
       (ruleValue) => _isPrimitiveValuesMatch(ruleValue, searchValue),
     );
+
+    return isMatch;
   }
 }
