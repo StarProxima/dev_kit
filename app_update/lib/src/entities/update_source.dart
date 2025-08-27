@@ -54,7 +54,7 @@ base class UpdateSource extends UpdateEntity {
     ruStore,
   ];
 
-  static const allValues = [
+  static const valuesWithAny = [
     ...values,
     any,
   ];

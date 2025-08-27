@@ -9,7 +9,7 @@ base class UpdateVersionConstraint extends UpdateEntityName {
   final VersionConstraint? versionConstraint;
   static const values = [];
 
-  static const allValues = [
+  static const valuesWithAny = [
     ...values,
     any,
   ];

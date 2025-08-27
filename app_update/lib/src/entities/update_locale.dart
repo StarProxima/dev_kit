@@ -15,7 +15,7 @@ base class UpdateLocale extends UpdateEntityName {
     en,
   ];
 
-  static const allValues = [
+  static const valuesWithAny = [
     ...values,
     any,
   ];

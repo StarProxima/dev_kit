@@ -15,7 +15,7 @@ base class AppStatus extends UpdateEntityName {
     outdated,
     active,
   ];
-  static const allValues = [
+  static const valuesWithAny = [
     ...values,
     any,
   ];

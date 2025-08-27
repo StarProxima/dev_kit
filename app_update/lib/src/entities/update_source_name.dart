@@ -19,7 +19,7 @@ base class UpdateSourceName extends UpdateEntityName {
     ruStore,
   ];
 
-  static const allValues = [
+  static const valuesWithAny = [
     ...values,
     any,
   ];

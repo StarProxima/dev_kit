@@ -25,7 +25,7 @@ base class UpdatePlatform extends UpdateEntityName {
     web,
   ];
 
-  static const allValues = [
+  static const valuesWithAny = [
     ...values,
     any,
   ];

@@ -23,7 +23,7 @@ class UpdateVersionConstraintParser {
 
     final byName = UpdateVersionConstraint(null, name: value);
 
-    if (UpdateVersionConstraint.values.contains(byName)) {
+    if (UpdateVersionConstraint.valuesWithAny.contains(byName)) {
       return byName;
     }
 

@@ -23,7 +23,7 @@ class UpdateLocaleParser {
 
     final byName = UpdateLocale(null, name: value);
 
-    if (UpdateLocale.values.contains(byName)) {
+    if (UpdateLocale.valuesWithAny.contains(byName)) {
       return byName;
     }
 
