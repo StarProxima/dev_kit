@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:http/http.dart' as http;
 
-/// API helper для работы с iTunes Search API
+/// API helper для работы с iTunes Search API.
 class AppStoreApi {
   const AppStoreApi();
 
@@ -25,7 +25,7 @@ class AppStoreApi {
     return appData;
   }
 
-  /// Пытается найти приложение с определенной локалью
+  /// Пытается найти приложение с определенной локалью.
   Future<Map<String, dynamic>?> _tryLookupApp(
     String bundleId,
     Locale locale,
@@ -51,7 +51,7 @@ class AppStoreApi {
     return results.first as Map<String, dynamic>;
   }
 
-  /// Создает URL для App Store страницы приложения на основе данных из iTunes API
+  /// Создает URL для App Store страницы приложения на основе данных из iTunes API.
   String? buildAppStoreUrl(Map<String, dynamic> appData, Locale locale) {
     final trackViewUrl = appData['trackViewUrl'] as String?;
     if (trackViewUrl == null) return null;

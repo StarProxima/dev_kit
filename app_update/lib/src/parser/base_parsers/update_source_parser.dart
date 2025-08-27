@@ -18,6 +18,7 @@ class UpdateSourceParser {
 
     // Short syntax
     if (value is String) {
+      // ignore: avoid-non-null-assertion
       final name = _updateSourceNameParser.parse(value)!;
 
       return UpdateSource.custom(name);

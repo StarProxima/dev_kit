@@ -63,9 +63,9 @@ class ReleaseConfigParser {
       version: version,
       date: date,
       sources: sources,
-      contentRules: rules?.contentRules,
-      settingsRules: rules?.settingsRules,
-      appSettingsRules: rules?.appSettingsRules,
+      contentRules: rules.contentRules,
+      settingsRules: rules.settingsRules,
+      appSettingsRules: rules.appSettingsRules,
       customData: map,
     );
   }

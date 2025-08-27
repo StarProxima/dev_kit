@@ -4,5 +4,6 @@ extension VersionX on Version {
   String toOnlyNumbersString() => '$major.$minor.$patch';
 
   String toVersionWithBuildString() =>
+      // ignore: no-empty-string
       '$major.$minor.$patch${build.isNotEmpty ? '+${build.join('.')}' : ''}';
 }

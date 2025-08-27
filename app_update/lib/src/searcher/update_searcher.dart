@@ -135,9 +135,10 @@ class UpdateSearcher {
     );
   }
 
-  /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateSearchData.sources]
+  /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateSearchData.sources].
   @protected
   @visibleForTesting
+  // ignore: prefer-named-parameters
   List<UpdateData> sortUpdates(
     List<UpdateData> updates,
     UpdateSearchData searchData,
@@ -150,8 +151,11 @@ class UpdateSearcher {
           searchData.sources.indexWhere((e) => e.sourceName == a.sourceName);
       final bIdx =
           searchData.sources.indexWhere((e) => e.sourceName == b.sourceName);
-      final aSafe = aIdx < 0 ? searchData.sources.length : aIdx;
-      final bSafe = bIdx < 0 ? searchData.sources.length : bIdx;
+
+      final maxIdx = searchData.sources.length;
+
+      final aSafe = aIdx < 0 ? maxIdx : aIdx;
+      final bSafe = bIdx < 0 ? maxIdx : bIdx;
 
       return aSafe.compareTo(bSafe);
     });

@@ -4,7 +4,7 @@ import '../../models/update_search/update_search_data.dart';
 import '../../utils/mergeable.dart';
 import '../base/rule_matcher.dart';
 
-/// Матчер для проверки соответствия версии приложения semver-ограничениям
+/// Матчер для проверки соответствия версии приложения semver-ограничениям.
 class VersionMatcher extends RuleMatcher {
   const VersionMatcher();
 

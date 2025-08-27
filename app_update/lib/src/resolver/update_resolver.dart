@@ -26,10 +26,16 @@ class UpdateResolver {
     required UpdateData updateData,
     required UpdateSearchData searchData,
   }) {
+    final appSettingsRules = updateData.appSettingsRules ?? [];
+
+    if (appSettingsRules.isEmpty) {
+      throw Exception('App settings rules are empty');
+    }
+
     final resolvedAppSettingsConfig =
         _ruleResolver.resolve<UpdateAppSettingsConfig>(
       searchData: searchData,
-      rules: updateData.appSettingsRules!,
+      rules: appSettingsRules,
     );
 
     final resolvedAppSettings = UpdateAppSettingsData.fromConfig(
@@ -42,9 +48,15 @@ class UpdateResolver {
       );
     }
 
+    final contentRules = updateData.contentRules ?? [];
+
+    if (contentRules.isEmpty) {
+      throw Exception('Content rules are empty');
+    }
+
     final rawResolvedContentConfig = _ruleResolver.resolve<UpdateContentConfig>(
       searchData: searchData,
-      rules: updateData.contentRules!,
+      rules: contentRules,
     );
 
     final rawResolvedContent = UpdateContentData.fromConfig(
@@ -57,9 +69,15 @@ class UpdateResolver {
       updateData: updateData,
     );
 
+    final settingsRules = updateData.settingsRules ?? [];
+
+    if (settingsRules.isEmpty) {
+      throw Exception('Settings rules are empty');
+    }
+
     final resolvedSettingsConfig = _ruleResolver.resolve<UpdateSettingsConfig>(
       searchData: searchData,
-      rules: updateData.settingsRules!,
+      rules: settingsRules,
     );
 
     final resolvedSettings = UpdateSettingsData.fromConfig(

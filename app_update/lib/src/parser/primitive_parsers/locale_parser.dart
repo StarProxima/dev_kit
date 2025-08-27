@@ -22,7 +22,10 @@ class LocaleParser {
     // split by _ or -
     final list = value.split(RegExp('[-_]'));
 
-    final (languageCode, countryCode) = (list.first, list.lastOrNull);
+    final (languageCode, countryCode) = (
+      list.firstOrNull ?? (throw const ParseConfigException()),
+      list.lastOrNull,
+    );
 
     final locale = Locale(languageCode, countryCode);
 

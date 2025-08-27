@@ -17,7 +17,7 @@ class UpdateRulesPartParser {
 
   const UpdateRulesPartParser();
 
-  UpdateRulesContainer? parse(
+  UpdateRulesContainer parse(
     Map<String, dynamic> map,
   ) {
     // contentRules

@@ -51,6 +51,8 @@ class UpdateContentData {
       ),
     );
 
+    final releaseNotes = this.releaseNotes;
+
     return UpdateContentData(
       updateUrl: updateUrl,
       title: _interpolateString(title, interpolateData),
@@ -58,7 +60,7 @@ class UpdateContentData {
       releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
       releaseNotes: releaseNotes == null
           ? null
-          : _interpolateString(releaseNotes!, interpolateData),
+          : _interpolateString(releaseNotes, interpolateData),
       skipButton: _interpolateString(skipButton, interpolateData),
       postponeButton: _interpolateString(postponeButton, interpolateData),
       updateButton: _interpolateString(updateButton, interpolateData),

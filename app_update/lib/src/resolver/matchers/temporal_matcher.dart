@@ -4,7 +4,7 @@ import '../../models/update_search/update_search_data.dart';
 import '../../utils/mergeable.dart';
 import '../base/rule_matcher.dart';
 
-/// Матчер для проверки временных условий: date, delay, rollout, segmentation
+/// Матчер для проверки временных условий: date, delay, rollout, segmentation.
 class TemporalMatcher extends RuleMatcher {
   const TemporalMatcher();
 
@@ -13,7 +13,7 @@ class TemporalMatcher extends RuleMatcher {
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData search,
   }) {
-    return _matchByDateAndRollout(
+    return _isMatchByDateAndRollout(
       ruleDate: rule.date ?? UpdateDate.any,
       delay: rule.delay,
       rollout: rule.rollout,
@@ -26,7 +26,8 @@ class TemporalMatcher extends RuleMatcher {
     );
   }
 
-  static bool _matchByDateAndRollout({
+  // ignore: avoid-long-parameter-list
+  static bool _isMatchByDateAndRollout({
     required UpdateDate ruleDate,
     required Duration? delay,
     required Duration? rollout,

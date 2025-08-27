@@ -51,9 +51,9 @@ class UpdateConfigParser {
     final rules = _updateRulesPartParser.parse(map);
 
     return UpdateConfig.byRequired(
-      contentRules: rules?.contentRules,
-      settingsRules: rules?.settingsRules,
-      appSettingsRules: rules?.appSettingsRules,
+      contentRules: rules.contentRules,
+      settingsRules: rules.settingsRules,
+      appSettingsRules: rules.appSettingsRules,
       sources: sources,
       releases: releases,
       customData: map,

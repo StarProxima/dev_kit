@@ -5,7 +5,7 @@ import '../../models/update_search/update_search_data.dart';
 import '../../utils/mergeable.dart';
 import '../base/rule_matcher.dart';
 
-/// Матчер для проверки соответствия источника дистрибуции и платформы
+/// Матчер для проверки соответствия источника дистрибуции и платформы.
 class SourceMatcher extends RuleMatcher {
   const SourceMatcher();
 

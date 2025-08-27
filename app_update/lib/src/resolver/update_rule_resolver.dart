@@ -16,7 +16,7 @@ import 'matchers/view_target_matcher.dart';
 /// Резолвер правил обновлений с настраиваемыми матчерами.
 /// Применяет список матчеров для фильтрации и объединения правил.
 class UpdateRuleResolver {
-  /// Стандартный набор матчеров для всех типов правил
+  /// Стандартный набор матчеров для всех типов правил.
   static const defaultMatchers = <RuleMatcher>[
     ViewTargetMatcher(),
     LocaleMatcher(),

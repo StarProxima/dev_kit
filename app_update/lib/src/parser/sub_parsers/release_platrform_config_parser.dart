@@ -66,9 +66,9 @@ class ReleasePlatformConfigParser {
     return ReleasePlatformConfig.byRequired(
       platformName: name,
       releaseOverride: releaseOverride,
-      contentRules: rules?.contentRules,
-      settingsRules: rules?.settingsRules,
-      appSettingsRules: rules?.appSettingsRules,
+      contentRules: rules.contentRules,
+      settingsRules: rules.settingsRules,
+      appSettingsRules: rules.appSettingsRules,
       customData: map,
     );
   }

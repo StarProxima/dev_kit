@@ -162,25 +162,22 @@ class UpdateReleaseLinker {
   static UpdateRuleConfig<T> _linkRule<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required ReleaseConfig release,
-    required ReleaseSourceConfig? source,
-    required ReleasePlatformConfig? platform,
+    required ReleaseSourceConfig source,
+    required ReleasePlatformConfig platform,
   }) {
-    final finalPlatforms = source?.platforms
+    final finalPlatforms = source.platforms
         ?.map((releasePlatformConfig) => releasePlatformConfig.platformName)
-        .where((platformName) =>
-            platform == null || platformName == platform.platformName)
+        .where((platformName) => platformName == platform.platformName)
         .toList();
 
-    final finalSource = source == null
-        ? null
-        : UpdateSource.custom(
-            source.sourceName,
-            platforms: finalPlatforms,
-          );
+    final finalSource = UpdateSource.custom(
+      source.sourceName,
+      platforms: finalPlatforms,
+    );
 
     final finalRule = rule.copyWith(
       versionIs: [UpdateVersionConstraint(release.version)],
-      sourceIs: finalSource == null ? null : [finalSource],
+      sourceIs: [finalSource],
     );
 
     return finalRule;
