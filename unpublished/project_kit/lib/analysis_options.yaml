@@ -409,13 +409,15 @@ dart_code_metrics:
     # Может быть ок в статических сигнатурах и дефолтных конструкторах
     - avoid-referencing-subclasses: false
 
+    # Постоянно срабатывает при дебаге
+    - avoid-commented-out-code: false
+
     # При интерполяции ок
     - no-empty-string:
         ignore-interpolations: true
 
-    - avoid-late-keyword:
-        # Создание валидаторов и полей с зависимостями от других полей
-        allow-initialized: true
+    # Слишком много false positive и проблем после автофиксов
+    - avoid-late-keyword: false
 
     # Гемор. Плохо работает с ApiWrap
     - prefer-extracting-function-callbacks: false
@@ -440,6 +442,8 @@ dart_code_metrics:
         only-doc-comments: true
 
     - avoid-long-functions:
+        exclude:
+          - test/**
         max-length: 80
         ignored-names:
           - build
@@ -481,11 +485,33 @@ dart_code_metrics:
           - width
 
     - avoid-long-files:
+        exclude:
+          - test/**
         severity: warning
         max-length: 350
 
     - prefer-named-parameters:
         max-number: 2
+
+    - prefer-moving-to-variable:
+        ignored-targets:
+          - Matcher
+        ignored-invocations:
+          - throwsA
+          - isA
+          - hasLength
+          - isNull
+          - isEmpty
+          - equals
+          - contains
+
+    - avoid-top-level-members-in-tests:
+        include:
+          - test/**/*_test.dart
+    
+    - avoid-unsafe-collection-methods:
+        exclude:
+          - test/**/
 
     - member-ordering:
         reduced-area: true

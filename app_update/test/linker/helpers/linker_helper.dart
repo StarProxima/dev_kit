@@ -1,3 +1,5 @@
+// ignore_for_file: prefer-static-class, avoid-long-parameter-list
+
 import 'package:app_update/app_update.dart';
 import 'package:pub_semver/pub_semver.dart';
 

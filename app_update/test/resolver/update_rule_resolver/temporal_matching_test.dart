@@ -18,7 +18,8 @@ void main() {
         expect(
           () => resolver.resolve(
             searchData: createTestSearchData(
-                currentDate: baseDate.subtract(const Duration(hours: 1))),
+              currentDate: baseDate.subtract(const Duration(hours: 1)),
+            ),
             rules: rules,
           ),
           throwsA(isA<Exception>()),
@@ -33,18 +34,21 @@ void main() {
       });
 
       test(
-          'Dynamic date: отсутствует localReleaseDate => правило не применяется',
-          () {
-        final rules = [
-          createTestRule(date: UpdateDate.localReleaseDate, title: 'bad'),
-        ];
+        'Dynamic date: отсутствует localReleaseDate => правило не применяется',
+        () {
+          final rules = [
+            createTestRule(date: UpdateDate.localReleaseDate, title: 'bad'),
+          ];
 
-        expect(
-          () => resolver.resolve(
-              searchData: createTestSearchData(), rules: rules),
-          throwsA(isA<Exception>()),
-        );
-      });
+          expect(
+            () => resolver.resolve(
+              searchData: createTestSearchData(),
+              rules: rules,
+            ),
+            throwsA(isA<Exception>()),
+          );
+        },
+      );
     });
   });
 }

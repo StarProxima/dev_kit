@@ -10,8 +10,9 @@ void main() {
     test('rule platforms == null берёт платформы из search source', () {
       const ruleSource = UpdateSource.custom(UpdateSourceName.custom('storeX'));
       const searchSource = UpdateSource.custom(
-          UpdateSourceName.custom('storeX'),
-          platforms: [UpdatePlatform.ios]);
+        UpdateSourceName.custom('storeX'),
+        platforms: [UpdatePlatform.ios],
+      );
 
       final rules = [
         createTestRule(sources: [ruleSource], title: 'ok'),
@@ -32,8 +33,9 @@ void main() {
       const ruleSource =
           UpdateSource.custom(UpdateSourceName.custom('storeX'), platforms: []);
       const searchSource = UpdateSource.custom(
-          UpdateSourceName.custom('storeX'),
-          platforms: [UpdatePlatform.ios]);
+        UpdateSourceName.custom('storeX'),
+        platforms: [UpdatePlatform.ios],
+      );
 
       final rules = [
         createTestRule(sources: [ruleSource], title: 'bad'),
@@ -41,8 +43,9 @@ void main() {
 
       expect(
         () => resolver.resolve(
-            searchData: createTestSearchData(sources: [searchSource]),
-            rules: rules),
+          searchData: createTestSearchData(sources: [searchSource]),
+          rules: rules,
+        ),
         throwsA(isA<Exception>()),
       );
     });
@@ -80,11 +83,14 @@ void main() {
     });
 
     test('rule platforms == [any] допускает любую платформу', () {
-      const ruleSource = UpdateSource.custom(UpdateSourceName.custom('storeX'),
-          platforms: [UpdatePlatform.any]);
+      const ruleSource = UpdateSource.custom(
+        UpdateSourceName.custom('storeX'),
+        platforms: [UpdatePlatform.any],
+      );
       const searchSource = UpdateSource.custom(
-          UpdateSourceName.custom('storeX'),
-          platforms: [UpdatePlatform.windows]);
+        UpdateSourceName.custom('storeX'),
+        platforms: [UpdatePlatform.windows],
+      );
 
       final rules = [
         createTestRule(sources: [ruleSource], title: 'ok'),

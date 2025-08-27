@@ -1,36 +1,38 @@
+// ignore_for_file: avoid-type-casts, no-empty-string
+
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 // Mock classes
-class MockUpdateRuleResolver extends Mock implements UpdateRuleResolver {}
+class _MockUpdateRuleResolver extends Mock implements UpdateRuleResolver {}
 
-class MockUpdateContentInterpolator extends Mock
+class _MockUpdateContentInterpolator extends Mock
     implements UpdateContentInterpolator {}
 
 void main() {
   group('UpdateResolver', () {
-    late MockUpdateRuleResolver mockRuleResolver;
-    late MockUpdateContentInterpolator mockContentInterpolator;
+    late _MockUpdateRuleResolver mockRuleResolver;
+    late _MockUpdateContentInterpolator mockContentInterpolator;
     late UpdateResolver resolver;
 
     setUpAll(() {
       // Регистрируем fallback значения для mocktail
       registerFallbackValue(UpdateSearchData(
-        currentDate: DateTime.now(),
-        localVersion: Version.parse('1.0.0'),
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        appName: 'Test',
-        appPackageName: 'com.test',
+        localVersion: Version.parse('1.0.0'),
+        displayTarget: UpdateViewTarget.any,
         appStatus: AppStatus.active,
         locale: UpdateLocale.any,
-        displayTarget: UpdateViewTarget.any,
-        rolloutPointer: 0,
-        segmentationPointer: 0,
+        currentDate: DateTime.now(),
         localReleaseDate: null,
         updateReleaseDate: null,
+        segmentationPointer: 0,
+        rolloutPointer: 0,
+        appName: 'Test',
+        appPackageName: 'com.test',
         customData: null,
       ));
 
@@ -63,8 +65,8 @@ void main() {
     });
 
     setUp(() {
-      mockRuleResolver = MockUpdateRuleResolver();
-      mockContentInterpolator = MockUpdateContentInterpolator();
+      mockRuleResolver = _MockUpdateRuleResolver();
+      mockContentInterpolator = _MockUpdateContentInterpolator();
       resolver = UpdateResolver(
         ruleResolver: mockRuleResolver,
         contentInterpolator: mockContentInterpolator,
@@ -75,19 +77,19 @@ void main() {
       test('успешно резолвит все компоненты в UpdateResult', () {
         // Arrange
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'Test App',
-          appPackageName: 'com.test.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: null, // Тестируем что будет установлен из appSettings
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: DateTime(2024, 10),
           updateReleaseDate: DateTime(2024, 10, 10),
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'Test App',
+          appPackageName: 'com.test.app',
           customData: null,
         );
 
@@ -98,15 +100,18 @@ void main() {
           platform: UpdatePlatform.android,
           contentRules: [
             const UpdateRuleConfig(
-                data: UpdateContentConfig(title: 'Raw Title')),
+              data: UpdateContentConfig(title: 'Raw Title'),
+            ),
           ],
           settingsRules: [
             const UpdateRuleConfig(
-                data: UpdateSettingsConfig(shouldShow: true)),
+              data: UpdateSettingsConfig(shouldShow: true),
+            ),
           ],
           appSettingsRules: [
             const UpdateRuleConfig(
-                data: UpdateAppSettingsConfig(appStatus: AppStatus.active)),
+              data: UpdateAppSettingsConfig(appStatus: AppStatus.active),
+            ),
           ],
           customData: {'test': 'value'},
         );
@@ -176,20 +181,25 @@ void main() {
         // Assert
         expect(result, isA<UpdateResult>());
         expect(result.updateStatus, isA<UpdateFoundStatus>());
-        expect(result.searchData!.appStatus,
-            AppStatus.outdated); // Обновлен из appSettings
+        expect(
+          result.searchData?.appStatus,
+          AppStatus.outdated,
+        ); // Обновлен из appSettings
 
+        // ignore: avoid-non-null-assertion
         final update = result.update!;
         expect(update.version, Version.parse('2.0.0'));
         expect(update.date, DateTime(2024, 10, 10));
         expect(update.sourceName, UpdateSourceName.googlePlay);
         expect(update.platform, UpdatePlatform.android);
-        expect(update.customData!['test'], 'value');
+        expect(update.customData?['test'], 'value');
 
         // Проверяем что content интерполировался
         expect(update.content.title, 'Update Available - Interpolated');
         expect(
-            update.content.description, 'New version available - Interpolated');
+          update.content.description,
+          'New version available - Interpolated',
+        );
 
         // Проверяем rawContent (до интерполяции)
         expect(update.rawContent.title, 'Update Available');
@@ -201,25 +211,25 @@ void main() {
 
         // Проверяем appSettings
         expect(update.appSettings.appStatus, AppStatus.outdated);
-        expect(update.appSettings.customData!['app'], 'settings');
+        expect(update.appSettings.customData?['app'], 'settings');
       });
 
       test('не изменяет appStatus если он уже установлен в searchData', () {
         // Arrange
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'Test App',
-          appPackageName: 'com.test.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.unsupported, // Уже установлен
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'Test App',
+          appPackageName: 'com.test.app',
           customData: null,
         );
 
@@ -231,29 +241,30 @@ void main() {
           contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
             const UpdateRuleConfig(
-                data: UpdateSettingsConfig(
-              shouldShow: true,
-              canSkip: false,
-              canPostpone: true,
-              skipReleaseDelay: Duration(hours: 24),
-              skipAllReleasesDelay: Duration(days: 7),
-              postponeReleaseDelay: Duration(hours: 12),
-              postponeAllReleasesDelay: Duration(days: 3),
-            ))
+              data: UpdateSettingsConfig(
+                shouldShow: true,
+                canSkip: false,
+                canPostpone: true,
+                skipReleaseDelay: Duration(hours: 24),
+                skipAllReleasesDelay: Duration(days: 7),
+                postponeReleaseDelay: Duration(hours: 12),
+                postponeAllReleasesDelay: Duration(days: 3),
+              ),
+            ),
           ],
           appSettingsRules: [
-            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
           customData: null,
         );
 
         // Setup mocks
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
-                  searchData: any(named: 'searchData'),
-                  rules: any(named: 'rules'),
-                ))
-            .thenReturn(
-                const UpdateAppSettingsConfig(appStatus: AppStatus.active));
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(
+          const UpdateAppSettingsConfig(appStatus: AppStatus.active),
+        );
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
@@ -297,7 +308,7 @@ void main() {
         );
 
         // Assert - appStatus должен остаться unsupported (исходный)
-        expect(result.searchData!.appStatus, AppStatus.unsupported);
+        expect(result.searchData?.appStatus, AppStatus.unsupported);
       });
 
       test('правильно передает все данные в зависимости', () {
@@ -315,6 +326,7 @@ void main() {
           final searchData =
               invocation.namedArguments[#searchData] as UpdateSearchData;
           capturedSearchDataForAppSettings.add(searchData);
+
           return const UpdateAppSettingsConfig(appStatus: AppStatus.active);
         });
 
@@ -326,6 +338,7 @@ void main() {
           final searchData =
               invocation.namedArguments[#searchData] as UpdateSearchData;
           capturedSearchDataForContent.add(searchData);
+
           return UpdateContentConfig.byRequired(
             updateUrl: Uri.parse('https://example.com'),
             title: 'Test Content',
@@ -347,6 +360,7 @@ void main() {
           final searchData =
               invocation.namedArguments[#searchData] as UpdateSearchData;
           capturedSearchDataForSettings.add(searchData);
+
           return const UpdateSettingsConfig(
             shouldShow: false,
             canSkip: true,
@@ -375,6 +389,7 @@ void main() {
             'searchData': searchData,
             'updateData': updateData,
           });
+
           return UpdateContentData(
             updateUrl: Uri.parse('https://example.com'),
             title: 'Interpolated',
@@ -389,19 +404,19 @@ void main() {
         });
 
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'Test App',
-          appPackageName: 'com.test.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: null,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'Test App',
+          appPackageName: 'com.test.app',
           customData: null,
         );
 
@@ -413,18 +428,19 @@ void main() {
           contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
             const UpdateRuleConfig(
-                data: UpdateSettingsConfig(
-              shouldShow: true,
-              canSkip: false,
-              canPostpone: true,
-              skipReleaseDelay: Duration(hours: 24),
-              skipAllReleasesDelay: Duration(days: 7),
-              postponeReleaseDelay: Duration(hours: 12),
-              postponeAllReleasesDelay: Duration(days: 3),
-            ))
+              data: UpdateSettingsConfig(
+                shouldShow: true,
+                canSkip: false,
+                canPostpone: true,
+                skipReleaseDelay: Duration(hours: 24),
+                skipAllReleasesDelay: Duration(days: 7),
+                postponeReleaseDelay: Duration(hours: 12),
+                postponeAllReleasesDelay: Duration(days: 3),
+              ),
+            ),
           ],
           appSettingsRules: [
-            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
           customData: null,
         );
@@ -438,54 +454,62 @@ void main() {
         // Assert
         // Проверяем что ruleResolver вызывался с правильными данными
         expect(capturedSearchDataForAppSettings, hasLength(1));
-        expect(capturedSearchDataForAppSettings[0].appStatus,
-            isNull); // Исходные данные
+        expect(
+          capturedSearchDataForAppSettings.firstOrNull?.appStatus,
+          isNull,
+        ); // Исходные данные
 
         expect(capturedSearchDataForContent, hasLength(1));
-        expect(capturedSearchDataForContent[0].appStatus,
-            AppStatus.active); // Обновленные
+        expect(
+          capturedSearchDataForContent.firstOrNull?.appStatus,
+          AppStatus.active,
+        ); // Обновленные
 
         expect(capturedSearchDataForSettings, hasLength(1));
-        expect(capturedSearchDataForSettings[0].appStatus,
-            AppStatus.active); // Обновленные
+        expect(
+          capturedSearchDataForSettings.firstOrNull?.appStatus,
+          AppStatus.active,
+        ); // Обновленные
 
         // Проверяем что interpolator получил правильные параметры
         expect(capturedInterpolateParams, hasLength(1));
-        final interpolateParams = capturedInterpolateParams[0];
+        final interpolateParams = capturedInterpolateParams.firstOrNull;
         final receivedUpdateContent =
-            interpolateParams['updateContent'] as UpdateContentData;
+            interpolateParams?['updateContent'] as UpdateContentData;
         final receivedSearchData =
-            interpolateParams['searchData'] as UpdateSearchData;
+            interpolateParams?['searchData'] as UpdateSearchData;
         final receivedUpdateData =
-            interpolateParams['updateData'] as UpdateData;
+            interpolateParams?['updateData'] as UpdateData;
 
         expect(
-            receivedUpdateContent.title, 'Test Content'); // От content resolver
+          receivedUpdateContent.title,
+          'Test Content',
+        ); // От content resolver
         expect(receivedSearchData.appStatus, AppStatus.active); // Обновленный
         expect(receivedUpdateData.version, Version.parse('2.0.0'));
 
         // Проверяем финальный результат
-        expect(result.update!.content.title, 'Interpolated');
-        expect(result.update!.rawContent.title, 'Test Content');
+        expect(result.update?.content.title, 'Interpolated');
+        expect(result.update?.rawContent.title, 'Test Content');
       });
     });
 
     group('edge cases', () {
       test('обрабатывает пустые customData', () {
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'App',
-          appPackageName: 'com.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'App',
+          appPackageName: 'com.app',
           customData: null,
         );
 
@@ -497,28 +521,29 @@ void main() {
           contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
             const UpdateRuleConfig(
-                data: UpdateSettingsConfig(
-              shouldShow: true,
-              canSkip: false,
-              canPostpone: true,
-              skipReleaseDelay: Duration(hours: 24),
-              skipAllReleasesDelay: Duration(days: 7),
-              postponeReleaseDelay: Duration(hours: 12),
-              postponeAllReleasesDelay: Duration(days: 3),
-            ))
+              data: UpdateSettingsConfig(
+                shouldShow: true,
+                canSkip: false,
+                canPostpone: true,
+                skipReleaseDelay: Duration(hours: 24),
+                skipAllReleasesDelay: Duration(days: 7),
+                postponeReleaseDelay: Duration(hours: 12),
+                postponeAllReleasesDelay: Duration(days: 3),
+              ),
+            ),
           ],
           appSettingsRules: [
-            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
           customData: null, // null customData
         );
 
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
-                  searchData: any(named: 'searchData'),
-                  rules: any(named: 'rules'),
-                ))
-            .thenReturn(
-                const UpdateAppSettingsConfig(appStatus: AppStatus.active));
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(
+          const UpdateAppSettingsConfig(appStatus: AppStatus.active),
+        );
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
@@ -560,24 +585,24 @@ void main() {
           searchData: searchData,
         );
 
-        expect(result.update!.customData, isNull);
+        expect(result.update?.customData, isNull);
       });
 
       test('обрабатывает минимальные конфиги', () {
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: '',
-          appPackageName: '',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0,
-          segmentationPointer: 0,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0,
+          rolloutPointer: 0,
+          appName: '',
+          appPackageName: '',
           customData: null,
         );
 
@@ -589,28 +614,29 @@ void main() {
           contentRules: [const UpdateRuleConfig(data: UpdateContentConfig())],
           settingsRules: [
             const UpdateRuleConfig(
-                data: UpdateSettingsConfig(
-              shouldShow: true,
-              canSkip: false,
-              canPostpone: true,
-              skipReleaseDelay: Duration(hours: 24),
-              skipAllReleasesDelay: Duration(days: 7),
-              postponeReleaseDelay: Duration(hours: 12),
-              postponeAllReleasesDelay: Duration(days: 3),
-            ))
+              data: UpdateSettingsConfig(
+                shouldShow: true,
+                canSkip: false,
+                canPostpone: true,
+                skipReleaseDelay: Duration(hours: 24),
+                skipAllReleasesDelay: Duration(days: 7),
+                postponeReleaseDelay: Duration(hours: 12),
+                postponeAllReleasesDelay: Duration(days: 3),
+              ),
+            ),
           ],
           appSettingsRules: [
-            const UpdateRuleConfig(data: UpdateAppSettingsConfig())
+            const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
           customData: {},
         );
 
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
-                  searchData: any(named: 'searchData'),
-                  rules: any(named: 'rules'),
-                ))
-            .thenReturn(
-                const UpdateAppSettingsConfig(appStatus: AppStatus.active));
+              searchData: any(named: 'searchData'),
+              rules: any(named: 'rules'),
+            )).thenReturn(
+          const UpdateAppSettingsConfig(appStatus: AppStatus.active),
+        );
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
@@ -652,10 +678,10 @@ void main() {
           searchData: searchData,
         );
 
-        expect(result.update!.version, Version.parse('1.0.1'));
-        expect(result.update!.customData, isEmpty);
-        expect(result.searchData!.appName, '');
-        expect(result.searchData!.appPackageName, '');
+        expect(result.update?.version, Version.parse('1.0.1'));
+        expect(result.update?.customData, isEmpty);
+        expect(result.searchData?.appName, '');
+        expect(result.searchData?.appPackageName, '');
       });
     });
   });

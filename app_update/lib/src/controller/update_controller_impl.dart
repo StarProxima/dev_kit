@@ -26,9 +26,9 @@ class UpdateControllerImpl implements UpdateController {
   @protected
   final List<UpdateConfigFetcher> fetchers;
   @protected
-  // ignore: avoid-late-keyword
   late final PackageInfo packageInfo;
   @protected
+  // ignore: prefer-correct-callback-field-name
   final onFetchStreamController = StreamController<void>.broadcast();
   @protected
   final initCompleter = Completer<void>();

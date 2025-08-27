@@ -1,3 +1,5 @@
+// ignore_for_file: prefer-explicit-type-arguments, avoid-type-casts
+
 import 'dart:io';
 import 'dart:ui';
 
@@ -39,8 +41,7 @@ void main() {
         expect(result, equals(expectedConfig));
       });
 
-      test('использует переданный parser', () async {
-        final customParser = MockUpdateConfigParser();
+      test('использует переданный parser', () {
         final fetcher = UpdateConfigFetcher.custom(
           () async => const UpdateConfig(),
         );
@@ -73,7 +74,7 @@ void main() {
         verify(() => mockParser.parse(rawData)).called(1);
       });
 
-      test('бросает UpdateConfigException если parser вернул null', () async {
+      test('бросает UpdateConfigException если parser вернул null', () {
         // Arrange
         when(() => mockParser.parse(any())).thenReturn(null);
 
@@ -85,7 +86,9 @@ void main() {
         // Act & Assert
         expect(
           () => fetcher.fetch(
-              locale: const Locale('en'), packageInfo: FakePackageInfo()),
+            locale: const Locale('en'),
+            packageInfo: FakePackageInfo(),
+          ),
           throwsA(isA<ParseConfigException>()),
         );
       });
@@ -147,7 +150,9 @@ releases: []
         // Act & Assert
         expect(
           () => fetcher.fetch(
-              locale: const Locale('en'), packageInfo: FakePackageInfo()),
+            locale: const Locale('en'),
+            packageInfo: FakePackageInfo(),
+          ),
           throwsA(isA<YamlException>()),
         );
 
@@ -204,19 +209,23 @@ releases: []
 
     group('fetch method edge cases', () {
       test(
-          'бросает UpdateConfigException если нет fetchRawConfig и fetchConfig',
-          () async {
-        // Arrange - создаем fetcher с null функцией
-        final fetcher =
-            UpdateConfigFetcher.customRaw(() async => throw Exception('Test'));
+        'бросает UpdateConfigException если нет fetchRawConfig и fetchConfig',
+        () {
+          // Arrange - создаем fetcher с null функцией
+          final fetcher = UpdateConfigFetcher.customRaw(
+            () async => throw Exception('Test'),
+          );
 
-        // Act & Assert
-        expect(
-          () => fetcher.fetch(
-              locale: const Locale('en'), packageInfo: FakePackageInfo()),
-          throwsA(isA<Exception>()),
-        );
-      });
+          // Act & Assert
+          expect(
+            () => fetcher.fetch(
+              locale: const Locale('en'),
+              packageInfo: FakePackageInfo(),
+            ),
+            throwsA(isA<Exception>()),
+          );
+        },
+      );
     });
 
     group('YamlMapConverter extension', () {

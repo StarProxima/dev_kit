@@ -3,7 +3,7 @@
 
 import 'dart:io';
 
-/// Скрипт для генерации экспорт файла app_update.dart
+/// Скрипт для генерации экспорт файла app_update.dart.
 void main() async {
   print('Генерация файла экспортов...');
 
@@ -34,7 +34,7 @@ void main() async {
   }
 }
 
-/// Рекурсивно получает все .dart файлы из директории
+/// Рекурсивно получает все .dart файлы из директории.
 Future<List<String>> _getAllDartFiles(Directory dir) async {
   final files = <String>[];
 
@@ -42,6 +42,7 @@ Future<List<String>> _getAllDartFiles(Directory dir) async {
     if (entity is File && entity.path.endsWith('.dart')) {
       /// Преобразуем абсолютный путь в относительный от lib/
       final relativePath = entity.path
+          // ignore: no-empty-string
           .replaceFirst(RegExp(r'.*lib/'), '')
           .replaceAll(Platform.pathSeparator, '/');
 
@@ -52,7 +53,7 @@ Future<List<String>> _getAllDartFiles(Directory dir) async {
   return files;
 }
 
-/// Генерирует содержимое экспорт файла
+/// Генерирует содержимое экспорт файла.
 String _generateExportContent(List<String> dartFiles) {
   final buffer = StringBuffer();
 

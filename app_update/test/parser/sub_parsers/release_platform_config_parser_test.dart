@@ -35,7 +35,7 @@ void main() {
       final result = parser.parse(map);
       expect(result, isA<ReleasePlatformConfig>());
       expect(result?.platformName.name, 'ios');
-      expect(result?.releaseOverride?.version.toString(), '1.2.3');
+      expect(result?.releaseOverride?.version?.toString(), '1.2.3');
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
       expect(result?.appSettingsRules, isNotNull);

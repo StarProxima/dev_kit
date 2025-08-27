@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-long-parameter-list, avoid-never-passed-parameters, avoid-unnecessary-nullable-parameters, avoid-non-null-assertion, prefer-moving-to-variable
+
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -145,7 +147,10 @@ void main() {
         );
 
         expect(result.contentRules, hasLength(1));
-        expect(result.contentRules![0].data.title, equals('Container Title'));
+        expect(
+          result.contentRules!.first.data.title,
+          equals('Container Title'),
+        );
       });
 
       test('применяет правила из глобального источника', () {
@@ -171,10 +176,12 @@ void main() {
 
         expect(result.contentRules, hasLength(1));
         expect(
-            result.contentRules![0].data.title, equals('Global Source Title'));
+          result.contentRules!.first.data.title,
+          equals('Global Source Title'),
+        );
         // Проверяем что правило было связано с источником
         expect(
-          result.contentRules![0].sourceIs?.firstOrNull?.sourceName,
+          result.contentRules!.first.sourceIs?.firstOrNull?.sourceName,
           equals(UpdateSourceName.googlePlay),
         );
       });
@@ -206,15 +213,17 @@ void main() {
         );
 
         expect(result.contentRules, hasLength(1));
-        expect(result.contentRules![0].data.title,
-            equals('Global Platform Title'));
+        expect(
+          result.contentRules!.first.data.title,
+          equals('Global Platform Title'),
+        );
         // Проверяем что правило было связано с источником и платформой
         expect(
-          result.contentRules![0].sourceIs?.firstOrNull?.sourceName,
+          result.contentRules!.first.sourceIs?.firstOrNull?.sourceName,
           equals(UpdateSourceName.googlePlay),
         );
         expect(
-          result.contentRules![0].sourceIs?.firstOrNull?.platforms,
+          result.contentRules!.first.sourceIs?.firstOrNull?.platforms,
           contains(UpdatePlatform.android),
         );
       });
@@ -236,7 +245,7 @@ void main() {
         );
 
         expect(result.contentRules, hasLength(1));
-        expect(result.contentRules![0].data.title, equals('Update Title'));
+        expect(result.contentRules!.first.data.title, equals('Update Title'));
       });
 
       test('мержит правила в правильном приоритете', () {
@@ -254,13 +263,13 @@ void main() {
 
         final globalSource = createGlobalSource(
           sourceName: UpdateSourceName.googlePlay,
-          contentRules: [globalSourceRule],
           platforms: [
             createGlobalPlatform(
               platformName: UpdatePlatform.android,
               contentRules: [globalPlatformRule],
             ),
           ],
+          contentRules: [globalSourceRule],
         );
 
         final result = linker.link(
@@ -273,7 +282,7 @@ void main() {
 
         expect(result.contentRules, hasLength(4));
         // Порядок: container -> globalSource -> globalPlatform -> update
-        expect(result.contentRules![0].data.title, equals('Container'));
+        expect(result.contentRules!.first.data.title, equals('Container'));
         expect(result.contentRules![1].data.title, equals('Global Source'));
         expect(result.contentRules![2].data.title, equals('Global Platform'));
         expect(result.contentRules![3].data.title, equals('Update'));
@@ -305,10 +314,12 @@ void main() {
         expect(result.settingsRules, hasLength(1));
         expect(result.appSettingsRules, hasLength(1));
 
-        expect(result.contentRules![0].data.title, equals('Title'));
-        expect(result.settingsRules![0].data.shouldShow, equals(true));
-        expect(result.appSettingsRules![0].data.appStatus,
-            equals(AppStatus.active));
+        expect(result.contentRules!.first.data.title, equals('Title'));
+        expect(result.settingsRules!.first.data.shouldShow, equals(true));
+        expect(
+          result.appSettingsRules!.first.data.appStatus,
+          equals(AppStatus.active),
+        );
       });
 
       test('игнорирует глобальные источники с несовпадающим именем', () {
@@ -418,10 +429,16 @@ void main() {
         );
 
         expect(result, hasLength(2));
-        expect(result[0].contentRules, hasLength(1));
+        expect(result.first.contentRules, hasLength(1));
         expect(result[1].contentRules, hasLength(1));
-        expect(result[0].contentRules![0].data.title, equals('Container Rule'));
-        expect(result[1].contentRules![0].data.title, equals('Container Rule'));
+        expect(
+          result.first.contentRules!.first.data.title,
+          equals('Container Rule'),
+        );
+        expect(
+          result[1].contentRules!.first.data.title,
+          equals('Container Rule'),
+        );
       });
 
       test('применяет разные правила к разным источникам', () {
@@ -460,8 +477,13 @@ void main() {
 
         expect(result, hasLength(2));
         expect(
-            result[0].contentRules![0].data.title, equals('Google Play Rule'));
-        expect(result[1].contentRules![0].data.title, equals('App Store Rule'));
+          result.first.contentRules!.first.data.title,
+          equals('Google Play Rule'),
+        );
+        expect(
+          result[1].contentRules!.first.data.title,
+          equals('App Store Rule'),
+        );
       });
 
       test('сохраняет порядок обновлений', () {
@@ -490,7 +512,7 @@ void main() {
         );
 
         expect(result, hasLength(3));
-        expect(result[0].version, Version.parse('3.0.0'));
+        expect(result.first.version, Version.parse('3.0.0'));
         expect(result[1].version, Version.parse('1.0.0'));
         expect(result[2].version, Version.parse('2.0.0'));
       });
@@ -550,48 +572,49 @@ void main() {
 
         /// Должно применить правило источника, но не правило платформы
         expect(result.contentRules, hasLength(1));
-        expect(result.contentRules![0].data.title, equals('Global Rule'));
+        expect(result.contentRules!.first.data.title, equals('Global Rule'));
       });
 
       test(
-          'обрабатывает глобальный источник с платформами, не содержащими нужную платформу',
-          () {
-        final globalSourceRule = createContentRule(title: 'Source Rule');
-        final globalPlatformRule = createContentRule(title: 'Platform Rule');
+        'обрабатывает глобальный источник с платформами, не содержащими нужную платформу',
+        () {
+          final globalSourceRule = createContentRule(title: 'Source Rule');
+          final globalPlatformRule = createContentRule(title: 'Platform Rule');
 
-        final update = createUpdateData(
-          version: Version.parse('1.0.0'),
-          sourceName: UpdateSourceName.googlePlay,
-          platform: UpdatePlatform.android,
+          final update = createUpdateData(
+            version: Version.parse('1.0.0'),
+            sourceName: UpdateSourceName.googlePlay,
+            platform: UpdatePlatform.android,
 
-          /// Ищем Android
-        );
+            /// Ищем Android
+          );
 
-        final globalSource = createGlobalSource(
-          sourceName: UpdateSourceName.googlePlay,
-          contentRules: [globalSourceRule],
-          platforms: [
-            createGlobalPlatform(
-              platformName: UpdatePlatform.ios,
+          final globalSource = createGlobalSource(
+            sourceName: UpdateSourceName.googlePlay,
+            platforms: [
+              createGlobalPlatform(
+                platformName: UpdatePlatform.ios,
 
-              /// Но есть только iOS платформа
-              contentRules: [globalPlatformRule],
-            ),
-          ],
-        );
+                /// Но есть только iOS платформа
+                contentRules: [globalPlatformRule],
+              ),
+            ],
+            contentRules: [globalSourceRule],
+          );
 
-        final result = linker.link(
-          update: update,
-          rulesContainer: createRulesContainer(),
-          globalSources: [globalSource],
-        );
+          final result = linker.link(
+            update: update,
+            rulesContainer: createRulesContainer(),
+            globalSources: [globalSource],
+          );
 
-        /// Должно применить только правило источника, но не платформы
-        expect(result.contentRules, hasLength(1));
-        expect(result.contentRules![0].data.title, equals('Source Rule'));
+          /// Должно применить только правило источника, но не платформы
+          expect(result.contentRules, hasLength(1));
+          expect(result.contentRules!.first.data.title, equals('Source Rule'));
 
-        /// Убеждаемся что правило платформы не применилось
-      });
+          /// Убеждаемся что правило платформы не применилось
+        },
+      );
 
       test('обрабатывает null значения в UpdateData корректно', () {
         final update = createUpdateData(
@@ -613,42 +636,47 @@ void main() {
       });
 
       test(
-          'корректно связывает правила с источником когда платформы фильтруются',
-          () {
-        final globalSourceRule = createContentRule(title: 'Source Rule');
+        'корректно связывает правила с источником когда платформы фильтруются',
+        () {
+          final globalSourceRule = createContentRule(title: 'Source Rule');
 
-        final update = createUpdateData(
-          version: Version.parse('1.0.0'),
-          sourceName: UpdateSourceName.googlePlay,
-          platform: UpdatePlatform.android,
-        );
+          final update = createUpdateData(
+            version: Version.parse('1.0.0'),
+            sourceName: UpdateSourceName.googlePlay,
+            platform: UpdatePlatform.android,
+          );
 
-        final globalSource = createGlobalSource(
-          sourceName: UpdateSourceName.googlePlay,
-          contentRules: [globalSourceRule],
-          platforms: [
-            createGlobalPlatform(platformName: UpdatePlatform.android),
-            createGlobalPlatform(platformName: UpdatePlatform.ios),
-          ],
-        );
+          final globalSource = createGlobalSource(
+            sourceName: UpdateSourceName.googlePlay,
+            platforms: [
+              createGlobalPlatform(platformName: UpdatePlatform.android),
+              createGlobalPlatform(platformName: UpdatePlatform.ios),
+            ],
+            contentRules: [globalSourceRule],
+          );
 
-        final result = linker.link(
-          update: update,
-          rulesContainer: createRulesContainer(),
-          globalSources: [globalSource],
-        );
+          final result = linker.link(
+            update: update,
+            rulesContainer: createRulesContainer(),
+            globalSources: [globalSource],
+          );
 
-        expect(result.contentRules, hasLength(1));
-        final linkedRule = result.contentRules![0];
+          expect(result.contentRules, hasLength(1));
+          final linkedRule = result.contentRules!.first;
 
-        /// Проверяем что правило связано с источником
-        expect(linkedRule.sourceIs?.firstOrNull?.sourceName,
-            equals(UpdateSourceName.googlePlay));
+          /// Проверяем что правило связано с источником
+          expect(
+            linkedRule.sourceIs?.firstOrNull?.sourceName,
+            equals(UpdateSourceName.googlePlay),
+          );
 
-        /// Проверяем что в список платформ включена только нужная платформа
-        expect(linkedRule.sourceIs?.firstOrNull?.platforms,
-            contains(UpdatePlatform.android));
-      });
+          /// Проверяем что в список платформ включена только нужная платформа
+          expect(
+            linkedRule.sourceIs?.firstOrNull?.platforms,
+            contains(UpdatePlatform.android),
+          );
+        },
+      );
 
       test('обрабатывает множественные globalSources с одинаковым именем', () {
         final firstSourceRule = createContentRule(title: 'First Source Rule');
@@ -681,7 +709,10 @@ void main() {
 
         /// Должен использовать только первый найденный источник (firstWhereOrNull)
         expect(result.contentRules, hasLength(1));
-        expect(result.contentRules![0].data.title, equals('First Source Rule'));
+        expect(
+          result.contentRules!.first.data.title,
+          equals('First Source Rule'),
+        );
       });
 
       test('обрабатывает глобальный источник без правил корректно', () {
@@ -718,7 +749,7 @@ void main() {
 
         /// Должно применить только правила из контейнера и самого update
         expect(result.contentRules, hasLength(2));
-        expect(result.contentRules![0].data.title, equals('Container Rule'));
+        expect(result.contentRules!.first.data.title, equals('Container Rule'));
         expect(result.contentRules![1].data.title, equals('Update Rule'));
       });
     });

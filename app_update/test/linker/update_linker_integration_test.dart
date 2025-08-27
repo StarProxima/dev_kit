@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-duplicate-initializers
+
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -51,37 +53,34 @@ void main() {
         final result = linker.linkAllConfigs([config]);
 
         expect(result, hasLength(1));
-        expect(result[0].version, Version.parse('1.0.0'));
+        expect(result.first.version, Version.parse('1.0.0'));
       });
 
       test('объединяет правила из нескольких конфигураций', () {
         final contentRule1 = createContentRule(title: 'Title 1');
         final contentRule2 = createContentRule(title: 'Title 2');
 
+        final source = createReleaseSource(
+          sourceName: UpdateSourceName.googlePlay,
+          platforms: [
+            createReleasePlatform(platformName: UpdatePlatform.android),
+          ],
+        );
+
         final release1 = createRelease(
           version: Version.parse('1.0.0'),
-          contentRules: [contentRule1],
           sources: [
-            createReleaseSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [
-                createReleasePlatform(platformName: UpdatePlatform.android),
-              ],
-            ),
+            source,
           ],
+          contentRules: [contentRule1],
         );
 
         final release2 = createRelease(
           version: Version.parse('2.0.0'),
-          contentRules: [contentRule2],
           sources: [
-            createReleaseSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [
-                createReleasePlatform(platformName: UpdatePlatform.android),
-              ],
-            ),
+            source,
           ],
+          contentRules: [contentRule2],
         );
 
         final globalSource = createGlobalSource(
@@ -106,8 +105,10 @@ void main() {
         final result = linker.linkAllConfigs([config1, config2]);
 
         expect(result, hasLength(2));
-        expect(result.map((r) => r.version.toString()).toList(),
-            ['1.0.0', '2.0.0']);
+        expect(
+          result.map((r) => r.version.toString()).toList(),
+          ['1.0.0', '2.0.0'],
+        );
       });
 
       test('объединяет источники из разных конфигураций', () {
@@ -155,8 +156,10 @@ void main() {
 
         final result = linker.linkAllConfigs([config1, config2]);
 
-        expect(result,
-            hasLength(4)); // 2 config * 2 platforms per release = 4 results
+        expect(
+          result,
+          hasLength(4),
+        ); // 2 config * 2 platforms per release = 4 results
         expect(result.any((r) => r.version == Version.parse('1.0.0')), isTrue);
       });
 
@@ -186,9 +189,6 @@ void main() {
 
         final release = createRelease(
           version: Version.parse('1.0.0'),
-          contentRules: [contentRule],
-          settingsRules: [settingsRule],
-          appSettingsRules: [appSettingsRule],
           sources: [
             createReleaseSource(
               sourceName: UpdateSourceName.googlePlay,
@@ -197,6 +197,9 @@ void main() {
               ],
             ),
           ],
+          contentRules: [contentRule],
+          settingsRules: [settingsRule],
+          appSettingsRules: [appSettingsRule],
         );
 
         final globalSource = createGlobalSource(
@@ -217,31 +220,28 @@ void main() {
         final result = linker.linkAllConfigs([config]);
 
         expect(result, hasLength(1));
-        expect(result[0].version, Version.parse('1.0.0'));
+        expect(result.first.version, Version.parse('1.0.0'));
       });
 
       test('объединяет релизы и сортирует по версии', () {
+        final source = createReleaseSource(
+          sourceName: UpdateSourceName.googlePlay,
+          platforms: [
+            createReleasePlatform(platformName: UpdatePlatform.android),
+          ],
+        );
+
         final release1 = createRelease(
           version: Version.parse('1.0.0'),
           sources: [
-            createReleaseSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [
-                createReleasePlatform(platformName: UpdatePlatform.android),
-              ],
-            ),
+            source,
           ],
         );
 
         final release2 = createRelease(
           version: Version.parse('2.0.0'),
           sources: [
-            createReleaseSource(
-              sourceName: UpdateSourceName.googlePlay,
-              platforms: [
-                createReleasePlatform(platformName: UpdatePlatform.android),
-              ],
-            ),
+            source,
           ],
         );
 
@@ -266,7 +266,7 @@ void main() {
 
         expect(result, hasLength(2));
         // Результат должен быть отсортирован по версии
-        expect(result[0].version, Version.parse('2.0.0'));
+        expect(result.first.version, Version.parse('2.0.0'));
       });
     });
   });

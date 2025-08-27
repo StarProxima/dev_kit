@@ -28,6 +28,7 @@ void main() {
           app_status: active
         custom_field: 42
       ''';
+      // ignore: avoid-type-casts
       final map = (loadYaml(yamlStr) as YamlMap).toMap();
       final result = parser.parse(map);
       expect(result, isA<GlobalPlatformConfig>());

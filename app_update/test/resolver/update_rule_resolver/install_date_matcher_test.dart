@@ -17,15 +17,16 @@ void main() {
 
       final rules = [
         createTestRule(
-          custom: const {'min_delay_after_app_install_hours': 7 * 24}, // 7 дней
+          // 7 дней
           title: 'Показать пользователю через неделю после установки',
+          custom: const {'min_delay_after_app_install_hours': 7 * 24},
         ),
       ];
 
       final res = customResolver.resolve(
         searchData: createTestSearchData(
-          appInstallDate: installDate,
           currentDate: currentDate,
+          appInstallDate: installDate,
         ),
         rules: rules,
       );
@@ -42,16 +43,17 @@ void main() {
 
       final rules = [
         createTestRule(
-          custom: const {'min_delay_after_app_install_hours': 7 * 24}, // 7 дней
+          // 7 дней
           title: 'bad',
+          custom: const {'min_delay_after_app_install_hours': 7 * 24},
         ),
       ];
 
       expect(
         () => customResolver.resolve(
           searchData: createTestSearchData(
-            appInstallDate: installDate,
             currentDate: currentDate,
+            appInstallDate: installDate,
           ),
           rules: rules,
         ),
@@ -66,8 +68,8 @@ void main() {
 
       final rules = [
         createTestRule(
-          custom: const {'min_delay_after_app_install_hours': 24},
           title: 'bad',
+          custom: const {'min_delay_after_app_install_hours': 24},
         ),
       ];
 
@@ -100,19 +102,19 @@ void main() {
 
       final rules = [
         createTestRule(
+          title: 'Combined matchers work',
           custom: const {
             'min_delay_after_app_install_hours': 5 * 24, // 5 дней
             'env_is': 'prod', // Для CustomDataMatcher
           },
-          title: 'Combined matchers work',
         ),
       ];
 
       final res = customResolver.resolve(
         searchData: createTestSearchData(
-          appInstallDate: installDate,
           currentDate: currentDate,
           custom: const {'env': 'prod'}, // Для CustomDataMatcher
+          appInstallDate: installDate,
         ),
         rules: rules,
       );

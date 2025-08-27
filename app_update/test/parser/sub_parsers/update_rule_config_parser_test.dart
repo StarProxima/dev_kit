@@ -33,7 +33,7 @@ void main() {
         ),
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
-      expect(result?.appStatusIs?.first.name, 'outdated');
+      expect(result?.appStatusIs?.firstOrNull?.name, 'outdated');
       expect(result?.data.map['title'], 'Заголовок');
     });
 

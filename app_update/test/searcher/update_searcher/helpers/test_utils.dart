@@ -1,9 +1,11 @@
+// ignore_for_file: avoid-long-parameter-list
+
 import 'package:app_update/app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-/// Общие утилиты для тестов UpdateSearcher
-class UpdateSearcherTestUtils {
+/// Общие утилиты для тестов UpdateSearcher.
+abstract final class UpdateSearcherTestUtils {
   static final searchDataDefaulter = UpdateSearchDataDefaulter(
     updateSourceChecker: UpdateSourceSupportCheckerNoOp(),
   );
@@ -14,7 +16,7 @@ class UpdateSearcherTestUtils {
 
   static final currentDate = DateTime(2024, 10, 20, 12);
 
-  /// Создает UpdateSearchData для тестов с базовыми параметрами
+  /// Создает UpdateSearchData для тестов с базовыми параметрами.
   static UpdateSearchData createSearchData({
     required DateTime currentDate,
     required Version localVersion,
@@ -22,10 +24,10 @@ class UpdateSearcherTestUtils {
     required List<UpdateSource> sources,
   }) {
     final searchConfig = UpdateSearchConfig(
-      currentDate: currentDate,
-      localVersion: localVersion,
       platform: platform,
       sources: sources,
+      localVersion: localVersion,
+      currentDate: currentDate,
     );
 
     return searchDataDefaulter.getSearchDataWithDefaults(
@@ -39,7 +41,7 @@ class UpdateSearcherTestUtils {
     );
   }
 
-  /// Хелпер для создания UpdateData
+  /// Хелпер для создания UpdateData.
   static UpdateData createUpdateData(
     String version, {
     required DateTime date,
@@ -58,7 +60,7 @@ class UpdateSearcherTestUtils {
     );
   }
 
-  /// Создает PackageInfo для тестов
+  /// Создает PackageInfo для тестов.
   static PackageInfo createPackageInfo({
     String appName = 'test',
     String packageName = 'test',
@@ -75,7 +77,7 @@ class UpdateSearcherTestUtils {
     );
   }
 
-  /// Создает UpdateSearchConfig для тестов
+  /// Создает UpdateSearchConfig для тестов.
   static UpdateSearchConfig createSearchConfig({
     DateTime? currentDate,
     Version? localVersion,
@@ -83,10 +85,10 @@ class UpdateSearcherTestUtils {
     List<UpdateSource>? sources,
   }) {
     return UpdateSearchConfig(
-      currentDate: currentDate,
-      localVersion: localVersion,
       platform: platform,
       sources: sources,
+      localVersion: localVersion,
+      currentDate: currentDate,
     );
   }
 }

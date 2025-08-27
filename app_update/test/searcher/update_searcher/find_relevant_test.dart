@@ -11,14 +11,18 @@ void main() {
 
     test('возвращает самое релевантное обновление (первое из доступных)', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('1.5.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.appStore),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.5.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.appStore,
+        ),
       ];
 
       final result = searcher.findMostRelevantUpdate(
@@ -32,16 +36,18 @@ void main() {
       );
 
       expect(result, isNotNull);
-      expect(result!.version, Version.parse('2.0.0'));
-      expect(result.sourceName, UpdateSourceName.googlePlay);
+      expect(result?.version, Version.parse('2.0.0'));
+      expect(result?.sourceName, UpdateSourceName.googlePlay);
     });
 
     test('возвращает null если нет доступных обновлений', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('0.9.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay), // меньше локальной версии
+        UpdateSearcherTestUtils.createUpdateData(
+          '0.9.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ), // меньше локальной версии
       ];
 
       final result = searcher.findMostRelevantUpdate(
@@ -59,14 +65,18 @@ void main() {
 
     test('учитывает приоритет источников при одинаковой версии', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.ruStore),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.ruStore,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final result = searcher.findMostRelevantUpdate(
@@ -76,14 +86,14 @@ void main() {
           platform: UpdatePlatform.android,
           sources: const [
             UpdateSource.ruStore,
-            UpdateSource.googlePlay
+            UpdateSource.googlePlay,
           ], // ruStore первый
         ),
         updates: updates,
       );
 
       expect(result, isNotNull);
-      expect(result!.sourceName.name, UpdateSourceName.ruStore.name);
+      expect(result?.sourceName.name, UpdateSourceName.ruStore.name);
     });
 
     test('возвращает null для пустого списка обновлений', () {
@@ -102,14 +112,18 @@ void main() {
 
     test('игнорирует обновления с будущими датами', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2025), // будущая дата
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('1.5.0',
-            date: DateTime(2024, 10, 10), // подходящая дата
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2025), // будущая дата
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.5.0',
+          date: DateTime(2024, 10, 10), // подходящая дата
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final result = searcher.findMostRelevantUpdate(
@@ -123,23 +137,29 @@ void main() {
       );
 
       expect(result, isNotNull);
-      expect(result!.version, Version.parse('1.5.0'));
+      expect(result?.version, Version.parse('1.5.0'));
     });
 
     test('возвращает обновление с максимальной версией', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('1.5.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('2.1.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.ruStore), // ruStore поддерживает Android
-        UpdateSearcherTestUtils.createUpdateData('1.8.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.5.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.1.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.ruStore,
+        ), // ruStore поддерживает Android
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.8.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final result = searcher.findMostRelevantUpdate(
@@ -153,16 +173,18 @@ void main() {
       );
 
       expect(result, isNotNull);
-      expect(result!.version, Version.parse('2.1.0'));
-      expect(result.sourceName, UpdateSourceName.ruStore);
+      expect(result?.version, Version.parse('2.1.0'));
+      expect(result?.sourceName, UpdateSourceName.ruStore);
     });
 
     test('работает с единственным подходящим обновлением', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final result = searcher.findMostRelevantUpdate(
@@ -176,8 +198,8 @@ void main() {
       );
 
       expect(result, isNotNull);
-      expect(result!.version, Version.parse('2.0.0'));
-      expect(result.sourceName, UpdateSourceName.googlePlay);
+      expect(result?.version, Version.parse('2.0.0'));
+      expect(result?.sourceName, UpdateSourceName.googlePlay);
     });
   });
 }

@@ -1,9 +1,11 @@
+// ignore_for_file: prefer-static-class, avoid-long-parameter-list
+
 import 'dart:ui';
 
 import 'package:app_update/app_update.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-/// Создает UpdateSearchData для тестов с настраиваемыми параметрами
+/// Создает UpdateSearchData для тестов с настраиваемыми параметрами.
 UpdateSearchData createTestSearchData({
   UpdateViewTarget target = UpdateViewTarget.card,
   UpdateLocale? locale,
@@ -21,7 +23,7 @@ UpdateSearchData createTestSearchData({
   Map<String, dynamic>? custom,
   DateTime? appInstallDate,
 }) {
-  var customData = custom ?? <String, dynamic>{};
+  Map<String, dynamic> customData = custom ?? <String, dynamic>{};
 
   if (appInstallDate != null) {
     customData = {...customData, 'app_install_date': appInstallDate};
@@ -45,7 +47,7 @@ UpdateSearchData createTestSearchData({
   );
 }
 
-/// Создает UpdateRuleConfig для тестов с настраиваемыми параметрами
+/// Создает UpdateRuleConfig для тестов с настраиваемыми параметрами.
 UpdateRuleConfig<UpdateContentConfig> createTestRule({
   List<UpdateViewTarget> targets = const [UpdateViewTarget.any],
   List<UpdateLocale> locales = const [UpdateLocale.any],

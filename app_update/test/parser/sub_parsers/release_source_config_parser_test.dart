@@ -52,7 +52,7 @@ void main() {
       ''';
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
-      expect(result?.releaseOverride?.version.toString(), '1.2.3');
+      expect(result?.releaseOverride?.version?.toString(), '1.2.3');
     });
 
     test('Ошибка при неверном типе', () {

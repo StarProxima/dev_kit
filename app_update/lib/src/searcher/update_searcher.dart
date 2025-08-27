@@ -138,7 +138,6 @@ class UpdateSearcher {
   /// Сортировка: по версии по убыванию, при равной версии — по приоритету источника из [UpdateSearchData.sources].
   @protected
   @visibleForTesting
-  // ignore: prefer-named-parameters
   List<UpdateData> sortUpdates(
     List<UpdateData> updates,
     UpdateSearchData searchData,

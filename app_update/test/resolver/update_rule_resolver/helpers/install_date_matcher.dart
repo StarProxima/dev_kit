@@ -4,7 +4,6 @@ import 'package:app_update/app_update.dart';
 /// Использует поле 'min_delay_after_app_install_hours' в customData правила
 /// и поле 'app_install_date' в customData поиска для определения времени.
 /// Должен выполняться ПЕРЕД CustomDataMatcher, так как не использует суффикс '_is'.
-// ignore: avoid-top-level-members-in-tests
 class InstallDateMatcher extends RuleMatcher {
   const InstallDateMatcher();
 

@@ -51,8 +51,10 @@ void main() {
     });
 
     test('Ошибка при неверном типе входных данных', () {
-      expect(() => parser.parse('not a map'),
-          throwsA(isA<ParseConfigException>()));
+      expect(
+        () => parser.parse('not a map'),
+        throwsA(isA<ParseConfigException>()),
+      );
       expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
       expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
     });

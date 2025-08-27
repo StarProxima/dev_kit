@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer-commenting-future-delayed
 
 import 'dart:ui';
 
@@ -35,18 +35,28 @@ void main() {
 }
 
 void _testGooglePlay() {
-  for (final app in [TestApps.multiStoreApp, TestApps.onlyKoreanApp, TestApps.nonRuApp]) {
+  for (final app in [
+    TestApps.multiStoreApp,
+    TestApps.onlyKoreanApp,
+    TestApps.nonRuApp,
+  ]) {
     for (final locale in [TestLocales.english, TestLocales.korean]) {
-      final parameters = <String, String>{'id': app.getPackageId(TargetPlatform.android)};
+      final parameters = <String, String>{
+        'id': app.getPackageId(TargetPlatform.android),
+      };
 
-      if (locale.countryCode != null) {
-        parameters['gl'] = locale.countryCode!;
-      }
-      if (locale.languageCode.isNotEmpty) {
-        parameters['hl'] = locale.languageCode;
+      final countryCode = locale.countryCode;
+      if (countryCode != null) {
+        parameters['gl'] = countryCode;
       }
 
-      final url = Uri.https('play.google.com', 'store/apps/details', parameters);
+      final languageCode = locale.languageCode;
+      if (languageCode.isNotEmpty) {
+        parameters['hl'] = languageCode;
+      }
+
+      final url =
+          Uri.https('play.google.com', 'store/apps/details', parameters);
       print('  ✅ ${app.name} ${TestLocales.describe(locale)}: URL generated');
       print('    🔗 $url');
     }
@@ -54,8 +64,15 @@ void _testGooglePlay() {
 }
 
 void _testRuStore() {
-  for (final app in [TestApps.multiStoreApp, TestApps.onlyKoreanApp, TestApps.nonRuApp]) {
-    final url = Uri.https('apps.rustore.ru', 'app/${app.getPackageId(TargetPlatform.android)}');
+  for (final app in [
+    TestApps.multiStoreApp,
+    TestApps.onlyKoreanApp,
+    TestApps.nonRuApp,
+  ]) {
+    final url = Uri.https(
+      'apps.rustore.ru',
+      'app/${app.getPackageId(TargetPlatform.android)}',
+    );
     print('  ✅ ${app.name}: URL generated');
     print('    🔗 $url');
   }
@@ -65,7 +82,11 @@ Future<void> _testAppStore() async {
   const api = AppStoreApi();
 
   // Мультиплатформенное приложение
-  for (final locale in [TestLocales.english, TestLocales.korean, TestLocales.russian]) {
+  for (final locale in [
+    TestLocales.english,
+    TestLocales.korean,
+    TestLocales.russian,
+  ]) {
     await _testAppStoreApp(api, TestApps.multiStoreApp, locale);
     await Future.delayed(const Duration(milliseconds: 500));
   }
@@ -83,29 +104,39 @@ Future<void> _testAppStore() async {
   }
 }
 
-Future<void> _testAppStoreApp(AppStoreApi api, TestAppData app, Locale locale) async {
+Future<void> _testAppStoreApp(
+  AppStoreApi api,
+  TestAppData app,
+  Locale locale,
+) async {
   final stopwatch = Stopwatch()..start();
 
   try {
-    final appData = await api.lookupApp(app.getPackageId(TargetPlatform.ios), locale);
+    final appData = await api.lookupApp(
+      bundleId: app.getPackageId(TargetPlatform.ios),
+      locale: locale,
+    );
 
     stopwatch.stop();
 
-    if (appData != null) {
+    if (appData == null) {
+      print(
+        '  ❌ ${app.name} ${TestLocales.describe(locale)}: Not found (${stopwatch.elapsedMilliseconds}ms)',
+      );
+    } else {
       final url = api.buildAppStoreUrl(appData, locale);
       print(
-          '  ✅ ${app.name} ${TestLocales.describe(locale)}: App found (${stopwatch.elapsedMilliseconds}ms)');
+        '  ✅ ${app.name} ${TestLocales.describe(locale)}: App found (${stopwatch.elapsedMilliseconds}ms)',
+      );
       if (url != null) {
         print('    🔗 $url');
       }
-    } else {
-      print(
-          '  ❌ ${app.name} ${TestLocales.describe(locale)}: Not found (${stopwatch.elapsedMilliseconds}ms)');
     }
   } catch (e) {
     stopwatch.stop();
     print(
-        '  💥 ${app.name} ${TestLocales.describe(locale)}: Error (${stopwatch.elapsedMilliseconds}ms) - $e');
+      '  💥 ${app.name} ${TestLocales.describe(locale)}: Error (${stopwatch.elapsedMilliseconds}ms) - $e',
+    );
   }
 }
 
@@ -118,37 +149,71 @@ Future<void> _testAppStoreFallback() async {
   print('\n  📦 ${TestApps.nonRuApp.name} (не доступно в России):');
 
   // Тест 1
-  await _testFallbackCase(api, nonRuAppId, TestLocales.russian, 'ru-RU (не должен найти)');
+  await _testFallbackCase(
+    api,
+    nonRuAppId,
+    TestLocales.russian,
+    'ru-RU (не должен найти)',
+  );
   await Future.delayed(const Duration(milliseconds: 1000));
 
   // Тест 2
-  await _testFallbackCase(api, nonRuAppId, TestLocales.russianOnly, 'ru (fallback, должен найти)');
+  await _testFallbackCase(
+    api,
+    nonRuAppId,
+    TestLocales.russianOnly,
+    'ru (fallback, должен найти)',
+  );
   await Future.delayed(const Duration(milliseconds: 1000));
 
   // Тест 3
-  await _testFallbackCase(api, nonRuAppId, TestLocales.english, 'en-US (должен найти)');
+  await _testFallbackCase(
+    api,
+    nonRuAppId,
+    TestLocales.english,
+    'en-US (должен найти)',
+  );
   await Future.delayed(const Duration(milliseconds: 1000));
 
   // Проверка на корейском приложении
-  final onlyKoreanAppId = TestApps.onlyKoreanApp.getPackageId(TargetPlatform.ios);
+  final onlyKoreanAppId =
+      TestApps.onlyKoreanApp.getPackageId(TargetPlatform.ios);
 
   print('\n  📦 ${TestApps.onlyKoreanApp.name} (только в Корее):');
 
   // Тест 4
-  await _testFallbackCase(api, onlyKoreanAppId, TestLocales.korean, 'ko-KR (должен найти)');
+  await _testFallbackCase(
+    api,
+    onlyKoreanAppId,
+    TestLocales.korean,
+    'ko-KR (должен найти)',
+  );
   await Future.delayed(const Duration(milliseconds: 1000));
 
   // Тест 5
   await _testFallbackCase(
-      api, onlyKoreanAppId, TestLocales.koreanOnly, 'ko (fallback, не должен найти)');
+    api,
+    onlyKoreanAppId,
+    TestLocales.koreanOnly,
+    'ko (fallback, не должен найти)',
+  );
   await Future.delayed(const Duration(milliseconds: 1000));
 
   // Тест 6
-  await _testFallbackCase(api, onlyKoreanAppId, TestLocales.english, 'en-US (не должен найти)');
+  await _testFallbackCase(
+    api,
+    onlyKoreanAppId,
+    TestLocales.english,
+    'en-US (не должен найти)',
+  );
 
   // Тест 7
   await _testFallbackCase(
-      api, onlyKoreanAppId, TestLocales.englishOnly, 'en (fallback, не должен найти)');
+    api,
+    onlyKoreanAppId,
+    TestLocales.englishOnly,
+    'en (fallback, не должен найти)',
+  );
   await Future.delayed(const Duration(milliseconds: 1000));
 }
 
@@ -161,18 +226,22 @@ Future<void> _testFallbackCase(
   final stopwatch = Stopwatch()..start();
 
   try {
-    final appData = await api.lookupApp(bundleId, locale, shouldUseFallback: false);
+    final appData = await api.lookupApp(
+      bundleId: bundleId,
+      locale: locale,
+      shouldUseFallback: false,
+    );
 
     stopwatch.stop();
 
-    if (appData != null) {
+    if (appData == null) {
+      print('  ❌ $description: Not found (${stopwatch.elapsedMilliseconds}ms)');
+    } else {
       final url = api.buildAppStoreUrl(appData, locale);
       print('  ✅ $description: App found (${stopwatch.elapsedMilliseconds}ms)');
       if (url != null) {
         print('    🔗 $url');
       }
-    } else {
-      print('  ❌ $description: Not found (${stopwatch.elapsedMilliseconds}ms)');
     }
   } catch (e) {
     stopwatch.stop();

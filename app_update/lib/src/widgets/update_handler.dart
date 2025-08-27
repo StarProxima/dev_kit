@@ -1,5 +1,3 @@
-// ignore_for_file: prefer-named-parameters, avoid-late-keyword
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -49,6 +47,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   Locale get _locale => Localizations.localeOf(context);
 
   late final AppLifecycleListener _appLifecycleListener;
+  // ignore: prefer-correct-callback-field-name
   late final StreamSubscription<void> _onFetchSubscription;
   late final UpdateController _controller;
   late UpdateSearchConfig _searchConfig;
@@ -137,12 +136,14 @@ class _UpdateHandlerState extends State<UpdateHandler> {
       const SizedBox.shrink();
 }
 
+// ignore: prefer-named-parameters
 typedef OnUpdateResult = FutureOr<void> Function(
   BuildContext context,
   UpdateController controller,
   UpdateResult result,
 );
 
+// ignore: prefer-named-parameters
 typedef UpdateWidgetBuilder = Widget Function(
   BuildContext context,
   UpdateController controller,

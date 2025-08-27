@@ -17,7 +17,7 @@ void main() {
           locales: [const UpdateLocale(Locale('ru'))],
           sources: const [UpdateSource.googlePlay],
           versions: [
-            UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0 <2.0.0'))
+            UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0 <2.0.0')),
           ],
           title: 'A',
         ),
@@ -50,8 +50,9 @@ void main() {
       // pointer 0.2 > 0.1 => правило не подходит
       expect(
         () => resolver.resolve(
-            searchData: createTestSearchData(segmentationPointer: 0.2),
-            rules: rules),
+          searchData: createTestSearchData(segmentationPointer: 0.2),
+          rules: rules,
+        ),
         throwsA(isA<Exception>()),
       );
     });
@@ -60,16 +61,18 @@ void main() {
       final baseDate = DateTime(2024, 10, 20, 12);
       final rules = [
         createTestRule(
-            date: UpdateDate(baseDate),
-            delay: const Duration(hours: 24),
-            title: 'A'),
+          date: UpdateDate(baseDate),
+          delay: const Duration(hours: 24),
+          title: 'A',
+        ),
       ];
 
       // now до (base+24h) — правило не подходит
       expect(
         () => resolver.resolve(
           searchData: createTestSearchData(
-              currentDate: baseDate.add(const Duration(hours: 23))),
+            currentDate: baseDate.add(const Duration(hours: 23)),
+          ),
           rules: rules,
         ),
         throwsA(isA<Exception>()),
@@ -78,7 +81,8 @@ void main() {
       // now после (base+24h)
       final res = resolver.resolve(
         searchData: createTestSearchData(
-            currentDate: baseDate.add(const Duration(hours: 25))),
+          currentDate: baseDate.add(const Duration(hours: 25)),
+        ),
         rules: rules,
       );
       expect(res.title, 'A');
@@ -88,9 +92,10 @@ void main() {
       final baseDate = DateTime(2024, 10, 20, 12);
       final rules = [
         createTestRule(
-            date: UpdateDate(baseDate),
-            rollout: const Duration(hours: 100),
-            title: 'A'),
+          date: UpdateDate(baseDate),
+          rollout: const Duration(hours: 100),
+          title: 'A',
+        ),
       ];
 
       // Через 10 часов, прогресс ~0.1 — pointer 0.2 не проходит
@@ -122,14 +127,17 @@ void main() {
       final rules = [
         // 1. База, работает везде, задаём заглушки
         createTestRule(
-            title: 'base', description: 'd0', custom: const {'env_is': 'prod'}),
+          title: 'base',
+          description: 'd0',
+          custom: const {'env_is': 'prod'},
+        ),
 
         // 2. Источник googlePlay + платформа android => мердж описания
         createTestRule(
-          sources: const [UpdateSource.googlePlay],
           targets: const [UpdateViewTarget.card],
+          sources: const [UpdateSource.googlePlay],
           versions: [
-            UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0'))
+            UpdateVersionConstraint(VersionConstraint.parse('>=1.0.0')),
           ],
           description: 'android-store',
         ),
@@ -156,11 +164,12 @@ void main() {
         () => resolver.resolve(
           searchData: createTestSearchData(
             target: UpdateViewTarget.screen,
-            currentDate: baseDate.add(const Duration(hours: 20)),
-            rolloutPointer: 0.6,
-            localReleaseDate: baseDate,
-            updateReleaseDate: baseDate,
             sources: const [UpdateSource.googlePlay],
+            currentDate: baseDate.add(const Duration(hours: 20)),
+            localReleaseDate: baseDate,
+            // ignore: no-equal-arguments
+            updateReleaseDate: baseDate,
+            rolloutPointer: 0.6,
           ),
           rules: rules,
         ),
@@ -170,17 +179,18 @@ void main() {
       // Второй проход — 30h после localReleaseDate -> сработает правило 4 (delay 24h)
       final res2 = resolver.resolve(
         searchData: createTestSearchData(
-          currentDate: baseDate.add(const Duration(hours: 30)),
-          rolloutPointer: 0.5,
-          localReleaseDate: baseDate,
-          updateReleaseDate: baseDate,
           sources: const [UpdateSource.googlePlay],
+          currentDate: baseDate.add(const Duration(hours: 30)),
+          localReleaseDate: baseDate,
+          // ignore: no-equal-arguments
+          updateReleaseDate: baseDate,
+          rolloutPointer: 0.5,
           // теперь передаём customData для базового правила
           custom: const {
             'env': 'PROD',
             'meta': {
-              'tags': ['alpha', 'beta']
-            }
+              'tags': ['alpha', 'beta'],
+            },
           },
         ),
         rules: rules,

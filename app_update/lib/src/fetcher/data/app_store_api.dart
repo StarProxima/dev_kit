@@ -57,7 +57,6 @@ class AppStoreApi {
   }
 
   /// Создает URL для App Store страницы приложения на основе данных из iTunes API.
-  // ignore: prefer-named-parameters
   String? buildAppStoreUrl(Map<String, dynamic> appData, Locale locale) {
     final trackViewUrl = appData['trackViewUrl'] as String?;
     if (trackViewUrl == null) return null;

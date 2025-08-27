@@ -24,7 +24,7 @@ void main() {
 
     test('rule map vs search map: кейсы ключей/значений игнорируются', () {
       final rules = [
-        createTestRule(custom: const {'env_is': 'PROD'}, title: 'ok'),
+        createTestRule(title: 'ok', custom: const {'env_is': 'PROD'}),
       ];
 
       final res = resolver.resolve(
@@ -36,7 +36,7 @@ void main() {
 
     test("rule 'any' как строка — всегда true", () {
       final rules = [
-        createTestRule(custom: const {'stage_is': 'ANY'}, title: 'ok'),
+        createTestRule(title: 'ok', custom: const {'stage_is': 'ANY'}),
       ];
 
       final res = resolver.resolve(
@@ -48,12 +48,15 @@ void main() {
 
     test('NEW: Map в правиле игнорируется (не поддерживается)', () {
       final rules = [
-        createTestRule(custom: const {
-          'meta_is': {
-            'Flag': 'On', // Это Map - должно быть проигнорировано
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'meta_is': {
+              'Flag': 'On', // Это Map - должно быть проигнорировано
+            },
+            'env_is': 'prod', // Примитив - должен работать
           },
-          'env_is': 'prod', // Примитив - должен работать
-        }, title: 'ok'),
+        ),
       ];
 
       // Правило должно сработать, потому что поле meta_is (Map) игнорируется,
@@ -70,14 +73,17 @@ void main() {
 
     test('list any-of: достаточно совпадения хотя бы одного элемента', () {
       final rules = [
-        createTestRule(custom: const {
-          'tags_is': ['alpha', 'beta']
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'tags_is': ['alpha', 'beta'],
+          },
+        ),
       ];
 
       final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {
-          'tags': ['gamma', 'BETA']
+          'tags': ['gamma', 'BETA'],
         }),
         rules: rules,
       );
@@ -86,9 +92,12 @@ void main() {
 
     test("list 'any' в правиле — всегда true", () {
       final rules = [
-        createTestRule(custom: const {
-          'tags_is': ['any']
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'tags_is': ['any'],
+          },
+        ),
       ];
 
       final res = resolver.resolve(
@@ -100,12 +109,12 @@ void main() {
 
     test('scalar vs list: совпадает если элемент найден в списке', () {
       final rules = [
-        createTestRule(custom: const {'tag_is': 'Alpha'}, title: 'ok'),
+        createTestRule(title: 'ok', custom: const {'tag_is': 'Alpha'}),
       ];
 
       final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {
-          'tag': ['alpha', 'beta']
+          'tag': ['alpha', 'beta'],
         }),
         rules: rules,
       );
@@ -114,9 +123,12 @@ void main() {
 
     test('list vs scalar: достаточно совпадения одного элемента', () {
       final rules = [
-        createTestRule(custom: const {
-          'tag_is': ['ALPHA', 'BETA']
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'tag_is': ['ALPHA', 'BETA'],
+          },
+        ),
       ];
 
       final res = resolver.resolve(
@@ -127,9 +139,8 @@ void main() {
     });
 
     test('числа и булевы сравниваются по точному совпадению', () {
-      // Позитивные
-      var rules = [
-        createTestRule(custom: const {'n_is': 5, 'b_is': true}, title: 'ok'),
+      List<UpdateRuleConfig<UpdateContentConfig>> rules = [
+        createTestRule(title: 'ok', custom: const {'n_is': 5, 'b_is': true}),
       ];
       final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {'n': 5, 'b': true}),
@@ -139,36 +150,41 @@ void main() {
 
       // Негативные
       rules = [
-        createTestRule(custom: const {'n_is': 5}, title: 'bad'),
+        createTestRule(title: 'bad', custom: const {'n_is': 5}),
       ];
       expect(
         () => resolver.resolve(
-            searchData: createTestSearchData(custom: const {'n': '5'}),
-            rules: rules),
+          searchData: createTestSearchData(custom: const {'n': '5'}),
+          rules: rules,
+        ),
         throwsA(isA<Exception>()),
       );
 
       rules = [
-        createTestRule(custom: const {'b_is': true}, title: 'bad'),
+        createTestRule(title: 'bad', custom: const {'b_is': true}),
       ];
       expect(
         () => resolver.resolve(
-            searchData: createTestSearchData(custom: const {'b': false}),
-            rules: rules),
+          searchData: createTestSearchData(custom: const {'b': false}),
+          rules: rules,
+        ),
         throwsA(isA<Exception>()),
       );
     });
 
     test('list any-of: числа', () {
       final rules = [
-        createTestRule(custom: const {
-          'nums_is': [5, 7]
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'nums_is': [5, 7],
+          },
+        ),
       ];
 
       final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {
-          'nums': [7]
+          'nums': [7],
         }),
         rules: rules,
       );
@@ -177,40 +193,49 @@ void main() {
 
     test('negative: отсутствие ключа в поиске — false', () {
       final rules = [
-        createTestRule(custom: const {'env_is': 'prod'}, title: 'bad'),
+        createTestRule(title: 'bad', custom: const {'env_is': 'prod'}),
       ];
 
       expect(
         () => resolver.resolve(
-            searchData: createTestSearchData(custom: const {}), rules: rules),
+          searchData: createTestSearchData(custom: const {}),
+          rules: rules,
+        ),
         throwsA(isA<Exception>()),
       );
     });
 
     test('negative: список не содержит ни одного совпадения', () {
       final rules = [
-        createTestRule(custom: const {
-          'tags_is': ['alpha']
-        }, title: 'bad'),
+        createTestRule(
+          title: 'bad',
+          custom: const {
+            'tags_is': ['alpha'],
+          },
+        ),
       ];
 
       expect(
         () => resolver.resolve(
-            searchData: createTestSearchData(custom: const {
-              'tags': ['beta']
-            }),
-            rules: rules),
+          searchData: createTestSearchData(custom: const {
+            'tags': ['beta'],
+          }),
+          rules: rules,
+        ),
         throwsA(isA<Exception>()),
       );
     });
 
     test('NEW: поля без суффикса "_is" блокируют правило', () {
       final rules = [
-        createTestRule(custom: const {
-          'env_is': 'prod', // Проверяется
-          'version': '1.0.0', // Неизвестное поле - блокирует
-          'debug_mode': true, // Неизвестное поле - блокирует
-        }, title: 'bad'),
+        createTestRule(
+          title: 'bad',
+          custom: const {
+            'env_is': 'prod', // Проверяется
+            'version': '1.0.0', // Неизвестное поле - блокирует
+            'debug_mode': true, // Неизвестное поле - блокирует
+          },
+        ),
       ];
 
       expect(
@@ -226,13 +251,16 @@ void main() {
 
     test('NEW: List с Map игнорируется', () {
       final rules = [
-        createTestRule(custom: const {
-          'items_is': [
-            {'name': 'item1'}, // List<Map> - должен быть проигнорирован
-            {'name': 'item2'}
-          ],
-          'tags_is': ['alpha', 'beta'], // List<String> - должен работать
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'items_is': [
+              {'name': 'item1'}, // List<Map> - должен быть проигнорирован
+              {'name': 'item2'},
+            ],
+            'tags_is': ['alpha', 'beta'], // List<String> - должен работать
+          },
+        ),
       ];
 
       final res = resolver.resolve(
@@ -247,14 +275,17 @@ void main() {
 
     test('NEW: смешанный List с Map и примитивами игнорируется', () {
       final rules = [
-        createTestRule(custom: const {
-          'mixed_is': [
-            'string',
-            42,
-            {'key': 'value'}
-          ], // Смешанный - игнорируется
-          'env_is': 'prod', // Примитив - работает
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'mixed_is': [
+              'string',
+              42,
+              {'key': 'value'},
+            ], // Смешанный - игнорируется
+            'env_is': 'prod', // Примитив - работает
+          },
+        ),
       ];
 
       final res = resolver.resolve(
@@ -266,35 +297,45 @@ void main() {
       expect(res.title, 'ok');
     });
 
-    test('NEW: правило только с непримитивными полями игнорируется полностью',
-        () {
-      final rules = [
-        createTestRule(custom: const {
-          'config_is': {'debug': true, 'level': 'info'}, // Map - игнорируется
-          'items_is': [
-            {'id': 1},
-            {'id': 2}
-          ], // List<Map> - игнорируется
-        }, title: 'ignored'),
-      ];
+    test(
+      'NEW: правило только с непримитивными полями игнорируется полностью',
+      () {
+        final rules = [
+          createTestRule(
+            title: 'ignored',
+            custom: const {
+              'config_is': {
+                'debug': true,
+                'level': 'info',
+              }, // Map - игнорируется
+              'items_is': [
+                {'id': 1},
+                {'id': 2},
+              ], // List<Map> - игнорируется
+            },
+          ),
+        ];
 
-      // Правило должно сработать, потому что все поля игнорированы (filteredRuleCustom пустой)
-      final res = resolver.resolve(
-        searchData: createTestSearchData(custom: const {
-          'any_field': 'any_value',
-        }),
-        rules: rules,
-      );
-      expect(res.title, 'ignored');
-    });
+        // Правило должно сработать, потому что все поля игнорированы (filteredRuleCustom пустой)
+        final res = resolver.resolve(
+          searchData: createTestSearchData(custom: const {
+            'any_field': 'any_value',
+          }),
+          rules: rules,
+        );
+        expect(res.title, 'ignored');
+      },
+    );
 
     test('NEW: null поддерживается, пустой список блокирует', () {
-      // Positive case: null в правиле матчит любое значение
-      var rules = [
-        createTestRule(custom: const {
-          'nullable_is': null, // null - поддерживается (всегда true)
-          'env_is': 'prod',
-        }, title: 'ok'),
+      List<UpdateRuleConfig<UpdateContentConfig>> rules = [
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'nullable_is': null, // null - поддерживается (всегда true)
+            'env_is': 'prod',
+          },
+        ),
       ];
 
       final res = resolver.resolve(
@@ -309,10 +350,13 @@ void main() {
 
       // Negative case: пустой список в правиле блокирует любые значения
       rules = [
-        createTestRule(custom: const {
-          'empty_list_is': <String>[], // Пустой список - никого не пускает
-          'env_is': 'prod',
-        }, title: 'bad'),
+        createTestRule(
+          title: 'bad',
+          custom: const {
+            'empty_list_is': <String>[], // Пустой список - никого не пускает
+            'env_is': 'prod',
+          },
+        ),
       ];
 
       expect(
@@ -320,7 +364,7 @@ void main() {
           searchData: createTestSearchData(custom: const {
             'empty_list': [
               'item1',
-              'item2'
+              'item2',
             ], // Не должно пройти из-за пустого списка в правиле
             'env': 'prod',
           }),
@@ -346,11 +390,14 @@ void main() {
       );
 
       final rules = [
-        createTestRule(custom: const {
-          'min_delay_after_app_install_hours':
-              24, // Поле для InstallDateMatcher
-          'env_is': 'prod', // Поле для CustomDataMatcher
-        }, title: 'ok'),
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'min_delay_after_app_install_hours':
+                24, // Поле для InstallDateMatcher
+            'env_is': 'prod', // Поле для CustomDataMatcher
+          },
+        ),
       ];
 
       // InstallDateMatcher должен обработать и удалить свое поле,
@@ -377,34 +424,41 @@ void main() {
     });
 
     test('NEW: логика сравнения списков - пересечение множеств', () {
-      // Positive case: есть пересечение между search и rule списками
-      var rules = [
-        createTestRule(custom: const {
-          'tags_is': [
-            'alpha',
-            'gamma',
-            'delta'
-          ], // rule содержит alpha, gamma, delta
-        }, title: 'ok'),
+      List<UpdateRuleConfig<UpdateContentConfig>> rules = [
+        createTestRule(
+          title: 'ok',
+          custom: const {
+            'tags_is': [
+              'alpha',
+              'gamma',
+              'delta',
+            ], // rule содержит alpha, gamma, delta
+          },
+        ),
       ];
 
-      var res = resolver.resolve(
+      UpdateContentConfig res = resolver.resolve(
         searchData: createTestSearchData(custom: const {
           'tags': [
             'alpha',
-            'beta'
+            'beta',
           ], // search содержит alpha, beta - alpha пересекается
         }),
         rules: rules,
       );
       expect(
-          res.title, 'ok'); // Проходит, потому что alpha есть в обоих списках
+        res.title,
+        'ok',
+      ); // Проходит, потому что alpha есть в обоих списках
 
       // Negative case: нет пересечения между списками
       rules = [
-        createTestRule(custom: const {
-          'tags_is': ['alpha', 'gamma'], // rule содержит только alpha, gamma
-        }, title: 'bad'),
+        createTestRule(
+          title: 'bad',
+          custom: const {
+            'tags_is': ['alpha', 'gamma'], // rule содержит только alpha, gamma
+          },
+        ),
       ];
 
       expect(
@@ -412,7 +466,7 @@ void main() {
           searchData: createTestSearchData(custom: const {
             'tags': [
               'beta',
-              'delta'
+              'delta',
             ], // search содержит beta, delta - нет пересечения
           }),
           rules: rules,
@@ -422,9 +476,12 @@ void main() {
 
       // Edge case: один элемент пересекается из многих
       rules = [
-        createTestRule(custom: const {
-          'tags_is': ['alpha', 'gamma', 'epsilon'],
-        }, title: 'single_match'),
+        createTestRule(
+          title: 'single_match',
+          custom: const {
+            'tags_is': ['alpha', 'gamma', 'epsilon'],
+          },
+        ),
       ];
 
       res = resolver.resolve(
@@ -437,15 +494,17 @@ void main() {
     });
 
     test('NEW: поддержка регулярных выражений', () {
-      // Positive case: email проходит проверку по регулярке
-      var rules = [
-        createTestRule(custom: const {
-          'email_is':
-              r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', // Email regex
-        }, title: 'valid_email'),
+      List<UpdateRuleConfig<UpdateContentConfig>> rules = [
+        createTestRule(
+          title: 'valid_email',
+          custom: const {
+            'email_is':
+                r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', // Email regex
+          },
+        ),
       ];
 
-      var res = resolver.resolve(
+      UpdateContentConfig res = resolver.resolve(
         searchData: createTestSearchData(
           appStatus:
               AppStatus.active, // Добавляем appStatus для AppStatusMatcher
@@ -459,10 +518,13 @@ void main() {
 
       // Negative case: невалидный email не проходит регулярку
       rules = [
-        createTestRule(custom: const {
-          'email_is':
-              r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-        }, title: 'bad'),
+        createTestRule(
+          title: 'bad',
+          custom: const {
+            'email_is':
+                r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+          },
+        ),
       ];
 
       expect(
@@ -480,12 +542,15 @@ void main() {
 
       // Edge case: смешивание обычных значений и регулярок в списке
       rules = [
-        createTestRule(custom: const {
-          'user_type_is': [
-            'admin',
-            r'regexp:^premium_.*'
-          ], // Обычное + регулярка
-        }, title: 'mixed'),
+        createTestRule(
+          title: 'mixed',
+          custom: const {
+            'user_type_is': [
+              'admin',
+              r'regexp:^premium_.*',
+            ], // Обычное + регулярка
+          },
+        ),
       ];
 
       res = resolver.resolve(
@@ -509,6 +574,8 @@ void main() {
         ),
         rules: rules,
       );
+
+      // ignore: avoid-duplicate-test-assertions
       expect(res.title, 'mixed');
     });
   });

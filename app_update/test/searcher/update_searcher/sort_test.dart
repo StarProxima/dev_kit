@@ -11,18 +11,24 @@ void main() {
 
     test('сортирует по версии по убыванию', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('1.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('1.5.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.5.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -34,24 +40,32 @@ void main() {
 
       final result = searcher.sortUpdates(updates, findData);
 
-      expect(result.map((e) => e.version.toString()).toList(),
-          ['2.0.0', '1.5.0', '1.0.0']);
+      expect(
+        result.map((e) => e.version.toString()).toList(),
+        ['2.0.0', '1.5.0', '1.0.0'],
+      );
     });
 
     test('при одинаковой версии сортирует по приоритету источника', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.ruStore),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.appStore),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.ruStore,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.appStore,
+        ),
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -61,7 +75,7 @@ void main() {
         sources: const [
           UpdateSource.appStore,
           UpdateSource.googlePlay,
-          UpdateSource.ruStore
+          UpdateSource.ruStore,
         ],
       );
 
@@ -70,20 +84,24 @@ void main() {
       expect(result.map((e) => e.sourceName).toList(), [
         UpdateSourceName.appStore,
         UpdateSourceName.googlePlay,
-        UpdateSourceName.ruStore
+        UpdateSourceName.ruStore,
       ]);
     });
 
     test('источники не в списке sources помещаются в конец', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: const UpdateSourceName.custom('unknown')), // не в sources
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay), // в sources
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: const UpdateSourceName.custom('unknown'),
+        ), // не в sources
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ), // в sources
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -97,24 +115,30 @@ void main() {
 
       expect(result.map((e) => e.sourceName).toList(), [
         UpdateSourceName.googlePlay,
-        const UpdateSourceName.custom('unknown')
+        const UpdateSourceName.custom('unknown'),
       ]);
     });
 
     test('комбинированная сортировка: версия + приоритет источника', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('1.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.appStore),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.appStore,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -128,8 +152,10 @@ void main() {
 
       // Сначала версия 2.0.0 (googlePlay имеет приоритет над appStore)
       // Затем версия 1.0.0
-      expect(result.map((e) => '${e.version}-${e.sourceName.name}').toList(),
-          ['2.0.0-googleplay', '2.0.0-appstore', '1.0.0-googleplay']);
+      expect(
+        result.map((e) => '${e.version}-${e.sourceName.name}').toList(),
+        ['2.0.0-googleplay', '2.0.0-appstore', '1.0.0-googleplay'],
+      );
     });
 
     test('пустой список остается пустым', () {
@@ -147,10 +173,12 @@ void main() {
 
     test('единственный элемент остается без изменений', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -163,32 +191,42 @@ void main() {
       final result = searcher.sortUpdates(updates, findData);
 
       expect(result, hasLength(1));
-      expect(result[0].version, Version.parse('2.0.0'));
-      expect(result[0].sourceName, UpdateSourceName.googlePlay);
+      expect(result.firstOrNull?.version, Version.parse('2.0.0'));
+      expect(result.firstOrNull?.sourceName, UpdateSourceName.googlePlay);
     });
 
     test('сложная сортировка с несколькими версиями и источниками', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('1.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.ruStore),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.ruStore),
-        UpdateSearcherTestUtils.createUpdateData('1.5.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
-        UpdateSearcherTestUtils.createUpdateData('1.5.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.appStore),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.ruStore,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.ruStore,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.5.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '1.5.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.appStore,
+        ),
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -198,7 +236,7 @@ void main() {
         sources: const [
           UpdateSource.googlePlay,
           UpdateSource.appStore,
-          UpdateSource.ruStore
+          UpdateSource.ruStore,
         ],
       );
 
@@ -210,27 +248,35 @@ void main() {
         '2.0.0-rustore',
         '1.5.0-googleplay',
         '1.5.0-appstore',
-        '1.0.0-rustore'
+        '1.0.0-rustore',
       ];
 
-      expect(result.map((e) => '${e.version}-${e.sourceName.name}').toList(),
-          expected);
+      expect(
+        result.map((e) => '${e.version}-${e.sourceName.name}').toList(),
+        expected,
+      );
     });
 
     test('обрабатывает множественные неизвестные источники', () {
       final updates = [
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: const UpdateSourceName.custom('unknown1')),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: const UpdateSourceName.custom('unknown2')),
-        UpdateSearcherTestUtils.createUpdateData('2.0.0',
-            date: DateTime(2024, 10, 10),
-            platform: UpdatePlatform.android,
-            source: UpdateSourceName.googlePlay),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: const UpdateSourceName.custom('unknown1'),
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: const UpdateSourceName.custom('unknown2'),
+        ),
+        UpdateSearcherTestUtils.createUpdateData(
+          '2.0.0',
+          date: DateTime(2024, 10, 10),
+          platform: UpdatePlatform.android,
+          source: UpdateSourceName.googlePlay,
+        ),
       ];
 
       final findData = UpdateSearcherTestUtils.createSearchData(
@@ -243,7 +289,7 @@ void main() {
       final result = searcher.sortUpdates(updates, findData);
 
       // GooglePlay должен быть первым, затем неизвестные источники
-      expect(result[0].sourceName, UpdateSourceName.googlePlay);
+      expect(result.firstOrNull?.sourceName, UpdateSourceName.googlePlay);
       expect(result[1].sourceName, const UpdateSourceName.custom('unknown1'));
       expect(result[2].sourceName, const UpdateSourceName.custom('unknown2'));
     });

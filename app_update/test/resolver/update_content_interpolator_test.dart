@@ -1,3 +1,5 @@
+// ignore_for_file: no-empty-string
+
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -9,19 +11,19 @@ void main() {
     group('buildInterpolateData', () {
       test('создает правильную мапу данных для интерполяции', () {
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.2.3+45'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'Test App',
-          appPackageName: 'com.test.app',
+          localVersion: Version.parse('1.2.3+45'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: DateTime(2024, 10),
           updateReleaseDate: DateTime(2024, 10, 10),
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'Test App',
+          appPackageName: 'com.test.app',
           customData: null,
         );
 
@@ -54,21 +56,21 @@ void main() {
 
       test('обрабатывает кастомные названия источников', () {
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [
-            UpdateSource.custom(UpdateSourceName.custom('my custom store'))
+            UpdateSource.custom(UpdateSourceName.custom('my custom store')),
           ],
-          appName: 'App',
-          appPackageName: 'com.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'App',
+          appPackageName: 'com.app',
           customData: null,
         );
 
@@ -93,19 +95,19 @@ void main() {
 
       test('обрабатывает версии без build number', () {
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.2.3'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'App',
-          appPackageName: 'com.app',
+          localVersion: Version.parse('1.2.3'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'App',
+          appPackageName: 'com.app',
           customData: null,
         );
 
@@ -144,24 +146,24 @@ void main() {
           postponeButton: 'Later',
           updateButton: 'Update {appName}',
           customData: {
-            'custom_field': 'App: {appName}, Version: {updateVersion}'
+            'custom_field': 'App: {appName}, Version: {updateVersion}',
           },
         );
 
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0+10'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'My App',
-          appPackageName: 'com.myapp',
+          localVersion: Version.parse('1.0.0+10'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'My App',
+          appPackageName: 'com.myapp',
           customData: null,
         );
 
@@ -183,14 +185,20 @@ void main() {
         );
 
         expect(result.title, 'Update My App to 2.1.5');
-        expect(result.description,
-            'Your current version 1.0.0 is outdated. Update from GooglePlay!');
+        expect(
+          result.description,
+          'Your current version 1.0.0 is outdated. Update from GooglePlay!',
+        );
         expect(result.releaseNotes, 'Version 2.1.5+25 includes new features.');
         expect(result.updateButton, 'Update My App');
-        expect(result.updateUrl.toString(),
-            'https://placeholder.com'); // Uri не интерполируется
         expect(
-            result.customData!['custom_field'], 'App: My App, Version: 2.1.5');
+          result.updateUrl.toString(),
+          'https://placeholder.com',
+        ); // Uri не интерполируется
+        expect(
+          result.customData?['custom_field'],
+          'App: My App, Version: 2.1.5',
+        );
       });
 
       test('не изменяет содержимое без переменных', () {
@@ -207,19 +215,19 @@ void main() {
         );
 
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'App',
-          appPackageName: 'com.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'App',
+          appPackageName: 'com.app',
           customData: null,
         );
 
@@ -245,7 +253,7 @@ void main() {
         expect(result.releaseNotes, 'No variables here');
         expect(result.updateButton, 'Update Now');
         expect(result.updateUrl.toString(), 'https://example.com');
-        expect(result.customData!['field'], 'value');
+        expect(result.customData?['field'], 'value');
       });
 
       test('обрабатывает частичную интерполяцию', () {
@@ -262,19 +270,19 @@ void main() {
         );
 
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.5.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'Test App',
-          appPackageName: 'com.test',
+          localVersion: Version.parse('1.5.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'Test App',
+          appPackageName: 'com.test',
           customData: null,
         );
 
@@ -317,19 +325,19 @@ void main() {
         );
 
         final searchData = UpdateSearchData(
-          currentDate: DateTime(2024, 10, 15),
-          localVersion: Version.parse('1.0.0'),
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          appName: 'App',
-          appPackageName: 'com.app',
+          localVersion: Version.parse('1.0.0'),
+          displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
-          displayTarget: UpdateViewTarget.any,
-          rolloutPointer: 0.5,
-          segmentationPointer: 0.3,
+          currentDate: DateTime(2024, 10, 15),
           localReleaseDate: null,
           updateReleaseDate: null,
+          segmentationPointer: 0.3,
+          rolloutPointer: 0.5,
+          appName: 'App',
+          appPackageName: 'com.app',
           customData: null,
         );
 
