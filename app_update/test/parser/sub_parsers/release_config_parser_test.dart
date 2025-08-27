@@ -28,7 +28,7 @@ void main() {
             data:
               can_skip: true
         app_settings:
-          - version_is: any
+          - app_version_is: any
             data:
               app_status: active
         custom_field: 123

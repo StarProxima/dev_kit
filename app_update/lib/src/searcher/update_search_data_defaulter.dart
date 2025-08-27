@@ -32,7 +32,7 @@ class UpdateSearchDataDefaulter {
     final defaultSearchData = UpdateSearchData(
       platform: UpdatePlatform.current(),
       sources: defaultSources,
-      localVersion:
+      appVersion:
           Version.parse('${packageInfo.version}+${packageInfo.buildNumber}'),
       displayTarget: UpdateViewTarget.any,
       appStatus: null,
@@ -54,7 +54,7 @@ class UpdateSearchDataDefaulter {
     final searchData = UpdateSearchData(
       platform: searchConfig.platform ?? defaultSearchData.platform,
       sources: searchConfig.sources ?? defaultSearchData.sources,
-      localVersion: searchConfig.localVersion ?? defaultSearchData.localVersion,
+      appVersion: searchConfig.appVersion ?? defaultSearchData.appVersion,
       displayTarget:
           searchConfig.displayTarget ?? defaultSearchData.displayTarget,
       appStatus: searchConfig.appStatus ?? defaultSearchData.appStatus,

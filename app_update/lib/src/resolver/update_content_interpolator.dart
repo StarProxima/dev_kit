@@ -27,18 +27,18 @@ class UpdateContentInterpolator {
     required UpdateSearchData searchData,
     required UpdateData updateData,
   }) {
-    final localVersionStr = searchData.localVersion.toOnlyNumbersString();
-    final localVersionWithBuildStr =
-        searchData.localVersion.toVersionWithBuildString();
+    final appVersionStr = searchData.appVersion.toOnlyNumbersString();
+    final appVersionWithBuildStr =
+        searchData.appVersion.toVersionWithBuildString();
     final updateVersionStr = updateData.version.toOnlyNumbersString();
     final updateVersionWithBuildStr =
         updateData.version.toVersionWithBuildString();
 
     final interpolateData = {
-      'appVersion': localVersionStr,
-      'appVersionWithBuild': localVersionWithBuildStr,
-      'localVersion': localVersionStr,
-      'localVersionWithBuild': localVersionWithBuildStr,
+      'appVersion': appVersionStr,
+      'appVersionWithBuild': appVersionWithBuildStr,
+      'localVersion': appVersionStr,
+      'localVersionWithBuild': appVersionWithBuildStr,
       'updateVersion': updateVersionStr,
       'updateVersionWithBuild': updateVersionWithBuildStr,
       'appName': searchData.appName,

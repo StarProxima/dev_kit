@@ -10,7 +10,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
   final List<AppStatus>? appStatusIs;
   final List<UpdateLocale>? localeIs;
   final List<UpdateViewTarget>? viewTargetIs;
-  final List<UpdateVersionConstraint>? versionIs;
+  final List<UpdateVersionConstraint>? appVersionIs;
   final List<UpdateSource>? sourceIs;
   final UpdateDate? date;
   final Duration? delay;
@@ -23,7 +23,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     this.appStatusIs,
     this.localeIs,
     this.viewTargetIs,
-    this.versionIs,
+    this.appVersionIs,
     this.sourceIs,
     this.date,
     this.delay,
@@ -37,7 +37,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     required this.appStatusIs,
     required this.localeIs,
     required this.viewTargetIs,
-    required this.versionIs,
+    required this.appVersionIs,
     required this.sourceIs,
     required this.date,
     required this.delay,
@@ -51,7 +51,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     List<AppStatus>? appStatusIs,
     List<UpdateLocale>? localeIs,
     List<UpdateViewTarget>? viewTargetIs,
-    List<UpdateVersionConstraint>? versionIs,
+    List<UpdateVersionConstraint>? appVersionIs,
     List<UpdateSource>? sourceIs,
     UpdateDate? date,
     Duration? delay,
@@ -64,7 +64,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
         appStatusIs: appStatusIs ?? this.appStatusIs,
         localeIs: localeIs ?? this.localeIs,
         viewTargetIs: viewTargetIs ?? this.viewTargetIs,
-        versionIs: versionIs ?? this.versionIs,
+        appVersionIs: appVersionIs ?? this.appVersionIs,
         sourceIs: sourceIs ?? this.sourceIs,
         date: date ?? this.date,
         delay: delay ?? this.delay,

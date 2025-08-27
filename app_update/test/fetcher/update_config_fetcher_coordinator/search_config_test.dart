@@ -116,7 +116,7 @@ void main() {
           )).thenReturn(UpdateSearchData(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('2.5.0'),
+        appVersion: Version.parse('2.5.0'),
         displayTarget: UpdateViewTarget.card,
         appStatus: const AppStatus.custom('updateable'),
         locale: const UpdateLocale(Locale('fr', 'FR')),
@@ -135,7 +135,7 @@ void main() {
       final complexConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('2.5.0'),
+        appVersion: Version.parse('2.5.0'),
         displayTarget: UpdateViewTarget.card,
         locale: const UpdateLocale(Locale('fr', 'FR')),
         currentDate: DateTime(2024, 12, 25),
@@ -335,7 +335,7 @@ void main() {
         final config = UpdateSearchConfig(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: version,
+          appVersion: version,
         );
 
         // Act
@@ -378,7 +378,7 @@ void main() {
             )).thenReturn(UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.card,
           appStatus: null,
           locale: const UpdateLocale(Locale('en')),

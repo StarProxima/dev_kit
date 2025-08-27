@@ -29,7 +29,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -56,7 +56,7 @@ void main() {
       expect(result.searchData.updateReleaseDate, DateTime(2024, 10, 10));
 
       // Проверяем базовые поля searchData
-      expect(result.searchData.localVersion, Version.parse('1.0.0'));
+      expect(result.searchData.appVersion, Version.parse('1.0.0'));
       expect(result.searchData.platform, UpdatePlatform.android);
       expect(result.searchData.currentDate, currentDate);
     });
@@ -74,7 +74,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -112,7 +112,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -144,7 +144,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -191,7 +191,7 @@ void main() {
       // Проверяем что используются значения из packageInfo
       expect(result.searchData.appName, 'TestApp');
       expect(result.searchData.appPackageName, 'com.test.app');
-      expect(result.searchData.localVersion, Version.parse('1.5.0+42'));
+      expect(result.searchData.appVersion, Version.parse('1.5.0+42'));
 
       // Проверяем что используется текущее время (приблизительно)
       final now = DateTime.now();
@@ -217,7 +217,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: customVersion,
+        appVersion: customVersion,
         currentDate: customDate,
         appName: 'CustomApp',
         appPackageName: 'com.custom.app',
@@ -236,7 +236,7 @@ void main() {
 
       // Проверяем что используются значения из searchConfig
       expect(result.searchData.currentDate, customDate);
-      expect(result.searchData.localVersion, customVersion);
+      expect(result.searchData.appVersion, customVersion);
       expect(result.searchData.appName, 'CustomApp');
       expect(result.searchData.appPackageName, 'com.custom.app');
       expect(result.searchData.platform, UpdatePlatform.android);
@@ -246,7 +246,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -262,7 +262,7 @@ void main() {
       expect(result.localUpdateData, isNull);
       expect(result.searchData.localReleaseDate, isNull);
       expect(result.searchData.updateReleaseDate, isNull);
-      expect(result.searchData.localVersion, Version.parse('1.0.0'));
+      expect(result.searchData.appVersion, Version.parse('1.0.0'));
     });
 
     test('правильно обрабатывает приоритеты источников', () {
@@ -299,7 +299,7 @@ void main() {
           UpdateSource.ruStore,
           UpdateSource.googlePlay,
         ], // ruStore имеет приоритет
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -335,7 +335,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay, UpdateSource.appStore],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -372,7 +372,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
       );
 
@@ -412,7 +412,7 @@ void main() {
       final searchConfig = UpdateSearchConfig(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         currentDate: currentDate,
         localReleaseDate: DateTime(2024, 7), // исходное значение
         updateReleaseDate: DateTime(2024, 6), // исходное значение

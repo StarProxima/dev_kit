@@ -21,7 +21,7 @@ void main() {
       final map = Map<String, dynamic>.from(loadYaml(yamlStr));
       final result = parser.parse(map);
       expect(result, isA<UpdateContentConfig>());
-      expect(result?.updateUrl, Uri.parse('https://example.com'));
+      expect(result?.updateUrl, 'https://example.com');
       expect(result?.title, 'Заголовок');
       expect(result?.description, 'Описание');
       expect(result?.releaseNotesTitle, 'Заметки');

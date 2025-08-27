@@ -33,7 +33,7 @@ class UpdateSearcher {
         continue;
       }
 
-      if (update.version <= searchData.localVersion) break;
+      if (update.version <= searchData.appVersion) break;
       if (update.date.isAfter(searchData.currentDate)) continue;
       if (update.platform != searchData.platform) continue;
       if (!searchData.sources.any((source) =>
@@ -74,8 +74,8 @@ class UpdateSearcher {
         continue;
       }
 
-      if (update.version < searchData.localVersion) break;
-      if (update.version > searchData.localVersion) continue;
+      if (update.version < searchData.appVersion) break;
+      if (update.version > searchData.appVersion) continue;
       if (update.date.isAfter(searchData.currentDate)) continue;
       if (update.platform != searchData.platform) continue;
       if (!searchData.sources.any((source) =>

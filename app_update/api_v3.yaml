@@ -11,7 +11,7 @@ content:
         platforms:
           - android
           - ios
-    version_is: any
+    app_version_is: any
     date: 2020-01-01
     data:
       title: Обновите приложение
@@ -114,19 +114,19 @@ settings:
 # Позволяет гибко задать настройки и распределить версии по статусам,
 # Действует такая же логика применения правил.
 app_settings:
-  - version_is: any
+  - app_version_is: any
     data:
       app_status: active
 
   # Задает жизненный цикл релизов
   # The `date: update_release` parameter take date from 
   # latest matched release and uses it instead of `date`.
-  - version_is: any
+  - app_version_is: any
     date: $updateReleaseDate
     data:
       app_status: active
 
-  - version_is: any
+  - app_version_is: any
     date: $updateReleaseDate
     delay_hours: 48  # 2 days
     rollout_hours: 72 # 3 days
@@ -143,19 +143,19 @@ app_settings:
   # outdated if is older than 10 days
   # deprecated if is older than 127 days
   # unsupported if is older than 247 days
-  - version_is: any
+  - app_version_is: any
     date: $localReleaseDate
     delay_hours: 168 # 7 days
     rollout_hours: 72 # 3 days
     data:
       app_status: outdated
-  - version_is: any
+  - app_version_is: any
     date: $localReleaseDate
     delay_hours: 2880 # 120 days
     rollout_hours: 168 # 7 days
     data:
       app_status: deprecated
-  - version_is: any
+  - app_version_is: any
     date: $localReleaseDate
     delay_hours: 6760 # 240 days
     rollout_hours: 168 # 7 days
@@ -163,7 +163,7 @@ app_settings:
       app_status: unsupported
 
   # any matched versions are deprecated
-  - version_is: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+  - app_version_is: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
     data:
       app_status: deprecated 
 
@@ -171,25 +171,25 @@ app_settings:
   # outdated after 2014-10-17 + 10 days 
   # deprecated after 2014-10-17 + 127 days
   # unsupported after 2014-10-17 + 294 days
-  - version_is: '<4.0.0'
+  - app_version_is: '<4.0.0'
     date: 2014-10-17 00:00:00
     delay_hours: 168 # 7 days
     rollout_hours: 72 # 3 days
     data:
       app_status: outdated
-  - version_is: '<4.0.0'
+  - app_version_is: '<4.0.0'
     date: 2014-10-17 00:00:00
     delay_hours: 2880 # 120 days
     rollout_hours: 168 # 7 days
     data:
       app_status: deprecated
-  - version_is: '<4.0.0'
+  - app_version_is: '<4.0.0'
     date: 2015-01-01 00:00:00
     delay_hours: 6720 # 280 days
     rollout_hours: 336 # 14 days
 
   # any versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
-  - version_is: '<=2.0.0'
+  - app_version_is: '<=2.0.0'
     date: 2014-10-17 23:00:00
     source_is:
       - GooglePlay
@@ -200,13 +200,13 @@ app_settings:
       app_status: unsupported
 
   # any versions after 6.0.0 are active
-  - version_is: '>=6.0.0'
+  - app_version_is: '>=6.0.0'
     data:
       app_status: active
 
   # any versions before 3.0.0 are: 
   # unsupported after 2014-10-17 + 168+72 hours
-  - version_is: '<=3.0.0'
+  - app_version_is: '<=3.0.0'
     date: 2014-10-17
     delay_hours: 12
     rollout_hours: 72
@@ -214,7 +214,7 @@ app_settings:
     data:
       app_status: unsupported
 
-  - version_is: '<=3.0.0'
+  - app_version_is: '<=3.0.0'
     date: 2014-10-17
     rollout_hours: 72
     segmentation_percent: 50
@@ -222,7 +222,7 @@ app_settings:
       app_status: unsupported
 
   # any versions before 1.0.0 are unsupported
-  - version_is: '<=1.0.0'
+  - app_version_is: '<=1.0.0'
     data:
       app_status: unsupported
 

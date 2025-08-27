@@ -500,7 +500,7 @@ void main() {
             final firstRule = updateData.contentRules!.first;
             expect(firstRule.data.title, releaseRule.data.title);
             expect(
-              firstRule.versionIs,
+              firstRule.appVersionIs,
               contains(UpdateVersionConstraint(release.version)),
             );
             final firstRuleSourceIs = firstRule.sourceIs?.firstOrNull;
@@ -516,7 +516,7 @@ void main() {
             final secondRule = updateData.contentRules![1];
             expect(secondRule.data.description, sourceRule.data.description);
             expect(
-              secondRule.versionIs,
+              secondRule.appVersionIs,
               contains(UpdateVersionConstraint(release.version)),
             );
             final secondRuleSourceIs = secondRule.sourceIs?.firstOrNull;
@@ -532,7 +532,7 @@ void main() {
             final thirdRule = updateData.contentRules![2];
             expect(thirdRule.data.title, platformRule.data.title);
             expect(
-              thirdRule.versionIs,
+              thirdRule.appVersionIs,
               contains(UpdateVersionConstraint(release.version)),
             );
             final thirdRuleSourceIs = thirdRule.sourceIs?.firstOrNull;
@@ -574,7 +574,7 @@ void main() {
           final firstContentRule = result.first.contentRules!.first;
           expect(firstContentRule.data.title, equals('Title'));
           expect(
-            firstContentRule.versionIs,
+            firstContentRule.appVersionIs,
             contains(UpdateVersionConstraint(release.version)),
           );
           expect(
@@ -589,7 +589,7 @@ void main() {
           final firstSettingsRule = result.first.settingsRules!.first;
           expect(firstSettingsRule.data.shouldShow, equals(true));
           expect(
-            firstSettingsRule.versionIs,
+            firstSettingsRule.appVersionIs,
             contains(UpdateVersionConstraint(release.version)),
           );
           expect(
@@ -604,7 +604,7 @@ void main() {
           final firstAppSettingsRule = result.first.appSettingsRules!.first;
           expect(firstAppSettingsRule.data.appStatus, equals(AppStatus.active));
           expect(
-            firstAppSettingsRule.versionIs,
+            firstAppSettingsRule.appVersionIs,
             contains(UpdateVersionConstraint(release.version)),
           );
           expect(

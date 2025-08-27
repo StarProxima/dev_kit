@@ -175,7 +175,7 @@ app_settings:
   - app_status: active
 
   # Берём дату последнего доступного обновления
-  - version_is: any
+  - app_version_is: any
     date: $updateReleaseDate
     data:
      app_status: active

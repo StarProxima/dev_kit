@@ -26,7 +26,7 @@ abstract final class UpdateSearcherTestUtils {
     final searchConfig = UpdateSearchConfig(
       platform: platform,
       sources: sources,
-      localVersion: localVersion,
+      appVersion: localVersion,
       currentDate: currentDate,
     );
 
@@ -87,7 +87,7 @@ abstract final class UpdateSearcherTestUtils {
     return UpdateSearchConfig(
       platform: platform,
       sources: sources,
-      localVersion: localVersion,
+      appVersion: localVersion,
       currentDate: currentDate,
     );
   }

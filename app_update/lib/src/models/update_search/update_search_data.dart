@@ -19,7 +19,7 @@ class UpdateSearchData {
   final UpdatePlatform platform;
 
   /// App version, uses for compare with rule version.
-  final Version localVersion;
+  final Version appVersion;
 
   /// Uses for calculate rule date and delay compliance.
   final DateTime currentDate;
@@ -44,7 +44,7 @@ class UpdateSearchData {
   const UpdateSearchData({
     required this.platform,
     required this.sources,
-    required this.localVersion,
+    required this.appVersion,
     required this.displayTarget,
     required this.appStatus,
     required this.locale,
@@ -63,7 +63,7 @@ class UpdateSearchData {
   UpdateSearchData copyWith({
     UpdatePlatform? platform,
     List<UpdateSource>? sources,
-    Version? localVersion,
+    Version? appVersion,
     UpdateViewTarget? displayTarget,
     UpdateLocale? locale,
     AppStatus? appStatus,
@@ -81,7 +81,7 @@ class UpdateSearchData {
       UpdateSearchData(
         platform: platform ?? this.platform,
         sources: sources ?? this.sources,
-        localVersion: localVersion ?? this.localVersion,
+        appVersion: appVersion ?? this.appVersion,
         displayTarget: displayTarget ?? this.displayTarget,
         appStatus: appStatus ?? this.appStatus,
         locale: locale ?? this.locale,

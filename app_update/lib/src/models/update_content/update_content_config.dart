@@ -1,7 +1,7 @@
 import '../../utils/mergeable.dart';
 
 class UpdateContentConfig implements Mergeable<UpdateContentConfig> {
-  final Uri? updateUrl;
+  final String? updateUrl;
   final String? title;
   final String? description;
   final String? releaseNotesTitle;

@@ -176,7 +176,7 @@ class UpdateReleaseLinker {
     );
 
     final finalRule = rule.copyWith(
-      versionIs: [UpdateVersionConstraint(release.version)],
+      appVersionIs: [UpdateVersionConstraint(release.version)],
       sourceIs: [finalSource],
     );
 

@@ -3,11 +3,10 @@
 import '../../models/update_content/update_content_config.dart';
 import '../parse_config_exeption.dart';
 import '../primitive_parsers/string_parser.dart';
-import '../primitive_parsers/uri_parser.dart';
 
 class UpdateContentConfigParser {
   static const _stringParser = StringParser();
-  static const _uriParser = UriParser();
+
   const UpdateContentConfigParser();
 
   UpdateContentConfig? parse(
@@ -28,7 +27,7 @@ class UpdateContentConfigParser {
 
     // updateUrl
     final updateUrlValue = map.remove('update_url');
-    final updateUrl = _uriParser.parse(updateUrlValue);
+    final updateUrl = _stringParser.parse(updateUrlValue);
 
     // title
     final titleValue = map.remove('title');

@@ -42,7 +42,7 @@ void main() {
         app_status_is: [outdated, active]
         locale_is: [ru, en]
         view_target_is: [card, dialog]
-        version_is: [">=1.0.0", "<2.0.0"]
+        app_version_is: [">=1.0.0", "<2.0.0"]
         source_is: [googlePlay, appStore]
         data:
           title: test
@@ -57,7 +57,7 @@ void main() {
       expect(result?.appStatusIs?.length, 2);
       expect(result?.localeIs?.length, 2);
       expect(result?.viewTargetIs?.length, 2);
-      expect(result?.versionIs?.length, 2);
+      expect(result?.appVersionIs?.length, 2);
       expect(result?.sourceIs?.length, 2);
     });
 

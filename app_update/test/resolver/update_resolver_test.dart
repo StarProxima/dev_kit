@@ -22,7 +22,7 @@ void main() {
       registerFallbackValue(UpdateSearchData(
         platform: UpdatePlatform.android,
         sources: const [UpdateSource.googlePlay],
-        localVersion: Version.parse('1.0.0'),
+        appVersion: Version.parse('1.0.0'),
         displayTarget: UpdateViewTarget.any,
         appStatus: AppStatus.active,
         locale: UpdateLocale.any,
@@ -42,8 +42,8 @@ void main() {
       registerFallbackValue(<UpdateRuleConfig<UpdateContentConfig>>[]);
       registerFallbackValue(<UpdateRuleConfig<UpdateSettingsConfig>>[]);
 
-      registerFallbackValue(UpdateContentData(
-        updateUrl: Uri.parse('https://example.com'),
+      registerFallbackValue(const UpdateContentData(
+        updateUrl: 'https://example.com',
         title: 'Title',
         description: 'Description',
         releaseNotesTitle: 'Release Notes',
@@ -81,7 +81,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: null, // Тестируем что будет установлен из appSettings
           locale: UpdateLocale.any,
@@ -125,8 +125,8 @@ void main() {
           customData: {'app': 'settings'},
         );
 
-        final mockContentConfig = UpdateContentConfig(
-          updateUrl: Uri.parse('https://example.com'),
+        const mockContentConfig = UpdateContentConfig(
+          updateUrl: 'https://example.com',
           title: 'Update Available',
           description: 'New version available',
           releaseNotesTitle: "What's New",
@@ -145,8 +145,8 @@ void main() {
           postponeAllReleasesDelay: Duration(days: 3),
         );
 
-        final mockInterpolatedContent = UpdateContentData(
-          updateUrl: Uri.parse('https://example.com'),
+        const mockInterpolatedContent = UpdateContentData(
+          updateUrl: 'https://example.com',
           title: 'Update Available - Interpolated',
           description: 'New version available - Interpolated',
           releaseNotesTitle: "What's New",
@@ -223,7 +223,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.unsupported, // Уже установлен
           locale: UpdateLocale.any,
@@ -274,8 +274,8 @@ void main() {
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
-            )).thenReturn(UpdateContentConfig.byRequired(
-          updateUrl: Uri.parse('https://example.com'),
+            )).thenReturn(const UpdateContentConfig.byRequired(
+          updateUrl: 'https://example.com',
           title: 'Test Title',
           description: 'Test Description',
           releaseNotesTitle: 'Release Notes',
@@ -345,8 +345,8 @@ void main() {
               invocation.namedArguments[#searchData] as UpdateSearchData;
           capturedSearchDataForContent.add(searchData);
 
-          return UpdateContentConfig.byRequired(
-            updateUrl: Uri.parse('https://example.com'),
+          return const UpdateContentConfig.byRequired(
+            updateUrl: 'https://example.com',
             title: 'Test Content',
             description: 'Description',
             releaseNotesTitle: 'Release Notes',
@@ -396,8 +396,8 @@ void main() {
             'updateData': updateData,
           });
 
-          return UpdateContentData(
-            updateUrl: Uri.parse('https://example.com'),
+          return const UpdateContentData(
+            updateUrl: 'https://example.com',
             title: 'Interpolated',
             description: 'Description',
             releaseNotesTitle: 'Release Notes',
@@ -412,7 +412,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: null,
           locale: UpdateLocale.any,
@@ -507,7 +507,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -557,8 +557,8 @@ void main() {
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
-            )).thenReturn(UpdateContentConfig.byRequired(
-          updateUrl: Uri.parse('https://example.com'),
+            )).thenReturn(const UpdateContentConfig.byRequired(
+          updateUrl: 'https://example.com',
           title: 'Title',
           description: 'Description',
           releaseNotesTitle: 'Release Notes',
@@ -602,7 +602,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -652,8 +652,8 @@ void main() {
         when(() => mockRuleResolver.resolve<UpdateContentConfig>(
               searchData: any(named: 'searchData'),
               rules: any(named: 'rules'),
-            )).thenReturn(UpdateContentConfig.byRequired(
-          updateUrl: Uri.parse('https://example.com'),
+            )).thenReturn(const UpdateContentConfig.byRequired(
+          updateUrl: 'https://example.com',
           title: 'Title',
           description: 'Description',
           releaseNotesTitle: 'Release Notes',

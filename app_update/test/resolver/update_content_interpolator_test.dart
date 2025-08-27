@@ -13,7 +13,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.2.3+45'),
+          appVersion: Version.parse('1.2.3+45'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -62,7 +62,7 @@ void main() {
           sources: const [
             UpdateSource.custom(UpdateSourceName.custom('my custom store')),
           ],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -101,7 +101,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.2.3'),
+          appVersion: Version.parse('1.2.3'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -140,8 +140,8 @@ void main() {
 
     group('interpolate', () {
       test('интерполирует содержимое с правильными переменными', () {
-        final updateContentTemplate = UpdateContentData(
-          updateUrl: Uri.parse('https://placeholder.com'),
+        const updateContentTemplate = UpdateContentData(
+          updateUrl: 'https://placeholder.com',
           title: 'Update {appName} to {updateVersion}',
           description:
               'Your current version {localVersion} is outdated. Update from {sourceName}!',
@@ -159,7 +159,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0+10'),
+          appVersion: Version.parse('1.0.0+10'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -200,9 +200,9 @@ void main() {
         expect(result.releaseNotes, 'Version 2.1.5+25 includes new features.');
         expect(result.updateButton, 'Update My App');
         expect(
-          result.updateUrl.toString(),
+          result.updateUrl,
           'https://placeholder.com',
-        ); // Uri не интерполируется
+        );
         expect(
           result.customData?['custom_field'],
           'App: My App, Version: 2.1.5',
@@ -210,8 +210,8 @@ void main() {
       });
 
       test('не изменяет содержимое без переменных', () {
-        final updateContent = UpdateContentData(
-          updateUrl: Uri.parse('https://example.com'),
+        const updateContent = UpdateContentData(
+          updateUrl: 'https://example.com',
           title: 'Simple Title',
           description: 'Simple description without variables',
           releaseNotesTitle: "What's New",
@@ -225,7 +225,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -267,8 +267,8 @@ void main() {
       });
 
       test('обрабатывает частичную интерполяцию', () {
-        final updateContent = UpdateContentData(
-          updateUrl: Uri.parse('https://example.com'),
+        const updateContent = UpdateContentData(
+          updateUrl: 'https://example.com',
           title: '{appName} version {localVersion} → {updateVersion}',
           description: 'Some text {unknownVariable} and {appName}',
           releaseNotesTitle: 'Release Notes',
@@ -282,7 +282,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.5.0'),
+          appVersion: Version.parse('1.5.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,
@@ -319,13 +319,13 @@ void main() {
         expect(result.description, 'Some text {unknownVariable} and Test App');
         expect(result.releaseNotes, isNull);
         expect(result.updateButton, 'Update');
-        expect(result.updateUrl.toString(), 'https://example.com');
+        expect(result.updateUrl, 'https://example.com');
         expect(result.customData, isNull);
       });
 
       test('работает с пустыми и null полями', () {
-        final updateContent = UpdateContentData(
-          updateUrl: Uri.parse('https://example.com'),
+        const updateContent = UpdateContentData(
+          updateUrl: 'https://example.com',
           title: 'Default Title',
           description: '',
           releaseNotesTitle: 'Updates',
@@ -339,7 +339,7 @@ void main() {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          localVersion: Version.parse('1.0.0'),
+          appVersion: Version.parse('1.0.0'),
           displayTarget: UpdateViewTarget.any,
           appStatus: AppStatus.active,
           locale: UpdateLocale.any,

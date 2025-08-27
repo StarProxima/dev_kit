@@ -52,37 +52,37 @@ class UpdateRuleConfigParser {
       return null;
     }
 
-    // appStatuses
-    final appStatusesRawValue = map.remove('app_status_is');
-    final appStatusesValue = _listOrValueParser.parse(appStatusesRawValue);
+    // appStatusIs
+    final appStatusIsRawValue = map.remove('app_status_is');
+    final appStatusIsValue = _listOrValueParser.parse(appStatusIsRawValue);
     final appStatusIs =
-        appStatusesValue?.map(_appStatusParser.parse).nonNulls.toList();
+        appStatusIsValue?.map(_appStatusParser.parse).nonNulls.toList();
 
     // locales
-    final localesRawValue = map.remove('locale_is');
-    final localesValue = _listOrValueParser.parse(localesRawValue);
+    final localeIsRawValue = map.remove('locale_is');
+    final localeIsValue = _listOrValueParser.parse(localeIsRawValue);
     final localeIs =
-        localesValue?.map(_updateLocaleParser.parse).nonNulls.toList();
+        localeIsValue?.map(_updateLocaleParser.parse).nonNulls.toList();
 
     // viewTargets
-    final viewTargetsRawValue = map.remove('view_target_is');
-    final viewTargetsValue = _listOrValueParser.parse(viewTargetsRawValue);
+    final viewTargetIsRawValue = map.remove('view_target_is');
+    final viewTargetIsValue = _listOrValueParser.parse(viewTargetIsRawValue);
     final viewTargetIs =
-        viewTargetsValue?.map(_updateViewTargetParser.parse).nonNulls.toList();
+        viewTargetIsValue?.map(_updateViewTargetParser.parse).nonNulls.toList();
 
     // versions
-    final versionsRawValue = map.remove('version_is');
-    final versionsValue = _listOrValueParser.parse(versionsRawValue);
-    final versionIs = versionsValue
+    final appVersionIsRawValue = map.remove('app_version_is');
+    final appVersionIsValue = _listOrValueParser.parse(appVersionIsRawValue);
+    final appVersionIs = appVersionIsValue
         ?.map(_updateVersionConstraintParser.parse)
         .nonNulls
         .toList();
 
     // sources
-    final sourcesRawValue = map.remove('source_is');
-    final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
+    final sourceIsRawValue = map.remove('source_is');
+    final sourceIsValue = _listOrValueParser.parse(sourceIsRawValue);
     final sourceIs =
-        sourcesValue?.map(_updateSourceParser.parse).nonNulls.toList();
+        sourceIsValue?.map(_updateSourceParser.parse).nonNulls.toList();
 
     // date
     final dateValue = map.remove('date');
@@ -105,7 +105,7 @@ class UpdateRuleConfigParser {
       appStatusIs: appStatusIs,
       localeIs: localeIs,
       viewTargetIs: viewTargetIs,
-      versionIs: versionIs,
+      appVersionIs: appVersionIs,
       sourceIs: sourceIs,
       date: date,
       delay: delay,

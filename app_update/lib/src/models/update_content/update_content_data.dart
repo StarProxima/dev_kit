@@ -1,7 +1,7 @@
 import 'update_content_config.dart';
 
 class UpdateContentData {
-  final Uri updateUrl;
+  final String updateUrl;
   final String title;
   final String description;
   final String releaseNotesTitle;
@@ -51,9 +51,8 @@ class UpdateContentData {
       ),
     );
 
-    return UpdateContentData(
-      updateUrl:
-          Uri.parse(_interpolateString(updateUrl.toString(), interpolateData)),
+    final data = UpdateContentData(
+      updateUrl: _interpolateString(updateUrl, interpolateData),
       title: _interpolateString(title, interpolateData),
       description: _interpolateString(description, interpolateData),
       releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
@@ -63,6 +62,8 @@ class UpdateContentData {
       updateButton: _interpolateString(updateButton, interpolateData),
       customData: interpolatedCustomData,
     );
+
+    return data;
   }
 
   static T _interpolateString<T extends String?>(

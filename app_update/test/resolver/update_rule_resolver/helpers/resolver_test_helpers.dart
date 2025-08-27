@@ -32,7 +32,7 @@ UpdateSearchData createTestSearchData({
   return UpdateSearchData(
     platform: platform ?? UpdatePlatform.android,
     sources: sources ?? const [UpdateSource.googlePlay],
-    localVersion: Version.parse(version),
+    appVersion: Version.parse(version),
     displayTarget: target,
     appStatus: appStatus ?? AppStatus.any,
     locale: locale ?? const UpdateLocale(Locale('ru')),
@@ -68,7 +68,7 @@ UpdateRuleConfig<UpdateContentConfig> createTestRule({
     appStatusIs: statuses,
     localeIs: locales,
     viewTargetIs: targets,
-    versionIs: versions,
+    appVersionIs: versions,
     sourceIs: sources,
     date: date,
     delay: delay,

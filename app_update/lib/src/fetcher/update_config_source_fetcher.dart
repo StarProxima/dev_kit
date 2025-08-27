@@ -63,7 +63,7 @@ abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
             UpdateRuleConfig(
               sourceIs: [source],
               data: UpdateContentConfig(
-                updateUrl: url,
+                updateUrl: url.toString(),
               ),
             ),
           ];

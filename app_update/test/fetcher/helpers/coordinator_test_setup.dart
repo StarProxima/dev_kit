@@ -26,7 +26,7 @@ class CoordinatorTestSetup {
     return UpdateSearchData(
       platform: platform,
       sources: sources,
-      localVersion: localVersion ?? Version.parse('1.0.0'),
+      appVersion: localVersion ?? Version.parse('1.0.0'),
       displayTarget: UpdateViewTarget.card,
       appStatus: null,
       locale: locale ?? const UpdateLocale(Locale('en')),
@@ -98,7 +98,7 @@ class CoordinatorTestSetup {
     registerFallbackValue(UpdateSearchData(
       platform: UpdatePlatform.android,
       sources: const [UpdateSource.googlePlay],
-      localVersion: Version.parse('1.0.0'),
+      appVersion: Version.parse('1.0.0'),
       displayTarget: UpdateViewTarget.card,
       appStatus: null,
       locale: const UpdateLocale(Locale('en')),

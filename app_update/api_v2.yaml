@@ -83,8 +83,8 @@ settings:
     can_skip_release: true
 
 version_settings:
-  unsupported_version_is: ["<=4.2.0", 0.3.4]
-  deprecated_version_is: ["<=5.1.0 >=4.2.0 ", ">5.6.0 <5.6.7"]
+  unsupported_app_version_is: ["<=4.2.0", 0.3.4]
+  deprecated_app_version_is: ["<=5.1.0 >=4.2.0 ", ">5.6.0 <5.6.7"]
 
 source_is:
   - name: appStore
@@ -94,7 +94,7 @@ source_is:
       - name: ios
         source:
           version_settings:
-            unsupported_version_is: ["1.8.3"]
+            unsupported_app_version_is: ["1.8.3"]
 
   - name: appGallery
     url: https://example.com
@@ -105,7 +105,7 @@ source_is:
     text:
       title: Title
     version_settings:
-      unsupported_version_is: ["<=4.2.0"]
+      unsupported_app_version_is: ["<=4.2.0"]
 
   - name: gitHub
     url: https://example.com
@@ -117,7 +117,7 @@ source_is:
           text:
             title: Title
           version_settings:
-            deprecated_version_is: [">5.6.0 <5.6.7"]
+            deprecated_app_version_is: [">5.6.0 <5.6.7"]
       # Short syntax
       - windows
       - macos
