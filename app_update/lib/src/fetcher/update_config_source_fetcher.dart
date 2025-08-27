@@ -5,11 +5,11 @@ import 'dart:ui';
 
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../shared/entities/update_source.dart';
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update/update_config.dart';
-import '../shared/models/update_content/update_content_config.dart';
-import '../shared/models/update_rule/update_rule_config.dart';
+import '../entities/update_source.dart';
+import '../models/release/update_data.dart';
+import '../models/update_config/update_config.dart';
+import '../models/update_content/update_content_config.dart';
+import '../models/update_rule/update_rule_config.dart';
 import 'source_fetchers/app_store_fetcher.dart';
 import 'source_fetchers/google_play_fetcher.dart';
 import 'source_fetchers/ru_store_fetcher.dart';

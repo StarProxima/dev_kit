@@ -4,8 +4,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../default_rules/default_update_config.dart';
 import '../searcher/update_search_data_defaulter.dart';
-import '../shared/models/update/update_config.dart';
-import '../shared/models/update_search/update_search_config.dart';
+import '../models/update_config/update_config.dart';
+import '../models/update_search/update_search_config.dart';
 import 'update_config_fetcher.dart';
 import 'update_config_source_fetcher.dart';
 

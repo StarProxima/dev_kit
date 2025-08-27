@@ -13,11 +13,11 @@ import '../resolver/update_rule_resolver.dart';
 import '../searcher/update_search_data_defaulter.dart';
 import '../searcher/update_searcher.dart';
 import '../searcher/update_supported_sources_checker.dart';
-import '../shared/models/release/update.dart';
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update_result/update_result.dart';
-import '../shared/models/update_search/update_search_config.dart';
-import '../shared/models/update_status/update_status.dart';
+import '../models/release/update.dart';
+import '../models/release/update_data.dart';
+import '../models/update_result/update_result.dart';
+import '../models/update_search/update_search_config.dart';
+import '../models/update_status/update_status.dart';
 import 'update_contoller.dart';
 
 class UpdateControllerImpl implements UpdateController {

@@ -1,6 +1,6 @@
 import 'package:pub_semver/pub_semver.dart';
 
-import '../mergeable.dart';
+import '../../utils/mergeable.dart';
 
 class ReleaseOverrideConfig {
   final Version? version;

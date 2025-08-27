@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/mergeable.dart';
-import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../utils/mergeable.dart';
+import '../../models/update_rule/update_rule_config.dart';
 import '../base_parsers/app_status_parser.dart';
 import '../base_parsers/update_date_parser.dart';
 import '../base_parsers/update_locale_parser.dart';

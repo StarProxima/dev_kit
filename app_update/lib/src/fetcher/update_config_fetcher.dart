@@ -8,7 +8,7 @@ import 'package:yaml/yaml.dart';
 
 import '../parser/common.dart';
 import '../parser/update_config_parser.dart';
-import '../shared/models/update/update_config.dart';
+import '../models/update_config/update_config.dart';
 
 /// Базовый класс для фетчера конфига
 ///

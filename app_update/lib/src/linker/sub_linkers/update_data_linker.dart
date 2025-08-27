@@ -1,12 +1,12 @@
 import 'package:collection/collection.dart';
 
-import '../../shared/entities/update_source.dart';
-import '../../shared/models/global_platform/global_platform_config.dart';
-import '../../shared/models/global_source/global_source_config.dart';
-import '../../shared/models/mergeable.dart';
-import '../../shared/models/release/update_data.dart';
-import '../../shared/models/update_rule/update_rule_config.dart';
-import '../../shared/models/update_rule/update_rules_container.dart';
+import '../../entities/update_source.dart';
+import '../../models/global_platform/global_platform_config.dart';
+import '../../models/global_source/global_source_config.dart';
+import '../../utils/mergeable.dart';
+import '../../models/release/update_data.dart';
+import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_rule/update_rules_container.dart';
 
 class UpdateDataLinker {
   const UpdateDataLinker();

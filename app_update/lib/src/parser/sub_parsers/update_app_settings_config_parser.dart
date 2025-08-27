@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/update_app_settings/update_app_settings_config.dart';
+import '../../models/update_app_settings/update_app_settings_config.dart';
 import '../base_parsers/app_status_parser.dart';
 import '../common.dart';
 

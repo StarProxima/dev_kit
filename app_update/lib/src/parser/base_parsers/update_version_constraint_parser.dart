@@ -1,4 +1,4 @@
-import '../../shared/entities/update_version_constraint.dart';
+import '../../entities/update_version_constraint.dart';
 import '../common.dart';
 import '../primitive_parsers/version_constraint_parser.dart';
 

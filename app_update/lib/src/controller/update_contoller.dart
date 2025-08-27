@@ -4,9 +4,9 @@ import 'dart:async';
 
 import '../fetcher/update_config_fetcher.dart';
 import '../fetcher/update_config_source_fetcher.dart';
-import '../shared/models/release/update.dart';
-import '../shared/models/update_result/update_result.dart';
-import '../shared/models/update_search/update_search_config.dart';
+import '../models/release/update.dart';
+import '../models/update_result/update_result.dart';
+import '../models/update_search/update_search_config.dart';
 import 'update_controller_impl.dart';
 
 /// Контроллер для поиска обновлений

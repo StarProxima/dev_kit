@@ -1,6 +1,6 @@
-import '../../shared/entities/app_status.dart';
-import '../../shared/models/update_app_settings/update_app_settings_config.dart';
-import '../../shared/models/update_rule/update_rule_config.dart';
+import '../../entities/app_status.dart';
+import '../../models/update_app_settings/update_app_settings_config.dart';
+import '../../models/update_rule/update_rule_config.dart';
 
 final List<UpdateRuleConfig<UpdateAppSettingsConfig>>
     defaultUpdateAppSettingsRules = [

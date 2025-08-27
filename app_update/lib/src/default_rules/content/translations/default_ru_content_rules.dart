@@ -1,7 +1,7 @@
-import '../../../shared/entities/app_status.dart';
-import '../../../shared/entities/update_locale.dart';
-import '../../../shared/models/update_content/update_content_config.dart';
-import '../../../shared/models/update_rule/update_rule_config.dart';
+import '../../../entities/app_status.dart';
+import '../../../entities/update_locale.dart';
+import '../../../models/update_content/update_content_config.dart';
+import '../../../models/update_rule/update_rule_config.dart';
 
 final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
   const UpdateRuleConfig(

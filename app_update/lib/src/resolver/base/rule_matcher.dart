@@ -1,6 +1,6 @@
-import '../../shared/models/mergeable.dart';
-import '../../shared/models/update_rule/update_rule_config.dart';
-import '../../shared/models/update_search/update_search_data.dart';
+import '../../utils/mergeable.dart';
+import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_search/update_search_data.dart';
 
 /// Интерфейс матчера одного аспекта правила.
 /// Каждый матчер проверяет соответствие определенного аспекта правила поисковому контексту.

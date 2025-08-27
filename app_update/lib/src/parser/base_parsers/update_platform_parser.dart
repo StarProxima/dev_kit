@@ -1,4 +1,4 @@
-import '../../shared/entities/update_platform.dart';
+import '../../entities/update_platform.dart';
 import '../common.dart';
 
 class UpdatePlatformParser {

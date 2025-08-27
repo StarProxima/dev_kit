@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/release_source/release_source_config.dart';
+import '../../models/release_source/release_source_config.dart';
 import '../base_parsers/update_rules_container_parser.dart';
 import '../base_parsers/update_source_name_parser.dart';
 import '../common.dart';

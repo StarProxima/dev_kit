@@ -1,4 +1,4 @@
-import '../../shared/entities/update_date.dart';
+import '../../entities/update_date.dart';
 import '../common.dart';
 import '../primitive_parsers/date_time_parser.dart';
 

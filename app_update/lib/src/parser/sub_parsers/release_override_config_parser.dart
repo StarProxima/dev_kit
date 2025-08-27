@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/release/release_override_config.dart';
+import '../../models/release/release_override_config.dart';
 import '../common.dart';
 import '../primitive_parsers/date_time_parser.dart';
 import '../primitive_parsers/version_parser.dart';

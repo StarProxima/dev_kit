@@ -1,4 +1,4 @@
-import '../../shared/entities/update_locale.dart';
+import '../../entities/update_locale.dart';
 import '../common.dart';
 import '../primitive_parsers/locale_parser.dart';
 

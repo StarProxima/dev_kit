@@ -1,6 +1,6 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/update_content/update_content_config.dart';
+import '../../models/update_content/update_content_config.dart';
 import '../common.dart';
 import '../primitive_parsers/string_parser.dart';
 import '../primitive_parsers/uri_parser.dart';

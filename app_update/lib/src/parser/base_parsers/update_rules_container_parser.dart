@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import '../../shared/models/update_content/update_content_config.dart';
-import '../../shared/models/update_rule/update_rules_container.dart';
+import '../../models/update_content/update_content_config.dart';
+import '../../models/update_rule/update_rules_container.dart';
 import '../primitive_parsers/list_or_value_parser.dart';
 import '../sub_parsers/update_app_settings_config_parser.dart';
 import '../sub_parsers/update_content_config_parser.dart';

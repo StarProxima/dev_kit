@@ -1,8 +1,8 @@
-import '../../shared/entities/update_platform.dart';
-import '../../shared/entities/update_source.dart';
-import '../../shared/models/mergeable.dart';
-import '../../shared/models/update_rule/update_rule_config.dart';
-import '../../shared/models/update_search/update_search_data.dart';
+import '../../entities/update_platform.dart';
+import '../../entities/update_source.dart';
+import '../../utils/mergeable.dart';
+import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_search/update_search_data.dart';
 import '../base/rule_matcher.dart';
 
 /// Матчер для проверки соответствия источника дистрибуции и платформы

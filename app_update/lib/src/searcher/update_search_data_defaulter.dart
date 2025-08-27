@@ -1,11 +1,11 @@
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../shared/entities/update_locale.dart';
-import '../shared/entities/update_platform.dart';
-import '../shared/entities/update_view_target.dart';
-import '../shared/models/update_search/update_search_config.dart';
-import '../shared/models/update_search/update_search_data.dart';
+import '../entities/update_locale.dart';
+import '../entities/update_platform.dart';
+import '../entities/update_view_target.dart';
+import '../models/update_search/update_search_config.dart';
+import '../models/update_search/update_search_data.dart';
 import 'update_supported_sources_checker.dart';
 
 class UpdateSearchDataDefaulter {

@@ -1,4 +1,4 @@
-import '../../shared/entities/app_status.dart';
+import '../../entities/app_status.dart';
 import '../common.dart';
 
 class AppStatusParser {

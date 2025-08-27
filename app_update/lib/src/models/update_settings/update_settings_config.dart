@@ -1,4 +1,4 @@
-import '../mergeable.dart';
+import '../../utils/mergeable.dart';
 
 class UpdateSettingsConfig implements Mergeable {
   final bool? shouldShow;

@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../controller/update_contoller.dart';
-import '../shared/models/update_result/update_result.dart';
+import '../models/update_result/update_result.dart';
 
 /// Нужен, чтобы можно было использовать отдельные методы в onUpdateAvailable.
 ///

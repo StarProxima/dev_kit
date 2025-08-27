@@ -1,4 +1,4 @@
-import '../../shared/entities/update_source_name.dart';
+import '../../entities/update_source_name.dart';
 import '../common.dart';
 
 class UpdateSourceNameParser {

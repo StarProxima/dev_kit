@@ -2,10 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update_search/update_search_config.dart';
-import '../shared/models/update_search/update_search_data.dart';
-import '../shared/models/update_search/update_search_result.dart';
+import '../models/release/update_data.dart';
+import '../models/update_search/update_search_config.dart';
+import '../models/update_search/update_search_data.dart';
+import '../models/update_search/update_search_result.dart';
 import 'update_search_data_defaulter.dart';
 
 class UpdateSearcher {

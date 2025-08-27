@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update_content/update_content_data.dart';
-import '../shared/models/update_search/update_search_data.dart';
-import '../shared/utils/version_x.dart';
+import '../models/release/update_data.dart';
+import '../models/update_content/update_content_data.dart';
+import '../models/update_search/update_search_data.dart';
+import '../utils/version_x.dart';
 
 class UpdateContentInterpolator {
   const UpdateContentInterpolator();

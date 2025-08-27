@@ -5,7 +5,7 @@ import '../../entities/update_locale.dart';
 import '../../entities/update_platform.dart';
 import '../../entities/update_source.dart';
 import '../../entities/update_view_target.dart';
-import '../mergeable.dart';
+import '../../utils/mergeable.dart';
 
 class UpdateSearchConfig {
   /// Default [UpdatePlatform.current].

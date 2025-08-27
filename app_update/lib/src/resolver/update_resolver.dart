@@ -1,14 +1,14 @@
-import '../shared/models/release/update.dart';
-import '../shared/models/release/update_data.dart';
-import '../shared/models/update_app_settings/update_app_settings_config.dart';
-import '../shared/models/update_app_settings/update_app_settings_data.dart';
-import '../shared/models/update_content/update_content_config.dart';
-import '../shared/models/update_content/update_content_data.dart';
-import '../shared/models/update_result/update_result.dart';
-import '../shared/models/update_search/update_search_data.dart';
-import '../shared/models/update_settings/update_settings_config.dart';
-import '../shared/models/update_settings/update_settings_data.dart';
-import '../shared/models/update_status/update_status.dart';
+import '../models/release/update.dart';
+import '../models/release/update_data.dart';
+import '../models/update_app_settings/update_app_settings_config.dart';
+import '../models/update_app_settings/update_app_settings_data.dart';
+import '../models/update_content/update_content_config.dart';
+import '../models/update_content/update_content_data.dart';
+import '../models/update_result/update_result.dart';
+import '../models/update_search/update_search_data.dart';
+import '../models/update_settings/update_settings_config.dart';
+import '../models/update_settings/update_settings_data.dart';
+import '../models/update_status/update_status.dart';
 import 'update_content_interpolator.dart';
 import 'update_rule_resolver.dart';
 

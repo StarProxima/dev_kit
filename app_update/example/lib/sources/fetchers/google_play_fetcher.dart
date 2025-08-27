@@ -10,13 +10,13 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-import '../../parser/sub_parsers/global_source_config/global_source_config.dart';
-import '../../parser/sub_parsers/release_config/release_config.dart';
+import '../../../../lib/src/parser/sub_parsers/global_source_config/global_source_config.dart';
+import '../../../../lib/src/parser/sub_parsers/release_config/release_config.dart';
 // import '../../parser/models/update_text_config.dart';
 // import '../../parser/models/update_text_config_container.dart';
-import '../source.dart';
-import '../sources.dart';
-import 'source_fetcher.dart';
+import '../../../../lib/src/sources/source.dart';
+import '../../../../lib/src/sources/sources.dart';
+import '../../../../lib/src/sources/fetchers/source_fetcher.dart';
 //TODO http.Client и clientHeaders надо бы сделать изменяемыми из вне. Или переписать всё на нативные дартовые клиенты
 
 class GooglePlayFetcher extends SourceReleaseFetcher {
