@@ -68,6 +68,10 @@ base class UpdateSource extends UpdateEntity {
 
   @override
   List<Object?> get params => [sourceName, ...?platforms];
+
+  @override
+  String get debugString =>
+      'UpdateSource(${sourceName.originalName}, ${platforms ?? 'null'} )';
 }
 
 extension ReleaseSourceConfigToUpdateSourceX on ReleaseSourceConfig {

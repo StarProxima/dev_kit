@@ -51,9 +51,16 @@ class UpdateRuleResolver {
   }) {
     T? result;
 
-    for (final rule in rules) {
-      if (!isRuleMatched(rule: rule, searchData: searchData)) continue;
+    final matchedRules = <UpdateRuleConfig<T>>[];
 
+    for (final rule in rules) {
+      final isMatched = isRuleMatched(rule: rule, searchData: searchData);
+      if (isMatched) {
+        matchedRules.add(rule);
+      }
+    }
+
+    for (final rule in matchedRules) {
       final data = rule.data;
       result = result?.merge(data) ?? data;
     }

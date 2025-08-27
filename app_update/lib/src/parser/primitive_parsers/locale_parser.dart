@@ -24,7 +24,7 @@ class LocaleParser {
 
     final (languageCode, countryCode) = (
       list.firstOrNull ?? (throw const ParseConfigException()),
-      list.lastOrNull,
+      list.elementAtOrNull(1),
     );
 
     final locale = Locale(languageCode, countryCode);

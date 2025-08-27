@@ -21,4 +21,8 @@ base class UpdateVersionConstraint extends UpdateEntityName {
 
   @override
   List<Object?> get params => [name, versionConstraint];
+
+  @override
+  String get debugString =>
+      'UpdateVersionConstraint(${versionConstraint ?? name})';
 }

@@ -23,4 +23,7 @@ base class AppStatus extends UpdateEntityName {
   const AppStatus._(super._name);
 
   const factory AppStatus.custom(String name) = AppStatus._;
+
+  @override
+  String get debugString => 'AppStatus($name)';
 }

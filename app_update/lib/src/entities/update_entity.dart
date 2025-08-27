@@ -34,4 +34,9 @@ abstract base class UpdateEntity {
     return other.params.length == params.length &&
         other.params.every((param) => params.contains(param));
   }
+
+  String get debugString;
+
+  @override
+  String toString() => debugString;
 }

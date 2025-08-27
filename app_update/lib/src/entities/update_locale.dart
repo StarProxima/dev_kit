@@ -4,12 +4,12 @@ import 'update_entity.dart';
 
 // ignore: prefer-overriding-parent-equality
 base class UpdateLocale extends UpdateEntityName {
+  final Locale? locale;
+
+  static const ru = UpdateLocale(Locale('ru'));
+  static const en = UpdateLocale(Locale('en'));
   static const any = UpdateLocale(null, name: 'any');
 
-  final Locale? locale;
-  static const ru = UpdateLocale(Locale('ru'), name: 'ru');
-
-  static const en = UpdateLocale(Locale('en'), name: 'en');
   static const values = [
     ru,
     en,
@@ -23,5 +23,8 @@ base class UpdateLocale extends UpdateEntityName {
   const UpdateLocale(this.locale, {String name = 'direct'}) : super(name);
 
   @override
-  List<Object?> get params => [name, locale];
+  List<Object?> get params => [name, locale?.languageCode];
+
+  @override
+  String get debugString => 'UpdateLocale(${locale ?? name})';
 }

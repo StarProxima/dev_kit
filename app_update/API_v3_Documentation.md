@@ -172,36 +172,32 @@ settings:
 
 ```yaml
 app_settings:
-  - version: any
-    data:
-      app_status: active
+  - app_status: active
 
   # Берём дату последнего доступного обновления
-  - version: any
+  - version_is: any
     date: $updateReleaseDate
-    app_status: active
+    data:
+     app_status: active
 
-  - version: any
-    date: $updateReleaseDate
+  - date: $updateReleaseDate
     delay_hours: 48
     rollout_hours: 72
-    app_status: outdated
+    data:
+      app_status: outdated
 
   # Жизненный цикл от локальной даты релиза текущего приложения
-  - version: any
-    date: $localReleaseDate
+  - date: $localReleaseDate
     delay_hours: 168
     rollout_hours: 72
     data:
       app_status: outdated
-  - version: any
-    date: $localReleaseDate
+  - date: $localReleaseDate
     delay_hours: 2880
     rollout_hours: 168
     data:
       app_status: deprecated
-  - version: any
-    date: $localReleaseDate
+  - date: $localReleaseDate
     delay_hours: 6760
     rollout_hours: 168
     data:
