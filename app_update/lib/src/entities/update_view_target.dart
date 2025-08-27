@@ -13,10 +13,6 @@ base class UpdateViewTarget extends UpdateEntityName {
   static const bottomModalSheet = UpdateViewTarget._('bottomModalSheet');
   static const any = UpdateViewTarget._('any');
 
-  const UpdateViewTarget._(super._name);
-
-  factory UpdateViewTarget.custom(String name) => UpdateViewTarget._(name);
-
   static const values = [
     card,
     dialog,
@@ -30,4 +26,8 @@ base class UpdateViewTarget extends UpdateEntityName {
     ...values,
     any,
   ];
+
+  const UpdateViewTarget._(super._name);
+
+  factory UpdateViewTarget.custom(String name) => UpdateViewTarget._(name);
 }

@@ -46,13 +46,6 @@ base class UpdateSource extends UpdateEntity {
   final List<UpdatePlatform>? platforms;
   final UpdateSourceName sourceName;
 
-  const UpdateSource._(this.sourceName, {this.platforms});
-
-  const factory UpdateSource.custom(
-    UpdateSourceName sourceName, {
-    List<UpdatePlatform>? platforms,
-  }) = UpdateSource._;
-
   static const values = [
     googlePlay,
     appStore,
@@ -65,6 +58,13 @@ base class UpdateSource extends UpdateEntity {
     ...values,
     any,
   ];
+
+  const UpdateSource._(this.sourceName, {this.platforms});
+
+  const factory UpdateSource.custom(
+    UpdateSourceName sourceName, {
+    List<UpdatePlatform>? platforms,
+  }) = UpdateSource._;
 
   @override
   List<Object?> get params => [sourceName, ...?platforms];

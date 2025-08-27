@@ -3,7 +3,7 @@ import '../../../entities/update_locale.dart';
 import '../../../models/update_content/update_content_config.dart';
 import '../../../models/update_rule/update_rule_config.dart';
 
-final List<UpdateRuleConfig<UpdateContentConfig>> defaultEnContentRules = [
+final defaultEnContentRules = [
   const UpdateRuleConfig(
     localeIs: [UpdateLocale.en, UpdateLocale.any],
     data: UpdateContentConfig.byRequired(
@@ -20,8 +20,8 @@ final List<UpdateRuleConfig<UpdateContentConfig>> defaultEnContentRules = [
     ),
   ),
   const UpdateRuleConfig(
-    localeIs: [UpdateLocale.en, UpdateLocale.any],
     appStatusIs: [AppStatus.unsupported],
+    localeIs: [UpdateLocale.en, UpdateLocale.any],
     data: UpdateContentConfig(
       title: r'Update $appName',
       description:

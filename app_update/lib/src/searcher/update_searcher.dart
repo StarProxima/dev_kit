@@ -9,11 +9,11 @@ import '../models/update_search/update_search_result.dart';
 import 'update_search_data_defaulter.dart';
 
 class UpdateSearcher {
+  final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
+
   const UpdateSearcher({
     required UpdateSearchDataDefaulter searchDataDefaulter,
   }) : _updateSearchDataDefaulter = searchDataDefaulter;
-
-  final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
 
   /// Ищет последние подходящие обновления для конкретной платформы и источника,
   /// учитывая фильтры по версии и дате.
@@ -107,7 +107,8 @@ class UpdateSearcher {
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
   }) {
-    var searchData = _updateSearchDataDefaulter.getSearchDataWithDefaults(
+    UpdateSearchData searchData =
+        _updateSearchDataDefaulter.getSearchDataWithDefaults(
       searchConfig: searchConfig,
       packageInfo: packageInfo,
     );
@@ -138,7 +139,9 @@ class UpdateSearcher {
   @protected
   @visibleForTesting
   List<UpdateData> sortUpdates(
-      List<UpdateData> updates, UpdateSearchData searchData) {
+    List<UpdateData> updates,
+    UpdateSearchData searchData,
+  ) {
     return updates.sorted((a, b) {
       final byVersionDesc = b.version.compareTo(a.version);
       if (byVersionDesc != 0) return byVersionDesc;
@@ -149,6 +152,7 @@ class UpdateSearcher {
           searchData.sources.indexWhere((e) => e.sourceName == b.sourceName);
       final aSafe = aIdx < 0 ? searchData.sources.length : aIdx;
       final bSafe = bIdx < 0 ? searchData.sources.length : bIdx;
+
       return aSafe.compareTo(bSafe);
     });
   }

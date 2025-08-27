@@ -3,10 +3,10 @@ import 'package:collection/collection.dart';
 import '../../entities/update_source.dart';
 import '../../models/global_platform/global_platform_config.dart';
 import '../../models/global_source/global_source_config.dart';
-import '../../utils/mergeable.dart';
 import '../../models/release/update_data.dart';
 import '../../models/update_rule/update_rule_config.dart';
 import '../../models/update_rule/update_rules_container.dart';
+import '../../utils/mergeable.dart';
 
 class UpdateDataLinker {
   const UpdateDataLinker();
@@ -83,16 +83,16 @@ class UpdateDataLinker {
     );
 
     final finalUpdate = update.copyWith(
+      appSettingsRules: finalAppSettingsRules,
       contentRules: finalContentRules,
       settingsRules: finalSettingsRules,
-      appSettingsRules: finalAppSettingsRules,
     );
 
     return finalUpdate;
   }
 
   /// Добавляет в правило источник и платформу.
-  UpdateRuleConfig<T> _linkRule<T extends Mergeable<T>>({
+  static UpdateRuleConfig<T> _linkRule<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required GlobalSourceConfig? source,
     required GlobalPlatformConfig? platform,
@@ -103,16 +103,15 @@ class UpdateDataLinker {
             platform == null || platformName == platform.platformName)
         .toList();
 
-    final finalSource = source != null
-        ? UpdateSource.custom(
+    final finalSource = source == null
+        ? null
+        : UpdateSource.custom(
             source.sourceName,
             platforms: finalPlatforms,
-          )
-        : null;
+          );
 
-    final finalRule = rule.copyWith(
-      sourceIs: finalSource != null ? [finalSource] : null,
-    );
+    final finalRule =
+        rule.copyWith(sourceIs: finalSource == null ? null : [finalSource]);
 
     return finalRule;
   }

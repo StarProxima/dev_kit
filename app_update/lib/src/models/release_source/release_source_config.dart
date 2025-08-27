@@ -1,10 +1,10 @@
 import '../../entities/update_source_name.dart';
-import '../update_content/update_content_config.dart';
-import '../update_rule/update_rule_config.dart';
-import '../update_settings/update_settings_config.dart';
 import '../release/release_override_config.dart';
 import '../release_platrform/release_platrform_config.dart';
 import '../update_app_settings/update_app_settings_config.dart';
+import '../update_content/update_content_config.dart';
+import '../update_rule/update_rule_config.dart';
+import '../update_settings/update_settings_config.dart';
 
 class ReleaseSourceConfig {
   final UpdateSourceName sourceName;

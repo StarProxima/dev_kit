@@ -24,43 +24,43 @@ class UpdateSearchDataDefaulter {
     );
 
     final defaultSearchData = UpdateSearchData(
-      currentDate: DateTime.now(),
-      localVersion:
-          Version.parse('${packageInfo.version}+${packageInfo.buildNumber}'),
       platform: UpdatePlatform.current(),
       sources: defaultSources,
-      appName: packageInfo.appName,
-      appPackageName: packageInfo.packageName,
+      localVersion:
+          Version.parse('${packageInfo.version}+${packageInfo.buildNumber}'),
+      displayTarget: UpdateViewTarget.any,
       appStatus: null,
       locale: UpdateLocale.any,
-      displayTarget: UpdateViewTarget.any,
+      currentDate: DateTime.now(),
       localReleaseDate: packageInfo.updateTime ?? packageInfo.installTime,
-      rolloutPointer: 1, // TODO: default value
-      segmentationPointer: 1, // TODO: default value
+      // TODO: default value
       updateReleaseDate: null,
+      // TODO: default value
+      segmentationPointer: 1, rolloutPointer: 1, appName: packageInfo.appName,
+      appPackageName: packageInfo.packageName,
       customData: null,
     );
 
     final searchData = UpdateSearchData(
-      currentDate: searchConfig.currentDate ?? defaultSearchData.currentDate,
-      localVersion: searchConfig.localVersion ?? defaultSearchData.localVersion,
       platform: searchConfig.platform ?? defaultSearchData.platform,
       sources: searchConfig.sources ?? defaultSearchData.sources,
-      appName: searchConfig.appName ?? defaultSearchData.appName,
-      appPackageName:
-          searchConfig.appPackageName ?? defaultSearchData.appPackageName,
-      appStatus: searchConfig.appStatus ?? defaultSearchData.appStatus,
-      locale: searchConfig.locale ?? defaultSearchData.locale,
+      localVersion: searchConfig.localVersion ?? defaultSearchData.localVersion,
       displayTarget:
           searchConfig.displayTarget ?? defaultSearchData.displayTarget,
-      rolloutPointer:
-          searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
-      segmentationPointer: searchConfig.segmentationPointer ??
-          defaultSearchData.segmentationPointer,
+      appStatus: searchConfig.appStatus ?? defaultSearchData.appStatus,
+      locale: searchConfig.locale ?? defaultSearchData.locale,
+      currentDate: searchConfig.currentDate ?? defaultSearchData.currentDate,
       localReleaseDate:
           searchConfig.localReleaseDate ?? defaultSearchData.localReleaseDate,
       updateReleaseDate:
           searchConfig.updateReleaseDate ?? defaultSearchData.updateReleaseDate,
+      segmentationPointer: searchConfig.segmentationPointer ??
+          defaultSearchData.segmentationPointer,
+      rolloutPointer:
+          searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
+      appName: searchConfig.appName ?? defaultSearchData.appName,
+      appPackageName:
+          searchConfig.appPackageName ?? defaultSearchData.appPackageName,
       customData: searchConfig.customData ?? defaultSearchData.customData,
     );
 

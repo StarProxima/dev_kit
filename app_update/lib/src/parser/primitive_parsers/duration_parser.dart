@@ -19,7 +19,7 @@ class DurationParser {
     }
 
     if (hours < 0) {
-      throw ParseConfigException();
+      throw const ParseConfigException();
     }
 
     final duraton = Duration(hours: hours);

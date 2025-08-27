@@ -60,7 +60,7 @@ class UpdateStorage {
   Future<void> clearOldReleases() async {
     final now = nowDateTime;
     final postponedReleases = [
-      ...?_prefs.getStringList(_kPostponedReleaseVersions)
+      ...?_prefs.getStringList(_kPostponedReleaseVersions),
     ];
     final filteredReleases = postponedReleases.where((release) {
       final data = json.decode(release) as Map<String, dynamic>;
@@ -77,7 +77,7 @@ class UpdateStorage {
     int maxStored = 5,
   }) async {
     final skippedReleases = [
-      ...?_prefs.getStringList(_kSkippedReleaseVersions)
+      ...?_prefs.getStringList(_kSkippedReleaseVersions),
     ];
     if (skippedReleases.length > maxStored) {
       skippedReleases.removeWhere((releaseVersion) {

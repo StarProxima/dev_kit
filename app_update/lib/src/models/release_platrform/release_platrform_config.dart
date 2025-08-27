@@ -1,6 +1,6 @@
 import '../../entities/update_platform.dart';
-import '../release/release_override_config.dart';
 import '../../utils/mergeable.dart';
+import '../release/release_override_config.dart';
 import '../update_app_settings/update_app_settings_config.dart';
 import '../update_content/update_content_config.dart';
 import '../update_rule/update_rule_config.dart';

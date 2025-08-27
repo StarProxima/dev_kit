@@ -57,16 +57,16 @@ abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
       },
     );
 
-    final urlContentRules = url != null
-        ? [
+    final urlContentRules = url == null
+        ? null
+        : [
             UpdateRuleConfig(
               sourceIs: [source],
               data: UpdateContentConfig(
                 updateUrl: url,
               ),
             ),
-          ]
-        : null;
+          ];
 
     final releases = updates.map((e) => e.toReleaseConfig()).toList();
 

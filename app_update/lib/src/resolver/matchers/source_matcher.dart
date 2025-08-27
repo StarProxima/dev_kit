@@ -1,8 +1,8 @@
 import '../../entities/update_platform.dart';
 import '../../entities/update_source.dart';
-import '../../utils/mergeable.dart';
 import '../../models/update_rule/update_rule_config.dart';
 import '../../models/update_search/update_search_data.dart';
+import '../../utils/mergeable.dart';
 import '../base/rule_matcher.dart';
 
 /// Матчер для проверки соответствия источника дистрибуции и платформы
@@ -10,8 +10,10 @@ class SourceMatcher extends RuleMatcher {
   const SourceMatcher();
 
   @override
-  bool isMatches<T extends Mergeable<T>>(
-      {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
+  bool isMatches<T extends Mergeable<T>>({
+    required UpdateRuleConfig<T> rule,
+    required UpdateSearchData search,
+  }) {
     return _matchBySources(
       rule.sourceIs ?? [UpdateSource.any],
       search.sources,
@@ -32,17 +34,22 @@ class SourceMatcher extends RuleMatcher {
         return true;
       }
     }
+
     return false;
   }
 
-  UpdateSource? _findSource(List<UpdateSource> sources, UpdateSource target) {
+  static UpdateSource? _findSource(
+    List<UpdateSource> sources,
+    UpdateSource target,
+  ) {
     for (final s in sources) {
       if (s.sourceName == target.sourceName) return s;
     }
+
     return null;
   }
 
-  bool _sourceSupportsPlatform(
+  static bool _sourceSupportsPlatform(
     UpdateSource ruleSource,
     UpdatePlatform platform,
     UpdateSource searchSource,
@@ -51,10 +58,12 @@ class SourceMatcher extends RuleMatcher {
     if (rulePlatforms == null) {
       final globalPlatforms = searchSource.platforms;
       if (globalPlatforms == null || globalPlatforms.isEmpty) return true;
+
       return globalPlatforms
           .any((p) => p == platform || p == UpdatePlatform.any);
     }
     if (rulePlatforms.isEmpty) return false;
+
     return rulePlatforms.any((p) => p == platform || p == UpdatePlatform.any);
   }
 }

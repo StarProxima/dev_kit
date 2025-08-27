@@ -1,6 +1,6 @@
-import '../../utils/mergeable.dart';
 import '../../models/update_rule/update_rule_config.dart';
 import '../../models/update_search/update_search_data.dart';
+import '../../utils/mergeable.dart';
 import '../base/reg_exp_matcher_mixin.dart';
 import '../base/rule_matcher.dart';
 
@@ -15,8 +15,10 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
   const CustomDataMatcher();
 
   @override
-  bool isMatches<T extends Mergeable<T>>(
-      {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
+  bool isMatches<T extends Mergeable<T>>({
+    required UpdateRuleConfig<T> rule,
+    required UpdateSearchData search,
+  }) {
     return _matchByCustomData(
       rule.customData,
       search.customData,
@@ -24,7 +26,9 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
   }
 
   bool _matchByCustomData(
-      Map<String, dynamic>? ruleCustom, Map<String, dynamic>? searchCustom) {
+    Map<String, dynamic>? ruleCustom,
+    Map<String, dynamic>? searchCustom,
+  ) {
     if (ruleCustom == null || ruleCustom.isEmpty) return true;
     if (searchCustom == null || searchCustom.isEmpty) return false;
 
@@ -47,23 +51,28 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
     }
 
     if (filteredRuleCustom.isEmpty) return true;
+
     return _primitiveContainsCaseInsensitive(filteredRuleCustom, searchCustom);
   }
 
   /// Проверяет, является ли значение примитивным типом или списком примитивов
-  bool _isPrimitiveValue(dynamic value) {
+  static bool _isPrimitiveValue(dynamic value) {
     if (value == null) return true;
     if (value is String || value is num || value is bool) return true;
-    if (value is List) {
-      return value.every((item) =>
-          item == null || item is String || item is num || item is bool);
-    }
-    return false; // Map и другие сложные типы не поддерживаются
+
+    return value is List &&
+        value.every((item) =>
+            item == null ||
+            item is String ||
+            item is num ||
+            item is bool); // Map и другие сложные типы не поддерживаются
   }
 
   /// Сравнение только примитивных типов с поддержкой case-insensitive для строк
   bool _primitiveContainsCaseInsensitive(
-      Map<String, dynamic> ruleFields, Map<String, dynamic> searchFields) {
+    Map<String, dynamic> ruleFields,
+    Map<String, dynamic> searchFields,
+  ) {
     for (final entry in ruleFields.entries) {
       final key = entry.key.toLowerCase();
       final ruleValue = entry.value;
@@ -71,7 +80,7 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
       // Найти соответствующее поле в данных поиска (case-insensitive)
       final searchEntry = searchFields.entries.firstWhere(
         (e) => e.key.toLowerCase() == key,
-        orElse: () => MapEntry('', null),
+        orElse: () => const MapEntry('', null),
       );
 
       if (searchEntry.key.isEmpty) return false; // Поле не найдено
@@ -81,6 +90,7 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
         return false;
       }
     }
+
     return true;
   }
 

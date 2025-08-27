@@ -6,17 +6,18 @@ base class UpdateVersionConstraint extends UpdateEntityName {
   static const any = UpdateVersionConstraint(null, name: 'any');
 
   final VersionConstraint? versionConstraint;
-  const UpdateVersionConstraint(this.versionConstraint,
-      {String name = 'direct'})
-      : super(name);
-
-  @override
-  List<Object?> get params => [name, versionConstraint];
-
   static const values = [];
 
   static const allValues = [
     ...values,
     any,
   ];
+
+  const UpdateVersionConstraint(
+    this.versionConstraint, {
+    String name = 'direct',
+  }) : super(name);
+
+  @override
+  List<Object?> get params => [name, versionConstraint];
 }

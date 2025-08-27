@@ -54,10 +54,31 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   late UpdateSearchConfig _searchConfig;
 
   late UpdateResult _updateResult = const UpdateResult(
-    update: null,
-    searchData: null,
     updateStatus: UpdateInitialStatus(),
+    searchData: null,
+    update: null,
   );
+
+  Future<void> fetch() async {
+    await _controller.fetch(_searchConfig);
+  }
+
+  void checkUpdate() {
+    if (!widget.enabled) return;
+    if (!mounted) return;
+
+    final updateResult = _controller.findUpdate(_searchConfig);
+
+    setState(() {
+      _updateResult = updateResult;
+    });
+
+    widget.onUpdateResult?.call(
+      context,
+      _controller,
+      updateResult,
+    );
+  }
 
   @override
   Future<void> initState() async {
@@ -88,38 +109,17 @@ class _UpdateHandlerState extends State<UpdateHandler> {
 
     final searchConfig = widget.searchConfig;
 
-    if (searchConfig != null) {
+    if (searchConfig == null) {
+      if (locale != _searchConfig.locale) {
+        _searchConfig = _searchConfig.copyWith(locale: locale);
+      }
+    } else {
       _searchConfig = searchConfig;
 
       if (_searchConfig.locale == null) {
         _searchConfig = _searchConfig.copyWith(locale: locale);
       }
-    } else {
-      if (locale != _searchConfig.locale) {
-        _searchConfig = _searchConfig.copyWith(locale: locale);
-      }
     }
-  }
-
-  Future<void> fetch() async {
-    await _controller.fetch(_searchConfig);
-  }
-
-  void checkUpdate() {
-    if (!widget.enabled) return;
-    if (!mounted) return;
-
-    final updateResult = _controller.findUpdate(_searchConfig);
-
-    setState(() {
-      _updateResult = updateResult;
-    });
-
-    widget.onUpdateResult?.call(
-      context,
-      _controller,
-      updateResult,
-    );
   }
 
   @override

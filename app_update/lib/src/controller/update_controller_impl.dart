@@ -7,17 +7,17 @@ import '../fetcher/update_config_fetcher.dart';
 import '../fetcher/update_config_fetcher_coordinator.dart';
 import '../fetcher/update_config_source_fetcher.dart';
 import '../linker/update_inker.dart';
+import '../models/release/update.dart';
+import '../models/release/update_data.dart';
+import '../models/update_result/update_result.dart';
+import '../models/update_search/update_search_config.dart';
+import '../models/update_status/update_status.dart';
 import '../resolver/update_content_interpolator.dart';
 import '../resolver/update_resolver.dart';
 import '../resolver/update_rule_resolver.dart';
 import '../searcher/update_search_data_defaulter.dart';
 import '../searcher/update_searcher.dart';
 import '../searcher/update_supported_sources_checker.dart';
-import '../models/release/update.dart';
-import '../models/release/update_data.dart';
-import '../models/update_result/update_result.dart';
-import '../models/update_search/update_search_config.dart';
-import '../models/update_status/update_status.dart';
 import 'update_contoller.dart';
 
 class UpdateControllerImpl implements UpdateController {
@@ -92,8 +92,8 @@ class UpdateControllerImpl implements UpdateController {
 
     final configs = await fetcherCoordinator.fetch(
       fetchers: fetchers,
-      packageInfo: packageInfo,
       searchConfig: searchConfig,
+      packageInfo: packageInfo,
       shouldFetchSourceFetchers: shouldFetchSourceFetchers,
       shouldFetchFerchers: shouldFetchFerchers,
     );
@@ -112,8 +112,8 @@ class UpdateControllerImpl implements UpdateController {
 
     final searchResult = updateSearcher.searchFull(
       updates: updates,
-      packageInfo: packageInfo,
       searchConfig: searchConfig,
+      packageInfo: packageInfo,
     );
 
     final searchData = searchResult.searchData;
@@ -121,9 +121,9 @@ class UpdateControllerImpl implements UpdateController {
 
     if (mostRelevantUpdate == null) {
       final result = UpdateResult(
-        update: null,
-        searchData: searchData,
         updateStatus: const UpdateNotFoundException(),
+        searchData: searchData,
+        update: null,
       );
 
       return result;

@@ -3,12 +3,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:yaml/yaml.dart';
 
+import '../models/update_config/update_config.dart';
 import '../parser/parse_config_exeption.dart';
 import '../parser/update_config_parser.dart';
-import '../models/update_config/update_config.dart';
 
 /// Базовый класс для фетчера конфига
 ///
@@ -16,8 +17,8 @@ import '../models/update_config/update_config.dart';
 /// и предоставляет конструкторы с дефолтной реализацией.
 interface class UpdateConfigFetcher {
   final UpdateConfigParser _updateConfigParser;
-  final FutureOr<Map<String, dynamic>> Function()? _fetchRawConfig;
-  final FutureOr<UpdateConfig> Function()? _fetchConfig;
+  final FutureOr<Map<String, dynamic>> Function()? _onFetchRawConfig;
+  final FutureOr<UpdateConfig> Function()? _onFetchConfig;
 
   factory UpdateConfigFetcher.config(UpdateConfig config) =>
       UpdateConfigFetcher.custom(
@@ -26,15 +27,15 @@ interface class UpdateConfigFetcher {
 
   const UpdateConfigFetcher.custom(
     FutureOr<UpdateConfig> Function() fetchConfig,
-  )   : _fetchConfig = fetchConfig,
-        _fetchRawConfig = null,
+  )   : _onFetchConfig = fetchConfig,
+        _onFetchRawConfig = null,
         _updateConfigParser = const UpdateConfigParser();
 
   const UpdateConfigFetcher.customRaw(
     FutureOr<Map<String, dynamic>> Function() fetchRawConfig, {
     UpdateConfigParser? updateConfigParser,
-  })  : _fetchRawConfig = fetchRawConfig,
-        _fetchConfig = null,
+  })  : _onFetchRawConfig = fetchRawConfig,
+        _onFetchConfig = null,
         _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
 
   factory UpdateConfigFetcher.byUrl(Uri uri) => UpdateConfigFetcher.customRaw(
@@ -51,7 +52,7 @@ interface class UpdateConfigFetcher {
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
-    final fetchRawConfig = _fetchRawConfig;
+    final fetchRawConfig = _onFetchRawConfig;
     if (fetchRawConfig != null) {
       final result = await fetchRawConfig();
       final config = _updateConfigParser.parse(result);
@@ -63,7 +64,7 @@ interface class UpdateConfigFetcher {
       return config;
     }
 
-    final fetchConfig = _fetchConfig;
+    final fetchConfig = _onFetchConfig;
     if (fetchConfig != null) {
       final config = await fetchConfig();
 

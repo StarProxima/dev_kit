@@ -56,9 +56,9 @@ class UpdateContentData {
       title: _interpolateString(title, interpolateData),
       description: _interpolateString(description, interpolateData),
       releaseNotesTitle: _interpolateString(releaseNotesTitle, interpolateData),
-      releaseNotes: releaseNotes != null
-          ? _interpolateString(releaseNotes!, interpolateData)
-          : null,
+      releaseNotes: releaseNotes == null
+          ? null
+          : _interpolateString(releaseNotes!, interpolateData),
       skipButton: _interpolateString(skipButton, interpolateData),
       postponeButton: _interpolateString(postponeButton, interpolateData),
       updateButton: _interpolateString(updateButton, interpolateData),
@@ -71,8 +71,10 @@ class UpdateContentData {
     for (final entry in interpolateData.entries) {
       result = result.replaceAll(_regExpForField(entry.key), entry.value);
     }
+
     return result;
   }
 
-  RegExp _regExpForField(String name) => RegExp('\$$name|{$name}|\${$name}');
+  static RegExp _regExpForField(String name) =>
+      RegExp('\$$name|{$name}|\${$name}');
 }

@@ -15,10 +15,6 @@ base class UpdatePlatform extends UpdateEntityName {
   static const web = UpdatePlatform._('web');
   static const any = UpdatePlatform._('any');
 
-  const UpdatePlatform._(super._name);
-
-  const factory UpdatePlatform.custom(String name) = UpdatePlatform._;
-
   static const values = [
     android,
     fuchsia,
@@ -33,6 +29,10 @@ base class UpdatePlatform extends UpdateEntityName {
     ...values,
     any,
   ];
+
+  const UpdatePlatform._(super._name);
+
+  const factory UpdatePlatform.custom(String name) = UpdatePlatform._;
 
   factory UpdatePlatform.current() => UpdatePlatform._(
         kIsWeb ? web.name : Platform.operatingSystem,

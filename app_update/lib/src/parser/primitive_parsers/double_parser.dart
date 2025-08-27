@@ -14,6 +14,7 @@ class DoubleParser {
       if (doubleValue.isNaN || !doubleValue.isFinite) {
         throw const ParseConfigException();
       }
+
       return doubleValue;
     }
 

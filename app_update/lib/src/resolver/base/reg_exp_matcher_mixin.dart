@@ -1,6 +1,6 @@
 /// Миксин для поддержки регулярных выражений в матчерах правил.
 mixin RegExpMatcherMixin {
-  static const String _regexpPrefix = 'regexp:';
+  static const _regexpPrefix = 'regexp:';
 
   /// Проверяет совпадение значения со списком возможных вариантов.
   /// Поддерживает:

@@ -14,8 +14,7 @@ class AppStoreApi {
     Locale locale, {
     bool shouldUseFallback = true,
   }) async {
-    // Сначала пробуем с исходной локалью
-    var appData = await _tryLookupApp(bundleId, locale);
+    Map<String, dynamic>? appData = await _tryLookupApp(bundleId, locale);
 
     // Если не найдено и есть страна, пробуем без страны (fallback)
     if (shouldUseFallback && appData == null && locale.countryCode != null) {
@@ -28,7 +27,9 @@ class AppStoreApi {
 
   /// Пытается найти приложение с определенной локалью
   Future<Map<String, dynamic>?> _tryLookupApp(
-      String bundleId, Locale locale) async {
+    String bundleId,
+    Locale locale,
+  ) async {
     final url = _buildLookupUrl(bundleId, locale);
     final response = await http.get(url);
 
@@ -66,7 +67,7 @@ class AppStoreApi {
     return updatedUrl;
   }
 
-  Uri _buildLookupUrl(String bundleId, Locale locale) {
+  static Uri _buildLookupUrl(String bundleId, Locale locale) {
     final queryParams = <String, String>{
       'bundleId': bundleId,
     };

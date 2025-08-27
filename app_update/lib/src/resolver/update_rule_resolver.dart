@@ -1,9 +1,9 @@
 // ignore_for_file: comment_references
 
-import '../parser/parse_config_exeption.dart';
-import '../utils/mergeable.dart';
 import '../models/update_rule/update_rule_config.dart';
 import '../models/update_search/update_search_data.dart';
+import '../parser/parse_config_exeption.dart';
+import '../utils/mergeable.dart';
 import 'base/rule_matcher.dart';
 import 'matchers/app_status_matcher.dart';
 import 'matchers/custom_data_matcher.dart';
@@ -61,6 +61,7 @@ class UpdateRuleResolver {
     }
 
     if (result == null) throw const ParseConfigException();
+
     return result;
   }
 

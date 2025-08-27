@@ -3,13 +3,13 @@ import 'package:collection/collection.dart';
 import '../../entities/update_source.dart';
 import '../../entities/update_source_name.dart';
 import '../../entities/update_version_constraint.dart';
-import '../../utils/mergeable.dart';
 import '../../models/release/release_config.dart';
 import '../../models/release/release_override_config.dart';
 import '../../models/release/update_data.dart';
 import '../../models/release_platrform/release_platrform_config.dart';
 import '../../models/release_source/release_source_config.dart';
 import '../../models/update_rule/update_rule_config.dart';
+import '../../utils/mergeable.dart';
 
 class UpdateReleaseLinker {
   const UpdateReleaseLinker();
@@ -138,7 +138,7 @@ class UpdateReleaseLinker {
   }
 
   /// Получает ReleasePlatformConfig для источника из глобальных источников.
-  List<ReleasePlatformConfig> _getPlatforms({
+  static List<ReleasePlatformConfig> _getPlatforms({
     required UpdateSourceName sourceName,
     required List<UpdateSource> sources,
   }) {
@@ -159,7 +159,7 @@ class UpdateReleaseLinker {
   }
 
   /// Добавляет в правило источник, платформу и версию релиза.
-  UpdateRuleConfig<T> _linkRule<T extends Mergeable<T>>({
+  static UpdateRuleConfig<T> _linkRule<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required ReleaseConfig release,
     required ReleaseSourceConfig? source,
@@ -171,16 +171,16 @@ class UpdateReleaseLinker {
             platform == null || platformName == platform.platformName)
         .toList();
 
-    final finalSource = source != null
-        ? UpdateSource.custom(
+    final finalSource = source == null
+        ? null
+        : UpdateSource.custom(
             source.sourceName,
             platforms: finalPlatforms,
-          )
-        : null;
+          );
 
     final finalRule = rule.copyWith(
       versionIs: [UpdateVersionConstraint(release.version)],
-      sourceIs: finalSource != null ? [finalSource] : null,
+      sourceIs: finalSource == null ? null : [finalSource],
     );
 
     return finalRule;

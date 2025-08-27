@@ -47,9 +47,9 @@ class UpdateData {
         date: date ?? this.date,
         sourceName: sourceName ?? this.sourceName,
         platform: platform ?? this.platform,
-        appSettingsRules: appSettingsRules ?? this.appSettingsRules,
         contentRules: contentRules ?? this.contentRules,
         settingsRules: settingsRules ?? this.settingsRules,
+        appSettingsRules: appSettingsRules ?? this.appSettingsRules,
         customData: Mergeable.mergeCustomData(this.customData, customData),
       );
 }

@@ -6,7 +6,7 @@ class UpdateSearchResult {
   final UpdateData? localUpdateData;
   final UpdateSearchData searchData;
 
-  UpdateSearchResult({
+  const UpdateSearchResult({
     required this.updateData,
     required this.localUpdateData,
     required this.searchData,

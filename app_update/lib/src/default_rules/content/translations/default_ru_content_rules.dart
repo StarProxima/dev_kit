@@ -3,7 +3,7 @@ import '../../../entities/update_locale.dart';
 import '../../../models/update_content/update_content_config.dart';
 import '../../../models/update_rule/update_rule_config.dart';
 
-final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
+final defaultRuContentRules = [
   const UpdateRuleConfig(
     localeIs: [UpdateLocale.ru],
     data: UpdateContentConfig.byRequired(
@@ -20,8 +20,8 @@ final List<UpdateRuleConfig<UpdateContentConfig>> defaultRuContentRules = [
     ),
   ),
   const UpdateRuleConfig(
-    localeIs: [UpdateLocale.ru],
     appStatusIs: [AppStatus.unsupported],
+    localeIs: [UpdateLocale.ru],
     data: UpdateContentConfig(
       title: r'Обновите $appName',
       description:

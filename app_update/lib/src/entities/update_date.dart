@@ -8,14 +8,6 @@ base class UpdateDate extends UpdateEntityName {
 
   final DateTime? date;
 
-  const UpdateDate(
-    this.date, {
-    String name = 'direct',
-  }) : super(name);
-
-  @override
-  List<Object?> get params => [name, date];
-
   static const values = [
     localReleaseDate,
     updateReleaseDate,
@@ -25,4 +17,12 @@ base class UpdateDate extends UpdateEntityName {
     ...values,
     any,
   ];
+
+  const UpdateDate(
+    this.date, {
+    String name = 'direct',
+  }) : super(name);
+
+  @override
+  List<Object?> get params => [name, date];
 }
