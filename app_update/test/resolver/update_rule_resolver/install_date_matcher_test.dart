@@ -113,8 +113,8 @@ void main() {
       final res = customResolver.resolve(
         searchData: createTestSearchData(
           currentDate: currentDate,
-          custom: const {'env': 'prod'}, // Для CustomDataMatcher
           customAppInstallDate: installDate,
+          custom: const {'env': 'prod'}, // Для CustomDataMatcher
         ),
         rules: rules,
       );

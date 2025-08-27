@@ -22,9 +22,7 @@ void main() {
       when(() => setup.mockDefaulter.getSearchDataWithDefaults(
             searchConfig: any(named: 'searchConfig'),
             packageInfo: any(named: 'packageInfo'),
-          )).thenReturn(setup.createSearchData(
-        
-      ));
+          )).thenReturn(setup.createSearchData());
 
       const sourceWithEmptyPlatforms = UpdateSource.custom(
         UpdateSourceName.custom('empty_platforms'),
