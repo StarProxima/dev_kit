@@ -2,12 +2,33 @@
 
 import 'dart:async';
 
+import '../fetcher/update_config_fetcher_base.dart';
+import '../fetcher/update_config_source_fetcher.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
+import 'update_controller_impl.dart';
 
-abstract class UpdateControllerBase {
+/// Контроллер для поиска обновлений
+///
+/// You can add custom fetchers
+/// ```dart
+/// UpdateController(
+///   fetchers: [
+///     ...UpdateConfigSourceFetcher.defaultFetchers,
+///     UpdateConfigFetchercher.byUrl(...),
+///   ],
+/// )
+/// ```
+///
+abstract interface class UpdateController {
   Stream<void> get onFetch;
+
+  factory UpdateController({
+    List<UpdateConfigFetcherBase> fetchers =
+        UpdateConfigSourceFetcher.defaultFetchers,
+  }) =>
+      UpdateControllerImpl(fetchers: fetchers);
 
   /// Initialize controller.
   FutureOr<void> init();

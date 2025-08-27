@@ -1,8 +1,8 @@
 /// Library for App Update.
 library app_update;
 
-export 'src/controller/update_contoller_base.dart';
-export 'src/controller/update_controller.dart';
+export 'src/controller/update_contoller.dart';
+export 'src/controller/update_controller_impl.dart';
 export 'src/default_rules/app_settings/default_update_app_settings.dart';
 export 'src/default_rules/content/default_update_content.dart';
 export 'src/default_rules/content/translations/default_en_content_rules.dart';

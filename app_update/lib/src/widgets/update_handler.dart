@@ -4,8 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../controller/update_contoller_base.dart';
-import '../controller/update_controller.dart';
+import '../controller/update_contoller.dart';
+import '../controller/update_controller_impl.dart';
 import '../shared/entities/update_locale.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
@@ -35,7 +35,7 @@ class UpdateHandler extends StatefulWidget {
 
   final bool enabled;
   final bool shouldCheckUpdateAfterAppResume;
-  final UpdateControllerBase? controller;
+  final UpdateController? controller;
   final UpdateSearchConfig? searchConfig;
   final OnUpdateResult? onUpdateResult;
   final UpdateWidgetBuilder? builder;
@@ -50,7 +50,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
 
   late final AppLifecycleListener _appLifecycleListener;
   late final StreamSubscription<void> _onFetchSubscription;
-  late final UpdateControllerBase _controller;
+  late final UpdateController _controller;
   late UpdateSearchConfig _searchConfig;
 
   late UpdateResult _updateResult = const UpdateResult(
@@ -62,7 +62,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   @override
   Future<void> initState() async {
     super.initState();
-    _controller = widget.controller ?? UpdateController();
+    _controller = widget.controller ?? UpdateControllerImpl();
     _searchConfig = widget.searchConfig ?? const UpdateSearchConfig();
 
     _onFetchSubscription = _controller.onFetch.listen((_) {
@@ -139,13 +139,13 @@ class _UpdateHandlerState extends State<UpdateHandler> {
 
 typedef OnUpdateResult = FutureOr<void> Function(
   BuildContext context,
-  UpdateControllerBase controller,
+  UpdateController controller,
   UpdateResult result,
 );
 
 typedef UpdateWidgetBuilder = Widget Function(
   BuildContext context,
-  UpdateControllerBase controller,
+  UpdateController controller,
   UpdateResult result,
   Widget? child,
 );

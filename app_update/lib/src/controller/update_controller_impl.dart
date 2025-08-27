@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../fetcher/update_config_fetcher_base.dart';
@@ -17,70 +18,68 @@ import '../shared/models/release/update_data.dart';
 import '../shared/models/update_result/update_result.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_status/update_status.dart';
-import 'update_contoller_base.dart';
+import 'update_contoller.dart';
 
-class UpdateController extends UpdateControllerBase {
+class UpdateControllerImpl implements UpdateController {
   // State
 
-  final List<UpdateConfigFetcherBase> _fetchers;
-  late PackageInfo _packageInfo;
-  final _onFetchStreamController = StreamController<void>.broadcast();
-  final _initCompleter = Completer<void>();
-  List<UpdateData> _updates = [];
+  @protected
+  final List<UpdateConfigFetcherBase> fetchers;
+  @protected
+  late PackageInfo packageInfo;
+  @protected
+  final onFetchStreamController = StreamController<void>.broadcast();
+  @protected
+  final initCompleter = Completer<void>();
+  @protected
+  List<UpdateData> updates = [];
 
   // Dependencies, can be overridden
 
-  final UpdateLinker _updateLinker = const UpdateLinker();
-
-  final _sourceSupportChecker = UpdateSourceSupportChecker();
-  late final _searchDataDefaulter = UpdateSearchDataDefaulter(
-    updateSourceChecker: _sourceSupportChecker,
+  @protected
+  final linker = const UpdateLinker();
+  @protected
+  final ruleResolver = const UpdateRuleResolver();
+  @protected
+  final contentInterpolator = const UpdateContentInterpolator();
+  @protected
+  final sourceSupportChecker = UpdateSourceSupportChecker();
+  @protected
+  late final searchDataDefaulter = UpdateSearchDataDefaulter(
+    updateSourceChecker: sourceSupportChecker,
+  );
+  @protected
+  late final updateResolver = UpdateResolver(
+    ruleResolver: ruleResolver,
+    contentInterpolator: contentInterpolator,
+  );
+  @protected
+  late final fetcherCoordinator = UpdateConfigFetcherCoordinator(
+    updateSearchDataDefaulter: searchDataDefaulter,
+  );
+  @protected
+  late final updateSearcher = UpdateSearcher(
+    searchDataDefaulter: searchDataDefaulter,
   );
 
-  final _updateResolver = const UpdateResolver(
-    ruleResolver: UpdateRuleResolver(),
-    contentInterpolator: UpdateContentInterpolator(),
-  );
-
-  late final _fetcherCoordinator = UpdateConfigFetcherCoordinator(
-    updateSearchDataDefaulter: _searchDataDefaulter,
-  );
-
-  late final _updateSearcher = UpdateSearcher(
-    searchDataDefaulter: _searchDataDefaulter,
-  );
-
-  /// Контроллер для поиска обновлений
-  ///
-  /// You can add custom fetchers
-  /// ```dart
-  /// UpdateController(
-  ///   fetchers: [
-  ///     ...UpdateConfigSourceFetcher.defaultFetchers,
-  ///     UpdateConfigFetchercher.byUrl(...),
-  ///   ],
-  /// )
-  /// ```
-  ///
-  UpdateController({
-    List<UpdateConfigFetcherBase> fetchers =
-        UpdateConfigSourceFetcher.defaultFetchers,
-  }) : _fetchers = fetchers;
+  UpdateControllerImpl({
+    this.fetchers = UpdateConfigSourceFetcher.defaultFetchers,
+  });
 
   @override
   Future<void> init() async {
-    if (_initCompleter.isCompleted) return;
+    if (initCompleter.isCompleted) return;
 
-    _packageInfo = await PackageInfo.fromPlatform();
-    await _sourceSupportChecker.init();
+    packageInfo = await PackageInfo.fromPlatform();
+    await sourceSupportChecker.init();
 
-    if (_initCompleter.isCompleted) return;
+    if (initCompleter.isCompleted) return;
 
-    _initCompleter.complete();
+    initCompleter.complete();
   }
 
   @override
-  Stream<void> get onFetch => _onFetchStreamController.stream;
+  Stream<void> get onFetch => onFetchStreamController.stream;
 
   @override
   Future<void> fetch(
@@ -90,29 +89,29 @@ class UpdateController extends UpdateControllerBase {
   }) async {
     await init();
 
-    final configs = await _fetcherCoordinator.fetch(
-      fetchers: _fetchers,
-      packageInfo: _packageInfo,
+    final configs = await fetcherCoordinator.fetch(
+      fetchers: fetchers,
+      packageInfo: packageInfo,
       searchConfig: searchConfig,
       shouldFetchSourceFetchers: shouldFetchSourceFetchers,
       shouldFetchFerchers: shouldFetchFerchers,
     );
 
-    final updates = _updateLinker.linkAllConfigs(configs);
+    final updates = linker.linkAllConfigs(configs);
 
-    _updates = updates;
-    _onFetchStreamController.add(null);
+    this.updates = updates;
+    onFetchStreamController.add(null);
   }
 
   @override
   UpdateResult findUpdate(UpdateSearchConfig searchConfig) {
-    if (!_initCompleter.isCompleted) {
+    if (!initCompleter.isCompleted) {
       throw Exception('UpdateController is not initialized');
     }
 
-    final searchResult = _updateSearcher.searchFull(
-      updates: _updates,
-      packageInfo: _packageInfo,
+    final searchResult = updateSearcher.searchFull(
+      updates: updates,
+      packageInfo: packageInfo,
       searchConfig: searchConfig,
     );
 
@@ -129,7 +128,7 @@ class UpdateController extends UpdateControllerBase {
       return result;
     }
 
-    final result = _updateResolver.resolve(
+    final result = updateResolver.resolve(
       updateData: mostRelevantUpdate,
       searchData: searchData,
     );
@@ -157,6 +156,6 @@ class UpdateController extends UpdateControllerBase {
 
   @override
   void dispose() {
-    _onFetchStreamController.close();
+    onFetchStreamController.close();
   }
 }
