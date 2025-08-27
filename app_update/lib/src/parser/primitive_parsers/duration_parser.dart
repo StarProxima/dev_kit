@@ -1,4 +1,4 @@
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class DurationParser {
   const DurationParser();
@@ -9,10 +9,17 @@ class DurationParser {
   }) {
     if (hours == null) return null;
 
-    if (hours is! int) throw const UpdateConfigException();
+    if (hours is! int) {
+      throw ParseConfigException.wrongType(
+        rightType: int,
+        wrongType: hours.runtimeType,
+        parserType: DurationParser,
+        configs: [hours],
+      );
+    }
 
     if (hours < 0) {
-      throw const UpdateConfigException();
+      throw ParseConfigException();
     }
 
     final duraton = Duration(hours: hours);

@@ -43,8 +43,8 @@ void main() {
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123), throwsA(isA<UpdateConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<UpdateConfigException>()));
+      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
     });
 
     test('null возвращает null', () {

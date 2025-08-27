@@ -1,4 +1,4 @@
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class DoubleParser {
   const DoubleParser();
@@ -12,11 +12,16 @@ class DoubleParser {
     if (value is num) {
       final doubleValue = value.toDouble();
       if (doubleValue.isNaN || !doubleValue.isFinite) {
-        throw const UpdateConfigException();
+        throw const ParseConfigException();
       }
       return doubleValue;
     }
 
-    throw const UpdateConfigException();
+    throw ParseConfigException.wrongType(
+      rightType: double,
+      wrongType: value.runtimeType,
+      parserType: DoubleParser,
+      configs: [value],
+    );
   }
 }

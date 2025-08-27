@@ -8,7 +8,7 @@ import '../base_parsers/update_locale_parser.dart';
 import '../base_parsers/update_source_parser.dart';
 import '../base_parsers/update_version_constraint_parser.dart';
 import '../base_parsers/update_view_target_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import '../primitive_parsers/double_parser.dart';
 import '../primitive_parsers/duration_parser.dart';
 import '../primitive_parsers/list_or_value_parser.dart';
@@ -33,7 +33,12 @@ class UpdateRuleConfigParser {
     if (value == null) return null;
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: UpdateRuleConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);

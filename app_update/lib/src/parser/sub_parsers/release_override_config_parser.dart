@@ -1,7 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../models/release/release_override_config.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import '../primitive_parsers/date_time_parser.dart';
 import '../primitive_parsers/version_parser.dart';
 
@@ -17,7 +17,12 @@ class ReleaseOverrideConfigParser {
     if (value == null) return null;
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: ReleaseOverrideConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);

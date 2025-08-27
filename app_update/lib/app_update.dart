@@ -28,7 +28,7 @@ export 'src/parser/base_parsers/update_source_name_parser.dart';
 export 'src/parser/base_parsers/update_source_parser.dart';
 export 'src/parser/base_parsers/update_version_constraint_parser.dart';
 export 'src/parser/base_parsers/update_view_target_parser.dart';
-export 'src/parser/common.dart';
+export 'src/parser/parse_config_exeption.dart';
 export 'src/parser/primitive_parsers/bool_parser.dart';
 export 'src/parser/primitive_parsers/date_time_parser.dart';
 export 'src/parser/primitive_parsers/double_parser.dart';

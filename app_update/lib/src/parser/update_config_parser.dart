@@ -2,7 +2,7 @@
 
 import '../models/update_config/update_config.dart';
 import 'base_parsers/update_rules_container_parser.dart';
-import 'common.dart';
+import 'parse_config_exeption.dart';
 import 'primitive_parsers/list_or_value_parser.dart';
 import 'sub_parsers/global_source_config_parser.dart';
 import 'sub_parsers/release_config_parser.dart';
@@ -21,7 +21,12 @@ class UpdateConfigParser {
     if (value == null) return null;
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: UpdateConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);
@@ -30,7 +35,7 @@ class UpdateConfigParser {
     final releasesRawValue = map.remove('releases');
     final releasesValue = _listOrValueParser.parse(releasesRawValue);
 
-    if (releasesValue == null) throw const UpdateConfigException();
+    if (releasesValue == null) throw const ParseConfigException();
 
     final releases =
         releasesValue.map(_releaseConfigParser.parse).nonNulls.toList();

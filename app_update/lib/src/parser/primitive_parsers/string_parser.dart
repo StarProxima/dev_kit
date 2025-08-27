@@ -1,4 +1,4 @@
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class StringParser {
   const StringParser();
@@ -9,7 +9,14 @@ class StringParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: StringParser,
+        configs: [value],
+      );
+    }
 
     return value;
   }

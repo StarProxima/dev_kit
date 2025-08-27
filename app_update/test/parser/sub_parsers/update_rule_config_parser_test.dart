@@ -62,12 +62,12 @@ void main() {
           () => parser.parse<MergeableMapAdapter>(123,
               dataParser: (v) =>
                   MergeableMapAdapter(Map<String, dynamic>.from(v))),
-          throwsA(isA<UpdateConfigException>()));
+          throwsA(isA<ParseConfigException>()));
       expect(
           () => parser.parse<MergeableMapAdapter>([],
               dataParser: (v) =>
                   MergeableMapAdapter(Map<String, dynamic>.from(v))),
-          throwsA(isA<UpdateConfigException>()));
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('customData содержит неиспользованные поля', () {

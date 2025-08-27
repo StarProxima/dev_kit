@@ -70,7 +70,7 @@ void main() {
         releases: null
       ''';
       final map = (loadYaml(yamlStr) as YamlMap).toMap();
-      expect(() => parser.parse(map), throwsA(isA<UpdateConfigException>()));
+      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
     });
   });
 }

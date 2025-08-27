@@ -1,5 +1,5 @@
 import '../../entities/update_date.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import '../primitive_parsers/date_time_parser.dart';
 
 class UpdateDateParser {
@@ -12,7 +12,14 @@ class UpdateDateParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: UpdateDateParser,
+        configs: [value],
+      );
+    }
 
     final byName = UpdateDate(null, name: value);
 

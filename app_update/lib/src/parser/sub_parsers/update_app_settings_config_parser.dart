@@ -2,7 +2,7 @@
 
 import '../../models/update_app_settings/update_app_settings_config.dart';
 import '../base_parsers/app_status_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class UpdateAppSettingsConfigParser {
   static const _appStatusParser = AppStatusParser();
@@ -15,7 +15,12 @@ class UpdateAppSettingsConfigParser {
     if (value == null) return null;
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: UpdateAppSettingsConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);

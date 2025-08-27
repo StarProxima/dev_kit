@@ -1,5 +1,5 @@
 import '../../entities/update_locale.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import '../primitive_parsers/locale_parser.dart';
 
 class UpdateLocaleParser {
@@ -12,7 +12,14 @@ class UpdateLocaleParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: UpdateLocaleParser,
+        configs: [value],
+      );
+    }
 
     final byName = UpdateLocale(null, name: value);
 

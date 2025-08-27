@@ -1,5 +1,5 @@
 import '../../entities/update_view_target.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class UpdateViewTargetParser {
   const UpdateViewTargetParser();
@@ -9,7 +9,14 @@ class UpdateViewTargetParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: UpdateViewTargetParser,
+        configs: [value],
+      );
+    }
 
     return UpdateViewTarget.custom(value);
   }

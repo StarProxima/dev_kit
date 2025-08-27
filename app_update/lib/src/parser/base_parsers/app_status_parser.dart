@@ -1,5 +1,5 @@
 import '../../entities/app_status.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class AppStatusParser {
   const AppStatusParser();
@@ -9,7 +9,14 @@ class AppStatusParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: AppStatusParser,
+        configs: [value],
+      );
+    }
 
     return AppStatus.custom(value);
   }

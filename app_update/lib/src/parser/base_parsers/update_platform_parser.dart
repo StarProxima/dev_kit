@@ -1,5 +1,5 @@
 import '../../entities/update_platform.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class UpdatePlatformParser {
   const UpdatePlatformParser();
@@ -9,7 +9,14 @@ class UpdatePlatformParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: UpdatePlatformParser,
+        configs: [value],
+      );
+    }
 
     return UpdatePlatform.custom(value);
   }

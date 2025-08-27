@@ -2,7 +2,7 @@
 
 import 'package:pub_semver/pub_semver.dart';
 
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class VersionConstraintParser {
   const VersionConstraintParser();
@@ -13,7 +13,14 @@ class VersionConstraintParser {
   ) {
     if (version == null) return null;
 
-    if (version is! String) throw const UpdateConfigException();
+    if (version is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: version.runtimeType,
+        parserType: VersionConstraintParser,
+        configs: [version],
+      );
+    }
 
     return VersionConstraint.parse(version);
   }

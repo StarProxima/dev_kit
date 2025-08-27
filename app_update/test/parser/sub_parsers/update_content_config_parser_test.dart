@@ -52,16 +52,16 @@ void main() {
 
     test('Ошибка при неверном типе входных данных', () {
       expect(() => parser.parse('not a map'),
-          throwsA(isA<UpdateConfigException>()));
-      expect(() => parser.parse(123), throwsA(isA<UpdateConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<UpdateConfigException>()));
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
     });
 
     test('Ошибка при нестроковых значениях полей', () {
       final map = {
         'title': 123,
       };
-      expect(() => parser.parse(map), throwsA(isA<UpdateConfigException>()));
+      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
     });
   });
 }

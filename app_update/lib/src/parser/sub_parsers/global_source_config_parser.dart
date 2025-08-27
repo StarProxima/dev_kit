@@ -4,7 +4,7 @@ import '../../models/global_platform/global_platform_config.dart';
 import '../../models/global_source/global_source_config.dart';
 import '../base_parsers/update_rules_container_parser.dart';
 import '../base_parsers/update_source_name_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import 'global_platform_config_parser.dart';
 
 class GlobalSourceConfigParser {
@@ -20,7 +20,12 @@ class GlobalSourceConfigParser {
     if (value == null) return null;
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: GlobalSourceConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);
@@ -30,13 +35,13 @@ class GlobalSourceConfigParser {
     final name = _updateSourceNameParser.parse(nameValue);
 
     if (name == null) {
-      throw const UpdateConfigException();
+      throw const ParseConfigException();
     }
 
     // platforms
     final platformsValue = map.remove('platforms');
     if (platformsValue is! List<dynamic>?) {
-      throw const UpdateConfigException();
+      throw const ParseConfigException();
     }
     final platforms = platformsValue
         ?.map(_globalPlatformConfigParser.parse)

@@ -1,6 +1,6 @@
 // ignore_for_file: comment_references
 
-import '../parser/common.dart';
+import '../parser/parse_config_exeption.dart';
 import '../utils/mergeable.dart';
 import '../models/update_rule/update_rule_config.dart';
 import '../models/update_search/update_search_data.dart';
@@ -38,7 +38,7 @@ class UpdateRuleResolver {
   ///
   /// Правила применяются по порядку. Последующие правила переопределяют поля предыдущих
   /// через реализацию [Mergeable.merge]. Если ни одно правило не подошло — кидает
-  /// [UpdateConfigException].
+  /// [ParseConfigException].
   ///
   /// Временные условия:
   /// - date: базовая дата срабатывания (или ссылка $localReleaseDate / $updateReleaseDate)
@@ -60,7 +60,7 @@ class UpdateRuleResolver {
       result = result == null ? data : (result.merge(data) as T);
     }
 
-    if (result == null) throw const UpdateConfigException();
+    if (result == null) throw const ParseConfigException();
     return result;
   }
 

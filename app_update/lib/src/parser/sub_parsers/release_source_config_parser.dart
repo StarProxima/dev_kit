@@ -3,7 +3,7 @@
 import '../../models/release_source/release_source_config.dart';
 import '../base_parsers/update_rules_container_parser.dart';
 import '../base_parsers/update_source_name_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import 'release_override_config_parser.dart';
 import 'release_platrform_config_parser.dart';
 
@@ -23,7 +23,7 @@ class ReleaseSourceConfigParser {
     // Short syntax
     if (value is String) {
       final name = _updateSourceNameParser.parse(value);
-      if (name == null) throw const UpdateConfigException();
+      if (name == null) throw const ParseConfigException();
 
       return ReleaseSourceConfig.byRequired(
         sourceName: name,
@@ -37,7 +37,12 @@ class ReleaseSourceConfigParser {
     }
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: ReleaseSourceConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);
@@ -45,11 +50,11 @@ class ReleaseSourceConfigParser {
     // name
     final nameValue = map.remove('name');
     final name = _updateSourceNameParser.parse(nameValue);
-    if (name == null) throw const UpdateConfigException();
+    if (name == null) throw const ParseConfigException();
 
     // platforms
     final platformsValue = map.remove('platforms');
-    if (platformsValue is! List?) throw const UpdateConfigException();
+    if (platformsValue is! List?) throw const ParseConfigException();
 
     final platforms = platformsValue
         ?.map(_releasePlatformConfigParser.parse)

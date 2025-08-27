@@ -2,7 +2,7 @@
 
 import '../../models/release/release_config.dart';
 import '../base_parsers/update_rules_container_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import '../primitive_parsers/date_time_parser.dart';
 import '../primitive_parsers/list_or_value_parser.dart';
 import '../primitive_parsers/version_parser.dart';
@@ -23,7 +23,12 @@ class ReleaseConfigParser {
     if (value == null) return null;
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: ReleaseConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);
@@ -33,7 +38,7 @@ class ReleaseConfigParser {
     final version = _versionParser.parse(versionValue);
 
     if (version == null) {
-      throw const UpdateConfigException();
+      throw const ParseConfigException();
     }
 
     // date
@@ -41,7 +46,7 @@ class ReleaseConfigParser {
     final date = _dateTimeParser.parse(dateValue);
 
     if (date == null) {
-      throw const UpdateConfigException();
+      throw const ParseConfigException();
     }
 
     // sources

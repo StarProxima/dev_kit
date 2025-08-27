@@ -42,12 +42,12 @@ void main() {
         'name': 'github',
         'platforms': 'android', // platforms должен быть List
       };
-      expect(() => parser.parse(map), throwsA(isA<UpdateConfigException>()));
+      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123), throwsA(isA<UpdateConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<UpdateConfigException>()));
+      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
     });
 
     test('null возвращает null', () {

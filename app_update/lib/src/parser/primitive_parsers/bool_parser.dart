@@ -1,4 +1,4 @@
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class BoolParser {
   const BoolParser();
@@ -10,7 +10,14 @@ class BoolParser {
   ) {
     if (value == null) return null;
 
-    if (value is! bool) throw const UpdateConfigException();
+    if (value is! bool) {
+      throw ParseConfigException.wrongType(
+        rightType: bool,
+        wrongType: value.runtimeType,
+        parserType: BoolParser,
+        configs: [value],
+      );
+    }
 
     return value;
   }

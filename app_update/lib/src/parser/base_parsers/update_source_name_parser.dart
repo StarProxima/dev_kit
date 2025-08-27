@@ -1,5 +1,5 @@
 import '../../entities/update_source_name.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class UpdateSourceNameParser {
   const UpdateSourceNameParser();
@@ -9,7 +9,14 @@ class UpdateSourceNameParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: UpdateSourceNameParser,
+        configs: [value],
+      );
+    }
 
     return UpdateSourceName.custom(value);
   }

@@ -86,7 +86,7 @@ void main() {
         expect(
           () => fetcher.fetch(
               locale: const Locale('en'), packageInfo: FakePackageInfo()),
-          throwsA(isA<UpdateConfigException>()),
+          throwsA(isA<ParseConfigException>()),
         );
       });
     });

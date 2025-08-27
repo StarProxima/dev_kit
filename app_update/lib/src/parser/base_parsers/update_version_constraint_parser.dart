@@ -1,5 +1,5 @@
 import '../../entities/update_version_constraint.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import '../primitive_parsers/version_constraint_parser.dart';
 
 class UpdateVersionConstraintParser {
@@ -12,7 +12,14 @@ class UpdateVersionConstraintParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: UpdateVersionConstraintParser,
+        configs: [value],
+      );
+    }
 
     final byName = UpdateVersionConstraint(null, name: value);
 

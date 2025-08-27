@@ -3,7 +3,7 @@
 import '../../models/global_platform/global_platform_config.dart';
 import '../base_parsers/update_platform_parser.dart';
 import '../base_parsers/update_rules_container_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class GlobalPlatformConfigParser {
   static const _updatePlatformParser = UpdatePlatformParser();
@@ -21,7 +21,7 @@ class GlobalPlatformConfigParser {
       final name = _updatePlatformParser.parse(value);
 
       if (name == null) {
-        throw const UpdateConfigException();
+        throw const ParseConfigException();
       }
 
       return GlobalPlatformConfig.byRequired(
@@ -34,7 +34,12 @@ class GlobalPlatformConfigParser {
     }
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: GlobalPlatformConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);
@@ -45,7 +50,7 @@ class GlobalPlatformConfigParser {
 
     // Разрешаем любые значения name, если строка не пуста
     if (name == null || (name.name.isEmpty)) {
-      throw const UpdateConfigException();
+      throw const ParseConfigException();
     }
 
     // rules

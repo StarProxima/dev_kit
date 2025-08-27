@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../common.dart';
+import '../parse_config_exeption.dart';
 
 class LocaleParser {
   const LocaleParser();
@@ -12,7 +12,14 @@ class LocaleParser {
   ) {
     if (value == null) return null;
 
-    if (value is! String) throw const UpdateConfigException();
+    if (value is! String) {
+      throw ParseConfigException.wrongType(
+        rightType: String,
+        wrongType: value.runtimeType,
+        parserType: LocaleParser,
+        configs: [value],
+      );
+    }
 
     // split by _ or -
     final list = value.split(RegExp('[-_]'));

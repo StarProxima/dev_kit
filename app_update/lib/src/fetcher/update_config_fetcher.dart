@@ -6,7 +6,7 @@ import 'dart:ui';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:yaml/yaml.dart';
 
-import '../parser/common.dart';
+import '../parser/parse_config_exeption.dart';
 import '../parser/update_config_parser.dart';
 import '../models/update_config/update_config.dart';
 
@@ -57,7 +57,7 @@ interface class UpdateConfigFetcher {
       final config = _updateConfigParser.parse(result);
 
       if (config == null) {
-        throw const UpdateConfigException();
+        throw const ParseConfigException();
       }
 
       return config;
@@ -69,7 +69,7 @@ interface class UpdateConfigFetcher {
       return config;
     }
 
-    throw const UpdateConfigException();
+    throw const ParseConfigException();
   }
 }
 

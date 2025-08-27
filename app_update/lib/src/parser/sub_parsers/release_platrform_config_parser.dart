@@ -3,7 +3,7 @@
 import '../../models/release_platrform/release_platrform_config.dart';
 import '../base_parsers/update_platform_parser.dart';
 import '../base_parsers/update_rules_container_parser.dart';
-import '../common.dart';
+import '../parse_config_exeption.dart';
 import 'release_override_config_parser.dart';
 
 class ReleasePlatformConfigParser {
@@ -23,7 +23,7 @@ class ReleasePlatformConfigParser {
       final name = _updatePlatformParser.parse(value);
 
       if (name == null) {
-        throw const UpdateConfigException();
+        throw const ParseConfigException();
       }
 
       return ReleasePlatformConfig.byRequired(
@@ -37,7 +37,12 @@ class ReleasePlatformConfigParser {
     }
 
     if (value is! Map) {
-      throw const UpdateConfigException();
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: ReleasePlatformConfigParser,
+        configs: [value],
+      );
     }
 
     final map = Map<String, dynamic>.from(value);
@@ -47,7 +52,7 @@ class ReleasePlatformConfigParser {
     final name = _updatePlatformParser.parse(nameValue);
 
     if (name == null) {
-      throw const UpdateConfigException();
+      throw const ParseConfigException();
     }
 
     // releaseOverride
