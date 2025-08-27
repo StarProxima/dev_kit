@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'update_entity.dart';
 
 @immutable
-class UpdatePlatform extends UpdateEntityName {
+base class UpdatePlatform extends UpdateEntityName {
   static const android = UpdatePlatform._('android');
   static const fuchsia = UpdatePlatform._('fuchsia');
   static const ios = UpdatePlatform._('ios');

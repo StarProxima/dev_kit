@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import '../fetcher/update_config_fetcher_base.dart';
+import '../fetcher/update_config_fetcher.dart';
 import '../fetcher/update_config_source_fetcher.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/update_result/update_result.dart';
@@ -25,7 +25,7 @@ abstract interface class UpdateController {
   Stream<void> get onFetch;
 
   factory UpdateController({
-    List<UpdateConfigFetcherBase> fetchers =
+    List<UpdateConfigFetcher> fetchers =
         UpdateConfigSourceFetcher.defaultFetchers,
   }) =>
       UpdateControllerImpl(fetchers: fetchers);

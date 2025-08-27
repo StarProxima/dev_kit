@@ -16,10 +16,6 @@ class UpdateSearchConfig {
   final UpdateViewTarget? displayTarget;
   final UpdateLocale? locale;
 
-  /// Not used for search, but used for data and interpolation.
-  final String? appName;
-  final String? appPackageName;
-
   /// Uses for calculate rule date and delay compliance.
   final DateTime? currentDate;
   final DateTime? localReleaseDate;
@@ -34,6 +30,10 @@ class UpdateSearchConfig {
   /// From 0.0 to 1.0, uses for calculate user rollout compliance.
   final double? rolloutPointer;
 
+  /// Not used for search, but used for store app data and interpolation.
+  final String? appName;
+  final String? appPackageName;
+
   /// Custom data for search, checks for matches in the customData in rule.
   final Map<String, dynamic>? customData;
 
@@ -43,14 +43,14 @@ class UpdateSearchConfig {
     this.localVersion,
     this.displayTarget,
     this.locale,
-    this.appName,
-    this.appPackageName,
     this.currentDate,
     this.localReleaseDate,
     this.updateReleaseDate,
     this.appStatus,
     this.segmentationPointer,
     this.rolloutPointer,
+    this.appName,
+    this.appPackageName,
     this.customData,
   });
 
@@ -60,14 +60,14 @@ class UpdateSearchConfig {
     Version? localVersion,
     UpdateViewTarget? displayTarget,
     UpdateLocale? locale,
-    String? appName,
-    String? appPackageName,
     DateTime? currentDate,
     DateTime? localReleaseDate,
     DateTime? updateReleaseDate,
     AppStatus? appStatus,
     double? segmentationPointer,
     double? rolloutPointer,
+    String? appName,
+    String? appPackageName,
     Map<String, dynamic>? customData,
   }) =>
       UpdateSearchConfig(
@@ -76,14 +76,14 @@ class UpdateSearchConfig {
         localVersion: localVersion ?? this.localVersion,
         displayTarget: displayTarget ?? this.displayTarget,
         locale: locale ?? this.locale,
-        appName: appName ?? this.appName,
-        appPackageName: appPackageName ?? this.appPackageName,
         currentDate: currentDate ?? this.currentDate,
         localReleaseDate: localReleaseDate ?? this.localReleaseDate,
         updateReleaseDate: updateReleaseDate ?? this.updateReleaseDate,
         appStatus: appStatus ?? this.appStatus,
         segmentationPointer: segmentationPointer ?? this.segmentationPointer,
         rolloutPointer: rolloutPointer ?? this.rolloutPointer,
+        appName: appName ?? this.appName,
+        appPackageName: appPackageName ?? this.appPackageName,
         customData: Mergeable.mergeCustomData(this.customData, customData),
       );
 }

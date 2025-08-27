@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'update_entity.dart';
 
 @immutable
-class AppStatus extends UpdateEntityName {
+base class AppStatus extends UpdateEntityName {
   const AppStatus._(super._name);
 
   const factory AppStatus.custom(String name) = AppStatus._;

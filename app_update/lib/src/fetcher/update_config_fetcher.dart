@@ -9,39 +9,44 @@ import 'package:yaml/yaml.dart';
 import '../parser/common.dart';
 import '../parser/update_config_parser.dart';
 import '../shared/models/update/update_config.dart';
-import 'update_config_fetcher_base.dart';
 
-class UpdateConfigFetcher implements UpdateConfigFetcherBase {
+/// Базовый класс для фетчера конфига
+///
+/// Дает интерфейс [fetch]
+/// и предоставляет конструкторы с дефолтной реализацией.
+interface class UpdateConfigFetcher {
   final UpdateConfigParser _updateConfigParser;
+  final FutureOr<Map<String, dynamic>> Function()? _fetchRawConfig;
+  final FutureOr<UpdateConfig> Function()? _fetchConfig;
 
-  final Future<Map<String, dynamic>> Function()? _fetchRawConfig;
-  final Future<UpdateConfig> Function()? _fetchConfig;
+  factory UpdateConfigFetcher.config(UpdateConfig config) =>
+      UpdateConfigFetcher.custom(
+        () => config,
+      );
 
   const UpdateConfigFetcher.custom(
-    Future<UpdateConfig> Function() fetchConfig, {
-    UpdateConfigParser? updateConfigParser,
-  })  : _fetchConfig = fetchConfig,
+    FutureOr<UpdateConfig> Function() fetchConfig,
+  )   : _fetchConfig = fetchConfig,
         _fetchRawConfig = null,
-        _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
+        _updateConfigParser = const UpdateConfigParser();
 
   const UpdateConfigFetcher.customRaw(
-    Future<Map<String, dynamic>> Function() fetchRawConfig, {
+    FutureOr<Map<String, dynamic>> Function() fetchRawConfig, {
     UpdateConfigParser? updateConfigParser,
   })  : _fetchRawConfig = fetchRawConfig,
         _fetchConfig = null,
         _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
 
-  factory UpdateConfigFetcher.byUrl({required Uri uri}) =>
-      UpdateConfigFetcher.customRaw(
+  factory UpdateConfigFetcher.byUrl(Uri uri) => UpdateConfigFetcher.customRaw(
         () => _defaultFetchByUrl(uri),
       );
 
-  factory UpdateConfigFetcher.byFile({required File file}) =>
+  factory UpdateConfigFetcher.byFile(File file) =>
       UpdateConfigFetcher.customRaw(
         () => _defaultFetchByFile(file),
       );
 
-  @override
+  /// Fetch UpdateConfig
   Future<UpdateConfig> fetch({
     required Locale locale,
     required PackageInfo packageInfo,

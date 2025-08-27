@@ -5,8 +5,8 @@ import '../shared/entities/update_source.dart';
 
 // Не тестим, т.к. внешнее апи.
 // coverage:ignore-file
-class UpdateSourceSupportChecker {
-  UpdateSourceSupportChecker();
+class UpdateSupportedSourcesChecker {
+  UpdateSupportedSourcesChecker();
 
   Source _sourceFromStoreChecker = Source.UNKNOWN;
 
@@ -40,7 +40,7 @@ class UpdateSourceSupportChecker {
   }
 }
 
-class UpdateSourceSupportCheckerNoOp implements UpdateSourceSupportChecker {
+class UpdateSourceSupportCheckerNoOp implements UpdateSupportedSourcesChecker {
   @override
   Future<void> init() async {}
 

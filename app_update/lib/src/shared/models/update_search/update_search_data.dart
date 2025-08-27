@@ -14,10 +14,6 @@ class UpdateSearchData {
   final UpdateViewTarget displayTarget;
   final UpdateLocale locale;
 
-  /// Not used for search, but used for data and interpolation.
-  final String appName;
-  final String appPackageName;
-
   /// Null for search in app_settings_rules.
   final AppStatus? appStatus;
 
@@ -32,6 +28,10 @@ class UpdateSearchData {
   /// From 0.0 to 1.0, uses for calculate user rollout compliance.
   final double rolloutPointer;
 
+  /// Not used for search, but used for store app data and interpolation.
+  final String appName;
+  final String appPackageName;
+
   /// Custom data for search, checks for matches in the customData in rule.
   final Map<String, dynamic>? customData;
 
@@ -40,8 +40,6 @@ class UpdateSearchData {
     required this.sources,
     required this.localVersion,
     required this.displayTarget,
-    required this.appName,
-    required this.appPackageName,
     required this.appStatus,
     required this.locale,
     required this.currentDate,
@@ -49,6 +47,8 @@ class UpdateSearchData {
     required this.updateReleaseDate,
     required this.segmentationPointer,
     required this.rolloutPointer,
+    required this.appName,
+    required this.appPackageName,
     required this.customData,
   });
 
@@ -58,14 +58,14 @@ class UpdateSearchData {
     Version? localVersion,
     UpdateViewTarget? displayTarget,
     UpdateLocale? locale,
-    String? appName,
-    String? appPackageName,
     AppStatus? appStatus,
     DateTime? currentDate,
     DateTime? localReleaseDate,
     DateTime? updateReleaseDate,
     double? segmentationPointer,
     double? rolloutPointer,
+    String? appName,
+    String? appPackageName,
     Map<String, dynamic>? customData,
   }) =>
       UpdateSearchData(
@@ -73,8 +73,6 @@ class UpdateSearchData {
         sources: sources ?? this.sources,
         localVersion: localVersion ?? this.localVersion,
         displayTarget: displayTarget ?? this.displayTarget,
-        appName: appName ?? this.appName,
-        appPackageName: appPackageName ?? this.appPackageName,
         locale: locale ?? this.locale,
         appStatus: appStatus ?? this.appStatus,
         currentDate: currentDate ?? this.currentDate,
@@ -82,6 +80,8 @@ class UpdateSearchData {
         updateReleaseDate: updateReleaseDate ?? this.updateReleaseDate,
         segmentationPointer: segmentationPointer ?? this.segmentationPointer,
         rolloutPointer: rolloutPointer ?? this.rolloutPointer,
+        appName: appName ?? this.appName,
+        appPackageName: appPackageName ?? this.appPackageName,
         customData: Mergeable.mergeCustomData(this.customData, customData),
       );
 }

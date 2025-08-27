@@ -9,7 +9,7 @@ import 'update_platform.dart';
 import 'update_source_name.dart';
 
 @immutable
-class UpdateSource extends UpdateEntityBase {
+base class UpdateSource extends UpdateEntity {
   static const googlePlay = UpdateSource._(
     UpdateSourceName.googlePlay,
     platforms: [UpdatePlatform.android],

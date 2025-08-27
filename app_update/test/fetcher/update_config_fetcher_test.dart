@@ -43,7 +43,6 @@ void main() {
         final customParser = MockUpdateConfigParser();
         final fetcher = UpdateConfigFetcher.custom(
           () async => const UpdateConfig(),
-          updateConfigParser: customParser,
         );
 
         expect(fetcher, isA<UpdateConfigFetcher>());
@@ -122,7 +121,7 @@ app_settings:
 releases: []
         ''');
 
-        final fetcher = UpdateConfigFetcher.byFile(file: testFile);
+        final fetcher = UpdateConfigFetcher.byFile(testFile);
 
         // Act
         final result = await fetcher.fetch(
@@ -143,7 +142,7 @@ releases: []
         final testFile = File('${tempDir.path}/bad_config.yaml');
         await testFile.writeAsString('invalid_yaml_content: [');
 
-        final fetcher = UpdateConfigFetcher.byFile(file: testFile);
+        final fetcher = UpdateConfigFetcher.byFile(testFile);
 
         // Act & Assert
         expect(
@@ -187,7 +186,7 @@ app_settings:
 releases: []
         ''');
 
-        final fetcher = UpdateConfigFetcher.byUrl(uri: testFile.uri);
+        final fetcher = UpdateConfigFetcher.byUrl(testFile.uri);
 
         // Act
         final result = await fetcher.fetch(

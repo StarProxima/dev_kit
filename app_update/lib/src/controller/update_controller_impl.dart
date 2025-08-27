@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../fetcher/update_config_fetcher_base.dart';
+import '../fetcher/update_config_fetcher.dart';
 import '../fetcher/update_config_fetcher_coordinator.dart';
 import '../fetcher/update_config_source_fetcher.dart';
 import '../linker/update_inker.dart';
@@ -12,7 +12,7 @@ import '../resolver/update_resolver.dart';
 import '../resolver/update_rule_resolver.dart';
 import '../searcher/update_search_data_defaulter.dart';
 import '../searcher/update_searcher.dart';
-import '../searcher/update_source_support_checker.dart';
+import '../searcher/update_supported_sources_checker.dart';
 import '../shared/models/release/update.dart';
 import '../shared/models/release/update_data.dart';
 import '../shared/models/update_result/update_result.dart';
@@ -24,7 +24,7 @@ class UpdateControllerImpl implements UpdateController {
   // State
 
   @protected
-  final List<UpdateConfigFetcherBase> fetchers;
+  final List<UpdateConfigFetcher> fetchers;
   @protected
   late PackageInfo packageInfo;
   @protected
@@ -43,7 +43,7 @@ class UpdateControllerImpl implements UpdateController {
   @protected
   final contentInterpolator = const UpdateContentInterpolator();
   @protected
-  final sourceSupportChecker = UpdateSourceSupportChecker();
+  final sourceSupportChecker = UpdateSupportedSourcesChecker();
   @protected
   late final searchDataDefaulter = UpdateSearchDataDefaulter(
     updateSourceChecker: sourceSupportChecker,

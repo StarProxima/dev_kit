@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 @immutable
-abstract class UpdateEntityName extends UpdateEntityBase {
+abstract base class UpdateEntityName extends UpdateEntity {
   final String _name;
 
   String get name => _name.replaceAll(' ', '').toLowerCase();
@@ -15,8 +15,8 @@ abstract class UpdateEntityName extends UpdateEntityBase {
 }
 
 @immutable
-abstract class UpdateEntityBase {
-  const UpdateEntityBase();
+abstract base class UpdateEntity {
+  const UpdateEntity();
 
   List<Object?> get params;
 

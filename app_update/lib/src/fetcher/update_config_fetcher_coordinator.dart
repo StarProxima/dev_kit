@@ -6,9 +6,10 @@ import '../default_rules/default_update_config.dart';
 import '../searcher/update_search_data_defaulter.dart';
 import '../shared/models/update/update_config.dart';
 import '../shared/models/update_search/update_search_config.dart';
-import 'update_config_fetcher_base.dart';
+import 'update_config_fetcher.dart';
 import 'update_config_source_fetcher.dart';
 
+/// Координатор фетчеров
 class UpdateConfigFetcherCoordinator {
   const UpdateConfigFetcherCoordinator({
     required UpdateSearchDataDefaulter updateSearchDataDefaulter,
@@ -17,7 +18,7 @@ class UpdateConfigFetcherCoordinator {
   final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
 
   Future<List<UpdateConfig>> fetch({
-    required List<UpdateConfigFetcherBase> fetchers,
+    required List<UpdateConfigFetcher> fetchers,
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
     required bool shouldFetchSourceFetchers,
@@ -59,7 +60,7 @@ class UpdateConfigFetcherCoordinator {
             continue;
           }
 
-        case UpdateConfigFetcherBase():
+        case UpdateConfigFetcher():
           if (!shouldFetchFerchers) continue;
 
           final config = await fetcher.fetch(

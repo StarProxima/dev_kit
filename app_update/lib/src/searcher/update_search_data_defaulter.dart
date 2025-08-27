@@ -6,13 +6,13 @@ import '../shared/entities/update_platform.dart';
 import '../shared/entities/update_view_target.dart';
 import '../shared/models/update_search/update_search_config.dart';
 import '../shared/models/update_search/update_search_data.dart';
-import 'update_source_support_checker.dart';
+import 'update_supported_sources_checker.dart';
 
 class UpdateSearchDataDefaulter {
-  final UpdateSourceSupportChecker _updateSourceChecker;
+  final UpdateSupportedSourcesChecker _updateSourceChecker;
 
   const UpdateSearchDataDefaulter({
-    required UpdateSourceSupportChecker updateSourceChecker,
+    required UpdateSupportedSourcesChecker updateSourceChecker,
   }) : _updateSourceChecker = updateSourceChecker;
 
   UpdateSearchData getSearchDataWithDefaults({

@@ -13,9 +13,9 @@ import '../shared/models/update_rule/update_rule_config.dart';
 import 'source_fetchers/app_store_fetcher.dart';
 import 'source_fetchers/google_play_fetcher.dart';
 import 'source_fetchers/ru_store_fetcher.dart';
-import 'update_config_fetcher_base.dart';
+import 'update_config_fetcher.dart';
 
-abstract class UpdateConfigSourceFetcher extends UpdateConfigFetcherBase {
+abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
   const UpdateConfigSourceFetcher();
 
   static const defaultFetchers = [
