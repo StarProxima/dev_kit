@@ -1,5 +1,6 @@
 import 'update_entity.dart';
 
+// ignore: prefer-overriding-parent-equality
 base class UpdateDate extends UpdateEntityName {
   static const any = UpdateDate(null, name: 'any');
   static const localReleaseDate = UpdateDate(null, name: r'$localReleaseDate');

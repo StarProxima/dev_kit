@@ -11,6 +11,7 @@ final defaultUpdateSettingsRules = [
       skipReleaseDelay: Duration(days: 180),
       skipAllReleasesDelay: Duration(days: 1),
       postponeReleaseDelay: Duration(days: 7),
+      // ignore: no-equal-arguments
       postponeAllReleasesDelay: Duration(days: 1),
       customData: null,
     ),

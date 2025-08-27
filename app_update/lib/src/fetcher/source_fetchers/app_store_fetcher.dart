@@ -20,7 +20,10 @@ class AppStoreFetcher extends UpdateConfigSourceFetcher {
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
-    final appData = await _api.lookupApp(packageInfo.packageName, locale);
+    final appData = await _api.lookupApp(
+      bundleId: packageInfo.packageName,
+      locale: locale,
+    );
     if (appData == null) return null;
 
     final appStoreUrlString = _api.buildAppStoreUrl(appData, locale);

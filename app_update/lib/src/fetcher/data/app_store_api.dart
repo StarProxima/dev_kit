@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-type-casts
+
 import 'dart:convert';
 import 'dart:ui';
 
@@ -8,15 +10,16 @@ class AppStoreApi {
   const AppStoreApi();
 
   /// Получает информацию о приложении по bundle ID
-  /// Использует fallback логику: если не найдено с исходной локалью, убирает страну
-  Future<Map<String, dynamic>?> lookupApp(
-    String bundleId,
-    Locale locale, {
+  /// Использует fallback логику: если не найдено с исходной локалью, убирает страну.
+  Future<Map<String, dynamic>?> lookupApp({
+    required String bundleId,
+    required Locale locale,
     bool shouldUseFallback = true,
   }) async {
     Map<String, dynamic>? appData = await _tryLookupApp(bundleId, locale);
 
     // Если не найдено и есть страна, пробуем без страны (fallback)
+    // ignore: avoid-unused-after-null-check
     if (shouldUseFallback && appData == null && locale.countryCode != null) {
       final fallbackLocale = Locale(locale.languageCode);
       appData = await _tryLookupApp(bundleId, fallbackLocale);
@@ -46,12 +49,15 @@ class AppStoreApi {
     if (resultCount == null || resultCount == 0) return null;
 
     final results = decodedResults['results'] as List?;
-    if (results == null || results.isEmpty) return null;
 
-    return results.first as Map<String, dynamic>;
+    final firstResult = results?.firstOrNull;
+    if (results == null || firstResult == null) return null;
+
+    return firstResult as Map<String, dynamic>;
   }
 
   /// Создает URL для App Store страницы приложения на основе данных из iTunes API.
+  // ignore: prefer-named-parameters
   String? buildAppStoreUrl(Map<String, dynamic> appData, Locale locale) {
     final trackViewUrl = appData['trackViewUrl'] as String?;
     if (trackViewUrl == null) return null;

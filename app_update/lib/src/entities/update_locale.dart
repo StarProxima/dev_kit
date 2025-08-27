@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'update_entity.dart';
 
+// ignore: prefer-overriding-parent-equality
 base class UpdateLocale extends UpdateEntityName {
   static const any = UpdateLocale(null, name: 'any');
 

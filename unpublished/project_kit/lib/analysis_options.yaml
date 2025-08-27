@@ -488,6 +488,7 @@ dart_code_metrics:
         max-number: 2
 
     - member-ordering:
+        reduced-area: true
         order:
           - public-fields
           - protected-fields

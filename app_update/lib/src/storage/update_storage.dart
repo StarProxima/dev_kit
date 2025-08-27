@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-type-casts
+
 import 'dart:convert';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:shared_preferences/shared_preferences.dart';

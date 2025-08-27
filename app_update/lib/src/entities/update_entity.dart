@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 abstract base class UpdateEntityName extends UpdateEntity {
   final String _name;
 
+  // ignore: no-empty-string
   String get name => _name.replaceAll(' ', '').toLowerCase();
 
+  // ignore: match-getter-setter-field-names
   String get originalName => _name;
 
   @override
@@ -20,7 +22,6 @@ abstract base class UpdateEntity {
 
   List<Object?> get params;
 
-  // ignore: member-ordering
   @override
   int get hashCode => Object.hashAll(params);
 

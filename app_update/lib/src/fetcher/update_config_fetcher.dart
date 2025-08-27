@@ -113,6 +113,7 @@ extension YamlMapConverter on YamlMap {
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     nodes.forEach((k, v) {
+      // ignore: avoid-type-casts
       map[(k as YamlScalar).value.toString()] = _convertNode(v.value);
     });
 
