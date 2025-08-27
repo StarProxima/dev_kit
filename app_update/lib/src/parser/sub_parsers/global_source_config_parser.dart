@@ -15,7 +15,7 @@ class GlobalSourceConfigParser {
   const GlobalSourceConfigParser();
 
   GlobalSourceConfig? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 
@@ -40,7 +40,7 @@ class GlobalSourceConfigParser {
 
     // platforms
     final platformsValue = map.remove('platforms');
-    if (platformsValue is! List<dynamic>?) {
+    if (platformsValue is! List<Object?>?) {
       throw const ParseConfigException();
     }
     final platforms = platformsValue

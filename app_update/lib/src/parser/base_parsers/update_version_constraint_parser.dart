@@ -8,7 +8,7 @@ class UpdateVersionConstraintParser {
   const UpdateVersionConstraintParser();
 
   UpdateVersionConstraint? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

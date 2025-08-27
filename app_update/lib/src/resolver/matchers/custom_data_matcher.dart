@@ -15,7 +15,7 @@ class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
   const CustomDataMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchByCustomData(
       rule.customData,

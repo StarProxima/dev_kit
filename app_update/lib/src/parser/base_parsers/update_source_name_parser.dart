@@ -5,7 +5,7 @@ class UpdateSourceNameParser {
   const UpdateSourceNameParser();
 
   UpdateSourceName? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

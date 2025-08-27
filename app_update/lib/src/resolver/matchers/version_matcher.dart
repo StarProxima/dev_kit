@@ -11,7 +11,7 @@ class VersionMatcher extends RuleMatcher {
   const VersionMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final constraints = rule.versionIs ?? [UpdateVersionConstraint.any];
     if (constraints.contains(UpdateVersionConstraint.any)) return true;

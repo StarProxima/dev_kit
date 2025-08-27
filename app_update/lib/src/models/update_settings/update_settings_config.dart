@@ -1,6 +1,6 @@
 import '../../utils/mergeable.dart';
 
-class UpdateSettingsConfig implements Mergeable {
+class UpdateSettingsConfig implements Mergeable<UpdateSettingsConfig> {
   final bool? shouldShow;
   final bool? canSkip;
   final bool? canPostpone;

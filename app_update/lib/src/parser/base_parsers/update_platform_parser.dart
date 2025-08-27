@@ -5,7 +5,7 @@ class UpdatePlatformParser {
   const UpdatePlatformParser();
 
   UpdatePlatform? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

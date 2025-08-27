@@ -104,7 +104,6 @@ linter:
     sort_pub_dependencies: false
 
     # Not relevant for common projects
-    package_api_docs: false
     public_member_api_docs: false
 
 
@@ -305,7 +304,6 @@ linter:
     unnecessary_to_list_in_spreads: true
     unreachable_from_main: true
     unrelated_type_equality_checks: true
-    unsafe_html: true
     use_build_context_synchronously: true
     use_colored_box: true
     use_decorated_box: true
@@ -334,6 +332,8 @@ dart_code_metrics:
     - package:dart_code_metrics_presets/all.yaml
     - package:dart_code_metrics_presets/riverpod.yaml
     - package:dart_code_metrics_presets/flutter_hooks.yaml
+    - package:dart_code_metrics_presets/pub.yaml
+    - package:dart_code_metrics_presets/intl.yaml
 
   rules:
 
@@ -350,7 +350,7 @@ dart_code_metrics:
     - prefer-test-matchers: false
     - avoid-similar-names: false
     - prefer-widget-private-members: false
-  
+    - prefer-class-destructuring: false
 
     # Не думаю, что это читаемей
     - avoid-local-functions: false
@@ -364,6 +364,8 @@ dart_code_metrics:
     - avoid-shadowing: false
     - avoid-mutating-parameters: false
     - avoid-passing-async-when-sync-expected: false
+    - avoid-inferrable-type-arguments: false
+    - avoid-continue: false
 
  
     # Слишком много false positive
@@ -386,7 +388,7 @@ dart_code_metrics:
     - avoid-slow-collection-methods: false
     - prefer-number-format: false
     - map-keys-ordering: false
-  
+    - avoid-unnecessary-constructor: false
 
     # Мб при вводе локализации
     - avoid-non-ascii-symbols: false
@@ -404,14 +406,22 @@ dart_code_metrics:
     # Без файлов экспорта из-за большого кол-ва кастомных сущностей тяжело
     - avoid-barrel-files: false
 
-    # Создание валидаторов
+    # Может быть ок в статических сигнатурах и дефолтных конструкторах
+    - avoid-referencing-subclasses: false
+
+    # При интерполяции ок
+    - no-empty-string:
+        ignore-interpolations: true
+
     - avoid-late-keyword:
+        # Создание валидаторов и полей с зависимостями от других полей
         allow-initialized: true
 
     # Гемор. Плохо работает с ApiWrap
     - prefer-extracting-function-callbacks: false
 
     - avoid-importing-entrypoint-exports:
+        only-in-src: true
         severity: error
 
     - arguments-ordering:
@@ -424,8 +434,9 @@ dart_code_metrics:
           - onSuccess
           - onError
 
-    # Гемор для временно закоменченного кода
+    
     - format-comment:
+        # Гемор для временно закоменченного кода
         only-doc-comments: true
 
     - avoid-long-functions:
@@ -434,11 +445,11 @@ dart_code_metrics:
           - build
           - builder
 
-    - avoid-banned-types:
-        entries:
-        - paths: ['.*\.dart']
-          types: ['^Text$']
-          message: 'Use SText instead'
+    # - avoid-banned-types:
+    #     entries:
+    #     - paths: ['.*\.dart']
+    #       types: ['^Text$']
+    #       message: 'Use SText instead'
 
     - prefer-static-class:
         ignore-annotations:
@@ -448,6 +459,9 @@ dart_code_metrics:
         ignore-names:
           - (.*)Provider
           - use(.*)
+      
+    - prefer-static-method:
+        ignore-public: true
 
     - prefer-correct-error-name:
         allowed-names:
@@ -470,19 +484,39 @@ dart_code_metrics:
         severity: warning
         max-length: 350
 
+    - prefer-named-parameters:
+        max-number: 2
+
     - member-ordering:
+        order:
+          - public-fields
+          - protected-fields
+          - private-fields
+          - constructors
+          - close-method
+          - dispose-method
         widgets-order:
-          - function Object() { [native code] }
-          - named-constructor
-          - const-fields
-          - static-methods
-          - final-fields
-          - var-fields
+          - field-getter-setter
+          - constructors
+          - methods
+          - private-methods
           - init-state-method
           - did-change-dependencies-method
           - did-update-widget-method
           - dispose-method
-          - private-methods
-          - overridden-public-methods
-          - public-methods
           - build-method
+        # widgets-order:
+        #   - function Object() { [native code] }
+        #   - named-constructor
+        #   - const-fields
+        #   - static-methods
+        #   - final-fields
+        #   - var-fields
+        #   - init-state-method
+        #   - did-change-dependencies-method
+        #   - did-update-widget-method
+        #   - dispose-method
+        #   - private-methods
+        #   - overridden-public-methods
+        #   - public-methods
+        #   - build-method

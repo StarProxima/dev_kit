@@ -8,7 +8,7 @@ class UpdateLocaleParser {
   const UpdateLocaleParser();
 
   UpdateLocale? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

@@ -8,7 +8,7 @@ class UpdateDateParser {
   const UpdateDateParser();
 
   UpdateDate? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

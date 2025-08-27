@@ -47,7 +47,7 @@ class UpdateRuleResolver {
   ///   - правило доступно, если rolloutPointer <= прогрессу выката (в диапазоне 0..1)
   /// - segmentation_percent: доля пользователей 0..100; правило доступно, если
   ///   segmentationPointer (0..1) <= segmentation_percent / 100
-  T resolve<T extends Mergeable>({
+  T resolve<T extends Mergeable<T>>({
     required UpdateSearchData searchData,
     required List<UpdateRuleConfig<T>> rules,
   }) {
@@ -57,14 +57,14 @@ class UpdateRuleResolver {
       if (!_isRuleMatched(rule: rule, searchData: searchData)) continue;
 
       final data = rule.data;
-      result = result == null ? data : (result.merge(data) as T);
+      result = result == null ? data : result.merge(data);
     }
 
     if (result == null) throw const ParseConfigException();
     return result;
   }
 
-  bool _isRuleMatched<T extends Mergeable>({
+  bool _isRuleMatched<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData searchData,
   }) {
@@ -75,7 +75,7 @@ class UpdateRuleResolver {
         : rule;
 
     for (final matcher in matchers) {
-      if (!matcher.matches<T>(rule: finalRule, search: searchData)) {
+      if (!matcher.isMatches<T>(rule: finalRule, search: searchData)) {
         return false;
       }
     }

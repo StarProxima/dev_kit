@@ -9,7 +9,7 @@ class TemporalMatcher extends RuleMatcher {
   const TemporalMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchByDateAndRollout(
       ruleDate: rule.date ?? UpdateDate.any,

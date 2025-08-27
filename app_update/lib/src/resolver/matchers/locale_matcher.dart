@@ -9,7 +9,7 @@ class LocaleMatcher extends RuleMatcher {
   const LocaleMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final locales = rule.localeIs ?? [UpdateLocale.any];
     final locale = search.locale;

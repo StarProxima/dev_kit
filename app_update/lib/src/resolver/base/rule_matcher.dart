@@ -13,7 +13,7 @@ abstract class RuleMatcher {
 
   /// Проверяет соответствие правила поисковому контексту.
   /// Generic параметр позволяет одному матчеру работать с разными типами правил.
-  bool matches<T extends Mergeable>({
+  bool isMatches<T extends Mergeable<T>>({
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData search,
   });

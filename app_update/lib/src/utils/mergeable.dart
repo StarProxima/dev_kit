@@ -1,7 +1,9 @@
+// ignore_for_file: prefer-named-parameters
+
 import '../models/update_rule/update_rule_config.dart';
 
-abstract class Mergeable {
-  Mergeable merge(Mergeable other);
+abstract class Mergeable<T extends Mergeable<T>> {
+  T merge(T other);
 
   static Map<String, dynamic>? mergeCustomData(
     Map<String, dynamic>? customData1,
@@ -21,7 +23,7 @@ abstract class Mergeable {
     return customData.isNotEmpty ? customData : null;
   }
 
-  static List<UpdateRuleConfig<T>>? mergeRules<T extends Mergeable>(
+  static List<UpdateRuleConfig<T>>? mergeRules<T extends Mergeable<T>>(
     List<UpdateRuleConfig<T>>? rules1,
     List<UpdateRuleConfig<T>>? rules2, [
     List<UpdateRuleConfig<T>>? rules3,

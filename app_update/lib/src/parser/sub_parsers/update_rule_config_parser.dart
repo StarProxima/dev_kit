@@ -26,9 +26,9 @@ class UpdateRuleConfigParser {
 
   const UpdateRuleConfigParser();
 
-  UpdateRuleConfig<T>? parse<T extends Mergeable>(
-    dynamic value, {
-    required T? Function(dynamic) dataParser,
+  UpdateRuleConfig<T>? parse<T extends Mergeable<T>>(
+    Object? value, {
+    required T? Function(Object? value) dataParser,
   }) {
     if (value == null) return null;
 

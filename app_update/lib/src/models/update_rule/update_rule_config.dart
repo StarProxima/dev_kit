@@ -6,7 +6,7 @@ import '../../entities/update_version_constraint.dart';
 import '../../entities/update_view_target.dart';
 import '../../utils/mergeable.dart';
 
-class UpdateRuleConfig<T extends Mergeable> {
+class UpdateRuleConfig<T extends Mergeable<T>> {
   final List<AppStatus>? appStatusIs;
   final List<UpdateLocale>? localeIs;
   final List<UpdateViewTarget>? viewTargetIs;

@@ -16,13 +16,13 @@ import 'source_fetchers/ru_store_fetcher.dart';
 import 'update_config_fetcher.dart';
 
 abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
-  const UpdateConfigSourceFetcher();
-
   static const defaultFetchers = [
     GooglePlayFetcher(),
     AppStoreFetcher(),
     RuStoreFetcher(),
   ];
+
+  const UpdateConfigSourceFetcher();
 
   UpdateSource get source;
 

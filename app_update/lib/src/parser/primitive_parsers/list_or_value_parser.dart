@@ -3,9 +3,8 @@
 class ListOrValueParser {
   const ListOrValueParser();
 
-  List<dynamic>? parse(
-    // ignore: avoid-dynamic
-    dynamic value,
+  List<Object?>? parse(
+    Object? value,
   ) {
     if (value == null) return null;
 

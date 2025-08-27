@@ -3,10 +3,8 @@ import '../parse_config_exeption.dart';
 class UriParser {
   const UriParser();
 
-  // ignore: prefer-boolean-prefixes
   Uri? parse(
-    // ignore: avoid-dynamic
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

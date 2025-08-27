@@ -9,13 +9,13 @@ import '../models/update_search/update_search_config.dart';
 import 'update_config_fetcher.dart';
 import 'update_config_source_fetcher.dart';
 
-/// Координатор фетчеров
+/// Координатор фетчеров.
 class UpdateConfigFetcherCoordinator {
+  final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
+
   const UpdateConfigFetcherCoordinator({
     required UpdateSearchDataDefaulter updateSearchDataDefaulter,
   }) : _updateSearchDataDefaulter = updateSearchDataDefaulter;
-
-  final UpdateSearchDataDefaulter _updateSearchDataDefaulter;
 
   Future<List<UpdateConfig>> fetch({
     required List<UpdateConfigFetcher> fetchers,
@@ -60,7 +60,7 @@ class UpdateConfigFetcherCoordinator {
             continue;
           }
 
-        case UpdateConfigFetcher():
+        case _:
           if (!shouldFetchFerchers) continue;
 
           final config = await fetcher.fetch(

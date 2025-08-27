@@ -10,7 +10,7 @@ class SourceMatcher extends RuleMatcher {
   const SourceMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     return _matchBySources(
       rule.sourceIs ?? [UpdateSource.any],

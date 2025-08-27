@@ -12,7 +12,7 @@ class UpdateSettingsConfigParser {
   const UpdateSettingsConfigParser();
 
   UpdateSettingsConfig? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

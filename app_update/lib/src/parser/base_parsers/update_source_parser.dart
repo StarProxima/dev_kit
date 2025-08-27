@@ -12,7 +12,7 @@ class UpdateSourceParser {
   const UpdateSourceParser();
 
   UpdateSource? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

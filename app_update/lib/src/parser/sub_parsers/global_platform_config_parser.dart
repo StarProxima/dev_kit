@@ -12,7 +12,7 @@ class GlobalPlatformConfigParser {
   const GlobalPlatformConfigParser();
 
   GlobalPlatformConfig? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

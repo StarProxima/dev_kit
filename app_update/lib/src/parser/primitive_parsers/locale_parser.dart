@@ -5,10 +5,8 @@ import '../parse_config_exeption.dart';
 class LocaleParser {
   const LocaleParser();
 
-  // ignore: prefer-boolean-prefixes
   Locale? parse(
-    // ignore: avoid-dynamic
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

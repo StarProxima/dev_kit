@@ -8,8 +8,7 @@ class VersionConstraintParser {
   const VersionConstraintParser();
 
   VersionConstraint? parse(
-    // ignore: avoid-dynamic
-    dynamic version,
+    Object? version,
   ) {
     if (version == null) return null;
 

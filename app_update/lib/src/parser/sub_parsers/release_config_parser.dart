@@ -18,7 +18,7 @@ class ReleaseConfigParser {
   const ReleaseConfigParser();
 
   ReleaseConfig? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

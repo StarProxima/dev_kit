@@ -26,7 +26,8 @@ class UpdateControllerImpl implements UpdateController {
   @protected
   final List<UpdateConfigFetcher> fetchers;
   @protected
-  late PackageInfo packageInfo;
+  // ignore: avoid-late-keyword
+  late final PackageInfo packageInfo;
   @protected
   final onFetchStreamController = StreamController<void>.broadcast();
   @protected

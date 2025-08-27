@@ -12,7 +12,7 @@ class ReleaseOverrideConfigParser {
   const ReleaseOverrideConfigParser();
 
   ReleaseOverrideConfig? parse(
-    dynamic value,
+    Object? value,
   ) {
     if (value == null) return null;
 

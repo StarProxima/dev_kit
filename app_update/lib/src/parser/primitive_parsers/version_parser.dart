@@ -8,8 +8,7 @@ class VersionParser {
   const VersionParser();
 
   Version? parse(
-    // ignore: avoid-dynamic
-    dynamic version,
+    Object? version,
   ) {
     if (version == null) return null;
 

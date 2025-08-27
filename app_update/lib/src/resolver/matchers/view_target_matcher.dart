@@ -9,7 +9,7 @@ class ViewTargetMatcher extends RuleMatcher {
   const ViewTargetMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final targets = rule.viewTargetIs ?? [UpdateViewTarget.any];
     final target = search.displayTarget;

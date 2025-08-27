@@ -9,7 +9,7 @@ class AppStatusMatcher extends RuleMatcher {
   const AppStatusMatcher();
 
   @override
-  bool matches<T extends Mergeable>(
+  bool isMatches<T extends Mergeable<T>>(
       {required UpdateRuleConfig<T> rule, required UpdateSearchData search}) {
     final ruleStatuses = rule.appStatusIs ?? [AppStatus.any];
     final status = search.appStatus;

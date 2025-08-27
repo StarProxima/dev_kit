@@ -1,7 +1,7 @@
 import '../../entities/app_status.dart';
 import '../../utils/mergeable.dart';
 
-class UpdateAppSettingsConfig implements Mergeable {
+class UpdateAppSettingsConfig implements Mergeable<UpdateAppSettingsConfig> {
   final AppStatus? appStatus;
   final Map<String, dynamic>? customData;
 

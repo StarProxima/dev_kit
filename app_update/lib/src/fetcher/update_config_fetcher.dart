@@ -46,7 +46,7 @@ interface class UpdateConfigFetcher {
         () => _defaultFetchByFile(file),
       );
 
-  /// Fetch UpdateConfig
+  /// Fetch UpdateConfig.
   Future<UpdateConfig> fetch({
     required Locale locale,
     required PackageInfo packageInfo,
@@ -66,6 +66,7 @@ interface class UpdateConfigFetcher {
     final fetchConfig = _fetchConfig;
     if (fetchConfig != null) {
       final config = await fetchConfig();
+
       return config;
     }
 
