@@ -1,11 +1,13 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../models/update_content/update_content_config.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../parse_config_exeption.dart';
 import '../primitive_parsers/string_parser.dart';
 
 class UpdateContentConfigParser {
   static const _stringParser = StringParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const UpdateContentConfigParser();
 
@@ -24,6 +26,10 @@ class UpdateContentConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
+
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
 
     // updateUrl
     final updateUrlValue = map.remove('update_url');
@@ -57,6 +63,15 @@ class UpdateContentConfigParser {
     final updateButtonValue = map.remove('update_button');
     final updateButton = _stringParser.parse(updateButtonValue);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateContentConfigParser,
+        configs: [value],
+      );
+    }
+
     return UpdateContentConfig.byRequired(
       updateUrl: updateUrl,
       title: title,
@@ -66,7 +81,7 @@ class UpdateContentConfigParser {
       skipButton: skipButton,
       postponeButton: postponeButton,
       updateButton: updateButton,
-      customData: map,
+      customData: customData,
     );
   }
 }

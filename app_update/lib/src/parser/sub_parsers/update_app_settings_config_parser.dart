@@ -2,10 +2,12 @@
 
 import '../../models/update_app_settings/update_app_settings_config.dart';
 import '../base_parsers/app_status_parser.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../parse_config_exeption.dart';
 
 class UpdateAppSettingsConfigParser {
   static const _appStatusParser = AppStatusParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const UpdateAppSettingsConfigParser();
 
@@ -25,15 +27,28 @@ class UpdateAppSettingsConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
+
     // appStatus
     final appStatusValue = map.remove('app_status');
     final appStatus = _appStatusParser.parse(
       appStatusValue,
     );
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateAppSettingsConfigParser,
+        configs: [value],
+      );
+    }
+
     return UpdateAppSettingsConfig.byRequired(
       appStatus: appStatus,
-      customData: map,
+      customData: customData,
     );
   }
 }

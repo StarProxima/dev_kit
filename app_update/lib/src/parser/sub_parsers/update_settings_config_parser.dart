@@ -1,6 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../models/update_settings/update_settings_config.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../parse_config_exeption.dart';
 import '../primitive_parsers/bool_parser.dart';
 import '../primitive_parsers/duration_parser.dart';
@@ -8,6 +9,7 @@ import '../primitive_parsers/duration_parser.dart';
 class UpdateSettingsConfigParser {
   static const _boolParser = BoolParser();
   static const _durationParser = DurationParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const UpdateSettingsConfigParser();
 
@@ -26,6 +28,10 @@ class UpdateSettingsConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
+
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
 
     // shouldShow
     final shouldShowValue = map.remove('should_show');
@@ -62,6 +68,15 @@ class UpdateSettingsConfigParser {
     final postponeAllReleasesDelay =
         _durationParser.parse(hours: postponeAllReleasesDelayValue);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateSettingsConfigParser,
+        configs: [value],
+      );
+    }
+
     return UpdateSettingsConfig.byRequired(
       shouldShow: shouldShow,
       canSkip: canSkip,
@@ -70,7 +85,7 @@ class UpdateSettingsConfigParser {
       skipAllReleasesDelay: skipAllReleasesDelay,
       postponeReleaseDelay: postponeReleaseDelay,
       postponeAllReleasesDelay: postponeAllReleasesDelay,
-      customData: map,
+      customData: customData,
     );
   }
 }

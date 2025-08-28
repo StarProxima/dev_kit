@@ -2,6 +2,7 @@
 
 import '../../models/global_platform/global_platform_config.dart';
 import '../../models/global_source/global_source_config.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../base_parsers/update_rules_container_parser.dart';
 import '../base_parsers/update_source_name_parser.dart';
 import '../parse_config_exeption.dart';
@@ -11,6 +12,7 @@ class GlobalSourceConfigParser {
   static const _updateSourceNameParser = UpdateSourceNameParser();
   static const _globalPlatformConfigParser = GlobalPlatformConfigParser();
   static const _updateRulesPartParser = UpdateRulesPartParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const GlobalSourceConfigParser();
 
@@ -29,6 +31,10 @@ class GlobalSourceConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
+
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
 
     // name
     final nameValue = map.remove('name');
@@ -52,13 +58,22 @@ class GlobalSourceConfigParser {
     // rules
     final rules = _updateRulesPartParser.parse(map);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: GlobalSourceConfigParser,
+        configs: [value],
+      );
+    }
+
     return GlobalSourceConfig.byRequired(
       sourceName: name,
       platforms: platforms,
       contentRules: rules.contentRules,
       settingsRules: rules.settingsRules,
       appSettingsRules: rules.appSettingsRules,
-      customData: map,
+      customData: customData,
     );
   }
 }

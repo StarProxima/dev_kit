@@ -1,6 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../models/release_platrform/release_platrform_config.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../base_parsers/update_platform_parser.dart';
 import '../base_parsers/update_rules_container_parser.dart';
 import '../parse_config_exeption.dart';
@@ -10,6 +11,7 @@ class ReleasePlatformConfigParser {
   static const _updatePlatformParser = UpdatePlatformParser();
   static const _releaseOverrideConfigParser = ReleaseOverrideConfigParser();
   static const _updateRulesPartParser = UpdateRulesPartParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const ReleasePlatformConfigParser();
 
@@ -47,6 +49,10 @@ class ReleasePlatformConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
+
     // name
     final nameValue = map.remove('name');
     final name = _updatePlatformParser.parse(nameValue);
@@ -63,13 +69,22 @@ class ReleasePlatformConfigParser {
     // rules
     final rules = _updateRulesPartParser.parse(map);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: ReleasePlatformConfigParser,
+        configs: [value],
+      );
+    }
+
     return ReleasePlatformConfig.byRequired(
       platformName: name,
       releaseOverride: releaseOverride,
       contentRules: rules.contentRules,
       settingsRules: rules.settingsRules,
       appSettingsRules: rules.appSettingsRules,
-      customData: map,
+      customData: customData,
     );
   }
 }

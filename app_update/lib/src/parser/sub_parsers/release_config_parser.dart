@@ -1,6 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../models/release/release_config.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../base_parsers/update_rules_container_parser.dart';
 import '../parse_config_exeption.dart';
 import '../primitive_parsers/date_time_parser.dart';
@@ -14,6 +15,7 @@ class ReleaseConfigParser {
   static const _releaseSourceConfigParser = ReleaseSourceConfigParser();
   static const _listOrValueParser = ListOrValueParser();
   static const _updateRulesPartParser = UpdateRulesPartParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const ReleaseConfigParser();
 
@@ -32,6 +34,10 @@ class ReleaseConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
+
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
 
     // version
     final versionValue = map.remove('version');
@@ -59,6 +65,15 @@ class ReleaseConfigParser {
     // rules
     final rules = _updateRulesPartParser.parse(map);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: ReleaseConfigParser,
+        configs: [value],
+      );
+    }
+
     return ReleaseConfig.byRequired(
       version: version,
       date: date,
@@ -66,7 +81,7 @@ class ReleaseConfigParser {
       contentRules: rules.contentRules,
       settingsRules: rules.settingsRules,
       appSettingsRules: rules.appSettingsRules,
-      customData: map,
+      customData: customData,
     );
   }
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
 import '../../models/release/release_override_config.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../parse_config_exeption.dart';
 import '../primitive_parsers/date_time_parser.dart';
 import '../primitive_parsers/version_parser.dart';
@@ -8,6 +9,7 @@ import '../primitive_parsers/version_parser.dart';
 class ReleaseOverrideConfigParser {
   static const _versionParser = VersionParser();
   static const _dateTimeParser = DateTimeParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const ReleaseOverrideConfigParser();
 
@@ -27,6 +29,10 @@ class ReleaseOverrideConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
+
     // version
     final versionValue = map.remove('version');
     final version = _versionParser.parse(versionValue);
@@ -35,10 +41,19 @@ class ReleaseOverrideConfigParser {
     final dateValue = map.remove('date');
     final date = _dateTimeParser.parse(dateValue);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: ReleaseOverrideConfigParser,
+        configs: [value],
+      );
+    }
+
     return ReleaseOverrideConfig.byRequired(
       version: version,
       date: date,
-      customData: map,
+      customData: customData,
     );
   }
 }

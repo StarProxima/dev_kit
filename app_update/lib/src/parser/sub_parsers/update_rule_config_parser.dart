@@ -3,6 +3,7 @@
 import '../../models/update_rule/update_rule_config.dart';
 import '../../utils/mergeable.dart';
 import '../base_parsers/app_status_parser.dart';
+import '../base_parsers/custom_params_parser.dart';
 import '../base_parsers/update_date_parser.dart';
 import '../base_parsers/update_locale_parser.dart';
 import '../base_parsers/update_source_parser.dart';
@@ -23,6 +24,7 @@ class UpdateRuleConfigParser {
   static const _listOrValueParser = ListOrValueParser();
   static const _durationParser = DurationParser();
   static const _doubleParser = DoubleParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const UpdateRuleConfigParser();
 
@@ -42,6 +44,10 @@ class UpdateRuleConfigParser {
     }
 
     final map = Map<String, dynamic>.from(value);
+
+    // customData
+    final customParamsValue = map.remove('custom_params');
+    final customData = _customParamsParser.parse(customParamsValue);
 
     // data
     // if not exists, use rule itself as data
@@ -101,6 +107,15 @@ class UpdateRuleConfigParser {
     final segmentationPercent =
         _doubleParser.parse(value: segmentationPercentValue);
 
+    // Проверяем, что не осталось неизвестных параметров
+    if (map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateRuleConfigParser,
+        configs: [value],
+      );
+    }
+
     final config = UpdateRuleConfig<T>.byRequired(
       appStatusIs: appStatusIs,
       localeIs: localeIs,
@@ -112,7 +127,7 @@ class UpdateRuleConfigParser {
       rollout: rollout,
       segmentationPercent: segmentationPercent,
       data: data,
-      customData: map,
+      customData: customData,
     );
 
     return config;
