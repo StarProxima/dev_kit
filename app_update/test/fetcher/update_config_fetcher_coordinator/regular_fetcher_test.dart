@@ -117,7 +117,7 @@ void main() {
           )).thenReturn(setup.createSearchData());
 
       const expectedConfig = UpdateConfig(
-        customData: {'custom_field': 'custom_value'},
+        customParams: {'custom_field': 'custom_value'},
       );
 
       final customFetcher = UpdateConfigFetcher.custom(() => expectedConfig);
@@ -134,7 +134,7 @@ void main() {
       // Assert
       expect(result, hasLength(2));
       expect(result.last, expectedConfig);
-      expect(result.last.customData?['custom_field'], 'custom_value');
+      expect(result.last.customParams?['custom_field'], 'custom_value');
     });
 
     test('обрабатывает fetcher из файла', () async {

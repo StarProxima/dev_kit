@@ -175,7 +175,7 @@ void main() {
       for (int i = 0; i < fetcherCount; i++) {
         final config = UpdateConfig(
           releases: [setup.createReleaseConfig('1.0.$i')],
-          customData: {'index': i},
+          customParams: {'index': i},
         );
         fetchers.add(setup.createSimpleFetcher(config));
       }
@@ -196,7 +196,7 @@ void main() {
       final nonDefaultConfigs = result.skip(1);
       int expectedIndex = 0;
       for (final config in nonDefaultConfigs) {
-        expect(config.customData?['index'], expectedIndex);
+        expect(config.customParams?['index'], expectedIndex);
         expectedIndex++;
       }
     });
@@ -210,7 +210,7 @@ void main() {
               packageInfo: any(named: 'packageInfo'),
             )).thenReturn(setup.createSearchData());
 
-        const validConfig = UpdateConfig(customData: {'valid': true});
+        const validConfig = UpdateConfig(customParams: {'valid': true});
         final validFetcher = setup.createSimpleFetcher(validConfig);
 
         // Fetcher который бросает UnimplementedError
@@ -246,8 +246,8 @@ void main() {
 
     test('обрабатывает кастомные источники с одинаковыми именами', () async {
       // Arrange
-      const config1 = UpdateConfig(customData: {'source': 1});
-      const config2 = UpdateConfig(customData: {'source': 2});
+      const config1 = UpdateConfig(customParams: {'source': 1});
+      const config2 = UpdateConfig(customParams: {'source': 2});
 
       const customSource1 = UpdateSource.custom(
         UpdateSourceName.custom('custom'),
@@ -291,8 +291,8 @@ void main() {
 
       // Assert
       expect(result, hasLength(3)); // default + 2 configs
-      expect(result[1].customData?['source'], 1);
-      expect(result[2].customData?['source'], 2);
+      expect(result[1].customParams?['source'], 1);
+      expect(result[2].customParams?['source'], 2);
     });
 
     test('правильно обрабатывает очень длинные списки источников', () async {

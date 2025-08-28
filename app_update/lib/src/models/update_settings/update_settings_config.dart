@@ -8,7 +8,7 @@ class UpdateSettingsConfig implements Mergeable<UpdateSettingsConfig> {
   final Duration? skipAllReleasesDelay;
   final Duration? postponeReleaseDelay;
   final Duration? postponeAllReleasesDelay;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateSettingsConfig({
     this.shouldShow,
@@ -18,7 +18,7 @@ class UpdateSettingsConfig implements Mergeable<UpdateSettingsConfig> {
     this.skipAllReleasesDelay,
     this.postponeReleaseDelay,
     this.postponeAllReleasesDelay,
-    this.customData,
+    this.customParams,
   });
 
   const UpdateSettingsConfig.byRequired({
@@ -29,7 +29,7 @@ class UpdateSettingsConfig implements Mergeable<UpdateSettingsConfig> {
     required this.skipAllReleasesDelay,
     required this.postponeReleaseDelay,
     required this.postponeAllReleasesDelay,
-    required this.customData,
+    required this.customParams,
   });
 
   @override
@@ -45,6 +45,7 @@ class UpdateSettingsConfig implements Mergeable<UpdateSettingsConfig> {
             other.postponeReleaseDelay ?? postponeReleaseDelay,
         postponeAllReleasesDelay:
             other.postponeAllReleasesDelay ?? postponeAllReleasesDelay,
-        customData: Mergeable.mergeCustomData(customData, other.customData),
+        customParams:
+            Mergeable.mergecustomParams(customParams, other.customParams),
       );
 }

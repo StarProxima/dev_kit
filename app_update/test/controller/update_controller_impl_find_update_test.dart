@@ -504,9 +504,9 @@ void main() {
 
         // Проверяем что релиз 2.0.2 с кастомными данными может быть найден
         if (result.update!.version == Version.parse('2.0.2')) {
-          expect(result.update!.customData, isNotNull);
-          expect(result.update!.customData!['release_type'], 'feature');
-          expect(result.update!.customData!['priority'], 'high');
+          expect(result.update!.customParams, isNotNull);
+          expect(result.update!.customParams!['release_type'], 'feature');
+          expect(result.update!.customParams!['priority'], 'high');
         }
       });
     });

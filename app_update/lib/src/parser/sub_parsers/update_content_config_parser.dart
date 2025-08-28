@@ -27,9 +27,9 @@ class UpdateContentConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customData
+    // customParams
     final customParamsValue = map.remove('custom_params');
-    final customData = _customParamsParser.parse(customParamsValue);
+    final customParams = _customParamsParser.parse(customParamsValue);
 
     // updateUrl
     final updateUrlValue = map.remove('update_url');
@@ -81,7 +81,7 @@ class UpdateContentConfigParser {
       skipButton: skipButton,
       postponeButton: postponeButton,
       updateButton: updateButton,
-      customData: customData,
+      customParams: customParams,
     );
   }
 }

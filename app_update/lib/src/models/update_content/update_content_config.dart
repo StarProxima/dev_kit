@@ -9,7 +9,7 @@ class UpdateContentConfig implements Mergeable<UpdateContentConfig> {
   final String? skipButton;
   final String? postponeButton;
   final String? updateButton;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateContentConfig({
     this.updateUrl,
@@ -20,7 +20,7 @@ class UpdateContentConfig implements Mergeable<UpdateContentConfig> {
     this.skipButton,
     this.postponeButton,
     this.updateButton,
-    this.customData,
+    this.customParams,
   });
 
   const UpdateContentConfig.byRequired({
@@ -32,7 +32,7 @@ class UpdateContentConfig implements Mergeable<UpdateContentConfig> {
     required this.skipButton,
     required this.postponeButton,
     required this.updateButton,
-    required this.customData,
+    required this.customParams,
   });
 
   @override
@@ -46,6 +46,7 @@ class UpdateContentConfig implements Mergeable<UpdateContentConfig> {
         skipButton: other.skipButton ?? skipButton,
         postponeButton: other.postponeButton ?? postponeButton,
         updateButton: other.updateButton ?? updateButton,
-        customData: Mergeable.mergeCustomData(customData, other.customData),
+        customParams:
+            Mergeable.mergecustomParams(customParams, other.customParams),
       );
 }

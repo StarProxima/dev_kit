@@ -7,7 +7,7 @@ import 'helpers/resolver_test_helpers.dart';
 // ignore_for_file: unnecessary_raw_strings
 
 void main() {
-  group('UpdateRuleResolver - CustomData matching', () {
+  group('UpdateRuleResolver - customParams matching', () {
     const resolver = UpdateRuleResolver();
 
     test('Пустое правило или null в правиле — всегда true', () {
@@ -398,7 +398,7 @@ void main() {
     });
 
     test('NEW: кастомные матчеры потребляют свои поля', () {
-      // Создаем resolver с InstallDateMatcher ПЕРЕД CustomDataMatcher
+      // Создаем resolver с InstallDateMatcher ПЕРЕД customParamsMatcher
       const customResolver = UpdateRuleResolver(
         matchers: [
           ViewTargetMatcher(),
@@ -407,8 +407,8 @@ void main() {
           VersionMatcher(),
           AppStatusMatcher(),
           TemporalMatcher(),
-          InstallDateMatcher(), // ПЕРЕД CustomDataMatcher
-          CustomDataMatcher(),
+          InstallDateMatcher(), // ПЕРЕД customParamsMatcher
+          CustomParamsMatcher(),
         ],
       );
 
@@ -418,13 +418,13 @@ void main() {
           custom: const {
             'min_delay_after_app_install_hours':
                 24, // Поле для InstallDateMatcher
-            'env_is': 'prod', // Поле для CustomDataMatcher
+            'env_is': 'prod', // Поле для customParamsMatcher
           },
         ),
       ];
 
       // InstallDateMatcher должен обработать и удалить свое поле,
-      // затем CustomDataMatcher увидит только env_is и пропустит правило
+      // затем customParamsMatcher увидит только env_is и пропустит правило
       final currentDate = DateTime.now();
       final installDate =
           currentDate.subtract(const Duration(hours: 48)); // 48 часов назад

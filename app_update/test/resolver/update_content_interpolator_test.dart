@@ -26,7 +26,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'Test App',
           appPackageName: 'com.test.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -37,7 +37,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.buildInterpolateData(
@@ -75,7 +75,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'App',
           appPackageName: 'com.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -86,7 +86,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.buildInterpolateData(
@@ -114,7 +114,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'App',
           appPackageName: 'com.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -125,7 +125,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.buildInterpolateData(
@@ -151,7 +151,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update {appName}',
-          customData: {
+          customParams: {
             'custom_field': 'App: {appName}, Version: {updateVersion}',
           },
         );
@@ -172,7 +172,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'My App',
           appPackageName: 'com.myapp',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -183,7 +183,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.interpolate(
@@ -204,7 +204,7 @@ void main() {
           'https://placeholder.com',
         );
         expect(
-          result.customData?['custom_field'],
+          result.customParams?['custom_field'],
           'App: My App, Version: 2.1.5',
         );
       });
@@ -219,7 +219,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update Now',
-          customData: {'field': 'value'},
+          customParams: {'field': 'value'},
         );
 
         final searchData = UpdateSearchData(
@@ -238,7 +238,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'App',
           appPackageName: 'com.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -249,7 +249,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.interpolate(
@@ -263,7 +263,7 @@ void main() {
         expect(result.releaseNotes, 'No variables here');
         expect(result.updateButton, 'Update Now');
         expect(result.updateUrl.toString(), 'https://example.com');
-        expect(result.customData?['field'], 'value');
+        expect(result.customParams?['field'], 'value');
       });
 
       test('обрабатывает частичную интерполяцию', () {
@@ -276,7 +276,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
-          customData: null,
+          customParams: null,
         );
 
         final searchData = UpdateSearchData(
@@ -295,7 +295,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'Test App',
           appPackageName: 'com.test',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -306,7 +306,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.interpolate(
@@ -320,7 +320,7 @@ void main() {
         expect(result.releaseNotes, isNull);
         expect(result.updateButton, 'Update');
         expect(result.updateUrl, 'https://example.com');
-        expect(result.customData, isNull);
+        expect(result.customParams, isNull);
       });
 
       test('работает с пустыми и null полями', () {
@@ -333,7 +333,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
-          customData: null,
+          customParams: null,
         );
 
         final searchData = UpdateSearchData(
@@ -352,7 +352,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'App',
           appPackageName: 'com.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -363,7 +363,7 @@ void main() {
           contentRules: [],
           settingsRules: [],
           appSettingsRules: [],
-          customData: null,
+          customParams: null,
         );
 
         final result = interpolator.interpolate(
@@ -377,7 +377,7 @@ void main() {
         expect(result.releaseNotes, '2.0.0');
         expect(result.updateButton, 'Update');
         expect(result.updateUrl.toString(), 'https://example.com');
-        expect(result.customData, isNull);
+        expect(result.customParams, isNull);
       });
     });
   });

@@ -12,7 +12,7 @@ class ReleasePlatformConfig {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const ReleasePlatformConfig({
     required this.platformName,
@@ -20,7 +20,7 @@ class ReleasePlatformConfig {
     this.contentRules,
     this.settingsRules,
     this.appSettingsRules,
-    this.customData,
+    this.customParams,
   });
 
   const ReleasePlatformConfig.byRequired({
@@ -29,7 +29,7 @@ class ReleasePlatformConfig {
     required this.contentRules,
     required this.settingsRules,
     required this.appSettingsRules,
-    required this.customData,
+    required this.customParams,
   });
 
   ReleasePlatformConfig copyWith({
@@ -38,7 +38,7 @@ class ReleasePlatformConfig {
     List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
     List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
     List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
-    Map<String, dynamic>? customData,
+    Map<String, dynamic>? customParams,
   }) =>
       ReleasePlatformConfig.byRequired(
         platformName: platformName ?? this.platformName,
@@ -46,6 +46,7 @@ class ReleasePlatformConfig {
         contentRules: contentRules ?? this.contentRules,
         settingsRules: settingsRules ?? this.settingsRules,
         appSettingsRules: appSettingsRules ?? this.appSettingsRules,
-        customData: Mergeable.mergeCustomData(this.customData, customData),
+        customParams:
+            Mergeable.mergecustomParams(this.customParams, customParams),
       );
 }

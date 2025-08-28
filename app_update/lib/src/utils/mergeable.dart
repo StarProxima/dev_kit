@@ -5,22 +5,22 @@ import '../models/update_rule/update_rule_config.dart';
 abstract class Mergeable<T extends Mergeable<T>> {
   T merge(T other);
 
-  static Map<String, dynamic>? mergeCustomData(
-    Map<String, dynamic>? customData1,
-    Map<String, dynamic>? customData2, [
-    Map<String, dynamic>? customData3,
-    Map<String, dynamic>? customData4,
-    Map<String, dynamic>? customData5,
+  static Map<String, dynamic>? mergecustomParams(
+    Map<String, dynamic>? customParams1,
+    Map<String, dynamic>? customParams2, [
+    Map<String, dynamic>? customParams3,
+    Map<String, dynamic>? customParams4,
+    Map<String, dynamic>? customParams5,
   ]) {
-    final customData = {
-      ...?customData1,
-      ...?customData2,
-      ...?customData3,
-      ...?customData4,
-      ...?customData5,
+    final customParams = {
+      ...?customParams1,
+      ...?customParams2,
+      ...?customParams3,
+      ...?customParams4,
+      ...?customParams5,
     };
 
-    return customData.isNotEmpty ? customData : null;
+    return customParams.isNotEmpty ? customParams : null;
   }
 
   static List<UpdateRuleConfig<T>>? mergeRules<T extends Mergeable<T>>(

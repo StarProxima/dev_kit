@@ -3,22 +3,23 @@ import '../../utils/mergeable.dart';
 
 class UpdateAppSettingsConfig implements Mergeable<UpdateAppSettingsConfig> {
   final AppStatus? appStatus;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateAppSettingsConfig({
     this.appStatus,
-    this.customData,
+    this.customParams,
   });
 
   const UpdateAppSettingsConfig.byRequired({
     required this.appStatus,
-    required this.customData,
+    required this.customParams,
   });
 
   @override
   UpdateAppSettingsConfig merge(covariant UpdateAppSettingsConfig other) =>
       UpdateAppSettingsConfig.byRequired(
         appStatus: other.appStatus ?? appStatus,
-        customData: Mergeable.mergeCustomData(customData, other.customData),
+        customParams:
+            Mergeable.mergecustomParams(customParams, other.customParams),
       );
 }

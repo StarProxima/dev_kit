@@ -8,7 +8,7 @@ class UpdateSettingsData {
   final Duration skipAllReleasesDelay;
   final Duration postponeReleaseDelay;
   final Duration postponeAllReleasesDelay;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateSettingsData({
     required this.shouldShow,
@@ -18,7 +18,7 @@ class UpdateSettingsData {
     required this.skipAllReleasesDelay,
     required this.postponeReleaseDelay,
     required this.postponeAllReleasesDelay,
-    required this.customData,
+    required this.customParams,
   });
 
   factory UpdateSettingsData.fromConfig(UpdateSettingsConfig config) {
@@ -36,7 +36,7 @@ class UpdateSettingsData {
           (throw ArgumentError('postponeReleaseDelay is required')),
       postponeAllReleasesDelay: config.postponeAllReleasesDelay ??
           (throw ArgumentError('postponeAllReleasesDelay is required')),
-      customData: config.customData,
+      customParams: config.customParams,
     );
   }
 }

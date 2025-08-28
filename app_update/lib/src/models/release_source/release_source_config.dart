@@ -13,7 +13,7 @@ class ReleaseSourceConfig {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const ReleaseSourceConfig({
     required this.sourceName,
@@ -22,7 +22,7 @@ class ReleaseSourceConfig {
     this.contentRules,
     this.settingsRules,
     this.appSettingsRules,
-    this.customData,
+    this.customParams,
   });
 
   const ReleaseSourceConfig.byRequired({
@@ -32,6 +32,6 @@ class ReleaseSourceConfig {
     required this.contentRules,
     required this.settingsRules,
     required this.appSettingsRules,
-    required this.customData,
+    required this.customParams,
   });
 }

@@ -11,7 +11,7 @@ class GlobalSourceConfig {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const GlobalSourceConfig({
     required this.sourceName,
@@ -19,7 +19,7 @@ class GlobalSourceConfig {
     this.contentRules,
     this.settingsRules,
     this.appSettingsRules,
-    this.customData,
+    this.customParams,
   });
 
   const GlobalSourceConfig.byRequired({
@@ -28,6 +28,6 @@ class GlobalSourceConfig {
     required this.contentRules,
     required this.settingsRules,
     required this.appSettingsRules,
-    required this.customData,
+    required this.customParams,
   });
 }

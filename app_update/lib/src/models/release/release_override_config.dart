@@ -5,31 +5,31 @@ import '../../utils/mergeable.dart';
 class ReleaseOverrideConfig {
   final Version? version;
   final DateTime? date;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const ReleaseOverrideConfig({
     this.version,
     this.date,
-    this.customData,
+    this.customParams,
   });
 
   const ReleaseOverrideConfig.byRequired({
     required this.version,
     required this.date,
-    required this.customData,
+    required this.customParams,
   });
 
   ReleaseOverrideConfig copyWith({
     Version? version,
     DateTime? date,
-    Map<String, dynamic>? customData,
+    Map<String, dynamic>? customParams,
   }) =>
       ReleaseOverrideConfig(
         version: version ?? this.version,
         date: date ?? this.date,
-        customData: Mergeable.mergeCustomData(
-          this.customData,
-          customData,
+        customParams: Mergeable.mergecustomParams(
+          this.customParams,
+          customParams,
         ),
       );
 }

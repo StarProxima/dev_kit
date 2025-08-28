@@ -35,9 +35,9 @@ class ReleaseConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customData
+    // customParams
     final customParamsValue = map.remove('custom_params');
-    final customData = _customParamsParser.parse(customParamsValue);
+    final customParams = _customParamsParser.parse(customParamsValue);
 
     // version
     final versionValue = map.remove('version');
@@ -81,7 +81,7 @@ class ReleaseConfigParser {
       contentRules: rules.contentRules,
       settingsRules: rules.settingsRules,
       appSettingsRules: rules.appSettingsRules,
-      customData: customData,
+      customParams: customParams,
     );
   }
 }

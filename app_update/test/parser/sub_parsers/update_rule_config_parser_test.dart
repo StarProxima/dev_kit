@@ -92,7 +92,7 @@ void main() {
       );
     });
 
-    test('customData содержит неиспользованные поля', () {
+    test('customParams содержит неиспользованные поля', () {
       const yamlStr = '''
         app_status_is: outdated
         custom_field: 42
@@ -106,7 +106,7 @@ void main() {
           Map<String, dynamic>.of(v as Map<String, dynamic>),
         ),
       );
-      expect(result?.customData, containsPair('custom_field', 42));
+      expect(result?.customParams, containsPair('custom_field', 42));
     });
 
     test('Парсит delay_hours, rollout_hours, segmentation_percent', () {

@@ -39,7 +39,7 @@ class CoordinatorTestSetup {
       rolloutPointer: 0,
       appName: 'Test App',
       appPackageName: 'com.test.app',
-      customData: null,
+      customParams: null,
     );
   }
 
@@ -59,11 +59,11 @@ class CoordinatorTestSetup {
   /// Создает простой UpdateConfig с релизом
   UpdateConfig createSimpleConfig(
     String version, {
-    Map<String, dynamic>? customData,
+    Map<String, dynamic>? customParams,
   }) {
     return UpdateConfig(
       releases: [createReleaseConfig(version)],
-      customData: customData,
+      customParams: customParams,
     );
   }
 
@@ -111,7 +111,7 @@ class CoordinatorTestSetup {
       rolloutPointer: 0,
       appName: 'Test',
       appPackageName: 'com.test',
-      customData: null,
+      customParams: null,
     ));
   }
 }

@@ -19,7 +19,7 @@ class UpdateData {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateData({
     required this.version,
@@ -29,7 +29,7 @@ class UpdateData {
     required this.contentRules,
     required this.settingsRules,
     required this.appSettingsRules,
-    required this.customData,
+    required this.customParams,
   });
 
   UpdateData copyWith({
@@ -40,7 +40,7 @@ class UpdateData {
     List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
     List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
     List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
-    Map<String, dynamic>? customData,
+    Map<String, dynamic>? customParams,
   }) =>
       UpdateData(
         version: version ?? this.version,
@@ -50,7 +50,8 @@ class UpdateData {
         contentRules: contentRules ?? this.contentRules,
         settingsRules: settingsRules ?? this.settingsRules,
         appSettingsRules: appSettingsRules ?? this.appSettingsRules,
-        customData: Mergeable.mergeCustomData(this.customData, customData),
+        customParams:
+            Mergeable.mergecustomParams(this.customParams, customParams),
       );
 }
 
@@ -69,6 +70,6 @@ extension UpdateDataToReleaseConfig on UpdateData {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customData: customData,
+        customParams: customParams,
       );
 }

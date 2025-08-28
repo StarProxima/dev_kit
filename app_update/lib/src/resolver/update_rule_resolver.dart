@@ -4,7 +4,7 @@ import '../parser/parse_config_exeption.dart';
 import '../utils/mergeable.dart';
 import 'base/rule_matcher.dart';
 import 'matchers/app_status_matcher.dart';
-import 'matchers/custom_data_matcher.dart';
+import 'matchers/custom_params_matcher.dart';
 import 'matchers/locale_matcher.dart';
 import 'matchers/source_matcher.dart';
 import 'matchers/temporal_matcher.dart';
@@ -22,7 +22,7 @@ class UpdateRuleResolver {
     VersionMatcher(),
     AppStatusMatcher(),
     TemporalMatcher(),
-    CustomDataMatcher(),
+    CustomParamsMatcher(),
   ];
 
   final List<RuleMatcher> matchers;
@@ -79,9 +79,9 @@ class UpdateRuleResolver {
     required UpdateRuleConfig<T> rule,
     required UpdateSearchData searchData,
   }) {
-    // Делаем копию правила (и customData в частности)
+    // Делаем копию правила (и customParams в частности)
     // чтобы не модифицировать оригинальное правило
-    final finalRule = matchers.any((matcher) => matcher.canUseCustomData)
+    final finalRule = matchers.any((matcher) => matcher.canUseCustomParams)
         ? rule.copyWith()
         : rule;
 

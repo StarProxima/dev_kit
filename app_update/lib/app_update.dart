@@ -85,7 +85,7 @@ export 'src/parser/update_config_parser.dart';
 export 'src/resolver/base/reg_exp_matcher_mixin.dart';
 export 'src/resolver/base/rule_matcher.dart';
 export 'src/resolver/matchers/app_status_matcher.dart';
-export 'src/resolver/matchers/custom_data_matcher.dart';
+export 'src/resolver/matchers/custom_params_matcher.dart';
 export 'src/resolver/matchers/locale_matcher.dart';
 export 'src/resolver/matchers/source_matcher.dart';
 export 'src/resolver/matchers/temporal_matcher.dart';

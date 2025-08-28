@@ -15,7 +15,7 @@ void main() {
       expect(result?.contentRules, isNull);
       expect(result?.settingsRules, isNull);
       expect(result?.appSettingsRules, isNull);
-      expect(result?.customData, isNull);
+      expect(result?.customParams, isNull);
     });
 
     test('Полный набор полей', () {
@@ -39,7 +39,7 @@ void main() {
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
       expect(result?.appSettingsRules, isNotNull);
-      expect(result?.customData, containsPair('custom_field', 42));
+      expect(result?.customParams, containsPair('custom_field', 42));
     });
 
     test('Ошибка при неверном типе', () {

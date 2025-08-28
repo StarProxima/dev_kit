@@ -27,7 +27,7 @@ void main() {
       expect(result?.skipAllReleasesDelay?.inHours, 20);
       expect(result?.postponeReleaseDelay?.inHours, 30);
       expect(result?.postponeAllReleasesDelay?.inHours, 40);
-      expect(result?.customData, containsPair('custom_field', 42));
+      expect(result?.customParams, containsPair('custom_field', 42));
     });
 
     test('Частичный набор полей', () {

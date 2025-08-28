@@ -14,7 +14,7 @@ final defaultUpdateSettingsRules = [
       postponeReleaseDelay: Duration(days: 7),
       // ignore: no-equal-arguments
       postponeAllReleasesDelay: Duration(days: 1),
-      customData: null,
+      customParams: null,
     ),
   ),
   const UpdateRuleConfig(

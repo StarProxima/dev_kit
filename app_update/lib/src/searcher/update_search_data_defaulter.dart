@@ -48,7 +48,7 @@ class UpdateSearchDataDefaulter {
       rolloutPointer: 0,
       appName: packageInfo.appName,
       appPackageName: packageInfo.packageName,
-      customData: null,
+      customParams: null,
     );
 
     final searchData = UpdateSearchData(
@@ -75,7 +75,7 @@ class UpdateSearchDataDefaulter {
       appName: searchConfig.appName ?? defaultSearchData.appName,
       appPackageName:
           searchConfig.appPackageName ?? defaultSearchData.appPackageName,
-      customData: searchConfig.customData ?? defaultSearchData.customData,
+      customParams: searchConfig.customParams ?? defaultSearchData.customParams,
     );
 
     return searchData;

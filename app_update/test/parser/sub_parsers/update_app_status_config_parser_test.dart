@@ -15,7 +15,7 @@ void main() {
       final result = parser.parse(map);
       expect(result, isA<UpdateAppSettingsConfig>());
       expect(result?.appStatus?.name, 'outdated');
-      expect(result?.customData, containsPair('custom_field', 42));
+      expect(result?.customParams, containsPair('custom_field', 42));
     });
 
     test('Ошибка при неверном типе', () {

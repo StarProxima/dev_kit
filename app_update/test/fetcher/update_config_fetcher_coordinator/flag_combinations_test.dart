@@ -201,8 +201,8 @@ void main() {
 
     test('смешанный список с разными флагами - все включены', () async {
       // Arrange
-      const sourceConfig = UpdateConfig(customData: {'type': 'source'});
-      const regularConfig = UpdateConfig(customData: {'type': 'regular'});
+      const sourceConfig = UpdateConfig(customParams: {'type': 'source'});
+      const regularConfig = UpdateConfig(customParams: {'type': 'regular'});
 
       when(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
@@ -222,13 +222,13 @@ void main() {
 
       // Assert
       expect(result, hasLength(3));
-      expect(result[1].customData?['type'], 'source');
-      expect(result[2].customData?['type'], 'regular');
+      expect(result[1].customParams?['type'], 'source');
+      expect(result[2].customParams?['type'], 'regular');
     });
 
     test('смешанный список с разными флагами - только regular', () async {
       // Arrange
-      const regularConfig = UpdateConfig(customData: {'type': 'regular'});
+      const regularConfig = UpdateConfig(customParams: {'type': 'regular'});
       final regularFetcher = setup.createSimpleFetcher(regularConfig);
 
       // Act
@@ -242,7 +242,7 @@ void main() {
 
       // Assert
       expect(result, hasLength(2));
-      expect(result[1].customData?['type'], 'regular');
+      expect(result[1].customParams?['type'], 'regular');
       verifyNever(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
             packageInfo: any(named: 'packageInfo'),

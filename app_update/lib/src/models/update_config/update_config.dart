@@ -11,7 +11,7 @@ class UpdateConfig {
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
   final List<GlobalSourceConfig>? sources;
   final List<ReleaseConfig> releases;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateConfig({
     this.contentRules,
@@ -19,7 +19,7 @@ class UpdateConfig {
     this.appSettingsRules,
     this.sources,
     this.releases = const [],
-    this.customData,
+    this.customParams,
   });
 
   const UpdateConfig.byRequired({
@@ -28,6 +28,6 @@ class UpdateConfig {
     required this.appSettingsRules,
     required this.sources,
     required this.releases,
-    required this.customData,
+    required this.customParams,
   });
 }

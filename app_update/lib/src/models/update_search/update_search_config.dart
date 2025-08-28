@@ -38,8 +38,8 @@ class UpdateSearchConfig {
   final String? appName;
   final String? appPackageName;
 
-  /// Custom data for search, checks for matches in the customData in rule.
-  final Map<String, dynamic>? customData;
+  /// Custom data for search, checks for matches in the customParams in rule.
+  final Map<String, dynamic>? customParams;
 
   const UpdateSearchConfig({
     this.platform,
@@ -57,7 +57,7 @@ class UpdateSearchConfig {
     this.rolloutPointer,
     this.appName,
     this.appPackageName,
-    this.customData,
+    this.customParams,
   });
 
   UpdateSearchConfig copyWith({
@@ -76,7 +76,7 @@ class UpdateSearchConfig {
     double? rolloutPointer,
     String? appName,
     String? appPackageName,
-    Map<String, dynamic>? customData,
+    Map<String, dynamic>? customParams,
   }) =>
       UpdateSearchConfig(
         platform: platform ?? this.platform,
@@ -94,6 +94,7 @@ class UpdateSearchConfig {
         rolloutPointer: rolloutPointer ?? this.rolloutPointer,
         appName: appName ?? this.appName,
         appPackageName: appPackageName ?? this.appPackageName,
-        customData: Mergeable.mergeCustomData(this.customData, customData),
+        customParams:
+            Mergeable.mergecustomParams(this.customParams, customParams),
       );
 }

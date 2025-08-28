@@ -29,7 +29,7 @@ void main() {
       expect(result?.skipButton, 'Пропустить');
       expect(result?.postponeButton, 'Позже');
       expect(result?.updateButton, 'Обновить');
-      expect(result?.customData, containsPair('custom_field', 123));
+      expect(result?.customParams, containsPair('custom_field', 123));
     });
 
     test('Парсинг с частичным набором полей', () {
@@ -42,7 +42,7 @@ void main() {
       expect(result, isA<UpdateContentConfig>());
       expect(result?.title, 'Заголовок');
       expect(result?.description, isNull);
-      expect(result?.customData, containsPair('custom_field', true));
+      expect(result?.customParams, containsPair('custom_field', true));
     });
 
     test('Парсинг null возвращает null', () {

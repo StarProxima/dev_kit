@@ -61,7 +61,7 @@ void main() {
     test('обрабатывает Android с множественными источниками', () async {
       // Arrange
       const googlePlayConfig =
-          UpdateConfig(customData: {'source': 'googlePlay'});
+          UpdateConfig(customParams: {'source': 'googlePlay'});
 
       // Создаем кастомный Android-совместимый источник
       const customAndroidSource = UpdateSource.custom(
@@ -129,7 +129,7 @@ void main() {
         rolloutPointer: 0.9,
         appName: 'Custom App',
         appPackageName: 'com.custom.package',
-        customData: const {'theme': 'dark', 'region': 'eu'},
+        customParams: const {'theme': 'dark', 'region': 'eu'},
       ));
 
       final complexConfig = UpdateSearchConfig(
@@ -142,7 +142,7 @@ void main() {
         appStatus: const AppStatus.custom('updateable'),
         segmentationPointer: 0.75,
         rolloutPointer: 0.9,
-        customData: const {'theme': 'dark', 'region': 'eu'},
+        customParams: const {'theme': 'dark', 'region': 'eu'},
       );
 
       // Act
@@ -361,7 +361,7 @@ void main() {
 
     test('обрабатывает кастомные данные в searchConfig', () async {
       // Arrange
-      final customDataVariants = [
+      final customParamsVariants = [
         <String, dynamic>{},
         {'theme': 'dark'},
         {'region': 'eu', 'language': 'en'},
@@ -371,7 +371,7 @@ void main() {
         },
       ];
 
-      for (final customData in customDataVariants) {
+      for (final customParams in customParamsVariants) {
         when(() => setup.mockDefaulter.getSearchDataWithDefaults(
               searchConfig: any(named: 'searchConfig'),
               packageInfo: any(named: 'packageInfo'),
@@ -391,13 +391,13 @@ void main() {
           rolloutPointer: 0,
           appName: 'Test App',
           appPackageName: 'com.test.app',
-          customData: customData.isEmpty ? null : customData,
+          customParams: customParams.isEmpty ? null : customParams,
         ));
 
         final config = UpdateSearchConfig(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
-          customData: customData.isEmpty ? null : customData,
+          customParams: customParams.isEmpty ? null : customParams,
         );
 
         // Act

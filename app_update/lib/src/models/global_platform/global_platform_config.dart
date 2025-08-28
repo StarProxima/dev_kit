@@ -10,14 +10,14 @@ class GlobalPlatformConfig {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const GlobalPlatformConfig({
     required this.platformName,
     this.contentRules,
     this.settingsRules,
     this.appSettingsRules,
-    this.customData,
+    this.customParams,
   });
 
   const GlobalPlatformConfig.byRequired({
@@ -25,6 +25,6 @@ class GlobalPlatformConfig {
     required this.contentRules,
     required this.settingsRules,
     required this.appSettingsRules,
-    required this.customData,
+    required this.customParams,
   });
 }

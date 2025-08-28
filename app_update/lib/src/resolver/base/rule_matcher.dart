@@ -6,9 +6,9 @@ import '../../models/update_search/update_search_data.dart';
 abstract class RuleMatcher {
   const RuleMatcher();
 
-  /// Может ли матчер использовать и изменять customData правила.
-  /// Если да, то матчер должен удалять из customData обработанные поля.
-  bool get canUseCustomData => false;
+  /// Может ли матчер использовать и изменять customParams правила.
+  /// Если да, то матчер должен удалять из customParams обработанные поля.
+  bool get canUseCustomParams => false;
 
   /// Проверяет соответствие правила поисковому контексту.
   /// Generic параметр позволяет одному матчеру работать с разными типами правил.

@@ -16,7 +16,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
   final Duration? delay;
   final Duration? rollout;
   final double? segmentationPercent;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
   final T data;
 
   const UpdateRuleConfig({
@@ -29,7 +29,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     this.delay,
     this.rollout,
     this.segmentationPercent,
-    this.customData,
+    this.customParams,
     required this.data,
   });
 
@@ -44,7 +44,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     required this.rollout,
     required this.segmentationPercent,
     required this.data,
-    required this.customData,
+    required this.customParams,
   });
 
   UpdateRuleConfig<T> copyWith({
@@ -57,7 +57,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     Duration? delay,
     Duration? rollout,
     double? segmentationPercent,
-    Map<String, dynamic>? customData,
+    Map<String, dynamic>? customParams,
     T? data,
   }) =>
       UpdateRuleConfig.byRequired(
@@ -71,6 +71,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
         rollout: rollout ?? this.rollout,
         segmentationPercent: segmentationPercent ?? this.segmentationPercent,
         data: data ?? this.data,
-        customData: Mergeable.mergeCustomData(this.customData, customData),
+        customParams:
+            Mergeable.mergecustomParams(this.customParams, customParams),
       );
 }

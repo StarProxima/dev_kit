@@ -35,7 +35,7 @@ void main() {
         rolloutPointer: 0,
         appName: 'Test',
         appPackageName: 'com.test',
-        customData: null,
+        customParams: null,
       ));
 
       registerFallbackValue(<UpdateRuleConfig<UpdateAppSettingsConfig>>[]);
@@ -51,7 +51,7 @@ void main() {
         skipButton: 'Skip',
         postponeButton: 'Later',
         updateButton: 'Update',
-        customData: null,
+        customParams: null,
       ));
 
       registerFallbackValue(UpdateData(
@@ -62,7 +62,7 @@ void main() {
         contentRules: [],
         settingsRules: [],
         appSettingsRules: [],
-        customData: null,
+        customParams: null,
       ));
     });
 
@@ -94,7 +94,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'Test App',
           appPackageName: 'com.test.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -117,12 +117,12 @@ void main() {
               data: UpdateAppSettingsConfig(appStatus: AppStatus.active),
             ),
           ],
-          customData: {'test': 'value'},
+          customParams: {'test': 'value'},
         );
 
         const mockAppSettingsConfig = UpdateAppSettingsConfig(
           appStatus: AppStatus.outdated,
-          customData: {'app': 'settings'},
+          customParams: {'app': 'settings'},
         );
 
         const mockContentConfig = UpdateContentConfig(
@@ -154,7 +154,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
-          customData: null,
+          customParams: null,
         );
 
         // Setup mocks
@@ -196,7 +196,7 @@ void main() {
         expect(update.date, DateTime(2024, 10, 10));
         expect(update.sourceName, UpdateSourceName.googlePlay);
         expect(update.platform, UpdatePlatform.android);
-        expect(update.customData?['test'], 'value');
+        expect(update.customParams?['test'], 'value');
 
         // Проверяем что content интерполировался
         expect(update.content.title, 'Update Available - Interpolated');
@@ -215,7 +215,7 @@ void main() {
 
         // Проверяем appSettings
         expect(update.appSettings.appStatus, AppStatus.outdated);
-        expect(update.appSettings.customData?['app'], 'settings');
+        expect(update.appSettings.customParams?['app'], 'settings');
       });
 
       test('не изменяет appStatus если он уже установлен в searchData', () {
@@ -236,7 +236,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'Test App',
           appPackageName: 'com.test.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -261,7 +261,7 @@ void main() {
           appSettingsRules: [
             const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
-          customData: null,
+          customParams: null,
         );
 
         // Setup mocks
@@ -283,7 +283,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
-          customData: null,
+          customParams: null,
         ));
         when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
               searchData: any(named: 'searchData'),
@@ -354,7 +354,7 @@ void main() {
             skipButton: 'Skip',
             postponeButton: 'Later',
             updateButton: 'Update',
-            customData: null,
+            customParams: null,
           );
         });
 
@@ -405,7 +405,7 @@ void main() {
             skipButton: 'Skip',
             postponeButton: 'Later',
             updateButton: 'Update',
-            customData: null,
+            customParams: null,
           );
         });
 
@@ -425,7 +425,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'Test App',
           appPackageName: 'com.test.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -450,7 +450,7 @@ void main() {
           appSettingsRules: [
             const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
-          customData: null,
+          customParams: null,
         );
 
         // Act
@@ -503,7 +503,7 @@ void main() {
     });
 
     group('edge cases', () {
-      test('обрабатывает пустые customData', () {
+      test('обрабатывает пустые customParams', () {
         final searchData = UpdateSearchData(
           platform: UpdatePlatform.android,
           sources: const [UpdateSource.googlePlay],
@@ -520,7 +520,7 @@ void main() {
           rolloutPointer: 0.5,
           appName: 'App',
           appPackageName: 'com.app',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -545,7 +545,7 @@ void main() {
           appSettingsRules: [
             const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
-          customData: null, // null customData
+          customParams: null, // null customParams
         );
 
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
@@ -566,7 +566,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
-          customData: null,
+          customParams: null,
         ));
         when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
               searchData: any(named: 'searchData'),
@@ -595,7 +595,7 @@ void main() {
           searchData: searchData,
         );
 
-        expect(result.update?.customData, isNull);
+        expect(result.update?.customParams, isNull);
       });
 
       test('обрабатывает минимальные конфиги', () {
@@ -615,7 +615,7 @@ void main() {
           rolloutPointer: 0,
           appName: '',
           appPackageName: '',
-          customData: null,
+          customParams: null,
         );
 
         final updateData = UpdateData(
@@ -640,7 +640,7 @@ void main() {
           appSettingsRules: [
             const UpdateRuleConfig(data: UpdateAppSettingsConfig()),
           ],
-          customData: {},
+          customParams: {},
         );
 
         when(() => mockRuleResolver.resolve<UpdateAppSettingsConfig>(
@@ -661,7 +661,7 @@ void main() {
           skipButton: 'Skip',
           postponeButton: 'Later',
           updateButton: 'Update',
-          customData: null,
+          customParams: null,
         ));
         when(() => mockRuleResolver.resolve<UpdateSettingsConfig>(
               searchData: any(named: 'searchData'),
@@ -691,7 +691,7 @@ void main() {
         );
 
         expect(result.update?.version, Version.parse('1.0.1'));
-        expect(result.update?.customData, isEmpty);
+        expect(result.update?.customParams, isEmpty);
         expect(result.searchData?.appName, '');
         expect(result.searchData?.appPackageName, '');
       });

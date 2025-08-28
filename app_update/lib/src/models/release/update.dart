@@ -15,7 +15,7 @@ class Update {
   final UpdateContentData content;
   final UpdateSettingsData settings;
   final UpdateAppSettingsData appSettings;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const Update({
     required this.version,
@@ -26,6 +26,6 @@ class Update {
     required this.content,
     required this.settings,
     required this.appSettings,
-    required this.customData,
+    required this.customParams,
   });
 }

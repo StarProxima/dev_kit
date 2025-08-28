@@ -45,9 +45,9 @@ class UpdateRuleConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customData
+    // customParams
     final customParamsValue = map.remove('custom_params');
-    final customData = _customParamsParser.parse(customParamsValue);
+    final customParams = _customParamsParser.parse(customParamsValue);
 
     // data
     // if not exists, use rule itself as data
@@ -127,7 +127,7 @@ class UpdateRuleConfigParser {
       rollout: rollout,
       segmentationPercent: segmentationPercent,
       data: data,
-      customData: customData,
+      customParams: customParams,
     );
 
     return config;

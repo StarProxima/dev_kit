@@ -9,7 +9,7 @@ class UpdateContentData {
   final String skipButton;
   final String postponeButton;
   final String updateButton;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const UpdateContentData({
     required this.updateUrl,
@@ -20,7 +20,7 @@ class UpdateContentData {
     required this.skipButton,
     required this.postponeButton,
     required this.updateButton,
-    required this.customData,
+    required this.customParams,
   });
 
   factory UpdateContentData.fromConfig(UpdateContentConfig config) {
@@ -39,12 +39,12 @@ class UpdateContentData {
           (throw ArgumentError('postponeButton is required')),
       updateButton: config.updateButton ??
           (throw ArgumentError('updateButton is required')),
-      customData: config.customData,
+      customParams: config.customParams,
     );
   }
 
   UpdateContentData interpolate(Map<String, String> interpolateData) {
-    final interpolatedCustomData = customData?.map(
+    final interpolatedcustomParams = customParams?.map(
       (key, value) => MapEntry(
         key,
         value is String ? _interpolateString(value, interpolateData) : value,
@@ -60,7 +60,7 @@ class UpdateContentData {
       skipButton: _interpolateString(skipButton, interpolateData),
       postponeButton: _interpolateString(postponeButton, interpolateData),
       updateButton: _interpolateString(updateButton, interpolateData),
-      customData: interpolatedCustomData,
+      customParams: interpolatedcustomParams,
     );
 
     return data;

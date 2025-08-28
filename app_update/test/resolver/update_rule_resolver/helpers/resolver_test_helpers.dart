@@ -45,7 +45,7 @@ UpdateSearchData createTestSearchData({
     rolloutPointer: rolloutPointer,
     appName: appName,
     appPackageName: appPackageName,
-    customData: custom,
+    customParams: custom,
   );
 }
 
@@ -78,6 +78,6 @@ UpdateRuleConfig<UpdateContentConfig> createTestRule({
       title: title,
       description: description,
     ),
-    customData: custom,
+    customParams: custom,
   );
 }

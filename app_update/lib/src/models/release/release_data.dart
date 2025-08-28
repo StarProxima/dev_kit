@@ -14,7 +14,7 @@ class ReleaseData {
   final UpdateContentData content;
   final UpdateSettingsData settings;
   final UpdateAppSettingsData appSettings;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const ReleaseData({
     required this.version,
@@ -24,6 +24,6 @@ class ReleaseData {
     required this.content,
     required this.settings,
     required this.appSettings,
-    this.customData,
+    this.customParams,
   });
 }

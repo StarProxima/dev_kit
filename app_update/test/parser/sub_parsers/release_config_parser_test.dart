@@ -51,7 +51,7 @@ void main() {
       expect(result?.contentRules, isNotNull);
       expect(result?.settingsRules, isNotNull);
       expect(result?.appSettingsRules, isNotNull);
-      expect(result?.customData, containsPair('custom_field', 123));
+      expect(result?.customParams, containsPair('custom_field', 123));
     });
 
     test('Парсинг короткого синтаксиса источников', () {

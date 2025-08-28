@@ -29,9 +29,9 @@ class UpdateSettingsConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customData
+    // customParams
     final customParamsValue = map.remove('custom_params');
-    final customData = _customParamsParser.parse(customParamsValue);
+    final customParams = _customParamsParser.parse(customParamsValue);
 
     // shouldShow
     final shouldShowValue = map.remove('should_show');
@@ -85,7 +85,7 @@ class UpdateSettingsConfigParser {
       skipAllReleasesDelay: skipAllReleasesDelay,
       postponeReleaseDelay: postponeReleaseDelay,
       postponeAllReleasesDelay: postponeAllReleasesDelay,
-      customData: customData,
+      customParams: customParams,
     );
   }
 }

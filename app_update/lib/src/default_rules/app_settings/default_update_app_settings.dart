@@ -7,7 +7,7 @@ final defaultUpdateAppSettingsRules = [
   const UpdateRuleConfig(
     data: UpdateAppSettingsConfig.byRequired(
       appStatus: AppStatus.active,
-      customData: null,
+      customParams: null,
     ),
   ),
 ];

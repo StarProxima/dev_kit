@@ -15,7 +15,7 @@ class ReleaseConfig {
   final List<UpdateRuleConfig<UpdateContentConfig>>? contentRules;
   final List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules;
   final List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules;
-  final Map<String, dynamic>? customData;
+  final Map<String, dynamic>? customParams;
 
   const ReleaseConfig({
     required this.version,
@@ -24,7 +24,7 @@ class ReleaseConfig {
     this.contentRules,
     this.settingsRules,
     this.appSettingsRules,
-    this.customData,
+    this.customParams,
   });
 
   const ReleaseConfig.byRequired({
@@ -34,7 +34,7 @@ class ReleaseConfig {
     required this.contentRules,
     required this.settingsRules,
     required this.appSettingsRules,
-    required this.customData,
+    required this.customParams,
   });
 
   ReleaseConfig overrideBy(ReleaseOverrideConfig? overrideData) =>
@@ -45,9 +45,9 @@ class ReleaseConfig {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customData: Mergeable.mergeCustomData(
-          customData,
-          overrideData?.customData,
+        customParams: Mergeable.mergecustomParams(
+          customParams,
+          overrideData?.customParams,
         ),
       );
 }

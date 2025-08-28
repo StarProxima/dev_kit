@@ -11,7 +11,7 @@ ReleaseConfig createRelease({
   List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
   List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
   List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
-  Map<String, dynamic>? customData,
+  Map<String, dynamic>? customParams,
 }) {
   return ReleaseConfig(
     version: version,
@@ -20,7 +20,7 @@ ReleaseConfig createRelease({
     contentRules: contentRules,
     settingsRules: settingsRules,
     appSettingsRules: appSettingsRules,
-    customData: customData,
+    customParams: customParams,
   );
 }
 
@@ -100,7 +100,7 @@ UpdateConfig createUpdateConfig({
   List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
   List<GlobalSourceConfig>? sources,
   List<ReleaseConfig>? releases,
-  Map<String, dynamic>? customData,
+  Map<String, dynamic>? customParams,
 }) {
   return UpdateConfig(
     contentRules: contentRules,
@@ -108,6 +108,6 @@ UpdateConfig createUpdateConfig({
     appSettingsRules: appSettingsRules,
     sources: sources,
     releases: releases ?? [],
-    customData: customData,
+    customParams: customParams,
   );
 }

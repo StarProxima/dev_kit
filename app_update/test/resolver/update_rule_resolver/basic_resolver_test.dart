@@ -121,7 +121,7 @@ void main() {
       expect(res.title, 'A');
     });
 
-    test('Платформы и customData + dynamic dates (local/update release)', () {
+    test('Платформы и customParams + dynamic dates (local/update release)', () {
       final baseDate = DateTime(2024, 10, 20, 12);
 
       final rules = [
@@ -185,7 +185,7 @@ void main() {
           // ignore: no-equal-arguments
           updateReleaseDate: baseDate,
           rolloutPointer: 0.5,
-          // теперь передаём customData для базового правила
+          // теперь передаём customParams для базового правила
           custom: const {
             'env': 'PROD',
             'meta': {

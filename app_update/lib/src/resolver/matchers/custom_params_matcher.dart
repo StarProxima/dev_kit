@@ -12,21 +12,21 @@ import '../base/rule_matcher.dart';
 ///
 /// Работает только с примитивными типами: null, String, num, bool и List примитивов.
 /// Поля с Map или List<Map> игнорируются для безопасности.
-class CustomDataMatcher extends RuleMatcher with RegExpMatcherMixin {
-  const CustomDataMatcher();
+class CustomParamsMatcher extends RuleMatcher with RegExpMatcherMixin {
+  const CustomParamsMatcher();
 
   @override
   bool isMatches({
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    return _isMatchByCustomData(
-      rule.customData,
-      search.customData,
+    return _isMatchBycustomParams(
+      rule.customParams,
+      search.customParams,
     );
   }
 
-  bool _isMatchByCustomData(
+  bool _isMatchBycustomParams(
     Map<String, dynamic>? ruleCustom,
     Map<String, dynamic>? searchCustom,
   ) {

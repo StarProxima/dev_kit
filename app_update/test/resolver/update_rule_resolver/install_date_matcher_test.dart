@@ -92,8 +92,8 @@ void main() {
           VersionMatcher(),
           AppStatusMatcher(),
           TemporalMatcher(),
-          InstallDateMatcher(), // ПЕРЕД CustomDataMatcher
-          CustomDataMatcher(),
+          InstallDateMatcher(), // ПЕРЕД customParamsMatcher
+          CustomParamsMatcher(),
         ],
       );
 
@@ -105,7 +105,7 @@ void main() {
           title: 'Combined matchers work',
           custom: const {
             'min_delay_after_app_install_hours': 5 * 24, // 5 дней
-            'env_is': 'prod', // Для CustomDataMatcher
+            'env_is': 'prod', // Для customParamsMatcher
           },
         ),
       ];
@@ -114,7 +114,7 @@ void main() {
         searchData: createTestSearchData(
           currentDate: currentDate,
           customAppInstallDate: installDate,
-          custom: const {'env': 'prod'}, // Для CustomDataMatcher
+          custom: const {'env': 'prod'}, // Для customParamsMatcher
         ),
         rules: rules,
       );

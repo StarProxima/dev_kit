@@ -56,7 +56,7 @@ abstract final class UpdateSearcherTestUtils {
       contentRules: null,
       settingsRules: null,
       appSettingsRules: null,
-      customData: null,
+      customParams: null,
     );
   }
 

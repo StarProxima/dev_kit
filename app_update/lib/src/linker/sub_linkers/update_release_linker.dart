@@ -80,9 +80,9 @@ class UpdateReleaseLinker {
     final finalRelease = release
         .overrideBy(
           ReleaseOverrideConfig(
-            customData: Mergeable.mergeCustomData(
-              source.customData,
-              platform.customData,
+            customParams: Mergeable.mergecustomParams(
+              source.customParams,
+              platform.customParams,
             ),
           ),
         )
@@ -133,7 +133,7 @@ class UpdateReleaseLinker {
       contentRules: contentRules,
       settingsRules: settingsRules,
       appSettingsRules: appSettingsRules,
-      customData: finalRelease.customData,
+      customParams: finalRelease.customParams,
     );
   }
 

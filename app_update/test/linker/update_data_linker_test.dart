@@ -17,7 +17,7 @@ void main() {
       List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
       List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
       List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
-      Map<String, dynamic>? customData,
+      Map<String, dynamic>? customParams,
     }) {
       return UpdateData(
         version: version,
@@ -27,7 +27,7 @@ void main() {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customData: customData,
+        customParams: customParams,
       );
     }
 
@@ -632,7 +632,7 @@ void main() {
         expect(result.contentRules, isNull);
         expect(result.settingsRules, isNull);
         expect(result.appSettingsRules, isNull);
-        expect(result.customData, isNull);
+        expect(result.customParams, isNull);
       });
 
       test(

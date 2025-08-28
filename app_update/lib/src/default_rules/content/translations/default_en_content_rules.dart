@@ -17,7 +17,7 @@ final defaultEnContentRules = [
       skipButton: 'Skip',
       postponeButton: 'Later',
       updateButton: 'Update',
-      customData: null,
+      customParams: null,
     ),
   ),
   const UpdateRuleConfig(

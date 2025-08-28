@@ -93,7 +93,7 @@ class UpdateResolver {
       content: resolvedContent,
       settings: resolvedSettings,
       appSettings: resolvedAppSettings,
-      customData: updateData.customData,
+      customParams: updateData.customParams,
     );
 
     return UpdateResult(

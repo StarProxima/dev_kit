@@ -17,7 +17,7 @@ final defaultRuContentRules = [
       skipButton: 'Пропустить',
       postponeButton: 'Позже',
       updateButton: 'Обновить',
-      customData: null,
+      customParams: null,
     ),
   ),
   const UpdateRuleConfig(

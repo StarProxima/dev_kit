@@ -23,7 +23,7 @@ void main() {
       List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
       List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
       List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
-      Map<String, dynamic>? customData,
+      Map<String, dynamic>? customParams,
     }) {
       return ReleaseConfig(
         version: version,
@@ -32,7 +32,7 @@ void main() {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customData: customData,
+        customParams: customParams,
       );
     }
 
@@ -43,7 +43,7 @@ void main() {
       List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
       List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
       List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
-      Map<String, dynamic>? customData,
+      Map<String, dynamic>? customParams,
     }) {
       return ReleaseSourceConfig(
         sourceName: sourceName,
@@ -52,7 +52,7 @@ void main() {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customData: customData,
+        customParams: customParams,
       );
     }
 
@@ -62,7 +62,7 @@ void main() {
       List<UpdateRuleConfig<UpdateContentConfig>>? contentRules,
       List<UpdateRuleConfig<UpdateSettingsConfig>>? settingsRules,
       List<UpdateRuleConfig<UpdateAppSettingsConfig>>? appSettingsRules,
-      Map<String, dynamic>? customData,
+      Map<String, dynamic>? customParams,
     }) {
       return ReleasePlatformConfig(
         platformName: platformName,
@@ -70,7 +70,7 @@ void main() {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customData: customData,
+        customParams: customParams,
       );
     }
 
@@ -410,37 +410,37 @@ void main() {
                     createPlatform(
                       platformName: UpdatePlatform.android,
                       releaseOverride: const ReleaseOverrideConfig(
-                        customData: {
+                        customParams: {
                           'platformOverride': 'data',
                           'shared': 'platformOverride',
                         },
                       ),
-                      customData: {'platform': 'data', 'shared': 'platform'},
+                      customParams: {'platform': 'data', 'shared': 'platform'},
                     ),
                   ],
                   releaseOverride: const ReleaseOverrideConfig(
-                    customData: {
+                    customParams: {
                       'sourceOverride': 'data',
                       'shared': 'sourceOverride',
                     },
                   ),
-                  customData: {'source': 'data', 'shared': 'source'},
+                  customParams: {'source': 'data', 'shared': 'source'},
                 ),
               ],
-              customData: {'release': 'data', 'shared': 'release'},
+              customParams: {'release': 'data', 'shared': 'release'},
             );
 
             final result = linker.link(release: release, sources: sources);
 
             expect(result, hasLength(1));
-            final customData = result.first.customData!;
-            expect(customData['release'], 'data');
-            expect(customData['source'], 'data');
-            expect(customData['sourceOverride'], 'data');
-            expect(customData['platform'], 'data');
-            expect(customData['platformOverride'], 'data');
+            final customParams = result.first.customParams!;
+            expect(customParams['release'], 'data');
+            expect(customParams['source'], 'data');
+            expect(customParams['sourceOverride'], 'data');
+            expect(customParams['platform'], 'data');
+            expect(customParams['platformOverride'], 'data');
             expect(
-              customData['shared'],
+              customParams['shared'],
               'platformOverride',
             ); // платформа override имеет высший приоритет
           },
@@ -946,7 +946,7 @@ void main() {
         expect(result, isEmpty);
       });
 
-      test('обрабатывает null customData корректно', () {
+      test('обрабатывает null customParams корректно', () {
         final release = createRelease(
           version: Version.parse('1.0.0'),
           sources: [
@@ -964,7 +964,7 @@ void main() {
         final result = linker.link(release: release, sources: sources);
 
         expect(result, hasLength(1));
-        expect(result.first.customData, isNull);
+        expect(result.first.customParams, isNull);
       });
     });
   });

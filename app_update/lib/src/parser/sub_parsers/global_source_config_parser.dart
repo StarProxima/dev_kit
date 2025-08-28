@@ -32,9 +32,9 @@ class GlobalSourceConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customData
+    // customParams
     final customParamsValue = map.remove('custom_params');
-    final customData = _customParamsParser.parse(customParamsValue);
+    final customParams = _customParamsParser.parse(customParamsValue);
 
     // name
     final nameValue = map.remove('name');
@@ -73,7 +73,7 @@ class GlobalSourceConfigParser {
       contentRules: rules.contentRules,
       settingsRules: rules.settingsRules,
       appSettingsRules: rules.appSettingsRules,
-      customData: customData,
+      customParams: customParams,
     );
   }
 }

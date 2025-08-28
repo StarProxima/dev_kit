@@ -27,9 +27,9 @@ class UpdateAppSettingsConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customData
+    // customParams
     final customParamsValue = map.remove('custom_params');
-    final customData = _customParamsParser.parse(customParamsValue);
+    final customParams = _customParamsParser.parse(customParamsValue);
 
     // appStatus
     final appStatusValue = map.remove('app_status');
@@ -48,7 +48,7 @@ class UpdateAppSettingsConfigParser {
 
     return UpdateAppSettingsConfig.byRequired(
       appStatus: appStatus,
-      customData: customData,
+      customParams: customParams,
     );
   }
 }

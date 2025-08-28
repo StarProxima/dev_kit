@@ -49,7 +49,8 @@ void main() {
       );
       expect(
         result?.releases.any((r) =>
-            r.customData?.containsKey('is_super_ultra_mega_release') ?? false),
+            r.customParams?.containsKey('is_super_ultra_mega_release') ??
+            false),
         isTrue,
       );
       // Проверка вложенных источников и платформ
@@ -68,9 +69,9 @@ void main() {
       expect(googlePlaySource?.releaseOverride, isNotNull);
       // Проверка кастомных полей
       final megaRelease = result?.releases.firstWhereOrNull(
-        (r) => r.customData?['is_super_ultra_mega_release'] == true,
+        (r) => r.customParams?['is_super_ultra_mega_release'] == true,
       );
-      expect(megaRelease?.customData?['is_super_ultra_mega_release'], isTrue);
+      expect(megaRelease?.customParams?['is_super_ultra_mega_release'], isTrue);
       // Проверка appStatusRules
       expect(result?.appSettingsRules, isNotNull);
       expect(result?.appSettingsRules, isNotEmpty);
