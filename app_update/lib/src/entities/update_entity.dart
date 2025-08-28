@@ -14,6 +14,9 @@ abstract base class UpdateEntityName extends UpdateEntity {
   List<Object?> get params => [name];
 
   const UpdateEntityName(this._name);
+
+  @override
+  String toString() => name;
 }
 
 @immutable
@@ -34,9 +37,4 @@ abstract base class UpdateEntity {
     return other.params.length == params.length &&
         other.params.every((param) => params.contains(param));
   }
-
-  String get debugString;
-
-  @override
-  String toString() => debugString;
 }

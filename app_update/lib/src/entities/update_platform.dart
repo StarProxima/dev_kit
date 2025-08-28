@@ -37,7 +37,4 @@ base class UpdatePlatform extends UpdateEntityName {
   factory UpdatePlatform.current() => UpdatePlatform._(
         kIsWeb ? web.name : Platform.operatingSystem,
       );
-
-  @override
-  String get debugString => 'UpdatePlatform($name)';
 }

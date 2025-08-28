@@ -46,7 +46,5 @@ base class UpdateDate extends UpdateEntityName {
   List<Object?> get params => [name, date];
 
   @override
-  String get debugString =>
-      // ignore: prefer-date-format
-      'UpdateDate(${date == null ? '' : '$date, '}$name)';
+  String toString() => '${date ?? name}';
 }

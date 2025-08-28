@@ -27,7 +27,4 @@ base class UpdateSourceName extends UpdateEntityName {
   const UpdateSourceName._(super._name);
 
   const factory UpdateSourceName.custom(String name) = UpdateSourceName._;
-
-  @override
-  String get debugString => 'UpdateSourceName($name)';
 }

@@ -26,5 +26,5 @@ base class UpdateLocale extends UpdateEntityName {
   List<Object?> get params => [name, locale?.languageCode];
 
   @override
-  String get debugString => 'UpdateLocale(${locale ?? name})';
+  String toString() => '${locale ?? name}';
 }

@@ -19,9 +19,16 @@ class ParseConfigException implements Exception {
     required this.parserType,
     required this.configs,
   }) : message =
-            'Wrong type: $wrongType, expected: $rightType, configs: ${jsonEncode(configs)}';
+            'Wrong type: $wrongType, expected: $rightType, related configs:\n${jsonEncode(configs)}';
+
+  ParseConfigException.unexpectedParams({
+    required Map<String, Object?> params,
+    required this.parserType,
+    required this.configs,
+  }) : message =
+            'Unexpected params:\n${jsonEncode(params)}\nrelated configs:\n${jsonEncode(configs)}';
 
   @override
   // ignore: avoid-nullable-interpolation
-  String toString() => 'ParseConfigException: $message';
+  String toString() => 'ParseConfigException in $parserType - $message';
 }

@@ -30,7 +30,4 @@ base class UpdateViewTarget extends UpdateEntityName {
   const UpdateViewTarget._(super._name);
 
   factory UpdateViewTarget.custom(String name) => UpdateViewTarget._(name);
-
-  @override
-  String get debugString => 'UpdateViewTarget($name)';
 }

@@ -70,8 +70,8 @@ base class UpdateSource extends UpdateEntity {
   List<Object?> get params => [sourceName, ...?platforms];
 
   @override
-  String get debugString =>
-      'UpdateSource(${sourceName.originalName}, ${platforms ?? 'null'} )';
+  // ignore: avoid-nullable-interpolation
+  String toString() => '${sourceName.originalName} with platforms $platforms';
 }
 
 extension ReleaseSourceConfigToUpdateSourceX on ReleaseSourceConfig {

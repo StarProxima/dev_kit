@@ -16,9 +16,10 @@ content:
     data:
       title: Обновите приложение
       description: Описание
-      custom_img: 
-        update_url: https://example.com
-        border_radius: 10
+      custom_params:
+        image: 
+          url: https://example.com
+          border_radius: 10
 
   - view_target_is: any
     locale_is: ru
@@ -237,8 +238,7 @@ sources:
 
   - name: appGallery
     content:
-      - data:
-          update_url: https://example.com
+      - update_url: https://example.com
       - locale_is: ru
         data:
           update_button: Перейти в AppGallery
@@ -295,7 +295,8 @@ releases:
     content:
       release_notes: Minor Improvements
     sources: []
-    is_super_ultra_mega_release: true
+    custom_params:
+      is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
     content:
