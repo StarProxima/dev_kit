@@ -43,11 +43,11 @@ settings:
 
       can_skip: false      
       skip_release_delay_hours: 2160
-      skip_any_releases_delay_hours: 72
+      skip_all_releases_delay_hours: 72
 
       can_postpone: false
       postpone_release_delay_hours: 96
-      postpone_any_releases_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
 
   # Настраиваем actions для статусов
   
@@ -62,7 +62,7 @@ settings:
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
-      postpone_any_releases_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
   
   - app_status_is: 
       - outdated

@@ -2,6 +2,8 @@ import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
+import '../helpers/parser_test_helpers.dart';
+
 void main() {
   group('ReleaseSourceConfigParser', () {
     const parser = ReleaseSourceConfigParser();
@@ -31,9 +33,10 @@ void main() {
           should_show: true
         app_settings:
           app_status: active
-        custom_field: 42
+        custom_params:
+          custom_field: 42
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<ReleaseSourceConfig>());
       expect(result?.sourceName.name, 'github'.toLowerCase());
@@ -50,7 +53,7 @@ void main() {
         release_override:
           version: '1.2.3'
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result?.releaseOverride?.version?.toString(), '1.2.3');
     });

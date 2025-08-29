@@ -1,6 +1,7 @@
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import '../helpers/parser_test_helpers.dart';
 
 void main() {
   group('UpdateAppStatusConfigParser', () {
@@ -9,9 +10,10 @@ void main() {
     test('Базовый кейс', () {
       const yamlStr = '''
         app_status: outdated
-        custom_field: 42
+        custom_params:
+          custom_field: 42
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<UpdateAppSettingsConfig>());
       expect(result?.appStatus?.name, 'outdated');

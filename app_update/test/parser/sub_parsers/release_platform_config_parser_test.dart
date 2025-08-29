@@ -2,6 +2,8 @@ import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
+import '../helpers/parser_test_helpers.dart';
+
 void main() {
   group('ReleasePlatformConfigParser', () {
     const parser = ReleasePlatformConfigParser();
@@ -29,9 +31,10 @@ void main() {
           should_show: true
         app_settings:
           app_status: active
-        custom_field: 42
+        custom_params:
+          custom_field: 42
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<ReleasePlatformConfig>());
       expect(result?.platformName.name, 'ios');

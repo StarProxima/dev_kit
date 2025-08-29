@@ -110,10 +110,10 @@ settings:
       should_show: false
       can_skip: false
       skip_release_delay_hours: 2160   # 90 дней
-      skip_any_releases_delay_hours: 72
+      skip_all_releases_delay_hours: 72
       can_postpone: false
       postpone_release_delay_hours: 96
-      postpone_any_releases_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
 
   # Unsupported — блокирующее обновление
   - app_status_is: unsupported
@@ -128,7 +128,7 @@ settings:
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
-      postpone_any_releases_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
 
   # Optional — полная свобода
   - app_status_is: [outdated, updateable, active]

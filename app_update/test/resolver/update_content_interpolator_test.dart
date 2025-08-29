@@ -262,7 +262,7 @@ void main() {
         expect(result.description, 'Simple description without variables');
         expect(result.releaseNotes, 'No variables here');
         expect(result.updateButton, 'Update Now');
-        expect(result.updateUrl.toString(), 'https://example.com');
+        expect(result.updateUrl, 'https://example.com');
         expect(result.customParams?['field'], 'value');
       });
 
@@ -376,7 +376,7 @@ void main() {
         expect(result.description, '');
         expect(result.releaseNotes, '2.0.0');
         expect(result.updateButton, 'Update');
-        expect(result.updateUrl.toString(), 'https://example.com');
+        expect(result.updateUrl, 'https://example.com');
         expect(result.customParams, isNull);
       });
     });

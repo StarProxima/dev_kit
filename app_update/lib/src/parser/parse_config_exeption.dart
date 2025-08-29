@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class ParseConfigException implements Exception {
   final String? message;
-  final List<Object>? configs;
+  final List<Object> configs;
 
   final Type? parserType;
 
@@ -10,7 +10,7 @@ class ParseConfigException implements Exception {
   const ParseConfigException([
     this.message,
     this.parserType,
-    this.configs,
+    this.configs = const [],
   ]);
 
   ParseConfigException.wrongType({
@@ -18,17 +18,24 @@ class ParseConfigException implements Exception {
     required Type wrongType,
     required this.parserType,
     required this.configs,
-  }) : message =
-            'Wrong type: $wrongType, expected: $rightType, related configs:\n${jsonEncode(configs)}';
+  }) : message = 'Wrong type: $wrongType, expected: $rightType';
 
   ParseConfigException.unexpectedParams({
     required Map<String, Object?> params,
     required this.parserType,
     required this.configs,
   }) : message =
-            'Unexpected params:\n${jsonEncode(params)}\nrelated configs:\n${jsonEncode(configs)}';
+            // ignore: avoid-nullable-interpolation
+            'Unexpected params:\n[\n${params.entries.map((e) => '  "${e.key}": "${e.value}"').join(',\n')}\n]';
+
+  ParseConfigException.requiredParams({
+    required List<String> params,
+    required this.parserType,
+    required this.configs,
+  }) : message = 'Required params not found: [\n  ${params.join(',\n  ')}\n]';
 
   @override
-  // ignore: avoid-nullable-interpolation
-  String toString() => 'ParseConfigException in $parserType - $message';
+  String toString() =>
+      // ignore: avoid-nullable-interpolation
+      'ParseConfigException in $parserType - $message\n\nrelated configs:\n[\n  ${configs.map(jsonEncode).join(',\n  ')}\n]';
 }

@@ -1,6 +1,7 @@
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import '../helpers/parser_test_helpers.dart';
 
 void main() {
   group('UpdateContentConfigParser', () {
@@ -16,9 +17,10 @@ void main() {
         skip_button: "Пропустить"
         postpone_button: "Позже"
         update_button: "Обновить"
-        custom_field: 123
+        custom_params:
+          custom_field: 123
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<UpdateContentConfig>());
       expect(result?.updateUrl, 'https://example.com');
@@ -35,9 +37,10 @@ void main() {
     test('Парсинг с частичным набором полей', () {
       const yamlStr = '''
         title: "Заголовок"
-        custom_field: true
+        custom_params:
+          custom_field: true
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<UpdateContentConfig>());
       expect(result?.title, 'Заголовок');

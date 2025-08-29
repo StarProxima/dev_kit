@@ -1,6 +1,7 @@
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import '../helpers/parser_test_helpers.dart';
 
 void main() {
   group('GlobalSourceConfigParser', () {
@@ -24,9 +25,10 @@ void main() {
           - app_version_is: any
             data:
               app_status: active
-        custom_field: 42
+        custom_params:
+          custom_field: 42
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<GlobalSourceConfig>());
       expect(result?.sourceName.name, 'github');

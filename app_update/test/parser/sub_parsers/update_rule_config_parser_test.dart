@@ -2,7 +2,8 @@
 
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import '../helpers/parser_test_helpers.dart';
 
 class _MergeableMapAdapter implements Mergeable<_MergeableMapAdapter> {
   final Map<String, dynamic> map;
@@ -25,7 +26,7 @@ void main() {
         data:
           title: "Заголовок"
       ''';
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
@@ -47,7 +48,7 @@ void main() {
         data:
           title: test
       ''';
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
@@ -95,11 +96,12 @@ void main() {
     test('customParams содержит неиспользованные поля', () {
       const yamlStr = '''
         app_status_is: outdated
-        custom_field: 42
+        custom_params:
+          custom_field: 42
         data:
           title: test
       ''';
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
@@ -118,7 +120,7 @@ void main() {
         data:
           title: test
       ''';
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(

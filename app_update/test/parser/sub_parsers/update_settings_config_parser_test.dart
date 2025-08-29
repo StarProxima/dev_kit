@@ -1,6 +1,7 @@
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import '../helpers/parser_test_helpers.dart';
 
 void main() {
   group('UpdateSettingsConfigParser', () {
@@ -15,9 +16,10 @@ void main() {
         skip_all_releases_delay_hours: 20
         postpone_release_delay_hours: 30
         postpone_all_releases_delay_hours: 40
-        custom_field: 42
+        custom_params:
+          custom_field: 42
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<UpdateSettingsConfig>());
       expect(result?.shouldShow, true);
@@ -34,7 +36,7 @@ void main() {
       const yamlStr = '''
         should_show: false
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result?.shouldShow, false);
       expect(result?.canSkip, isNull);

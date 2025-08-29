@@ -2,6 +2,8 @@ import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
+import '../helpers/parser_test_helpers.dart';
+
 void main() {
   group('GlobalPlatformConfigParser', () {
     const parser = GlobalPlatformConfigParser();
@@ -26,10 +28,10 @@ void main() {
           should_show: true
         app_settings:
           app_status: active
-        custom_field: 42
+        custom_params:
+          custom_field: 42
       ''';
-      // ignore: avoid-type-casts
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<GlobalPlatformConfig>());
       expect(result?.platformName.name, 'ios');

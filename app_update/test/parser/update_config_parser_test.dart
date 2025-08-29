@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:app_update/app_update.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import 'helpers/parser_test_helpers.dart';
 
 void main() {
   group('UpdateConfigParser (интеграционный)', () {
@@ -12,8 +13,8 @@ void main() {
     test('Парсинг большого конфига из api_v3.yaml', () async {
       final yamlStr =
           await File('test/parser/helpers/api_v3.yaml').readAsString();
-      // ignore: avoid-type-casts
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<UpdateConfig>());
 
@@ -81,8 +82,7 @@ void main() {
       const yamlStr = '''
         releases: null
       ''';
-      // ignore: avoid-type-casts
-      final map = (loadYaml(yamlStr) as YamlMap).toMap();
+      final map = parseYamlToMap(yamlStr);
       expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
     });
   });

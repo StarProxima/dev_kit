@@ -1,4 +1,4 @@
-// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
+// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment, avoid-long-functions
 
 import '../../models/update_rule/update_rule_config.dart';
 import '../../utils/mergeable.dart';
@@ -50,12 +50,31 @@ class UpdateRuleConfigParser {
     final customParams = _customParamsParser.parse(customParamsValue);
 
     // data
-    // if not exists, use rule itself as data
-    final dataValue = map.remove('data') ?? value;
+    final dataValue = map.remove('data');
     final data = dataParser(dataValue);
 
     if (data == null) {
-      return null;
+      try {
+        // if not exists, use rule itself as data
+        final finalData = dataParser(map);
+
+        if (finalData == null) {
+          throw ParseConfigException.requiredParams(
+            params: ['data'],
+            parserType: UpdateRuleConfigParser,
+            configs: [value],
+          );
+        }
+
+        return UpdateRuleConfig<T>(data: finalData);
+      } on ParseConfigException catch (_) {
+        // ignore: avoid-throw-in-catch-block
+        throw ParseConfigException.requiredParams(
+          params: ['data'],
+          parserType: UpdateRuleConfigParser,
+          configs: [value],
+        );
+      }
     }
 
     // appStatusIs

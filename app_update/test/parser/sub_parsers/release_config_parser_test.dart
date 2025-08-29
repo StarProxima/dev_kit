@@ -2,7 +2,8 @@
 
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yaml/yaml.dart';
+
+import '../helpers/parser_test_helpers.dart';
 
 void main() {
   group('ReleaseConfigParser', () {
@@ -31,9 +32,10 @@ void main() {
           - app_version_is: any
             data:
               app_status: active
-        custom_field: 123
+        custom_params:
+          custom_field: 123
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<ReleaseConfig>());
       expect(result?.version.toString(), '1.2.3+4');
@@ -62,7 +64,7 @@ void main() {
           - googlePlay
           - appStore
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<ReleaseConfig>());
       expect(result?.sources?.length, 2);
@@ -81,7 +83,7 @@ void main() {
               version: '0.2.1'
               date: '2025-10-10 12:00:00'
       ''';
-      final map = Map<String, dynamic>.from(loadYaml(yamlStr));
+      final map = parseYamlToMap(yamlStr);
       final result = parser.parse(map);
       expect(result, isA<ReleaseConfig>());
       expect(result?.sources?[0].releaseOverride?.version?.toString(), '0.2.1');

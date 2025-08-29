@@ -16,9 +16,10 @@ content:
     data:
       title: Обновите приложение
       description: Описание
-      custom_img: 
-        update_url: https://example.com
-        border_radius: 10
+      custom_params:
+        custom_img: 
+          update_url: https://example.com
+          border_radius: 10
 
   - view_target_is: any
     locale_is: ru
@@ -42,11 +43,11 @@ settings:
 
       can_skip: false      
       skip_release_delay_hours: 2160
-      skip_any_releases_delay_hours: 72
+      skip_all_releases_delay_hours: 72
 
       can_postpone: false
       postpone_release_delay_hours: 96
-      postpone_any_releases_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
 
   # Настраиваем actions для статусов
   
@@ -61,7 +62,7 @@ settings:
     data:
       can_postpone: true
       postpone_release_delay_hours: 24
-      postpone_any_releases_delay_hours: 24
+      postpone_all_releases_delay_hours: 24
   
   - app_status_is: 
       - outdated
@@ -187,6 +188,8 @@ app_settings:
     date: 2015-01-01 00:00:00
     delay_hours: 6720 # 280 days
     rollout_hours: 336 # 14 days
+    data:
+      app_status: unsupported
 
   # any versions before 2.0.0 are unsupported after 2014-10-17 23:00:00
   - app_version_is: '<=2.0.0'
@@ -296,7 +299,8 @@ releases:
     content:
       release_notes: Minor Improvements
     sources: []
-    is_super_ultra_mega_release: true
+    custom_params:
+      is_super_ultra_mega_release: true
 
   - version: 0.0.3+80
     date: 2024-08-24 15:35:00
@@ -369,7 +373,7 @@ releases:
         platforms:
           - name: android
             settings:
-              - target: dialog
+              - view_target_is: dialog
                 app_status_is: outdated
                 data:
                   can_skip: true
@@ -388,7 +392,7 @@ releases:
       title: Title
       description: Description
     settings:
-      can_skip_release: true
+      can_skip: true
     sources:
       - name: googlePlay
         platforms: []
