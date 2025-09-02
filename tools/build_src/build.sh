@@ -139,7 +139,7 @@ show_help() {
     echo -e "   ${PURPLE}--profile${NC}, ${PURPLE}-p${NC}           Profile режим сборки"
     echo -e "   ${PURPLE}--release${NC}, ${PURPLE}-r${NC}           Release режим сборки (по умолчанию)"
     echo -e "   ${PURPLE}--upload${NC}, ${PURPLE}-u${NC}            Автоматически загрузить в App Store Connect (только iOS)"
-    echo -e "   ${PURPLE}--auto-increment${NC}, ${PURPLE}-ai${NC}   Автоматически увеличить build number после успешного билда"
+    echo -e "   ${PURPLE}--increment-build-number${NC}, ${PURPLE}-ibn${NC}   Автоматически увеличить build number после успешного билда"
     echo -e "   ${PURPLE}--verbose${NC}, ${PURPLE}-v${NC}           Подробный вывод команд"
     echo -e "   ${PURPLE}--help${NC}, ${PURPLE}-h${NC}             Показать эту справку"
     echo
@@ -164,10 +164,10 @@ show_help() {
     echo -e "   $0 release ios prod --upload"
     echo
     echo -e "   ${CYAN}# Release с автоматическим инкрементом build number${NC}"
-    echo -e "   $0 release android dev --auto-increment"
+    echo -e "   $0 release android dev --increment-build-number"
     echo
     echo -e "   ${CYAN}# Краткие параметры для быстрого использования${NC}"
-    echo -e "   $0 release ios prod -u -ai -v"
+    echo -e "   $0 release ios prod -u -ibn -v"
     echo
     echo -e "🔑 ${WHITE}Особенности:${NC}"
     echo -e "   • Автоматическое обновление версии для iOS релизов"

@@ -11,6 +11,13 @@ export BUILD_DIR="${BUILD_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 # Остальные пути строятся относительно BUILD_DIR
 export TOOLS_DIR="${TOOLS_DIR:-$(dirname "$BUILD_DIR")}"
 export PROJECT_ROOT="${PROJECT_ROOT:-$(dirname "$TOOLS_DIR")}"
+
+# Загружаем пользовательские настройки из build_env/settings.sh (если существует)
+export BUILD_SETTINGS_PATH="${BUILD_SETTINGS_PATH:-$BUILD_DIR/../build_env/settings.sh}"
+if [[ -f "$BUILD_SETTINGS_PATH" ]]; then
+    source "$BUILD_SETTINGS_PATH"
+fi
+
 export APP_DIR="${APP_DIR:-$PROJECT_ROOT/app}"
 
 # Директории конфигурации и окружения

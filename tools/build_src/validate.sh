@@ -166,7 +166,7 @@ parse_arguments() {
             --upload|-u)
                 upload_enabled="true"
                 ;;
-            --auto-increment|-ai)
+            --increment-build-number|-ibn)
                 auto_increment="true"
                 ;;
             --help|-h)

@@ -3,7 +3,7 @@
 # Автоматический инкремент build number в pubspec.yaml и синхронизация с Xcode
 # 
 # Использование:
-#   build.sh ... --auto-increment  (рекомендуется)
+#   build.sh ... --increment-build-number  (рекомендуется)
 #   increment-build-number.sh      (прямой вызов)
 #
 # Поддерживает версии вида: 1.0.0+123
