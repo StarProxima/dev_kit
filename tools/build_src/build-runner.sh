@@ -17,6 +17,7 @@ run_build() {
     local verbose="$8"
     local upload_enabled="$9"
     local auto_increment="${10}"
+    local flutter_version="${11}"
     
     log_step "Подготовка к сборке..."
     
@@ -69,6 +70,11 @@ run_build() {
         esac
     fi
     
+    # Добавляем flutter-version для Shorebird
+    if [[ "$use_shorebird" == "true" && -n "$flutter_version" ]]; then
+        command+=" --flutter-version $flutter_version"
+    fi
+    
     # Добавляем verbose
     if [[ "$verbose" == "true" ]]; then
         command+=" --verbose"
@@ -85,6 +91,7 @@ run_build() {
     [[ "$original_platform" == "android" && "$use_apk" == "false" ]] && log_info "📦 Формат: App Bundle"
     [[ "$use_shorebird" == "false" ]] && log_info "🏗️ Режим: $build_mode"
     [[ "$use_shorebird" == "true" ]] && log_info "🏗️ Режим: release (Shorebird)"
+    [[ "$use_shorebird" == "true" && -n "$flutter_version" ]] && log_info "📱 Flutter версия: $flutter_version"
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo
     

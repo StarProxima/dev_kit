@@ -27,6 +27,7 @@ export BUILD_CONFIG_PATH="${BUILD_CONFIG_PATH:-$BUILD_ENV_DIR/build.env}"
 # Файлы проекта
 export PUBSPEC_PATH="${PUBSPEC_PATH:-$APP_DIR/pubspec.yaml}"
 export XCODE_PROJECT_PATH="${XCODE_PROJECT_PATH:-$APP_DIR/ios/Runner.xcodeproj/project.pbxproj}"
+export FVMRC_PATH="${FVMRC_PATH:-$PROJECT_ROOT/.fvmrc}"
 
 # Пути к скриптам
 export IOS_VERSION_SCRIPT="${IOS_VERSION_SCRIPT:-$BUILD_DIR/sync-xcode-version.sh}"

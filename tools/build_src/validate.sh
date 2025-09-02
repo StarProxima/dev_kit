@@ -48,7 +48,6 @@ check_shorebird() {
     if [[ "$use_shorebird" == "true" ]]; then
         if ! command -v shorebird &> /dev/null; then
             log_error "Shorebird не найден в системе"
-            log_info "Установите Shorebird или используйте флаг --no-shorebird"
             log_info "Установка: curl --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/shorebirdtech/install/main/install.sh -sSf | bash"
             return 1
         fi
@@ -133,11 +132,9 @@ parse_arguments() {
     local verbose="false"
     local upload_enabled="false"
     local auto_increment="false"
+    local flutter_version=""
     
-    # Для action=build автоматически используем Flutter
-    if [[ "$action" == "build" ]]; then
-        use_shorebird="false"
-    fi
+
     
     # Парсим остальные аргументы
     while [[ $# -gt 0 ]]; do
@@ -148,9 +145,7 @@ parse_arguments() {
             --no-apk)
                 use_apk="false"
                 ;;
-            --no-shorebird|-ns)
-                use_shorebird="false"
-                ;;
+
             --debug|-d)
                 build_mode="debug"
                 ;;
@@ -168,6 +163,10 @@ parse_arguments() {
                 ;;
             --increment-build-number|-ibn)
                 auto_increment="true"
+                ;;
+            --flutter-version)
+                shift
+                flutter_version="$1"
                 ;;
             --help|-h)
                 show_help
@@ -190,5 +189,17 @@ parse_arguments() {
         shift
     done
     
-    echo "$flavor|$use_shorebird|$use_apk|$build_mode|$verbose|$upload_enabled|$auto_increment"
+    # Автоматическое определение Flutter версии из .fvmrc для Shorebird release/patch
+    if [[ "$use_shorebird" == "true" && ("$action" == "release" || "$action" == "patch") && -z "$flutter_version" ]]; then
+        if [[ -f "$FVMRC_PATH" ]]; then
+            local auto_flutter_version
+            auto_flutter_version=$(grep -o '"flutter":[[:space:]]*"[^"]*"' "$FVMRC_PATH" 2>/dev/null | sed 's/.*"\([^"]*\)".*/\1/')
+            if [[ -n "$auto_flutter_version" ]]; then
+                flutter_version="$auto_flutter_version"
+                log_info "Автоматически определена Flutter версия: $flutter_version (из .fvmrc)" >&2
+            fi
+        fi
+    fi
+    
+    echo "$flavor|$use_shorebird|$use_apk|$build_mode|$verbose|$upload_enabled|$auto_increment|$flutter_version"
 } 

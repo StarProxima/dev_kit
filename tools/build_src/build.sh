@@ -55,12 +55,12 @@ main() {
     # Парсим аргументы
     local parse_result
     parse_result=$(parse_arguments "$@")
-    IFS='|' read -r flavor use_shorebird use_apk build_mode verbose upload_enabled auto_increment <<< "$parse_result"
+    IFS='|' read -r flavor use_shorebird use_apk build_mode verbose upload_enabled auto_increment flutter_version <<< "$parse_result"
     
     # Проверяем Shorebird если нужен (не для build action)
     if [[ "$use_shorebird" == "true" && "$action" != "build" ]]; then
         if ! check_shorebird "$use_shorebird"; then
-            log_error "Проблемы с Shorebird. Используйте --no-shorebird для Flutter или исправьте установку Shorebird"
+            log_error "Проблемы с Shorebird. Исправьте установку Shorebird"
             exit 1
         fi
     fi
@@ -78,7 +78,7 @@ main() {
     fi
     
     # Запускаем сборку
-    if run_build "$action" "$platform" "$platform" "$flavor" "$use_shorebird" "$use_apk" "$build_mode" "$verbose" "$upload_enabled" "$auto_increment"; then
+    if run_build "$action" "$platform" "$platform" "$flavor" "$use_shorebird" "$use_apk" "$build_mode" "$verbose" "$upload_enabled" "$auto_increment" "$flutter_version"; then
         echo
         log_success "🎊 Процесс завершен успешно!"
     else
@@ -117,7 +117,7 @@ show_help() {
     echo -e "📝 ${WHITE}Действия (Actions):${NC}"
     echo -e "   ${GREEN}release${NC}     Создать новый релиз через Shorebird"
     echo -e "   ${GREEN}patch${NC}       Создать патч для существующего релиза через Shorebird"
-    echo -e "   ${GREEN}build${NC}       Обычная сборка через Flutter (автоматически --no-shorebird)"
+    echo -e "   ${GREEN}build${NC}       Обычная сборка через Flutter"
     echo
     echo -e "🎯 ${WHITE}Платформы (Platforms):${NC}"
     echo -e "   ${BLUE}android${NC}     Android платформа"
@@ -134,12 +134,13 @@ show_help() {
     echo -e "🚩 ${WHITE}Флаги:${NC}"
     echo -e "   ${PURPLE}--apk${NC}                    Создать APK для Android (по умолчанию: $([[ "$DEFAULT_USE_APK" == "true" ]] && echo "включено" || echo "выключено"))"
     echo -e "   ${PURPLE}--no-apk${NC}                 Использовать App Bundle для Android"
-    echo -e "   ${PURPLE}--no-shorebird${NC}, ${PURPLE}-ns${NC}     Использовать Flutter вместо Shorebird"
+    echo -e ""
     echo -e "   ${PURPLE}--debug${NC}, ${PURPLE}-d${NC}             Debug режим сборки"
     echo -e "   ${PURPLE}--profile${NC}, ${PURPLE}-p${NC}           Profile режим сборки"
     echo -e "   ${PURPLE}--release${NC}, ${PURPLE}-r${NC}           Release режим сборки (по умолчанию)"
     echo -e "   ${PURPLE}--upload${NC}, ${PURPLE}-u${NC}            Автоматически загрузить в App Store Connect (только iOS)"
     echo -e "   ${PURPLE}--increment-build-number${NC}, ${PURPLE}-ibn${NC}   Автоматически увеличить build number после успешного билда"
+    echo -e "   ${PURPLE}--flutter-version${NC} <ver>  Указать версию Flutter для Shorebird (автоматически из .fvmrc)"
     echo -e "   ${PURPLE}--verbose${NC}, ${PURPLE}-v${NC}           Подробный вывод команд"
     echo -e "   ${PURPLE}--help${NC}, ${PURPLE}-h${NC}             Показать эту справку"
     echo
