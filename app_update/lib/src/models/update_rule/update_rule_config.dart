@@ -1,6 +1,7 @@
 import '../../entities/app_status.dart';
 import '../../entities/update_date.dart';
 import '../../entities/update_locale.dart';
+import '../../entities/update_platform.dart';
 import '../../entities/update_source.dart';
 import '../../entities/update_version_constraint.dart';
 import '../../entities/update_view_target.dart';
@@ -12,6 +13,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
   final List<UpdateViewTarget>? viewTargetIs;
   final List<UpdateVersionConstraint>? appVersionIs;
   final List<UpdateSource>? sourceIs;
+  final List<UpdatePlatform>? platformIs;
   final UpdateDate? date;
   final Duration? delay;
   final Duration? rollout;
@@ -25,6 +27,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     this.viewTargetIs,
     this.appVersionIs,
     this.sourceIs,
+    this.platformIs,
     this.date,
     this.delay,
     this.rollout,
@@ -39,6 +42,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     required this.viewTargetIs,
     required this.appVersionIs,
     required this.sourceIs,
+    required this.platformIs,
     required this.date,
     required this.delay,
     required this.rollout,
@@ -53,6 +57,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
     List<UpdateViewTarget>? viewTargetIs,
     List<UpdateVersionConstraint>? appVersionIs,
     List<UpdateSource>? sourceIs,
+    List<UpdatePlatform>? platformIs,
     UpdateDate? date,
     Duration? delay,
     Duration? rollout,
@@ -66,6 +71,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
         viewTargetIs: viewTargetIs ?? this.viewTargetIs,
         appVersionIs: appVersionIs ?? this.appVersionIs,
         sourceIs: sourceIs ?? this.sourceIs,
+        platformIs: platformIs ?? this.platformIs,
         date: date ?? this.date,
         delay: delay ?? this.delay,
         rollout: rollout ?? this.rollout,

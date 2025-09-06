@@ -6,6 +6,7 @@ import '../base_parsers/app_status_parser.dart';
 import '../base_parsers/custom_params_parser.dart';
 import '../base_parsers/update_date_parser.dart';
 import '../base_parsers/update_locale_parser.dart';
+import '../base_parsers/update_platform_parser.dart';
 import '../base_parsers/update_source_parser.dart';
 import '../base_parsers/update_version_constraint_parser.dart';
 import '../base_parsers/update_view_target_parser.dart';
@@ -25,6 +26,7 @@ class UpdateRuleConfigParser {
   static const _durationParser = DurationParser();
   static const _doubleParser = DoubleParser();
   static const _customParamsParser = CustomParamsParser();
+  static const _updatePlatformParser = UpdatePlatformParser();
 
   const UpdateRuleConfigParser();
 
@@ -109,6 +111,12 @@ class UpdateRuleConfigParser {
     final sourceIs =
         sourceIsValue?.map(_updateSourceParser.parse).nonNulls.toList();
 
+    // platforms
+    final platformIsRawValue = map.remove('platform_is');
+    final platformIsValue = _listOrValueParser.parse(platformIsRawValue);
+    final platformIs =
+        platformIsValue?.map(_updatePlatformParser.parse).nonNulls.toList();
+
     // date
     final dateValue = map.remove('date');
     final date = _updateDateParser.parse(dateValue);
@@ -141,6 +149,7 @@ class UpdateRuleConfigParser {
       viewTargetIs: viewTargetIs,
       appVersionIs: appVersionIs,
       sourceIs: sourceIs,
+      platformIs: platformIs,
       date: date,
       delay: delay,
       rollout: rollout,

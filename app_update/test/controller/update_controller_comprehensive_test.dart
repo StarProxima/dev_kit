@@ -394,19 +394,19 @@ settings:
 
 app_settings:
   # По умолчанию все активные
-  - version_is: any
+  - app_version_is: any
     data:
       app_status: active
       
   # Версии старше 2 дней становятся outdated
-  - version_is: any
+  - app_version_is: any
     date: $localReleaseDate
     delay_hours: 48
     data:
       app_status: outdated
       
   # Версии старше 30 дней становятся unsupported
-  - version_is: any
+  - app_version_is: any
     date: $localReleaseDate
     delay_hours: 720  # 30 дней
     data:
@@ -537,17 +537,17 @@ settings:
 
 app_settings:
   # По умолчанию active
-  - version_is: any
+  - app_version_is: any
     data:
       app_status: active
       
   # Версии 1.x deprecated
-  - version_is: ">=1.0.0 <2.0.0"
+  - app_version_is: ">=1.0.0 <2.0.0"
     data:
       app_status: deprecated
       
   # Версии ниже 1.0 unsupported
-  - version_is: "<1.0.0"
+  - app_version_is: "<1.0.0"
     data:
       app_status: unsupported
 
@@ -665,12 +665,12 @@ content:
 
 app_settings:
   # Базовое правило - все активные
-  - version_is: any
+  - app_version_is: any
     data:
       app_status: active
       
   # Beta релиз только для 30% пользователей
-  - version_is: ">=2.1.0-beta"
+  - app_version_is: ">=2.1.0-beta"
     segmentation_percent: 30
     data:
       app_status: active
@@ -754,12 +754,12 @@ sources:
 
 app_settings:
   # Базовое правило
-  - version_is: any
+  - app_version_is: any
     data:
       app_status: active
       
   # Поэтапный rollout для критических версий
-  - version_is: ">=2.0.0"
+  - app_version_is: ">=2.0.0"
     date: "2024-01-01T10:00:00"
     delay_hours: 24      # Задержка 24 часа
     rollout_hours: 72    # Раскатка на 3 дня

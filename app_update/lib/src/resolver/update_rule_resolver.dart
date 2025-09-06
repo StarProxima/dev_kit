@@ -6,6 +6,7 @@ import 'base/rule_matcher.dart';
 import 'matchers/app_status_matcher.dart';
 import 'matchers/custom_params_matcher.dart';
 import 'matchers/locale_matcher.dart';
+import 'matchers/platform_matcher.dart';
 import 'matchers/source_matcher.dart';
 import 'matchers/temporal_matcher.dart';
 import 'matchers/version_matcher.dart';
@@ -19,6 +20,7 @@ class UpdateRuleResolver {
     ViewTargetMatcher(),
     LocaleMatcher(),
     SourceMatcher(),
+    PlatformMatcher(),
     VersionMatcher(),
     AppStatusMatcher(),
     TemporalMatcher(),
