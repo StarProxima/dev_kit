@@ -208,28 +208,28 @@ app_settings:
 
 ```yaml
 app_settings:
-  - version: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
+  - app_version_is: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"]
     data:
       app_status: deprecated
 
-  - version: "<4.0.0"
+  - app_version_is: "<4.0.0"
     date: 2014-10-17 00:00:00
     delay_hours: 168
     rollout_hours: 72
     data: { app_status: outdated }
 
-  - version: "<4.0.0"
+  - app_version_is: "<4.0.0"
     date: 2014-10-17 00:00:00
     delay_hours: 2880
     rollout_hours: 168
     data: { app_status: deprecated }
 
-  - version: "<4.0.0"
+  - app_version_is: "<4.0.0"
     date: 2015-01-01 00:00:00
     delay_hours: 6720
     rollout_hours: 336
 
-  - version: "<=2.0.0"
+  - app_version_is: "<=2.0.0"
     date: 2014-10-17 23:00:00
     source_is:
       - GooglePlay
@@ -237,18 +237,18 @@ app_settings:
         platforms: [ios]
     data: { app_status: unsupported }
 
-  - version: ">=6.0.0"
+  - app_version_is: ">=6.0.0"
     data: { app_status: active }
 
   # Пример фазного выкатывания
-  - version: "<=3.0.0"
+  - app_version_is: "<=3.0.0"
     date: 2014-10-17
     delay_hours: 12
     rollout_hours: 72
     segmentation_percent: 10
     data: { app_status: unsupported }
 
-  - version: "<=3.0.0"
+  - app_version_is: "<=3.0.0"
     date: 2014-10-17
     delay_hours: 120
     rollout_hours: 72
@@ -263,11 +263,13 @@ app_settings:
 ```yaml
 sources:
   - name: appStore
-    url: https://example.com
+    content:
+      update_url: https://example.com
     platforms: [macos, { name: ios }]
 
   - name: appGallery
-    url: https://example.com
+    content:
+      update_url: https://example.com
     content:
       - locale_is: ru
         data: { update_button: Перейти в AppGallery }
@@ -275,10 +277,12 @@ sources:
         data: { update_button: Go to AppGallery }
 
   - name: ruStore
-    url: https://example.com
+    content:
+      update_url: https://example.com
 
   - name: gitHub
-    url: https://example.com
+    content:
+      update_url: https://example.com
     platforms:
       - name: android
         source:
@@ -291,7 +295,8 @@ sources:
 
   - name: site
     platforms: [android]
-    url: https://example.com
+    content:
+      update_url: https://example.com
 ```
 
 ## Releases — релизы
@@ -309,7 +314,7 @@ releases:
         ### Short notes
         - Added bugs
         - Fixed features
-    sources: [googlePlay, appStore, ruStore, { name: github, source: { url: https://example.com, platforms: [android, ios, aurora]}}]
+    sources: [googlePlay, appStore, ruStore, { name: github, source: {content: update_url: https://example.com, platforms: [android, ios, aurora]}}]
 
   - version: 0.3.8+10-beta
     content: { release_notes: Minor Improvements }
