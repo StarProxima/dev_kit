@@ -9,7 +9,7 @@ class DurationParser {
   }) {
     if (hours == null) return null;
 
-    if (hours is! int) {
+    if (hours is! num) {
       throw ParseConfigException.wrongType(
         rightType: int,
         wrongType: hours.runtimeType,
@@ -22,7 +22,9 @@ class DurationParser {
       throw const ParseConfigException();
     }
 
-    final duraton = Duration(hours: hours);
+    final hoursInMs = hours * 60 * 60 * 1000;
+
+    final duraton = Duration(milliseconds: hoursInMs.toInt());
 
     return duraton;
   }

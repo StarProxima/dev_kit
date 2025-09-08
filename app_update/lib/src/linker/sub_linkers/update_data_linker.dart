@@ -110,8 +110,9 @@ class UpdateDataLinker {
             platforms: finalPlatforms,
           );
 
-    final finalRule =
-        rule.copyWith(sourceIs: finalSource == null ? null : [finalSource]);
+    final finalRule = rule.copyWith(
+      sourceIs: finalSource == null ? null : [finalSource],
+    );
 
     return finalRule;
   }

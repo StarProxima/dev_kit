@@ -266,10 +266,10 @@ void main() {
         expect(result.customParams?['field'], 'value');
       });
 
-      test('обрабатывает частичную интерполяцию', () {
+      test('обрабатывает частичную интерполяцию c разными форматами', () {
         const updateContent = UpdateContentData(
           updateUrl: 'https://example.com',
-          title: '{appName} version {localVersion} → {updateVersion}',
+          title: r'$appName version {localVersion} → ${updateVersion}',
           description: 'Some text {unknownVariable} and {appName}',
           releaseNotesTitle: 'Release Notes',
           releaseNotes: null,

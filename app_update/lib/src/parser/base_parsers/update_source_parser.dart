@@ -21,7 +21,11 @@ class UpdateSourceParser {
       // ignore: avoid-non-null-assertion
       final name = _updateSourceNameParser.parse(value)!;
 
-      return UpdateSource.custom(name);
+      return UpdateSource.custom(
+        name,
+        // ignore: avoid_redundant_argument_values
+        platforms: null,
+      );
     }
 
     if (value is! Map) {

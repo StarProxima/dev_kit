@@ -38,7 +38,7 @@ class UpdateSearcher {
       if (update.platform != searchData.platform) continue;
       if (!searchData.sources.any((source) =>
           source.sourceName == update.sourceName &&
-          (source.platforms?.contains(update.platform) ?? false))) {
+          (source.platforms?.contains(update.platform) ?? true))) {
         continue;
       }
 

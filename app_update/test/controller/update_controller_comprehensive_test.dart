@@ -30,7 +30,8 @@ class MockUpdateConfigSourceFetcher extends Mock
     required PackageInfo packageInfo,
   }) async =>
       Uri.parse(
-          'https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
+        'https://play.google.com/store/apps/details?id=${packageInfo.packageName}',
+      );
 
   @override
   Future<List<UpdateData>> fetchUpdates({
@@ -272,8 +273,10 @@ releases:
 
         // Assert - Русский Android
         expect(androidRuResult.update!.content.title, 'Доступно обновление');
-        expect(androidRuResult.update!.content.description,
-            contains('Доступна версия 2.1.0'));
+        expect(
+          androidRuResult.update!.content.description,
+          contains('Доступна версия 2.1.0'),
+        );
         expect(androidRuResult.update!.content.updateButton, 'Обновить');
 
         // Assert - Русский iOS (более специфичное правило)
@@ -338,7 +341,8 @@ releases:
             sources: const [UpdateSource.googlePlay],
             displayTarget: UpdateViewTarget.dialog,
             locale: const UpdateLocale(
-                Locale('fr', 'FR')), // Французская локаль отсутствует
+              Locale('fr', 'FR'),
+            ), // Французская локаль отсутствует
             currentDate: DateTime.parse('2024-01-15T10:00:00'),
           ),
         );
@@ -352,10 +356,11 @@ releases:
     });
 
     group('App Status Rules и жизненный цикл версий', () {
-      test('должен правильно определять статусы версий с временными правилами',
-          () async {
-        // Arrange
-        const yamlConfig = r'''
+      test(
+        'должен правильно определять статусы версий с временными правилами',
+        () async {
+          // Arrange
+          const yamlConfig = r'''
 sources:
   - name: googlePlay
     platforms: [android]
@@ -418,80 +423,83 @@ releases:
     sources: [googlePlay]
 ''';
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - Свежая версия (active)
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.9.0',
-          buildNumber: '19',
-          buildSignature: '',
-        );
+          // Act - Свежая версия (active)
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.9.0',
+            buildNumber: '19',
+            buildSignature: '',
+          );
 
-        final activeResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-            localReleaseDate:
-                DateTime.parse('2024-01-14T10:00:00'), // 1 день назад
-          ),
-        );
+          final activeResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+              localReleaseDate:
+                  DateTime.parse('2024-01-14T10:00:00'), // 1 день назад
+            ),
+          );
 
-        // Act - Устаревшая версия (outdated)
-        final outdatedResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-            localReleaseDate:
-                DateTime.parse('2024-01-10T10:00:00'), // 5 дней назад
-          ),
-        );
+          // Act - Устаревшая версия (outdated)
+          final outdatedResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+              localReleaseDate:
+                  DateTime.parse('2024-01-10T10:00:00'), // 5 дней назад
+            ),
+          );
 
-        // Act - Неподдерживаемая версия (unsupported)
-        final unsupportedResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-            localReleaseDate:
-                DateTime.parse('2023-12-01T10:00:00'), // 45 дней назад
-          ),
-        );
+          // Act - Неподдерживаемая версия (unsupported)
+          final unsupportedResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+              localReleaseDate:
+                  DateTime.parse('2023-12-01T10:00:00'), // 45 дней назад
+            ),
+          );
 
-        // Assert - Active
-        expect(activeResult.update!.content.title, 'Optional Update');
-        expect(activeResult.update!.settings.canSkip, isTrue);
-        expect(activeResult.update!.settings.canPostpone, isTrue);
+          // Assert - Active
+          expect(activeResult.update!.content.title, 'Optional Update');
+          expect(activeResult.update!.settings.canSkip, isTrue);
+          expect(activeResult.update!.settings.canPostpone, isTrue);
 
-        // Assert - Outdated
-        expect(outdatedResult.update!.content.title, 'Recommended Update');
-        expect(outdatedResult.update!.settings.canSkip, isTrue);
-        expect(outdatedResult.update!.settings.canPostpone, isTrue);
+          // Assert - Outdated
+          expect(outdatedResult.update!.content.title, 'Recommended Update');
+          expect(outdatedResult.update!.settings.canSkip, isTrue);
+          expect(outdatedResult.update!.settings.canPostpone, isTrue);
 
-        // Assert - Unsupported
-        expect(unsupportedResult.update!.content.title,
-            'Critical Update Required');
-        expect(unsupportedResult.update!.settings.canSkip, isFalse);
-        expect(unsupportedResult.update!.settings.canPostpone, isFalse);
+          // Assert - Unsupported
+          expect(
+            unsupportedResult.update!.content.title,
+            'Critical Update Required',
+          );
+          expect(unsupportedResult.update!.settings.canSkip, isFalse);
+          expect(unsupportedResult.update!.settings.canPostpone, isFalse);
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
 
       test('должен применять app status по версионным ограничениям', () async {
         // Arrange
@@ -646,10 +654,11 @@ releases:
     });
 
     group('Временные правила: segmentation, rollout, delay', () {
-      test('должен правильно обрабатывать segmentation для beta релизов',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен правильно обрабатывать segmentation для beta релизов',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: googlePlay
     platforms: [android]
@@ -686,68 +695,72 @@ releases:
     sources: [googlePlay]
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.9.0',
-          buildNumber: '19',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.9.0',
+            buildNumber: '19',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - Пользователь в beta сегменте (20% < 30%)
-        final betaUserResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-            segmentationPointer: 0.2, // 20%
-          ),
-        );
+          // Act - Пользователь в beta сегменте (20% < 30%)
+          final betaUserResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+              segmentationPointer: 0.2, // 20%
+            ),
+          );
 
-        // Act - Пользователь вне beta сегмента (40% > 30%)
-        final regularUserResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-            segmentationPointer: 0.4, // 40%
-          ),
-        );
+          // Act - Пользователь вне beta сегмента (40% > 30%)
+          final regularUserResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+              segmentationPointer: 0.4, // 40%
+            ),
+          );
 
-        // Assert - Beta пользователь должен получить beta версию
-        expect(betaUserResult.update!.version.toString(), contains('beta'));
-        expect(
+          // Assert - Beta пользователь должен получить beta версию
+          expect(betaUserResult.update!.version.toString(), contains('beta'));
+          expect(
             betaUserResult
                 .update!.appSettings.customParams?['is_beta_available'],
-            isTrue);
+            isTrue,
+          );
 
-        // Assert - Обычный пользователь должен получить стабильную версию
-        expect(regularUserResult.update!.version, Version.parse('2.0.0'));
-        expect(
+          // Assert - Обычный пользователь должен получить стабильную версию
+          expect(regularUserResult.update!.version, Version.parse('2.0.0'));
+          expect(
             regularUserResult
                 .update!.appSettings.customParams?['is_beta_available'],
-            isNull);
+            isNull,
+          );
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
 
-      test('должен применять rollout правила с временными ограничениями',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен применять rollout правила с временными ограничениями',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: googlePlay
     platforms: [android]
@@ -773,86 +786,95 @@ releases:
     sources: [googlePlay]
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.8.0',
-          buildNumber: '18',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.8.0',
+            buildNumber: '18',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - До начала rollout (до delay)
-        final beforeDelayResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate:
-                DateTime.parse('2024-01-01T20:00:00'), // 10 часов после релиза
-            segmentationPointer: 0.3,
-            rolloutPointer: 0.3,
-          ),
-        );
+          // Act - До начала rollout (до delay)
+          final beforeDelayResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse(
+                '2024-01-01T20:00:00',
+              ), // 10 часов после релиза
+              segmentationPointer: 0.3,
+              rolloutPointer: 0.3,
+            ),
+          );
 
-        // Act - В середине rollout (после delay)
-        final duringRolloutResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate:
-                DateTime.parse('2024-01-02T20:00:00'), // 34 часа после релиза
-            segmentationPointer: 0.3, // В сегменте
-            rolloutPointer: 0.3, // В rollout
-          ),
-        );
+          // Act - В середине rollout (после delay)
+          final duringRolloutResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate:
+                  DateTime.parse('2024-01-02T20:00:00'), // 34 часа после релиза
+              segmentationPointer: 0.3, // В сегменте
+              rolloutPointer: 0.3, // В rollout
+            ),
+          );
 
-        // Act - После rollout
-        final afterRolloutResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate:
-                DateTime.parse('2024-01-05T10:00:00'), // 4 дня после релиза
-            segmentationPointer: 0.3,
-            rolloutPointer: 0.8, // Вне rollout группы
-          ),
-        );
+          // Act - После rollout
+          final afterRolloutResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate:
+                  DateTime.parse('2024-01-05T10:00:00'), // 4 дня после релиза
+              segmentationPointer: 0.3,
+              rolloutPointer: 0.8, // Вне rollout группы
+            ),
+          );
 
-        // Assert - До delay правило не должно применяться
-        expect(
-            beforeDelayResult.update!.appSettings.appStatus, AppStatus.active);
+          // Assert - До delay правило не должно применяться
+          expect(
+            beforeDelayResult.update!.appSettings.appStatus,
+            AppStatus.active,
+          );
 
-        // Assert - В rollout правило применяется для подходящих пользователей
-        expect(duringRolloutResult.update!.appSettings.appStatus,
-            AppStatus.outdated);
+          // Assert - В rollout правило применяется для подходящих пользователей
+          expect(
+            duringRolloutResult.update!.appSettings.appStatus,
+            AppStatus.outdated,
+          );
 
-        // Assert - После rollout правило применяется ко всем
-        expect(afterRolloutResult.update!.appSettings.appStatus,
-            AppStatus.outdated);
+          // Assert - После rollout правило применяется ко всем
+          expect(
+            afterRolloutResult.update!.appSettings.appStatus,
+            AppStatus.outdated,
+          );
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
     });
 
     group('Комплексные сценарии с множественными источниками', () {
-      test('должен правильно выбирать между источниками по приоритету',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен правильно выбирать между источниками по приоритету',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: googlePlay
     url: https://play.google.com/store/apps/details?id={appPackageName}
@@ -900,98 +922,109 @@ releases:
     sources: [appStore]
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.9.0',
-          buildNumber: '19',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.9.0',
+            buildNumber: '19',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - Множественные источники Android (должен выбрать первый по приоритету)
-        final multipleSourcesResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.googlePlay,
-              UpdateSource.ruStore,
-              UpdateSource.custom(UpdateSourceName.custom('fdroid')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Множественные источники Android (должен выбрать первый по приоритету)
+          final multipleSourcesResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.googlePlay,
+                UpdateSource.ruStore,
+                UpdateSource.custom(UpdateSourceName.custom('fdroid')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - Только Google Play (должен найти эксклюзивную версию)
-        final googlePlayOnlyResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.googlePlay],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Только Google Play (должен найти эксклюзивную версию)
+          final googlePlayOnlyResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - Только RuStore
-        final ruStoreOnlyResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [UpdateSource.ruStore],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.ru,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Только RuStore
+          final ruStoreOnlyResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.ruStore],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.ru,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - iOS App Store
-        final iosResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.ios,
-            sources: const [UpdateSource.appStore],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - iOS App Store
+          final iosResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.ios,
+              sources: const [UpdateSource.appStore],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Assert - Должен выбрать самую новую доступную версию из первого источника
-        expect(multipleSourcesResult.update!.version, Version.parse('2.1.0'));
-        expect(multipleSourcesResult.update!.sourceName,
-            UpdateSourceName.googlePlay);
+          // Assert - Должен выбрать самую новую доступную версию из первого источника
+          expect(multipleSourcesResult.update!.version, Version.parse('2.1.0'));
+          expect(
+            multipleSourcesResult.update!.sourceName,
+            UpdateSourceName.googlePlay,
+          );
 
-        // Assert - Google Play эксклюзив
-        expect(googlePlayOnlyResult.update!.version, Version.parse('2.1.0'));
-        expect(googlePlayOnlyResult.update!.rawContent.releaseNotes,
-            contains('Exclusive'));
+          // Assert - Google Play эксклюзив
+          expect(googlePlayOnlyResult.update!.version, Version.parse('2.1.0'));
+          expect(
+            googlePlayOnlyResult.update!.rawContent.releaseNotes,
+            contains('Exclusive'),
+          );
 
-        // Assert - RuStore с кастомным контентом
-        expect(ruStoreOnlyResult.update!.version, Version.parse('2.0.0'));
-        expect(ruStoreOnlyResult.update!.sourceName, UpdateSourceName.ruStore);
-        expect(ruStoreOnlyResult.update!.content.customParams?['store_name'],
-            'RuStore');
+          // Assert - RuStore с кастомным контентом
+          expect(ruStoreOnlyResult.update!.version, Version.parse('2.0.0'));
+          expect(
+            ruStoreOnlyResult.update!.sourceName,
+            UpdateSourceName.ruStore,
+          );
+          expect(
+            ruStoreOnlyResult.update!.content.customParams?['store_name'],
+            'RuStore',
+          );
 
-        // Assert - iOS версия
-        expect(iosResult.update!.version, Version.parse('2.0.5'));
-        expect(iosResult.update!.platform, UpdatePlatform.ios);
+          // Assert - iOS версия
+          expect(iosResult.update!.version, Version.parse('2.0.5'));
+          expect(iosResult.update!.platform, UpdatePlatform.ios);
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
 
-      test('должен корректно обрабатывать platform-specific переопределения',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен корректно обрабатывать platform-specific переопределения',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: universal
     platforms: [android, ios, windows, macos, linux]
@@ -1051,88 +1084,101 @@ releases:
           windows_feature: "Windows Store Integration"
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '2.5.0',
-          buildNumber: '25',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '2.5.0',
+            buildNumber: '25',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - Android
-        final androidResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('universal')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Android
+          final androidResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('universal')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - iOS
-        final iosResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.ios,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('universal')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - iOS
+          final iosResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.ios,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('universal')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - Windows
-        final windowsResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.windows,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('universal')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Windows
+          final windowsResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.windows,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('universal')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Assert - Android (мобильные правила + android-специфичный контент)
-        expect(androidResult.update!.content.title, 'Mobile Update');
-        expect(androidResult.update!.content.customParams?['mobile_specific'],
-            isTrue);
-        expect(androidResult.update!.content.customParams?['android_feature'],
-            'Google Play Integration');
-        expect(androidResult.update!.settings.canPostpone, isFalse);
+          // Assert - Android (мобильные правила + android-специфичный контент)
+          expect(androidResult.update!.content.title, 'Mobile Update');
+          expect(
+            androidResult.update!.content.customParams?['mobile_specific'],
+            isTrue,
+          );
+          expect(
+            androidResult.update!.content.customParams?['android_feature'],
+            'Google Play Integration',
+          );
+          expect(androidResult.update!.settings.canPostpone, isFalse);
 
-        // Assert - iOS (мобильные правила + ios-специфичный контент)
-        expect(iosResult.update!.content.title, 'Mobile Update');
-        expect(
-            iosResult.update!.content.customParams?['mobile_specific'], isTrue);
-        expect(iosResult.update!.content.customParams?['ios_feature'],
-            'App Store Integration');
-        expect(iosResult.update!.settings.canPostpone, isFalse);
+          // Assert - iOS (мобильные правила + ios-специфичный контент)
+          expect(iosResult.update!.content.title, 'Mobile Update');
+          expect(
+            iosResult.update!.content.customParams?['mobile_specific'],
+            isTrue,
+          );
+          expect(
+            iosResult.update!.content.customParams?['ios_feature'],
+            'App Store Integration',
+          );
+          expect(iosResult.update!.settings.canPostpone, isFalse);
 
-        // Assert - Windows (desktop правила + windows-специфичный контент)
-        expect(windowsResult.update!.content.title, 'Desktop Update');
-        expect(windowsResult.update!.content.customParams?['desktop_features'],
-            isTrue);
-        expect(windowsResult.update!.content.customParams?['windows_feature'],
-            'Windows Store Integration');
-        expect(windowsResult.update!.settings.canPostpone, isTrue);
+          // Assert - Windows (desktop правила + windows-специфичный контент)
+          expect(windowsResult.update!.content.title, 'Desktop Update');
+          expect(
+            windowsResult.update!.content.customParams?['desktop_features'],
+            isTrue,
+          );
+          expect(
+            windowsResult.update!.content.customParams?['windows_feature'],
+            'Windows Store Integration',
+          );
+          expect(windowsResult.update!.settings.canPostpone, isTrue);
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
     });
 
     group('Интерполяция переменных и кастомные данные', () {
@@ -1216,42 +1262,72 @@ releases:
         );
 
         // Assert - Интерполяция в основном контенте
-        expect(result.update!.content.title,
-            'Update AwesomeApp from 2.1.5+125 to 2.3.0');
-        expect(result.update!.content.description,
-            contains('Hello AwesomeApp user!'));
-        expect(result.update!.content.description,
-            contains('Current version: 2.1.5+125'));
         expect(
-            result.update!.content.description, contains('New version: 2.3.0'));
-        expect(result.update!.content.description,
-            contains('Package: com.example.awesomeapp'));
+          result.update!.content.title,
+          'Update AwesomeApp from 2.1.5+125 to 2.3.0',
+        );
         expect(
-            result.update!.content.description, contains('Platform: android'));
+          result.update!.content.description,
+          contains('Hello AwesomeApp user!'),
+        );
         expect(
-            result.update!.content.description, contains('Source: testStore'));
+          result.update!.content.description,
+          contains('Current version: 2.1.5+125'),
+        );
+        expect(
+          result.update!.content.description,
+          contains('New version: 2.3.0'),
+        );
+        expect(
+          result.update!.content.description,
+          contains('Package: com.example.awesomeapp'),
+        );
+        expect(
+          result.update!.content.description,
+          contains('Platform: android'),
+        );
+        expect(
+          result.update!.content.description,
+          contains('Source: testStore'),
+        );
 
         // Assert - Интерполяция URL
-        expect(result.update!.content.updateUrl,
-            'https://store.example.com/com.example.awesomeapp/download/2.3.0');
+        expect(
+          result.update!.content.updateUrl,
+          'https://store.example.com/com.example.awesomeapp/download/2.3.0',
+        );
 
         // Assert - Интерполяция в release контенте
-        expect(result.update!.content.releaseNotes,
-            contains("What's new in 2.3.0:"));
-        expect(result.update!.content.releaseNotes,
-            contains('Improved performance for AwesomeApp'));
-        expect(result.update!.content.releaseNotes,
-            contains('New features for android'));
-        expect(result.update!.content.customParams?['changelog'],
-            contains("What's new in 2.3.0:"));
-        expect(result.update!.content.customParams?['custom_field'],
-            'Value for com.example.awesomeapp');
+        expect(
+          result.update!.content.releaseNotes,
+          contains("What's new in 2.3.0:"),
+        );
+        expect(
+          result.update!.content.releaseNotes,
+          contains('Improved performance for AwesomeApp'),
+        );
+        expect(
+          result.update!.content.releaseNotes,
+          contains('New features for android'),
+        );
+        expect(
+          result.update!.content.customParams?['changelog'],
+          contains("What's new in 2.3.0:"),
+        );
+        expect(
+          result.update!.content.customParams?['custom_field'],
+          'Value for com.example.awesomeapp',
+        );
 
         // Assert - Кастомные данные
         expect(
-            result.searchData!.customParams?['app_category'], 'productivity');
-        expect(result.searchData!.customParams?['feature_flags'],
-            contains('new_ui'));
+          result.searchData!.customParams?['app_category'],
+          'productivity',
+        );
+        expect(
+          result.searchData!.customParams?['feature_flags'],
+          contains('new_ui'),
+        );
         expect(result.update!.customParams?['release_type'], 'major');
         expect(result.update!.customParams?['requires_restart'], isTrue);
 
@@ -1259,10 +1335,11 @@ releases:
         await configFile.delete();
       });
 
-      test('должен правильно мерджить кастомные данные из разных источников',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен правильно мерджить кастомные данные из разных источников',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: mainStore
     platforms: [android]
@@ -1302,57 +1379,68 @@ releases:
           android_optimization: "enabled"
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.5.0',
-          buildNumber: '15',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.5.0',
+            buildNumber: '15',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act
-        final result = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('mainStore')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act
+          final result = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('mainStore')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Assert - Проверяем merged кастомные данные в searchData
-        final searchcustomParams = result.searchData!.customParams!;
-        expect(
-            searchcustomParams['environment'], 'production'); // Из глобальных
-        expect(searchcustomParams['analytics_enabled'],
-            isFalse); // Переопределено в release
-        expect(searchcustomParams['theme'],
-            'dark'); // Переопределено в content правиле
-        expect(searchcustomParams['android_specific'],
-            isTrue); // Из content правила
-        expect(searchcustomParams['release_channel'], 'stable'); // Из release
-        expect(searchcustomParams['performance_mode'],
-            'optimized'); // Из release content
+          // Assert - Проверяем merged кастомные данные в searchData
+          final searchcustomParams = result.searchData!.customParams!;
+          expect(
+            searchcustomParams['environment'],
+            'production',
+          ); // Из глобальных
+          expect(
+            searchcustomParams['analytics_enabled'],
+            isFalse,
+          ); // Переопределено в release
+          expect(
+            searchcustomParams['theme'],
+            'dark',
+          ); // Переопределено в content правиле
+          expect(
+            searchcustomParams['android_specific'],
+            isTrue,
+          ); // Из content правила
+          expect(searchcustomParams['release_channel'], 'stable'); // Из release
+          expect(
+            searchcustomParams['performance_mode'],
+            'optimized',
+          ); // Из release content
 
-        // Assert - Кастомные данные в update
-        final updatecustomParams = result.update!.customParams!;
-        expect(updatecustomParams['release_channel'], 'stable');
-        expect(updatecustomParams['beta_features'], isFalse);
+          // Assert - Кастомные данные в update
+          final updatecustomParams = result.update!.customParams!;
+          expect(updatecustomParams['release_channel'], 'stable');
+          expect(updatecustomParams['beta_features'], isFalse);
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
     });
 
     group('Edge Cases и обработка ошибок', () {
@@ -1456,10 +1544,11 @@ releases:
         await configFile.delete();
       });
 
-      test('должен правильно обрабатывать несовместимые платформы и источники',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен правильно обрабатывать несовместимые платформы и источники',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: iosOnlyStore
     platforms: [ios]
@@ -1477,56 +1566,62 @@ releases:
     sources: [androidOnlyStore]
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.0.0',
-          buildNumber: '10',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.0.0',
+            buildNumber: '10',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - Android платформа с iOS источником
-        final incompatibleResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('iosOnlyStore')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Android платформа с iOS источником
+          final incompatibleResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('iosOnlyStore')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - Android платформа с совместимым источником
-        final compatibleResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('androidOnlyStore')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Android платформа с совместимым источником
+          final compatibleResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(
+                  UpdateSourceName.custom('androidOnlyStore'),
+                ),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Assert
-        expect(incompatibleResult.updateStatus.type, UpdateStatusType.notFound);
-        expect(compatibleResult.updateStatus.type, UpdateStatusType.found);
-        expect(compatibleResult.update!.version, Version.parse('1.9.0'));
+          // Assert
+          expect(
+            incompatibleResult.updateStatus.type,
+            UpdateStatusType.notFound,
+          );
+          expect(compatibleResult.updateStatus.type, UpdateStatusType.found);
+          expect(compatibleResult.update!.version, Version.parse('1.9.0'));
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
 
       test('должен обрабатывать инициализацию контроллера', () async {
         // Arrange
@@ -1595,10 +1690,11 @@ releases:
     });
 
     group('Display Target специфичные правила', () {
-      test('должен применять разные правила для разных display targets',
-          () async {
-        // Arrange
-        const yamlConfig = '''
+      test(
+        'должен применять разные правила для разных display targets',
+        () async {
+          // Arrange
+          const yamlConfig = '''
 sources:
   - name: testStore
     platforms: [android]
@@ -1657,84 +1753,92 @@ releases:
     sources: [testStore]
 ''';
 
-        PackageInfo.setMockInitialValues(
-          appName: 'TestApp',
-          packageName: 'com.example.app',
-          version: '1.0.0',
-          buildNumber: '10',
-          buildSignature: '',
-        );
+          PackageInfo.setMockInitialValues(
+            appName: 'TestApp',
+            packageName: 'com.example.app',
+            version: '1.0.0',
+            buildNumber: '10',
+            buildSignature: '',
+          );
 
-        final configFile = await _createTempConfig(yamlConfig);
-        final controller = UpdateController(
-          fetchers: [UpdateConfigFetcher.byFile(configFile)],
-        );
+          final configFile = await _createTempConfig(yamlConfig);
+          final controller = UpdateController(
+            fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          );
 
-        await controller.init();
-        await controller.fetch(const UpdateSearchConfig());
+          await controller.init();
+          await controller.fetch(const UpdateSearchConfig());
 
-        // Act - Card target
-        final cardResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('testStore')),
-            ],
-            displayTarget: UpdateViewTarget.card,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Card target
+          final cardResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('testStore')),
+              ],
+              displayTarget: UpdateViewTarget.card,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - Dialog target
-        final dialogResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('testStore')),
-            ],
-            displayTarget: UpdateViewTarget.dialog,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Dialog target
+          final dialogResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('testStore')),
+              ],
+              displayTarget: UpdateViewTarget.dialog,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Act - Screen target
-        final screenResult = controller.findUpdate(
-          UpdateSearchConfig(
-            platform: UpdatePlatform.android,
-            sources: const [
-              UpdateSource.custom(UpdateSourceName.custom('testStore')),
-            ],
-            displayTarget: UpdateViewTarget.screen,
-            locale: UpdateLocale.en,
-            currentDate: DateTime.parse('2024-01-15T10:00:00'),
-          ),
-        );
+          // Act - Screen target
+          final screenResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [
+                UpdateSource.custom(UpdateSourceName.custom('testStore')),
+              ],
+              displayTarget: UpdateViewTarget.screen,
+              locale: UpdateLocale.en,
+              currentDate: DateTime.parse('2024-01-15T10:00:00'),
+            ),
+          );
 
-        // Assert - Card
-        expect(cardResult.update!.content.title, 'Card Update');
-        expect(cardResult.update!.content.customParams?['show_icon'], isTrue);
-        expect(cardResult.update!.settings.canSkip, isTrue);
-        expect(cardResult.update!.settings.canPostpone, isTrue);
+          // Assert - Card
+          expect(cardResult.update!.content.title, 'Card Update');
+          expect(cardResult.update!.content.customParams?['show_icon'], isTrue);
+          expect(cardResult.update!.settings.canSkip, isTrue);
+          expect(cardResult.update!.settings.canPostpone, isTrue);
 
-        // Assert - Dialog
-        expect(dialogResult.update!.content.title, 'Dialog Update');
-        expect(
-            dialogResult.update!.content.customParams?['show_details'], isTrue);
-        expect(dialogResult.update!.settings.canSkip, isTrue);
-        expect(dialogResult.update!.settings.canPostpone, isFalse);
+          // Assert - Dialog
+          expect(dialogResult.update!.content.title, 'Dialog Update');
+          expect(
+            dialogResult.update!.content.customParams?['show_details'],
+            isTrue,
+          );
+          expect(dialogResult.update!.settings.canSkip, isTrue);
+          expect(dialogResult.update!.settings.canPostpone, isFalse);
 
-        // Assert - Screen
-        expect(screenResult.update!.content.title, 'Critical Update Required');
-        expect(screenResult.update!.content.customParams?['full_screen_mode'],
-            isTrue);
-        expect(screenResult.update!.settings.canSkip, isFalse);
-        expect(screenResult.update!.settings.canPostpone, isFalse);
+          // Assert - Screen
+          expect(
+            screenResult.update!.content.title,
+            'Critical Update Required',
+          );
+          expect(
+            screenResult.update!.content.customParams?['full_screen_mode'],
+            isTrue,
+          );
+          expect(screenResult.update!.settings.canSkip, isFalse);
+          expect(screenResult.update!.settings.canPostpone, isFalse);
 
-        // Cleanup
-        await configFile.delete();
-      });
+          // Cleanup
+          await configFile.delete();
+        },
+      );
     });
   });
 }
@@ -1743,8 +1847,10 @@ releases:
 Future<File> _createTempConfig(String yamlContent) async {
   final tempDir = Directory.systemTemp;
   final tempFile = File(
-      '${tempDir.path}/test_config_${DateTime.now().millisecondsSinceEpoch}.yaml');
+    '${tempDir.path}/test_config_${DateTime.now().millisecondsSinceEpoch}.yaml',
+  );
   await tempFile.writeAsString(yamlContent);
+
   return tempFile;
 }
 

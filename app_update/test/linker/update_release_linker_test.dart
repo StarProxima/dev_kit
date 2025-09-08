@@ -499,10 +499,6 @@ void main() {
 
             final firstRule = updateData.contentRules!.first;
             expect(firstRule.data.title, releaseRule.data.title);
-            expect(
-              firstRule.appVersionIs,
-              contains(UpdateVersionConstraint(release.version)),
-            );
             final firstRuleSourceIs = firstRule.sourceIs?.firstOrNull;
             expect(
               firstRuleSourceIs?.sourceName,
@@ -515,10 +511,6 @@ void main() {
 
             final secondRule = updateData.contentRules![1];
             expect(secondRule.data.description, sourceRule.data.description);
-            expect(
-              secondRule.appVersionIs,
-              contains(UpdateVersionConstraint(release.version)),
-            );
             final secondRuleSourceIs = secondRule.sourceIs?.firstOrNull;
             expect(
               secondRuleSourceIs?.sourceName,
@@ -531,10 +523,6 @@ void main() {
 
             final thirdRule = updateData.contentRules![2];
             expect(thirdRule.data.title, platformRule.data.title);
-            expect(
-              thirdRule.appVersionIs,
-              contains(UpdateVersionConstraint(release.version)),
-            );
             final thirdRuleSourceIs = thirdRule.sourceIs?.firstOrNull;
             expect(
               thirdRuleSourceIs?.sourceName,
@@ -574,10 +562,6 @@ void main() {
           final firstContentRule = result.first.contentRules!.first;
           expect(firstContentRule.data.title, equals('Title'));
           expect(
-            firstContentRule.appVersionIs,
-            contains(UpdateVersionConstraint(release.version)),
-          );
-          expect(
             firstContentRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
@@ -589,10 +573,6 @@ void main() {
           final firstSettingsRule = result.first.settingsRules!.first;
           expect(firstSettingsRule.data.shouldShow, equals(true));
           expect(
-            firstSettingsRule.appVersionIs,
-            contains(UpdateVersionConstraint(release.version)),
-          );
-          expect(
             firstSettingsRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
@@ -603,10 +583,6 @@ void main() {
 
           final firstAppSettingsRule = result.first.appSettingsRules!.first;
           expect(firstAppSettingsRule.data.appStatus, equals(AppStatus.active));
-          expect(
-            firstAppSettingsRule.appVersionIs,
-            contains(UpdateVersionConstraint(release.version)),
-          );
           expect(
             firstAppSettingsRule.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
@@ -931,6 +907,8 @@ void main() {
         final customSources = [
           const UpdateSource.custom(
             UpdateSourceName.custom('empty'),
+            // ignore: avoid_redundant_argument_values
+            platforms: null,
           ),
         ];
 

@@ -75,7 +75,8 @@ class UpdateContentData {
     String str = text;
 
     for (final entry in interpolateData.entries) {
-      str = str.replaceAll(_regExpForField(entry.key), entry.value);
+      final regExp = _regExpForField(entry.key);
+      str = str.replaceAll(regExp, entry.value);
     }
 
     // ignore: avoid-type-casts
@@ -83,5 +84,5 @@ class UpdateContentData {
   }
 
   static RegExp _regExpForField(String name) =>
-      RegExp('\$$name|{$name}|\${$name}');
+      RegExp('\\\$$name|{$name}|\\\${$name}');
 }
