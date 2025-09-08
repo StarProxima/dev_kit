@@ -33,6 +33,7 @@ class UpdateRuleConfigParser {
   UpdateRuleConfig<T>? parse<T extends Mergeable<T>>(
     Object? value, {
     required T? Function(Object? value) dataParser,
+    required bool isDebug,
   }) {
     if (value == null) return null;
 
@@ -135,7 +136,7 @@ class UpdateRuleConfigParser {
         _doubleParser.parse(value: segmentationPercentValue);
 
     // Проверяем, что не осталось неизвестных параметров
-    if (map.isNotEmpty) {
+    if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
         parserType: UpdateRuleConfigParser,

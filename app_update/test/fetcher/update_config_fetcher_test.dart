@@ -56,7 +56,8 @@ void main() {
         final rawData = <String, dynamic>{'test': 'data'};
         const expectedConfig = UpdateConfig();
 
-        when(() => mockParser.parse(any())).thenReturn(expectedConfig);
+        when(() => mockParser.parse(any(), isDebug: any(named: 'isDebug')))
+            .thenReturn(expectedConfig);
 
         final fetcher = UpdateConfigFetcher.customRaw(
           () async => rawData,
@@ -71,12 +72,13 @@ void main() {
 
         // Assert
         expect(result, equals(expectedConfig));
-        verify(() => mockParser.parse(rawData)).called(1);
+        verify(() => mockParser.parse(rawData, isDebug: true)).called(1);
       });
 
       test('бросает UpdateConfigException если parser вернул null', () {
         // Arrange
-        when(() => mockParser.parse(any())).thenReturn(null);
+        when(() => mockParser.parse(any(), isDebug: any(named: 'isDebug')))
+            .thenReturn(null);
 
         final fetcher = UpdateConfigFetcher.customRaw(
           () async => <String, dynamic>{'test': 'data'},

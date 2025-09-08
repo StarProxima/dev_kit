@@ -20,8 +20,9 @@ class ReleaseConfigParser {
   const ReleaseConfigParser();
 
   ReleaseConfig? parse(
-    Object? value,
-  ) {
+    Object? value, {
+    required bool isDebug,
+  }) {
     if (value == null) return null;
 
     if (value is! Map) {
@@ -59,14 +60,17 @@ class ReleaseConfigParser {
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
-    final sources =
-        sourcesValue?.map(_releaseSourceConfigParser.parse).nonNulls.toList();
+    final sources = sourcesValue
+        ?.map((value) =>
+            _releaseSourceConfigParser.parse(value, isDebug: isDebug))
+        .nonNulls
+        .toList();
 
     // rules
-    final rules = _updateRulesPartParser.parse(map);
+    final rules = _updateRulesPartParser.parse(map, isDebug: isDebug);
 
     // Проверяем, что не осталось неизвестных параметров
-    if (map.isNotEmpty) {
+    if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
         parserType: ReleaseConfigParser,

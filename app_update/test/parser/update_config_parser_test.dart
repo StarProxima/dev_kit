@@ -15,7 +15,7 @@ void main() {
           await File('test/parser/helpers/api_v3.yaml').readAsString();
 
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<UpdateConfig>());
 
       // Проверка content_rules
@@ -83,7 +83,8 @@ void main() {
         releases: null
       ''';
       final map = parseYamlToMap(yamlStr);
-      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(map, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
   });
 }

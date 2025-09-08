@@ -14,8 +14,9 @@ class GlobalPlatformConfigParser {
   const GlobalPlatformConfigParser();
 
   GlobalPlatformConfig? parse(
-    Object? value,
-  ) {
+    Object? value, {
+    required bool isDebug,
+  }) {
     if (value == null) return null;
 
     // Short syntax
@@ -60,10 +61,10 @@ class GlobalPlatformConfigParser {
     }
 
     // rules
-    final rules = _updateRulesPartParser.parse(map);
+    final rules = _updateRulesPartParser.parse(map, isDebug: isDebug);
 
     // Проверяем, что не осталось неизвестных параметров
-    if (map.isNotEmpty) {
+    if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
         parserType: GlobalPlatformConfigParser,

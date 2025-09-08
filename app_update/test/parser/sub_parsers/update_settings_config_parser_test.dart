@@ -20,7 +20,7 @@ void main() {
           custom_field: 42
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<UpdateSettingsConfig>());
       expect(result?.shouldShow, true);
       expect(result?.canSkip, false);
@@ -37,19 +37,21 @@ void main() {
         should_show: false
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result?.shouldShow, false);
       expect(result?.canSkip, isNull);
       expect(result?.canPostpone, isNull);
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([], isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('null возвращает null', () {
-      expect(parser.parse(null), isNull);
+      expect(parser.parse(null, isDebug: true), isNull);
     });
   });
 }

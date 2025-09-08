@@ -18,8 +18,9 @@ class UpdateRulesPartParser {
   const UpdateRulesPartParser();
 
   UpdateRulesContainer parse(
-    Map<String, dynamic> map,
-  ) {
+    Map<String, dynamic> map, {
+    required bool isDebug,
+  }) {
     // contentRules
     final contentRulesRawValue = map.remove('content');
     final contentRulesValue = _listOrValueParser.parse(contentRulesRawValue);
@@ -27,7 +28,9 @@ class UpdateRulesPartParser {
     final contentRules = contentRulesValue
         ?.map((value) => _updateRuleConfigParser.parse<UpdateContentConfig>(
               value,
-              dataParser: _updateContentConfigParser.parse,
+              dataParser: (v) =>
+                  _updateContentConfigParser.parse(v, isDebug: isDebug),
+              isDebug: isDebug,
             ))
         .nonNulls
         .toList();
@@ -39,7 +42,9 @@ class UpdateRulesPartParser {
     final settingsRules = settingsRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
               value,
-              dataParser: _updateSettingsConfigParser.parse,
+              dataParser: (v) =>
+                  _updateSettingsConfigParser.parse(v, isDebug: isDebug),
+              isDebug: isDebug,
             ))
         .nonNulls
         .toList();
@@ -51,7 +56,9 @@ class UpdateRulesPartParser {
     final appSettingsRules = appSettingsRulesValue
         ?.map((value) => _updateRuleConfigParser.parse(
               value,
-              dataParser: _updateAppStatusConfigParser.parse,
+              dataParser: (v) =>
+                  _updateAppStatusConfigParser.parse(v, isDebug: isDebug),
+              isDebug: isDebug,
             ))
         .nonNulls
         .toList();

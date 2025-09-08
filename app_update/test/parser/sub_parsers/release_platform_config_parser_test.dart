@@ -10,7 +10,7 @@ void main() {
 
     test('Короткий синтаксис', () {
       const yamlStr = '''android''';
-      final result = parser.parse(loadYaml(yamlStr));
+      final result = parser.parse(loadYaml(yamlStr), isDebug: true);
       expect(result, isA<ReleasePlatformConfig>());
       expect(result?.platformName.name, 'android');
       expect(result?.releaseOverride, isNull);
@@ -35,7 +35,7 @@ void main() {
           custom_field: 42
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<ReleasePlatformConfig>());
       expect(result?.platformName.name, 'ios');
       expect(result?.releaseOverride?.version?.toString(), '1.2.3');
@@ -46,12 +46,14 @@ void main() {
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([], isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('null возвращает null', () {
-      expect(parser.parse(null), isNull);
+      expect(parser.parse(null, isDebug: true), isNull);
     });
   });
 }

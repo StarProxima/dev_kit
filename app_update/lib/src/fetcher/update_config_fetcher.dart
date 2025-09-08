@@ -55,7 +55,10 @@ interface class UpdateConfigFetcher {
     final fetchRawConfig = _onFetchRawConfig;
     if (fetchRawConfig != null) {
       final result = await fetchRawConfig();
-      final config = _updateConfigParser.parse(result);
+      final config = _updateConfigParser.parse(
+        result,
+        isDebug: true,
+      );
 
       if (config == null) {
         throw const ParseConfigException();

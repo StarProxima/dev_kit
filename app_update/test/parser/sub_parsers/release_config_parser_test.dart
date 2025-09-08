@@ -36,7 +36,7 @@ void main() {
           custom_field: 123
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<ReleaseConfig>());
       expect(result?.version.toString(), '1.2.3+4');
       expect(result?.date.year, 2024);
@@ -65,7 +65,7 @@ void main() {
           - appStore
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<ReleaseConfig>());
       expect(result?.sources?.length, 2);
       expect(result?.sources?[0].sourceName.name, 'googlePlay'.toLowerCase());
@@ -84,7 +84,7 @@ void main() {
               date: '2025-10-10 12:00:00'
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<ReleaseConfig>());
       expect(result?.sources?[0].releaseOverride?.version?.toString(), '0.2.1');
       expect(
@@ -94,17 +94,19 @@ void main() {
     });
 
     test('Парсинг null возвращает null', () {
-      final result = parser.parse(null);
+      final result = parser.parse(null, isDebug: true);
       expect(result, isNull);
     });
 
     test('Ошибка при неверном типе входных данных', () {
       expect(
-        () => parser.parse('not a map'),
+        () => parser.parse('not a map', isDebug: true),
         throwsA(isA<ParseConfigException>()),
       );
-      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([], isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('Ошибка при невалидных вложенных структурах', () {
@@ -118,7 +120,13 @@ void main() {
           },
         ],
       };
-      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
+      expect(
+        () => parser.parse(
+          map,
+          isDebug: true,
+        ),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
   });
 }

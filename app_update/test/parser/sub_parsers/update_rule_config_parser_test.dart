@@ -32,6 +32,7 @@ void main() {
         dataParser: (v) => _MergeableMapAdapter(
           Map<String, dynamic>.of(v as Map<String, dynamic>),
         ),
+        isDebug: true,
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
       expect(result?.appStatusIs?.firstOrNull?.name, 'outdated');
@@ -54,6 +55,7 @@ void main() {
         dataParser: (v) => _MergeableMapAdapter(
           Map<String, dynamic>.of(v as Map<String, dynamic>),
         ),
+        isDebug: true,
       );
       expect(result?.appStatusIs?.length, 2);
       expect(result?.localeIs?.length, 2);
@@ -68,6 +70,7 @@ void main() {
         dataParser: (v) => _MergeableMapAdapter(
           Map<String, dynamic>.of(v as Map<String, dynamic>),
         ),
+        isDebug: true,
       );
       expect(result, isNull);
     });
@@ -79,6 +82,7 @@ void main() {
           dataParser: (v) => _MergeableMapAdapter(
             Map<String, dynamic>.of(v as Map<String, dynamic>),
           ),
+          isDebug: true,
         ),
         throwsA(isA<ParseConfigException>()),
       );
@@ -88,6 +92,7 @@ void main() {
           dataParser: (v) => _MergeableMapAdapter(
             Map<String, dynamic>.of(v as Map<String, dynamic>),
           ),
+          isDebug: true,
         ),
         throwsA(isA<ParseConfigException>()),
       );
@@ -107,6 +112,7 @@ void main() {
         dataParser: (v) => _MergeableMapAdapter(
           Map<String, dynamic>.of(v as Map<String, dynamic>),
         ),
+        isDebug: true,
       );
       expect(result?.customParams, containsPair('custom_field', 42));
     });
@@ -126,6 +132,7 @@ void main() {
         dataParser: (v) => _MergeableMapAdapter(
           Map<String, dynamic>.of(v as Map<String, dynamic>),
         ),
+        isDebug: true,
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
       expect(result?.delay?.inHours, 12);

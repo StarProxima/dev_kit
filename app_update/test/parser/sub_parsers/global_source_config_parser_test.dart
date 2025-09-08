@@ -29,7 +29,7 @@ void main() {
           custom_field: 42
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<GlobalSourceConfig>());
       expect(result?.sourceName.name, 'github');
       expect(result?.platforms?.length, 2);
@@ -44,16 +44,19 @@ void main() {
         'name': 'github',
         'platforms': 'android', // platforms должен быть List
       };
-      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(map, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([], isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('null возвращает null', () {
-      expect(parser.parse(null), isNull);
+      expect(parser.parse(null, isDebug: true), isNull);
     });
   });
 }

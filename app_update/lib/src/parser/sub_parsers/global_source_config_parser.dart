@@ -17,8 +17,9 @@ class GlobalSourceConfigParser {
   const GlobalSourceConfigParser();
 
   GlobalSourceConfig? parse(
-    Object? value,
-  ) {
+    Object? value, {
+    required bool isDebug,
+  }) {
     if (value == null) return null;
 
     if (value is! Map) {
@@ -50,16 +51,17 @@ class GlobalSourceConfigParser {
       throw const ParseConfigException();
     }
     final platforms = platformsValue
-        ?.map(_globalPlatformConfigParser.parse)
+        ?.map((value) =>
+            _globalPlatformConfigParser.parse(value, isDebug: isDebug))
         .where((e) => e != null)
         .cast<GlobalPlatformConfig>()
         .toList();
 
     // rules
-    final rules = _updateRulesPartParser.parse(map);
+    final rules = _updateRulesPartParser.parse(map, isDebug: isDebug);
 
     // Проверяем, что не осталось неизвестных параметров
-    if (map.isNotEmpty) {
+    if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
         parserType: GlobalSourceConfigParser,

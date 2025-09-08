@@ -18,8 +18,9 @@ class UpdateConfigParser {
   const UpdateConfigParser();
 
   UpdateConfig? parse(
-    Object? value,
-  ) {
+    Object? value, {
+    required bool isDebug,
+  }) {
     if (value == null) return null;
 
     if (value is! Map) {
@@ -43,21 +44,27 @@ class UpdateConfigParser {
 
     if (releasesValue == null) throw const ParseConfigException();
 
-    final releases =
-        releasesValue.map(_releaseConfigParser.parse).nonNulls.toList();
+    final releases = releasesValue
+        .map((value) => _releaseConfigParser.parse(value, isDebug: isDebug))
+        .nonNulls
+        .toList();
 
     // sources
     final sourcesRawValue = map.remove('sources');
     final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
-    final sources =
-        sourcesValue?.map(_globalSourceConfigParser.parse).nonNulls.toList();
+    final sources = sourcesValue
+        ?.map(
+          (value) => _globalSourceConfigParser.parse(value, isDebug: isDebug),
+        )
+        .nonNulls
+        .toList();
 
     // rules
-    final rules = _updateRulesPartParser.parse(map);
+    final rules = _updateRulesPartParser.parse(map, isDebug: isDebug);
 
     // Проверяем, что не осталось неизвестных параметров
-    if (map.isNotEmpty) {
+    if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
         parserType: UpdateConfigParser,

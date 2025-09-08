@@ -10,7 +10,7 @@ void main() {
 
     test('Короткий синтаксис', () {
       const yamlStr = '''googlePlay''';
-      final result = parser.parse(loadYaml(yamlStr));
+      final result = parser.parse(loadYaml(yamlStr), isDebug: true);
       expect(result, isA<ReleaseSourceConfig>());
       expect(result?.sourceName.name, 'googlePlay'.toLowerCase());
       expect(result?.platforms, isNull);
@@ -37,7 +37,7 @@ void main() {
           custom_field: 42
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<ReleaseSourceConfig>());
       expect(result?.sourceName.name, 'github'.toLowerCase());
       expect(result?.platforms?.length, 2);
@@ -54,13 +54,15 @@ void main() {
           version: '1.2.3'
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result?.releaseOverride?.version?.toString(), '1.2.3');
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([], isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('Ошибка при невалидных платформах', () {
@@ -68,11 +70,12 @@ void main() {
         'name': 'github',
         'platforms': 'android', // platforms должен быть List
       };
-      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(map, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('null возвращает null', () {
-      expect(parser.parse(null), isNull);
+      expect(parser.parse(null, isDebug: true), isNull);
     });
 
     test('name обязательное поле', () {
@@ -81,7 +84,7 @@ void main() {
       };
 
       expect(
-        () => parser.parse(map),
+        () => parser.parse(map, isDebug: true),
         throwsA(
           isA<ParseConfigException>(),
         ),

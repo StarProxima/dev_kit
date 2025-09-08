@@ -21,7 +21,7 @@ void main() {
           custom_field: 123
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<UpdateContentConfig>());
       expect(result?.updateUrl, 'https://example.com');
       expect(result?.title, 'Заголовок');
@@ -41,7 +41,7 @@ void main() {
           custom_field: true
       ''';
       final map = parseYamlToMap(yamlStr);
-      final result = parser.parse(map);
+      final result = parser.parse(map, isDebug: true);
       expect(result, isA<UpdateContentConfig>());
       expect(result?.title, 'Заголовок');
       expect(result?.description, isNull);
@@ -49,24 +49,27 @@ void main() {
     });
 
     test('Парсинг null возвращает null', () {
-      final result = parser.parse(null);
+      final result = parser.parse(null, isDebug: true);
       expect(result, isNull);
     });
 
     test('Ошибка при неверном типе входных данных', () {
       expect(
-        () => parser.parse('not a map'),
+        () => parser.parse('not a map', isDebug: true),
         throwsA(isA<ParseConfigException>()),
       );
-      expect(() => parser.parse(123), throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([]), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(123, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse([], isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
 
     test('Ошибка при нестроковых значениях полей', () {
       final map = {
         'title': 123,
       };
-      expect(() => parser.parse(map), throwsA(isA<ParseConfigException>()));
+      expect(() => parser.parse(map, isDebug: true),
+          throwsA(isA<ParseConfigException>()));
     });
   });
 }

@@ -12,8 +12,9 @@ class UpdateContentConfigParser {
   const UpdateContentConfigParser();
 
   UpdateContentConfig? parse(
-    Object? value,
-  ) {
+    Object? value, {
+    required bool isDebug,
+  }) {
     if (value == null) return null;
 
     if (value is! Map) {
@@ -64,7 +65,7 @@ class UpdateContentConfigParser {
     final updateButton = _stringParser.parse(updateButtonValue);
 
     // Проверяем, что не осталось неизвестных параметров
-    if (map.isNotEmpty) {
+    if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
         parserType: UpdateContentConfigParser,
