@@ -45,7 +45,7 @@ class ReleaseConfig {
         contentRules: contentRules,
         settingsRules: settingsRules,
         appSettingsRules: appSettingsRules,
-        customParams: Mergeable.mergecustomParams(
+        customParams: Mergeable.mergeCustomParams(
           customParams,
           overrideData?.customParams,
         ),

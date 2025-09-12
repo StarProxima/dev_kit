@@ -51,7 +51,7 @@ class UpdateData {
         settingsRules: settingsRules ?? this.settingsRules,
         appSettingsRules: appSettingsRules ?? this.appSettingsRules,
         customParams:
-            Mergeable.mergecustomParams(this.customParams, customParams),
+            Mergeable.mergeCustomParams(this.customParams, customParams),
       );
 }
 

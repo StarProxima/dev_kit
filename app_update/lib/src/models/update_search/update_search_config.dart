@@ -95,6 +95,6 @@ class UpdateSearchConfig {
         appName: appName ?? this.appName,
         appPackageName: appPackageName ?? this.appPackageName,
         customParams:
-            Mergeable.mergecustomParams(this.customParams, customParams),
+            Mergeable.mergeCustomParams(this.customParams, customParams),
       );
 }

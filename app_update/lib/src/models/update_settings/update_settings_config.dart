@@ -46,6 +46,6 @@ class UpdateSettingsConfig implements Mergeable<UpdateSettingsConfig> {
         postponeAllReleasesDelay:
             other.postponeAllReleasesDelay ?? postponeAllReleasesDelay,
         customParams:
-            Mergeable.mergecustomParams(customParams, other.customParams),
+            Mergeable.mergeCustomParams(customParams, other.customParams),
       );
 }

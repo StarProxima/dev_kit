@@ -5,7 +5,7 @@ import '../models/update_rule/update_rule_config.dart';
 abstract class Mergeable<T extends Mergeable<T>> {
   T merge(T other);
 
-  static Map<String, dynamic>? mergecustomParams(
+  static Map<String, dynamic>? mergeCustomParams(
     Map<String, dynamic>? customParams1,
     Map<String, dynamic>? customParams2, [
     Map<String, dynamic>? customParams3,

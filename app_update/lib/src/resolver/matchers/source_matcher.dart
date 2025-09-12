@@ -61,7 +61,11 @@ class SourceMatcher extends RuleMatcher {
   ) {
     final rulePlatforms = ruleSource.platforms ?? searchSource.platforms;
 
-    if (rulePlatforms == null || rulePlatforms.isEmpty) return false;
+    if (rulePlatforms == null) {
+      /// Если null, то считаем, что правило не учитывает платформы
+      if (searchSource.platforms == null) return true;
+      return false;
+    }
 
     final isMatch = rulePlatforms.contains(UpdatePlatform.any) ||
         rulePlatforms.contains(searchPlatform);

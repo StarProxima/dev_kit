@@ -707,11 +707,12 @@ void main() {
           globalSources: globalSources,
         );
 
-        /// Должен использовать только первый найденный источник (firstWhereOrNull)
+        /// Должен использовать только последний найденный источник
+        /// (чем дальше в списке, тем выше приоритет)
         expect(result.contentRules, hasLength(1));
         expect(
           result.contentRules!.first.data.title,
-          equals('First Source Rule'),
+          equals('Second Source Rule'),
         );
       });
 

@@ -20,6 +20,6 @@ class UpdateAppSettingsConfig implements Mergeable<UpdateAppSettingsConfig> {
       UpdateAppSettingsConfig.byRequired(
         appStatus: other.appStatus ?? appStatus,
         customParams:
-            Mergeable.mergecustomParams(customParams, other.customParams),
+            Mergeable.mergeCustomParams(customParams, other.customParams),
       );
 }

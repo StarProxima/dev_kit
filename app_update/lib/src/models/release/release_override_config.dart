@@ -27,7 +27,7 @@ class ReleaseOverrideConfig {
       ReleaseOverrideConfig(
         version: version ?? this.version,
         date: date ?? this.date,
-        customParams: Mergeable.mergecustomParams(
+        customParams: Mergeable.mergeCustomParams(
           this.customParams,
           customParams,
         ),

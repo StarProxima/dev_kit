@@ -47,6 +47,6 @@ class UpdateContentConfig implements Mergeable<UpdateContentConfig> {
         postponeButton: other.postponeButton ?? postponeButton,
         updateButton: other.updateButton ?? updateButton,
         customParams:
-            Mergeable.mergecustomParams(customParams, other.customParams),
+            Mergeable.mergeCustomParams(customParams, other.customParams),
       );
 }

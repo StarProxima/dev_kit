@@ -80,7 +80,7 @@ class UpdateReleaseLinker {
     final finalRelease = release
         .overrideBy(
           ReleaseOverrideConfig(
-            customParams: Mergeable.mergecustomParams(
+            customParams: Mergeable.mergeCustomParams(
               source.customParams,
               platform.customParams,
             ),

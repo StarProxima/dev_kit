@@ -40,7 +40,8 @@ class UpdateDataLinker {
     required UpdateRulesContainer rulesContainer,
     required List<GlobalSourceConfig> globalSources,
   }) {
-    final globalSource = globalSources.firstWhereOrNull(
+    /// Берем последний, т.к. в конфигах могут переопределить сурсы из дефолтного конфига
+    final globalSource = globalSources.lastWhereOrNull(
       (source) => source.sourceName == update.sourceName,
     );
 

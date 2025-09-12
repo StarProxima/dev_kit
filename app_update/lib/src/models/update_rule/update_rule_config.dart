@@ -78,6 +78,6 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
         segmentationPercent: segmentationPercent ?? this.segmentationPercent,
         data: data ?? this.data,
         customParams:
-            Mergeable.mergecustomParams(this.customParams, customParams),
+            Mergeable.mergeCustomParams(this.customParams, customParams),
       );
 }
