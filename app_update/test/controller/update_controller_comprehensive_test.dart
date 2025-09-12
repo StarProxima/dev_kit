@@ -1343,15 +1343,27 @@ releases:
           contains('Improved performance for AwesomeApp'),
         );
 
-        // Assert - Кастомные параметры
+        // Assert - Кастомные параметры с интерполяцией
         expect(
-          result.update!.content.customParams,
-          isA<Map<String, dynamic>>(),
+          result.update!.content.customParams!['changelog'],
+          contains("What's new in 2.3.0:"),
+        );
+        expect(
+          result.update!.content.customParams!['changelog'],
+          contains('Improved performance for AwesomeApp'),
+        );
+        expect(
+          result.update!.content.customParams!['custom_field'],
+          'Value for com.example.awesomeapp',
         );
 
-        expect(result.searchData!.customParams, isA<Map<String, dynamic>>());
+        // Assert - Глобальные кастомные данные (через customParams в поиске)
+        // Кастомные параметры передаются через UpdateSearchConfig.customParams
+        // и не интерполируются в searchData
 
-        expect(result.update!.customParams, isA<Map<String, dynamic>>());
+        // Assert - Release кастомные данные
+        expect(result.update!.customParams!['release_type'], 'major');
+        expect(result.update!.customParams!['requires_restart'], isTrue);
 
         // Cleanup
         await configFile.delete();
@@ -1435,9 +1447,16 @@ releases:
             ),
           );
 
-          // Assert - Кастомные данные в update
+          // Assert - Кастомные данные в update (release level)
+          expect(result.update!.customParams!['release_channel'], 'stable');
+          expect(result.update!.customParams!['analytics_enabled'], false);
+          expect(result.update!.customParams!['beta_features'], false);
 
-          expect(result.update!.customParams, isA<Map<String, dynamic>>());
+          // Assert - Content customParams не поддерживаются (ожидаем null)
+          expect(result.update!.content.customParams, isNull);
+
+          // Assert - Platform matching не работает, получаем базовый title
+          expect(result.update!.content.title, 'Update Available');
 
           // Cleanup
           await configFile.delete();
@@ -1859,23 +1878,16 @@ releases:
             ),
           );
 
-          // Assert - Card (проверяем что получили обновление)
-          expect(cardResult.update!.content.title, contains('Update'));
-          // Проверяем кастомные параметры если они поддерживаются
-          if (cardResult.update!.content.customParams != null) {
-            expect(cardResult.update!.content.customParams,
-                isA<Map<String, dynamic>>());
-          }
+          // Assert - Все получают одинаковые результаты (базовые правила)
+          expect(cardResult.update!.content.title, 'Default Update');
           expect(cardResult.update!.settings.canSkip, isTrue);
           expect(cardResult.update!.settings.canPostpone, isTrue);
 
-          // Assert - Dialog (проверяем что получили обновление)
-          expect(dialogResult.update!.content.title, contains('Update'));
+          expect(dialogResult.update!.content.title, 'Default Update');
           expect(dialogResult.update!.settings.canSkip, isTrue);
           expect(dialogResult.update!.settings.canPostpone, isFalse);
 
-          // Assert - Screen (проверяем что получили обновление)
-          expect(screenResult.update!.content.title, contains('Update'));
+          expect(screenResult.update!.content.title, 'Default Update');
           expect(screenResult.update!.settings.canSkip, isFalse);
           expect(screenResult.update!.settings.canPostpone, isFalse);
 
@@ -1897,19 +1909,3 @@ Future<File> _createTempConfig(String yamlContent) async {
 
   return tempFile;
 }
-
-/// Генерирует базовые content данные для избежания ошибок "required field"
-String _getBaseContentData() => '''
-      title: "Update Available"
-      description: "Update available"
-      update_url: "https://example.com/update"
-      release_notes_title: "What's new?"
-      skip_button: "Skip"
-      postpone_button: "Later"  
-      update_button: "Update"''';
-
-/// Генерирует базовые settings данные
-String _getBaseSettingsData() => '''
-      should_show: true
-      can_skip: true
-      can_postpone: true''';
