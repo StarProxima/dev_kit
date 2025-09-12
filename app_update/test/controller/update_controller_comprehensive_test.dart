@@ -671,25 +671,16 @@ content:
       update_url: "https://example.com/update"
       
   - platform_is: android
+    segmentation_percent: 30
     data:
       title: "Beta Update"
       update_url: "https://example.com/update"
-    custom_params:
-      is_beta: true
+
 
 app_settings:
   # Базовое правило - все активные
-  - app_version_is: any
-    data:
+  - data:
       app_status: active
-      
-  # Beta релиз только для 30% пользователей
-  - app_version_is: ">=2.1.0-beta"
-    segmentation_percent: 30
-    data:
-      app_status: active
-    custom_params:
-      is_beta_available: true
 
 releases:
   - version: "2.0.0"
@@ -698,6 +689,11 @@ releases:
     
   - version: "2.1.0-beta.1"
     date: "2024-01-10T10:00:00"
+    settings:
+      - should_show: false
+      - segmentation_percent: 30
+        data:
+          should_show: true
     sources: [googlePlay]
 ''';
 
@@ -744,17 +740,18 @@ releases:
           // Assert - Beta пользователь должен получить beta версию
           expect(betaUserResult.update!.version.toString(), contains('beta'));
           expect(
-            betaUserResult
-                .update!.appSettings.customParams?['is_beta_available'],
-            isTrue,
+            betaUserResult.update!.content.title,
+            equals('Beta Update'),
           );
 
-          // Assert - Обычный пользователь должен получить стабильную версию
-          expect(regularUserResult.update!.version, Version.parse('2.0.0'));
+          // Assert - Обычный пользователь не должен получить beta версию
           expect(
-            regularUserResult
-                .update!.appSettings.customParams?['is_beta_available'],
-            isNull,
+            regularUserResult.update!.content.title,
+            equals('Regular Update'),
+          );
+          expect(
+            regularUserResult.update!.settings.shouldShow,
+            equals(false),
           );
 
           // Cleanup
@@ -772,19 +769,14 @@ sources:
     platforms: [android]
 
 app_settings:
-  # Базовое правило
-  - app_version_is: any
-    data:
-      app_status: active
-      
   # Поэтапный rollout для критических версий
-  - app_version_is: ">=2.0.0"
+  - app_version_is: "<2.0.0"
     date: "2024-01-01T10:00:00"
     delay_hours: 24      # Задержка 24 часа
-    rollout_hours: 72    # Раскатка на 3 дня
-    segmentation_percent: 50  # Только 50% пользователей
+    rollout_hours: 72    # Раскатка за 3 дня
+    segmentation_percent: 50  # Только на 50% пользователей
     data:
-      app_status: outdated
+      app_status: unsupported
 
 releases:
   - version: "2.0.0"
@@ -808,46 +800,64 @@ releases:
           await controller.init();
           await controller.fetch(const UpdateSearchConfig());
 
+          final releaseDate = DateTime.parse('2024-01-01T10:00:00');
+
           // Act - До начала rollout (до delay)
           final beforeDelayResult = controller.findUpdate(
             UpdateSearchConfig(
               platform: UpdatePlatform.android,
               sources: const [UpdateSource.googlePlay],
-              displayTarget: UpdateViewTarget.dialog,
-              locale: UpdateLocale.en,
-              currentDate: DateTime.parse(
-                '2024-01-01T20:00:00',
-              ), // 10 часов после релиза
+
+              // 10 часов после релиза
+              currentDate: releaseDate.add(const Duration(hours: 10)),
               segmentationPointer: 0.3,
               rolloutPointer: 0.3,
             ),
           );
 
           // Act - В середине rollout (после delay)
-          final duringRolloutResult = controller.findUpdate(
+          final duringRolloutMatchResult = controller.findUpdate(
             UpdateSearchConfig(
               platform: UpdatePlatform.android,
               sources: const [UpdateSource.googlePlay],
-              displayTarget: UpdateViewTarget.dialog,
-              locale: UpdateLocale.en,
-              currentDate:
-                  DateTime.parse('2024-01-02T20:00:00'), // 34 часа после релиза
+
+              currentDate: releaseDate.add(const Duration(hours: 24 + 34)),
               segmentationPointer: 0.3, // В сегменте
               rolloutPointer: 0.3, // В rollout
             ),
           );
 
-          // Act - После rollout
-          final afterRolloutResult = controller.findUpdate(
+          final duringRolloutNotMatchResult = controller.findUpdate(
             UpdateSearchConfig(
               platform: UpdatePlatform.android,
               sources: const [UpdateSource.googlePlay],
-              displayTarget: UpdateViewTarget.dialog,
-              locale: UpdateLocale.en,
-              currentDate:
-                  DateTime.parse('2024-01-05T10:00:00'), // 4 дня после релиза
+
+              currentDate: releaseDate.add(const Duration(hours: 24 + 34)),
+              segmentationPointer: 0.3, // В сегменте
+              rolloutPointer: 0.7, // Не в rollout
+            ),
+          );
+
+          // Act - После rollout
+          final afterRolloutMatchResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+
+              currentDate: releaseDate.add(const Duration(hours: 24 + 72 + 1)),
               segmentationPointer: 0.3,
-              rolloutPointer: 0.8, // Вне rollout группы
+              rolloutPointer: 1, // В rollout
+            ),
+          );
+
+          final afterRolloutNotMatchResult = controller.findUpdate(
+            UpdateSearchConfig(
+              platform: UpdatePlatform.android,
+              sources: const [UpdateSource.googlePlay],
+
+              currentDate: releaseDate.add(const Duration(hours: 24 + 72 + 1)),
+              segmentationPointer: 0.7,
+              rolloutPointer: 1, // В rollout
             ),
           );
 
@@ -859,14 +869,24 @@ releases:
 
           // Assert - В rollout правило применяется для подходящих пользователей
           expect(
-            duringRolloutResult.update!.appSettings.appStatus,
-            AppStatus.outdated,
+            duringRolloutMatchResult.update!.appSettings.appStatus,
+            AppStatus.unsupported,
+          );
+
+          expect(
+            duringRolloutNotMatchResult.update!.appSettings.appStatus,
+            AppStatus.active,
           );
 
           // Assert - После rollout правило применяется ко всем
           expect(
-            afterRolloutResult.update!.appSettings.appStatus,
-            AppStatus.outdated,
+            afterRolloutMatchResult.update!.appSettings.appStatus,
+            AppStatus.unsupported,
+          );
+
+          expect(
+            afterRolloutNotMatchResult.update!.appSettings.appStatus,
+            AppStatus.active,
           );
 
           // Cleanup
