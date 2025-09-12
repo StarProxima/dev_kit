@@ -914,7 +914,8 @@ releases:
       - name: unknownSource
         platforms: [android]
         content:
-          update_url: https://example.com/update
+          - data:
+              update_url: https://example.com/update
 ''';
 
         PackageInfo.setMockInitialValues(

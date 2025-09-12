@@ -62,7 +62,6 @@ void main() {
         const yamlConfig = '''
 sources:
   - name: googlePlay
-    url: https://play.google.com/store/apps/details?id={appPackageName}
     platforms: [android]
 
 content:
@@ -369,14 +368,17 @@ content:
   - app_status_is: active
     data:
       title: "Optional Update"
+      update_url: "https://example.com/update"
       
   - app_status_is: outdated
     data:
       title: "Recommended Update"
+      update_url: "https://example.com/update"
       
   - app_status_is: unsupported
     data:
       title: "Critical Update Required"
+      update_url: "https://example.com/update"
 
 settings:
   - app_status_is: active
@@ -666,10 +668,13 @@ sources:
 content:
   - data:
       title: "Regular Update"
+      update_url: "https://example.com/update"
       
   - platform_is: android
     data:
       title: "Beta Update"
+      update_url: "https://example.com/update"
+    custom_params:
       is_beta: true
 
 app_settings:
@@ -683,6 +688,7 @@ app_settings:
     segmentation_percent: 30
     data:
       app_status: active
+    custom_params:
       is_beta_available: true
 
 releases:
@@ -877,30 +883,27 @@ releases:
           const yamlConfig = '''
 sources:
   - name: googlePlay
-    url: https://play.google.com/store/apps/details?id={appPackageName}
     platforms: [android]
     
   - name: appStore
-    url: https://apps.apple.com/app/id123456789
     platforms: [ios, macos]
     
   - name: ruStore
-    url: https://apps.rustore.ru/app/{appPackageName}
     platforms: [android]
     content:
       - locale_is: ru
-        data:
+        custom_params:
           store_name: "RuStore"
           special_offer: "Без комиссий!"
           
   - name: fdroid
-    url: https://f-droid.org/packages/{appPackageName}
     platforms: [android]
 
 content:
   - data:
       title: "Update from {sourceName}"
       description: "Version {updateVersion} via {sourceName}"
+      update_url: "https://example.com/update"
 
 releases:
   # Один релиз доступен во всех источниках
@@ -1034,17 +1037,22 @@ content:
   - data:
       title: "Universal Update"
       description: "Works on all platforms"
+      update_url: "https://example.com/update"
       
   # Специфично для мобильных
   - platform_is: [android, ios]
     data:
       title: "Mobile Update"
+      update_url: "https://example.com/update"
+    custom_params:
       mobile_specific: true
       
   # Специфично для desktop
   - platform_is: [windows, macos, linux]
     data:
       title: "Desktop Update"
+      update_url: "https://example.com/update"
+    custom_params:
       desktop_features: true
 
 settings:
@@ -1073,14 +1081,23 @@ releases:
     content:
       - platform_is: android
         data:
+          title: "Android Update"
+          update_url: "https://example.com/update"
+        custom_params:
           android_feature: "Google Play Integration"
           
       - platform_is: ios
         data:
+          title: "iOS Update"
+          update_url: "https://example.com/update"
+        custom_params:
           ios_feature: "App Store Integration"
           
       - platform_is: windows
         data:
+          title: "Windows Update"
+          update_url: "https://example.com/update"
+        custom_params:
           windows_feature: "Windows Store Integration"
 ''';
 
@@ -1187,7 +1204,6 @@ releases:
         const yamlConfig = '''
 sources:
   - name: testStore
-    url: https://store.example.com/{appPackageName}
     platforms: [android]
 
 content:
@@ -1203,7 +1219,7 @@ content:
         Date: {currentDate}
       update_url: "https://store.example.com/{appPackageName}/download/{updateVersion}"
 
-custom_data:
+custom_params:
   app_category: "productivity"
   target_audience: "developers"
   feature_flags:
@@ -1221,13 +1237,13 @@ releases:
             What's new in {updateVersion}:
             - Improved performance for {appName}
             - New features for {platform}
-        custom_data:
+        custom_params:
           changelog: |
             What's new in {updateVersion}:
             - Improved performance for {appName}
             - New features for {platform}
           custom_field: "Value for {appPackageName}"
-    custom_data:
+    custom_params:
       release_type: "major"
       requires_restart: true
 ''';
@@ -1345,7 +1361,7 @@ sources:
     platforms: [android]
 
 # Глобальные кастомные данные
-custom_data:
+custom_params:
   environment: "production"
   analytics_enabled: true
   theme: "light"
@@ -1353,29 +1369,34 @@ custom_data:
 content:
   - data:
       title: "Update Available"
+      update_url: "https://example.com/update"
       
   # Правило с кастомными данными  
   - platform_is: android
-    custom_data:
+    data:
+      title: "Android Update"
+      update_url: "https://example.com/update"
+    custom_params:
       android_specific: true
       theme: "dark"  # Переопределяет глобальное
-    data:
       android_features: "enabled"
 
 releases:
   - version: "2.0.0"
     date: "2024-01-01T10:00:00"
     sources: [mainStore]
-    custom_data:
+    custom_params:
       release_channel: "stable"
       analytics_enabled: false  # Переопределяет глобальное
       beta_features: false
     
     content:
       - platform_is: android
-        custom_data:
-          performance_mode: "optimized"
         data:
+          title: "Android Performance Update"
+          update_url: "https://example.com/update"
+        custom_params:
+          performance_mode: "optimized"
           android_optimization: "enabled"
 ''';
 
@@ -1703,23 +1724,30 @@ content:
   # Базовое правило
   - data:
       title: "Default Update"
+      update_url: "https://example.com/update"
       
   # Специфично для карточек
   - view_target_is: card
     data:
       title: "Card Update"
+      update_url: "https://example.com/update"
+    custom_params:
       show_icon: true
       
   # Специфично для диалогов
   - view_target_is: dialog
     data:
-      title: "Dialog Update"  
+      title: "Dialog Update"
+      update_url: "https://example.com/update"
+    custom_params:
       show_details: true
       
   # Специфично для полноэкранного режима
   - view_target_is: screen
     data:
       title: "Critical Update Required"
+      update_url: "https://example.com/update"
+    custom_params:
       full_screen_mode: true
 
 settings:
