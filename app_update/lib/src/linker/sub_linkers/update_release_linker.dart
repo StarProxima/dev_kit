@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 
 import '../../entities/update_source.dart';
 import '../../entities/update_source_name.dart';
-import '../../entities/update_version_constraint.dart';
 import '../../models/release/release_config.dart';
 import '../../models/release/release_override_config.dart';
 import '../../models/release/update_data.dart';
