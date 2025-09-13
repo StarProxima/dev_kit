@@ -43,128 +43,12 @@ The first method is easier to use, but is not flexible and does not support many
 
 The second method requires some customization, but works on all platforms, with all stores, and allows for full control and customization of your update process.
 
-We want to support both methods, but for now we're focusing on the second method.
-
-## Update Config
-
-Here is the full config api structure under consideration:
-```yaml
-# Description of the api structure
-# https://pub.dev/packages/app_update
-
-# Optianal, default settings for releases
-release_settings:
-  title:
-    # Any text (title, description, releaseNotes)
-    # supports optional localization, interpolation and markdown.
-    # Also supports short syntax without localization.
-    en: |-
-      ## New version for ($appName)[https://example.com]
-      ### Version $releaseVersion is available!
-    es: La versión $releaseVersion está disponible!
-    ru: Доступна новая версия!
-
-  description: |-
-    A new version of $appName is available!
-    Version $releaseVersion is now available. You have a $appVersion
-
-  # Allows users to skip this specific release until a new one is available
-  can_skip_release: true
-  # Allows users to postpone this specific release to a reminder_period_hours
-  can_postpone_release: true
-  # Interval at which the update notification will be repeatedly shown to the user
-  reminder_period_hours: 48
-  # Delay that must pass after the release before it begins to be shown to all users
-  release_delay_hours: 48
-  # Duration over which the release visibility will gradually increase from 0% to 100% of users.
-  progressive_rollout_hours: 48
-
-unsupported_app_version_is: ['<=4.2.0', 0.3.4]
-deprecated_app_version_is: ['<=5.1.0 >=4.2.0', '>5.6.0 <5.6.7']
-
-# Optional, will be set based on the platform and app ID
-source_is:
-  - name: googlePlay 
-    url: https://example.com
-  - name: appStore
-    url: https://example.com
-  - name: appGallery 
-    url: https://example.com
-    # You can also override any params for this source (title, release_delay_hours, deprecated_versions etc.)
-    title: Title
-  - name: ruStore 
-    url: https://example.com
-    # Custom store
-  - name: gitHub
-    url: https://example.com
-    platforms:
-      - android
-      - windows
-      - macos
-      - linux
-
-releases:
-  - version: 0.3.7 # Required
-    # You can also override all release_settings params here (title, release_delay_hours etc.)
-    # Optional, may not to be displayed.
-    release_notes: |-
-      # Big update!
-      [click](https://example.com) - full changelog.
-      ### Short notes
-      - Added bugs
-      - Fixed features
-    # Optional. Time is also optional.
-    date: '2024-08-24 15:35:00Z'
-    # Required. Support custom stores
-    source_is:
-        # Supports short syntax
-      - googlePlay
-      - appStore
-      - ruStore
-        # Also supports full syntax if you need to override parametrs
-      - name: github
-        # Override source params
-        url: https://example.com
-        platforms: [android, windows]
-        # And override any release params
-        release_notes: Notes
-        title: Title
-    
-  - version: 0.3.8
-    release_notes: Minor improvements
-    # You can add any custom parameters anywhere in the config, 
-    # you can access them from the app using Map.
-    is_super_ultra_mega_release: true
-    
-```
-
-
-# Shorebird
+# Shorebird (WIP)
 
 If you use [Shorebird](https://shorebird.dev/), the Code Push tool for Flutter, this package also allows you to process and show users information about a new patch with the ability to restart the application.
 
 Information about new patches is provided by shorebird.
 
-### Roadmap
-✅ Support the release status (required, broken, etc.) 
-✅ Finding the latest release woth optimal statis
-✅ Custom stores and platform
-✅ Link releases to release settings and stores
-✅ Parser for UpdateConfig
-🏗️ Implement UpdateConfigProvider
-🏗️ Provide UpdateController
-🏗️ Support reminder period
-🏗️ Support delayed release
-🏗️ Getting release data directly from the stores
-🏗️ Release reference to another releases
-🏗️ Specifying texts for different languages
-🏗️ Provide UpdateAlert widget
-🏗️ Provide UpdateAlertHandler methods
-🔳 Provide UpdateAlertCard widget
-🔳 Support for markdown in texts
-🔳 Specifying texts for specific statuses
-🔳 Release progressively rolls
-🔳 Package for shorebird patch support 🚀
 
 
 # Contributors ✨
