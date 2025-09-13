@@ -1687,3 +1687,538 @@ Clean architecture allows custom business logic integration.
 Intelligent matcher ordering и short-circuit evaluation для production efficiency.
 
 **Resolver System представляет state-of-the-art approach к rule-based configuration management в Flutter ecosystem, combining enterprise-grade capabilities с developer-friendly APIs.**
+
+---
+
+## 🎨 CREATIVE PHASE UPDATE: Enhanced Rule Architecture
+
+### ✅ New Resolution Architecture (Post-Creative Phase)
+
+#### Evolved Rule Structure Impact
+После творческой фазы принята новая архитектура when/rollout/data, которая значительно улучшает resolver semantics:
+
+```yaml
+# 🎯 NEW resolver-friendly structure:
+content:
+  - when:                    # 🎯 Matcher input (что matcher'ы проверяют)
+      view_target_is: card
+      app_status_is: outdated
+      locale_is: ru
+      custom_params:
+        env_is: prod         # ← Clearly for matching
+    rollout:                 # ⏰ TemporalMatcher input  
+      date: $updateReleaseDate
+      delay_hours: 24
+      rollout_hours: 168
+      segmentation_percent: 25
+    data:                    # 📄 Merge target (что resolver возвращает)
+      title: "Обновление"
+      custom_params:
+        analytics: "data"    # ← Clearly for result
+```
+
+#### Resolver System Benefits
+
+##### 1. Crystal Clear Matcher Responsibilities
+```dart
+// OLD confusing field access:
+class AppStatusMatcher extends RuleMatcher {
+  bool isMatches({required UpdateRuleConfig rule, required UpdateSearchData search}) {
+    final ruleStatuses = rule.appStatusIs ?? [AppStatus.any];  // ← Where did this come from?
+    // ...
+  }
+}
+
+// NEW semantic field access:
+class AppStatusMatcher extends RuleMatcher {
+  bool isMatches({required UpdateRuleConfig rule, required UpdateSearchData search}) {
+    final ruleStatuses = rule.when?.appStatusIs ?? [AppStatus.any];  // ← Obviously from "when" conditions!
+    // ...
+  }
+}
+```
+
+##### 2. TemporalMatcher Semantic Clarity
+```dart
+// OLD mixed field access:
+class TemporalMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    return _isMatchByDateAndRollout(
+      ruleDate: rule.date ?? UpdateDate.any,           // ← From top level (confusing)
+      delay: rule.delay,                               // ← From top level
+      rollout: rule.rollout,                           // ← From top level
+      segmentationPercent: rule.segmentationPercent,   // ← From top level
+      // ...
+    );
+  }
+}
+
+// NEW semantic field access:
+class TemporalMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    final rolloutParams = rule.rollout;  // ← Get rollout section
+    return _isMatchByDateAndRollout(
+      ruleDate: rolloutParams?.date ?? UpdateDate.any,           // ← Obviously from rollout!
+      delay: rolloutParams?.delay,                               // ← Obviously temporal!
+      rollout: rolloutParams?.rollout,                           // ← Self-documenting!
+      segmentationPercent: rolloutParams?.segmentationPercent,   // ← Clearly rollout param!
+      // ...
+    );
+  }
+}
+```
+
+##### 3. CustomParamsMatcher Purpose Separation
+```dart
+// NEW clear separation of concerns:
+class CustomParamsMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    // Only process MATCHING custom params (from when section):
+    return _isMatchByCustomParams(
+      rule.when?.customParams,     // ← Clearly for matching logic
+      search.customParams,
+    );
+    // rule.data.customParams NOT used for matching - used for result data!
+  }
+}
+```
+
+#### Enhanced Resolution Flow
+
+##### Semantic Resolution Steps
+```dart
+// NEW semantically clear resolution:
+class UpdateRuleResolver {
+  T resolve<T extends Mergeable<T>>({...}) {
+    for (final rule in rules) {
+      // 1. Check IF rule applies (when conditions):
+      final whenMatches = _checkWhenConditions(rule.when, searchData);
+      
+      // 2. Check WHEN rule applies (rollout timing):  
+      final rolloutMatches = _checkRolloutTiming(rule.rollout, searchData);
+      
+      if (whenMatches && rolloutMatches) {
+        // 3. Apply rule data (what to return):
+        result = result?.merge(rule.data) ?? rule.data;
+      }
+    }
+    return result;
+  }
+}
+```
+
+##### Business Logic Clarity
+```yaml
+# Business rules become self-documenting:
+app_settings:
+  # "When app version is old, after 1 week delay, rollout to 25% users over 7 days, set status outdated"
+  - when:
+      app_version_is: "<2.0.0"
+    rollout:
+      date: $localReleaseDate
+      delay_hours: 168        # 1 week
+      rollout_hours: 168      # 7 days rollout
+      segmentation_percent: 25 # 25% users
+    data:
+      app_status: outdated
+      
+# vs OLD confusing structure:
+# app_version_is: "<2.0.0"     # When condition
+# date: $localReleaseDate      # Rollout param  
+# delay_hours: 168             # Rollout param
+# rollout_hours: 168           # Rollout param (what's the difference?)
+# segmentation_percent: 25     # Rollout param
+# data: { app_status: outdated }
+```
+
+#### Resolver Architecture Improvements
+
+##### Matcher System Enhancement
+```mermaid
+graph TD
+    Rule["UpdateRuleConfig&lt;T&gt;"] --> When["when: UpdateRuleWhen"]
+    Rule --> Rollout["rollout: UpdateRuleRollout"]
+    Rule --> Data["data: T"]
+    
+    When --> Matchers["8 Specialized Matchers"]
+    Rollout --> TemporalMatcher["TemporalMatcher Only"]
+    Data --> MergeTarget["Merge Target"]
+    
+    Matchers --> M1["ViewTargetMatcher<br>↳ when.viewTargetIs"]
+    Matchers --> M2["LocaleMatcher<br>↳ when.localeIs"]
+    Matchers --> M3["AppStatusMatcher<br>↳ when.appStatusIs"]
+    Matchers --> M4["SourceMatcher<br>↳ when.sourceIs"]
+    Matchers --> M5["PlatformMatcher<br>↳ when.platformIs"]  
+    Matchers --> M6["VersionMatcher<br>↳ when.appVersionIs"]
+    Matchers --> M7["CustomParamsMatcher<br>↳ when.customParams"]
+    
+    TemporalMatcher --> T1["rollout.date"]
+    TemporalMatcher --> T2["rollout.delay"]
+    TemporalMatcher --> T3["rollout.rollout"]
+    TemporalMatcher --> T4["rollout.segmentationPercent"]
+    
+    style When fill:#10b981,stroke:#059669,color:white
+    style Rollout fill:#f6546a,stroke:#c30052,color:white
+    style Data fill:#ff9500,stroke:#e8890a,color:white
+    style TemporalMatcher fill:#4da6ff,stroke:#0066cc,color:white
+```
+
+##### Backward Compatibility Strategy
+```dart
+// Convenience accessors ensure seamless transition:
+class UpdateRuleConfig<T extends Mergeable<T>> {
+  final UpdateRuleWhen? when;
+  final UpdateRuleRollout? rollout;
+  final T data;
+  
+  // Transparent access для existing code:
+  List<AppStatus>? get appStatusIs => when?.appStatusIs;
+  List<UpdateLocale>? get localeIs => when?.localeIs;
+  UpdateDate? get date => rollout?.date;
+  Duration? get delay => rollout?.delay;
+  Duration? get rollout => rollout?.rollout;
+  double? get segmentationPercent => rollout?.segmentationPercent;
+  Map<String, dynamic>? get customParams => when?.customParams;  // ← Only matching params
+}
+
+// Result: ALL existing matcher code works unchanged!
+```
+
+#### Documentation Examples Update
+
+##### Simple Rule Examples
+```yaml
+# Minimal syntax examples:
+content:
+  - when: { locale_is: ru }
+    data: { title: "Русский заголовок" }
+    
+  - rollout: { delay_hours: 24 }
+    data: { title: "Delayed content" }
+    
+  - data: { title: "Always applies" }
+```
+
+##### Complex Rule Examples  
+```yaml
+# Production rollout example:
+app_settings:
+  - when:
+      app_version_is: "<2.0.0"
+      custom_params:
+        env_is: [prod, staging]
+        user_tier_is: [premium, enterprise]
+    rollout:
+      date: $localReleaseDate
+      delay_hours: 168        # 1 week stabilization
+      rollout_hours: 336      # 2 week gradual rollout
+      segmentation_percent: 30 # 30% of eligible users
+    data:
+      app_status: outdated
+```
+
+### 🎯 Parser Evolution Summary
+
+#### Technical Achievements
+1. **Semantic Architecture** - when/rollout/data clearly separates concerns
+2. **Enhanced Readability** - complex rules remain comprehensible
+3. **Future Extensibility** - architecture supports new sections
+4. **Custom Params Clarity** - eliminates dual-purpose confusion
+5. **Preserved Functionality** - convenience accessors maintain compatibility
+
+#### Developer Experience Transformation
+```yaml
+# Transform from cognitive burden:
+"What does date field do in this context?"
+"Is this custom_params for matching or data?"
+"Why are temporal fields mixed with conditions?"
+
+# To self-documenting structure:
+when:     # ← Obviously matching conditions
+rollout:  # ← Obviously timing parameters  
+data:     # ← Obviously result content
+```
+
+**Parser system architect готов для implementation новой YAML structure, обеспечивая significant UX improvement с maintained technical excellence.**
+
+---
+
+## 🎨 CREATIVE PHASE UPDATE: Enhanced Semantic Resolution
+
+### ✅ New Resolver Architecture (Post-Creative Phase)
+
+#### Semantic Resolution Flow Enhancement  
+Новая when/rollout/data структура кардинально улучшает clarity resolver logic:
+
+```mermaid
+graph TD
+    Rule["UpdateRuleConfig&lt;T&gt;"] --> ResolutionFlow["Resolution Process"]
+    
+    ResolutionFlow --> Step1["1️⃣ Check WHEN conditions<br>(rule.when → 8 matchers)"]
+    ResolutionFlow --> Step2["2️⃣ Check ROLLOUT timing<br>(rule.rollout → TemporalMatcher)"]
+    ResolutionFlow --> Step3["3️⃣ Apply DATA content<br>(rule.data → result)"]
+    
+    Step1 --> Matchers["Matching Logic"]
+    Step2 --> Temporal["Temporal Logic"]
+    Step3 --> Merging["Data Merging"]
+    
+    Matchers --> M1["when.viewTargetIs<br>when.localeIs<br>when.appStatusIs<br>when.sourceIs<br>when.platformIs<br>when.appVersionIs<br>when.customParams"]
+    
+    Temporal --> T1["rollout.date<br>rollout.delay<br>rollout.rollout<br>rollout.segmentationPercent"]
+    
+    Merging --> Result["Final T Result"]
+    
+    style Step1 fill:#10b981,stroke:#059669,color:white
+    style Step2 fill:#f6546a,stroke:#c30052,color:white  
+    style Step3 fill:#ff9500,stroke:#e8890a,color:white
+    style Result fill:#4da6ff,stroke:#0066cc,color:white
+```
+
+#### Enhanced Matcher Semantics
+
+##### 1. Condition Matchers (when section)
+```dart
+// All condition matchers теперь have clear semantic context:
+
+class ViewTargetMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    final ruleTargets = rule.when?.viewTargetIs ?? [UpdateViewTarget.any];
+    //                      ^^^^^ ← Obviously from conditions!
+    return ruleTargets.contains(searchTarget);
+  }
+}
+
+class LocaleMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    final ruleLocales = rule.when?.localeIs ?? [UpdateLocale.any];
+    //                      ^^^^^ ← Obviously from conditions!
+    return ruleLocales.contains(searchLocale);
+  }
+}
+
+class CustomParamsMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    return _isMatchByCustomParams(
+      rule.when?.customParams,   // ← Obviously matching params!
+      search.customParams,
+    );
+    // rule.data.customParams is NOT used for matching anymore!
+  }
+}
+```
+
+##### 2. Temporal Matcher (rollout section)
+```dart
+class TemporalMatcher extends RuleMatcher {
+  bool isMatches(...) {
+    final rolloutParams = rule.rollout;  // ← Get entire rollout section
+    
+    if (rolloutParams == null) return true;  // ← No timing constraints
+    
+    return _isMatchByDateAndRollout(
+      ruleDate: rolloutParams.date ?? UpdateDate.any,
+      delay: rolloutParams.delay,
+      rollout: rolloutParams.rollout,                // ← rollout.rollout (clear!)
+      segmentationPercent: rolloutParams.segmentationPercent,
+      // ... search params
+    );
+  }
+}
+```
+
+#### Business Logic Semantic Improvement
+
+##### Before: Confusing Mixed Structure
+```yaml
+# OLD - что это: условие или rollout параметр?
+app_settings:
+  - app_version_is: "<2.0.0"      # Условие (unclear context)
+    date: $localReleaseDate       # Rollout param (unclear purpose)
+    delay_hours: 168              # Rollout param (why this number?)
+    segmentation_percent: 25      # Rollout param (what does this control?)
+    data: { app_status: outdated }
+```
+
+##### After: Self-Documenting Structure
+```yaml
+# NEW - crystal clear purpose и context:
+app_settings:
+  - when:                         # 🎯 "Apply this rule when..."
+      app_version_is: "<2.0.0"    # ← Obviously a condition
+    rollout:                      # ⏰ "Control rollout timing..."
+      date: $localReleaseDate     # ← Obviously timing reference
+      delay_hours: 168            # ← Obviously delay period
+      segmentation_percent: 25    # ← Obviously user percentage
+    data:                         # 📄 "Result of rule application..."
+      app_status: outdated        # ← Obviously the outcome
+```
+
+#### Enhanced Error Messages
+
+##### Semantic Error Context
+```dart
+// NEW error messages с semantic context:
+class UpdateRuleWhenParser {
+  UpdateRuleWhen? parse(...) {
+    if (isDebug && map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateRuleWhenParser,
+        message: "Unknown fields in 'when' conditions section",
+        configs: [value],
+      );
+    }
+  }
+}
+
+// Result:
+// ParseConfigException in UpdateRuleWhenParser - Unknown fields in 'when' conditions section:
+// [
+//   "unknown_field": "value"
+// ]
+// This helps users understand they put field in wrong section!
+```
+
+##### Section-Specific Guidance
+```dart
+// Parser can provide specific guidance:
+if (foundDateInWhen) {
+  throw ParseConfigException(
+    "Found 'date' field in 'when' section. Did you mean to put it in 'rollout' section?",
+    UpdateRuleWhenParser,
+    [value]
+  );
+}
+
+if (foundAppStatusInRollout) {
+  throw ParseConfigException(
+    "Found 'app_status_is' field in 'rollout' section. Did you mean to put it in 'when' section?",
+    UpdateRuleRolloutParser,
+    [value]
+  );
+}
+```
+
+#### Resolution Examples с New Structure
+
+##### Multi-Stage Resolution с Clear Semantics
+```yaml
+content:
+  # Rule 1: Base rule для всех
+  - data:
+      title: "Update Available"
+      description: "New version available"
+      
+  # Rule 2: Russian localization (conditions override)
+  - when: { locale_is: ru }
+    data:
+      title: "Обновление доступно"
+      description: "Новая версия доступна"
+      
+  # Rule 3: Critical status messaging (conditions + timing)
+  - when:
+      app_status_is: deprecated
+      locale_is: ru
+    rollout:
+      segmentation_percent: 100   # All deprecated users immediately
+    data:
+      title: "Критическое обновление"
+      description: "Ваша версия больше не поддерживается"
+      
+  # Rule 4: Platform-specific rollout (full complexity)
+  - when:
+      app_status_is: deprecated
+      platform_is: android
+      source_is: googlePlay
+      locale_is: ru
+    rollout:
+      date: $updateReleaseDate
+      delay_hours: 12             # Shorter delay для critical
+      rollout_hours: 48           # Faster rollout
+      segmentation_percent: 100   # All users
+    data:
+      title: "Критическое обновление Android"
+      description: "Обновитесь через Google Play немедленно"
+      update_button: "Открыть Google Play"
+```
+
+**Resolution Flow Analysis:**
+1. **Rule 1** matches all (no when conditions) → base content
+2. **Rule 2** matches Russian locale → overrides title/description
+3. **Rule 3** matches deprecated status + Russian → overrides title (more urgent)
+4. **Rule 4** matches deprecated + android + googlePlay + Russian → final override (most specific)
+
+**Final Result** для Russian Android deprecated user:
+- title: "Критическое обновление Android" (Rule 4)
+- description: "Обновитесь через Google Play немедленно" (Rule 4)  
+- update_button: "Открыть Google Play" (Rule 4)
+
+##### Complex Temporal Logic Example
+```yaml
+# Production rollout с semantic clarity:
+app_settings:
+  - when:                           # 🎯 "For which users?"
+      app_version_is: ">=1.0.0 <2.0.0"
+      custom_params:
+        env_is: prod
+        user_tier_is: [standard, premium]
+    rollout:                        # ⏰ "How to rollout?"
+      date: $updateReleaseDate      # ← Base timing
+      delay_hours: 48               # ← 2-day stabilization
+      rollout_hours: 336            # ← 2-week gradual rollout
+      segmentation_percent: 40      # ← 40% of eligible users
+    data:                           # 📄 "What status change?"
+      app_status: outdated
+```
+
+**Business Logic Translation:**
+"For production users on versions 1.x, wait 2 days after update release, then gradually rollout over 2 weeks to 40% of eligible users, changing their status to outdated"
+
+#### Future Extensibility Examples
+
+##### Monitoring Section (Future)
+```yaml
+content:
+  - when: { app_status_is: deprecated }
+    rollout: { segmentation_percent: 25 }
+    monitoring:                     # 🔍 Future section
+      track_impressions: true
+      success_metric: "update_completion_rate"
+      failure_threshold: 0.05
+      rollback_trigger: "error_rate > 0.1"
+    data:
+      title: "Critical Update"
+```
+
+##### Analytics Section (Future)
+```yaml
+content:
+  - when: { locale_is: ru }
+    analytics:                      # 📊 Future section
+      event_name: "update_prompt_shown"
+      user_properties:
+        locale: ru
+        rule_type: "localized"
+      custom_dimensions:
+        ui_variant: "russian_localization"
+    data:
+      title: "Обновление"
+```
+
+### 🎯 Resolver System Evolution Summary
+
+#### Achieved Improvements
+1. **Semantic Clarity** - каждая секция has obvious purpose в resolution
+2. **Matcher Responsibility** - clear which section каждый matcher processes  
+3. **Error Message Quality** - section-specific guidance для developers
+4. **Business Logic Readability** - rules become self-documenting
+5. **Future Extensibility** - clean architecture для new features
+
+#### Technical Achievements
+1. **Zero Regression** - convenience accessors preserve functionality
+2. **Enhanced Type Safety** - stronger typing через grouped concepts
+3. **Improved Debugging** - section-specific error context
+4. **Performance Maintained** - accessor calls are O(1) operations
+5. **Architectural Excellence** - clean separation of concerns
+
+**Resolver system готов to leverage new YAML architecture для dramatically improved developer experience while maintaining all technical excellence.**

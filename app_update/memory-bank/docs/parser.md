@@ -1073,3 +1073,230 @@ Generic parsing с compile-time type safety - редкая комбинация.
 Debug vs production modes для разных scenarios использования.
 
 **Результат**: Parser система App Update Library устанавливает новый стандарт для configuration parsing в Flutter ecosystem, combining максимальную гибкость с rock-solid type safety.
+
+---
+
+## 🎨 CREATIVE PHASE UPDATE: New YAML Architecture
+
+### ✅ New Rule Structure Design (Post-Creative Phase)
+
+#### Evolved Architecture: when/rollout/data
+После creative phase принято решение о restructuring YAML API:
+
+```yaml
+# 🎯 NEW optimized structure:
+content:
+  - when:                    # �� Matching conditions
+      view_target_is: card
+      app_status_is: any
+      locale_is: any
+      custom_params:
+        env_is: prod
+    rollout:                 # ⏰ Temporal parameters
+      date: $updateReleaseDate
+      delay_hours: 24
+      rollout_hours: 168
+      segmentation_percent: 25
+    data:                    # 📄 Rule result data
+      title: "Title"
+      custom_params:
+        analytics_track: "event"
+```
+
+#### Parser Evolution Plan
+
+##### New Parser Classes Required
+```dart
+// NEW: Conditions parsing
+class UpdateRuleWhenParser {
+  static const _appStatusParser = AppStatusParser();
+  static const _updateLocaleParser = UpdateLocaleParser();
+  static const _listOrValueParser = ListOrValueParser();
+  static const _customParamsParser = CustomParamsParser();
+  
+  UpdateRuleWhen? parse(Object? value, {required bool isDebug}) {
+    if (value == null) return null;
+    
+    final map = Map<String, dynamic>.from(value);
+    
+    // Parse all condition fields:
+    final appStatusIs = _parseAppStatuses(map.remove('app_status_is'));
+    final localeIs = _parseLocales(map.remove('locale_is'));
+    final customParams = _customParamsParser.parse(map.remove('custom_params'));
+    
+    return UpdateRuleWhen(
+      appStatusIs: appStatusIs,
+      localeIs: localeIs,
+      customParams: customParams,
+    );
+  }
+}
+
+// NEW: Temporal parsing  
+class UpdateRuleRolloutParser {
+  static const _updateDateParser = UpdateDateParser();
+  static const _durationParser = DurationParser();
+  static const _doubleParser = DoubleParser();
+  
+  UpdateRuleRollout? parse(Object? value, {required bool isDebug}) {
+    if (value == null) return null;
+    
+    final map = Map<String, dynamic>.from(value);
+    
+    final date = _updateDateParser.parse(map.remove('date'));
+    final delay = _durationParser.parse(hours: map.remove('delay_hours'));
+    final rollout = _durationParser.parse(hours: map.remove('rollout_hours'));
+    final segmentationPercent = _doubleParser.parse(value: map.remove('segmentation_percent'));
+    
+    return UpdateRuleRollout(
+      date: date,
+      delay: delay,
+      rollout: rollout,
+      segmentationPercent: segmentationPercent,
+    );
+  }
+}
+```
+
+##### Modified Main Parser
+```dart
+// MODIFIED: UpdateRuleConfigParser
+class UpdateRuleConfigParser {
+  static const _whenParser = UpdateRuleWhenParser();
+  static const _rolloutParser = UpdateRuleRolloutParser();
+  
+  UpdateRuleConfig<T>? parse<T extends Mergeable<T>>(...) {
+    final map = Map<String, dynamic>.from(value);
+    
+    // Parse new nested structure:
+    final whenValue = map.remove('when');
+    final rolloutValue = map.remove('rollout');
+    final dataValue = map.remove('data');
+    
+    final when = _whenParser.parse(whenValue, isDebug: isDebug);
+    final rollout = _rolloutParser.parse(rolloutValue, isDebug: isDebug);
+    final data = dataParser(dataValue);
+    
+    // Enhanced data fallback logic:
+    if (data == null) {
+      // Try to parse remaining map as data (preserves current fallback behavior)
+      final fallbackData = dataParser(map);
+      if (fallbackData != null) {
+        return UpdateRuleConfig<T>(
+          when: when,
+          rollout: rollout,
+          data: fallbackData,
+        );
+      }
+    }
+    
+    return UpdateRuleConfig<T>(
+      when: when,
+      rollout: rollout,
+      data: data,
+    );
+  }
+}
+```
+
+#### Benefits Analysis
+
+##### 1. Custom Params Clarity Revolution
+```yaml
+# OLD confusing syntax:
+custom_params:
+  env_is: prod              # ← Matching condition
+  analytics_data: value     # ← Data storage (what is this for?)
+  
+# NEW crystal clear syntax:
+when:
+  custom_params:
+    env_is: prod            # ← Obviously для matching conditions
+data:
+  custom_params:
+    analytics_data: value   # ← Obviously для result data
+```
+
+##### 2. Complex Rules Readability
+```yaml
+# NEW structure makes complex rules digestible:
+content:
+  - when:                   # 🎯 "When does this rule apply?"
+      view_target_is: [card, dialog]
+      app_status_is: [outdated, deprecated]
+      locale_is: ru
+      platform_is: android
+      source_is:
+        - name: googlePlay
+          platforms: [android]
+      custom_params:
+        env_is: prod
+        user_tier_is: premium
+    rollout:                # ⏰ "When and how to rollout?"
+      date: $updateReleaseDate
+      delay_hours: 24
+      rollout_hours: 168
+      segmentation_percent: 25
+    data:                   # 📄 "What to show user?"
+      title: "Премиум обновление Android"
+      description: "Эксклюзивные функции доступны в Google Play"
+      custom_params:
+        analytics_track: "premium_android_rollout"
+        ui_variant: "gold_theme"
+        conversion_funnel: "premium_upgrade"
+```
+
+##### 3. Simple Rules Remain Simple
+```yaml
+# Simple rules don't get more complex:
+content:
+  - when: { locale_is: ru }
+    data: { title: "Русский заголовок" }
+    
+  - rollout: { delay_hours: 24 }
+    data: { title: "Delayed content" }
+    
+  - data: { title: "Default content" }  # ← No conditions = always applies
+```
+
+### 🔧 Implementation Impact Assessment
+
+#### Parser System Changes
+- **3 new parser classes** (When, Rollout, modified main)
+- **Enhanced error context** для nested structures
+- **Preserved fallback logic** для data parsing
+- **Maintained type safety** и validation quality
+
+#### Model System Changes  
+- **2 new model classes** (When, Rollout)
+- **Composition architecture** в UpdateRuleConfig
+- **Convenience accessors** для transparent migration
+- **Enhanced type safety** через grouped concepts
+
+#### Integration Preservation
+- **Zero resolver changes** благодаря convenience accessors
+- **Zero matcher changes** благодаря field access compatibility
+- **Zero linker changes** - works with same UpdateRuleConfig interface
+
+### 🎯 Parser Innovation Evolution
+
+#### From Flat to Semantic Hierarchy
+```
+OLD Parsing Flow:
+YAML → UpdateRuleConfigParser → Flat Field Extraction → UpdateRuleConfig
+
+NEW Parsing Flow:  
+YAML → UpdateRuleConfigParser → Nested Section Parsing → Composition Assembly
+  ↓
+UpdateRuleWhenParser → UpdateRuleWhen (conditions)
+UpdateRuleRolloutParser → UpdateRuleRollout (temporal)
+DataParser<T> → T (rule data)
+```
+
+#### Enhanced Developer Experience
+1. **Semantic Sections** - obvious where each field belongs
+2. **Progressive Complexity** - simple rules stay simple, complex rules organized
+3. **Clear Field Purpose** - no ambiguity about field roles
+4. **Future Extensibility** - new sections integrate naturally
+
+**Parser system evolution represents significant improvement в configuration design, addressing all identified UX issues while maintaining technical excellence.**

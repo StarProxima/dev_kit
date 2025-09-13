@@ -211,3 +211,113 @@ UpdateHandler.alert(
 4. **Add comprehensive documentation** - adoption enabler
 
 Проект находится в excellent state с solid foundation. Основная работа сосредоточена на **завершении implementation** уже спроектированных компонентов.
+
+---
+
+## 🎨 CREATIVE PHASE ЗАВЕРШЕНА: YAML API v4 Design
+
+### ✅ Architecture Design Complete  
+**Дата**: 13 сентября 2025
+**Результат**: Comprehensive API v4 design с when/rollout/data structure
+
+#### 🎯 Creative Phase Deliverables:
+- [x] **Architecture Decision Document** - `memory-bank/creative/creative-yaml-api-restructure.md`
+- [x] **Updated Parser Documentation** - Enhanced `memory-bank/docs/parser.md`
+- [x] **Updated Resolver Documentation** - Enhanced `memory-bank/docs/resolver.md`
+- [x] **API v4 Documentation** - Complete `memory-bank/docs/API_v4_Documentation.md`
+- [x] **Working Example** - `memory-bank/docs/api_v4_example.yaml`
+
+#### 🏗️ Final Architecture Decision:
+
+##### Selected Structure: when/rollout/data
+```yaml
+content:
+  - when:                    # 🎯 Matching conditions
+      view_target_is: card
+      app_status_is: outdated
+      custom_params:
+        env_is: prod
+    rollout:                 # ⏰ Temporal parameters
+      date: $updateReleaseDate
+      delay_hours: 24
+      rollout_hours: 168
+      segmentation_percent: 25
+    data:                    # 📄 Rule result data
+      title: "Title"
+      custom_params:
+        analytics: "data"
+```
+
+##### Key Design Decisions:
+1. **Clean break** - no backward compatibility (unpublished package)
+2. **Semantic clarity** - when (conditions) / rollout (timing) / data (output)
+3. **Custom params separation** - matching (when) vs storage (data)
+4. **Convenience accessors** - transparent internal code migration
+5. **Future extensibility** - architecture supports monitoring, analytics sections
+
+#### 📊 Benefits Analysis:
+
+##### Developer Experience Transformation
+```yaml
+# BEFORE v4 (confusing):
+- view_target_is: card        # ← What category is this?
+  date: 2020-01-01            # ← Is this a condition or timing?
+  delay_hours: 24             # ← What does this number control?
+  custom_params:              # ← Is this for matching or data?
+    env_is: prod              # ← This is matching...
+    analytics: data           # ← This is data... (confusing!)
+
+# AFTER v4 (crystal clear):  
+- when:                       # 🎯 Obviously conditions
+    view_target_is: card      # ← Obviously a condition
+    custom_params:            # ← Obviously for matching
+      env_is: prod            # ← Obviously matching condition
+  rollout:                    # ⏰ Obviously timing control
+    date: 2020-01-01          # ← Obviously timing reference
+    delay_hours: 24           # ← Obviously delay parameter
+  data:                       # 📄 Obviously result data
+    title: "Title"
+    custom_params:            # ← Obviously result data
+      analytics: data         # ← Obviously for application
+```
+
+##### Technical Architecture Improvements
+1. **Model Composition** - UpdateRuleWhen + UpdateRuleRollout classes
+2. **Parser Hierarchy** - specialized parsers для each section  
+3. **Semantic Field Access** - rule.when.appStatusIs vs rule.appStatusIs
+4. **Enhanced Error Context** - section-specific error messages
+5. **Maintained Compatibility** - convenience accessors preserve existing code
+
+#### 🔧 Implementation Readiness:
+
+##### Phase Breakdown:
+- **Phase 1**: Model classes (UpdateRuleWhen, UpdateRuleRollout) - 1-2 дня
+- **Phase 2**: Parser implementation (3 parsers rewrite) - 2-3 дня  
+- **Phase 3**: Integration testing (matchers via accessors) - 1-2 дня
+- **Phase 4**: Test migration (65+ files) - 3-4 дня
+- **Phase 5**: Documentation update (examples, guides) - 2-3 дня
+
+**Total Effort**: 9-14 дней
+**Risk Level**: Medium (straightforward но extensive)
+
+### 📈 Updated Project Status
+
+#### YAML API Evolution:
+- **v3 (Current)**: Flat rule structure - functional но confusing
+- **v4 (Designed)**: ✅ Semantic structure - clear и professional  
+- **Implementation**: Ready to begin
+
+#### Overall Progress к v1.0.0: 75% → 80%
+- **Core Logic**: 100% ✅
+- **API Design**: 100% ✅ (v4 complete)
+- **Implementation TODOs**: 60% 🔄
+- **Documentation**: 85% ✅
+
+### 🚀 Next Steps
+**IMPLEMENT MODE** готов для systematic implementation:
+1. Start с model classes creation
+2. Progressive parser rewrite
+3. Test-driven development approach
+4. Documentation examples alignment
+
+**Creative Phase successfully delivered production-ready API v4 design готовый для implementation.**
