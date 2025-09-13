@@ -6,6 +6,7 @@
     "files.watcherExclude": {
         "**/.fvm": true
     },
+    "git.openRepositoryInParentFolders": "always",
     // "dart.lineLength": 100,
     // "[dart]": {
     //     "editor.formatOnSave": true,
