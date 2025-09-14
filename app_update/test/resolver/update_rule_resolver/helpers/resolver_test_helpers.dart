@@ -63,23 +63,9 @@ UpdateRuleConfig<UpdateContentConfig> createTestRule({
   double? segmentation,
   String? title,
   String? description,
-  Map<String, dynamic>? custom,
   Map<String, dynamic>? whenCustom,
   Map<String, dynamic>? rolloutCustom,
 }) {
-  // Разделяем legacy custom params по назначению
-  Map<String, dynamic>? whenParams = whenCustom;
-  Map<String, dynamic>? rolloutParams = rolloutCustom;
-
-  if (custom != null && (whenCustom == null || rolloutCustom == null)) {
-    // Автоматически разделяем старые custom params
-    final whenEntries = custom.entries.where((e) => e.key.endsWith('_is'));
-    final rolloutEntries = custom.entries.where((e) => !e.key.endsWith('_is'));
-
-    whenParams ??= Map.fromEntries(whenEntries);
-    rolloutParams ??= Map.fromEntries(rolloutEntries);
-  }
-
   return UpdateRuleConfig<UpdateContentConfig>(
     when: UpdateRuleWhen(
       appStatusIs: statuses,
@@ -88,14 +74,14 @@ UpdateRuleConfig<UpdateContentConfig> createTestRule({
       appVersionIs: versions,
       sourceIs: sources,
       platformIs: platforms,
-      customParams: whenParams?.isNotEmpty == true ? whenParams : null,
+      customParams: whenCustom,
     ),
     rollout: UpdateRuleRollout(
       date: date,
       delay: delay,
       gradualRolloutDuration: rollout,
       userSegmentationPercent: segmentation,
-      customParams: rolloutParams?.isNotEmpty == true ? rolloutParams : null,
+      customParams: rolloutCustom,
     ),
     data: UpdateContentConfig(
       title: title,

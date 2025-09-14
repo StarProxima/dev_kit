@@ -129,7 +129,7 @@ void main() {
         createTestRule(
           title: 'base',
           description: 'd0',
-          custom: const {'env_is': 'prod'},
+          whenCustom: const {'env_is': 'prod'},
         ),
 
         // 2. Источник googlePlay + платформа android => мердж описания

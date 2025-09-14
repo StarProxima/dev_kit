@@ -24,7 +24,7 @@ void main() {
 
     test('rule map vs search map: кейсы ключей/значений игнорируются', () {
       final rules = [
-        createTestRule(title: 'ok', custom: const {'env_is': 'PROD'}),
+        createTestRule(title: 'ok', whenCustom: const {'env_is': 'PROD'}),
       ];
 
       final res = resolver.resolve(
@@ -36,7 +36,7 @@ void main() {
 
     test("rule 'any' как строка — всегда true", () {
       final rules = [
-        createTestRule(title: 'ok', custom: const {'stage_is': 'ANY'}),
+        createTestRule(title: 'ok', whenCustom: const {'stage_is': 'ANY'}),
       ];
 
       final res = resolver.resolve(
@@ -50,7 +50,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'meta_is': {
               'Flag': 'On', // Это Map - должно быть проигнорировано
             },
@@ -75,7 +75,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'tags_is': ['alpha', 'beta'],
           },
         ),
@@ -94,7 +94,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'tags_is': ['any', 'test'],
           },
         ),
@@ -132,7 +132,7 @@ void main() {
 
     test('scalar vs list: совпадает если элемент найден в списке', () {
       final rules = [
-        createTestRule(title: 'ok', custom: const {'tag_is': 'Alpha'}),
+        createTestRule(title: 'ok', whenCustom: const {'tag_is': 'Alpha'}),
       ];
 
       final res = resolver.resolve(
@@ -148,7 +148,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'tag_is': ['ALPHA', 'BETA'],
           },
         ),
@@ -163,7 +163,8 @@ void main() {
 
     test('числа и булевы сравниваются по точному совпадению', () {
       List<UpdateRuleConfig<UpdateContentConfig>> rules = [
-        createTestRule(title: 'ok', custom: const {'n_is': 5, 'b_is': true}),
+        createTestRule(
+            title: 'ok', whenCustom: const {'n_is': 5, 'b_is': true}),
       ];
       final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {'n': 5, 'b': true}),
@@ -173,7 +174,7 @@ void main() {
 
       // Негативные
       rules = [
-        createTestRule(title: 'bad', custom: const {'n_is': 5}),
+        createTestRule(title: 'bad', whenCustom: const {'n_is': 5}),
       ];
       expect(
         () => resolver.resolve(
@@ -184,7 +185,7 @@ void main() {
       );
 
       rules = [
-        createTestRule(title: 'bad', custom: const {'b_is': true}),
+        createTestRule(title: 'bad', whenCustom: const {'b_is': true}),
       ];
       expect(
         () => resolver.resolve(
@@ -199,7 +200,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'nums_is': [5, 7],
           },
         ),
@@ -216,7 +217,7 @@ void main() {
 
     test('negative: отсутствие ключа в поиске — false', () {
       final rules = [
-        createTestRule(title: 'bad', custom: const {'env_is': 'prod'}),
+        createTestRule(title: 'bad', whenCustom: const {'env_is': 'prod'}),
       ];
 
       expect(
@@ -232,7 +233,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'bad',
-          custom: const {
+          whenCustom: const {
             'tags_is': ['alpha'],
           },
         ),
@@ -452,7 +453,7 @@ void main() {
       List<UpdateRuleConfig<UpdateContentConfig>> rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'tags_is': [
               'alpha',
               'gamma',
@@ -480,7 +481,7 @@ void main() {
       rules = [
         createTestRule(
           title: 'bad',
-          custom: const {
+          whenCustom: const {
             'tags_is': ['alpha', 'gamma'], // rule содержит только alpha, gamma
           },
         ),
@@ -503,7 +504,7 @@ void main() {
       rules = [
         createTestRule(
           title: 'single_match',
-          custom: const {
+          whenCustom: const {
             'tags_is': ['alpha', 'gamma', 'epsilon'],
           },
         ),
@@ -523,7 +524,7 @@ void main() {
         final rules = [
           createTestRule(
             title: 'valid_email',
-            custom: const {
+            whenCustom: const {
               'email_is':
                   r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', // Email regex
             },
@@ -547,7 +548,7 @@ void main() {
         final rules = [
           createTestRule(
             title: 'bad',
-            custom: const {
+            whenCustom: const {
               'email_is':
                   r'regexp:^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
             },
@@ -572,7 +573,7 @@ void main() {
         final rules = [
           createTestRule(
             title: 'bad',
-            custom: const {
+            whenCustom: const {
               'email_is': r'regexp:]]', // Невалидная регулярка
             },
           ),
@@ -596,7 +597,7 @@ void main() {
         final rules = [
           createTestRule(
             title: 'mixed',
-            custom: const {
+            whenCustom: const {
               'user_type_is': [
                 'admin',
                 r'regexp:^premium_.*',

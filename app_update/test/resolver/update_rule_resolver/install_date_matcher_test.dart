@@ -19,7 +19,7 @@ void main() {
         createTestRule(
           // 7 дней
           title: 'Показать пользователю через неделю после установки',
-          custom: const {'min_delay_after_app_install_hours': 7 * 24},
+          rolloutCustom: const {'min_delay_after_app_install_hours': 7 * 24},
         ),
       ];
 
@@ -45,7 +45,7 @@ void main() {
         createTestRule(
           // 7 дней
           title: 'bad',
-          custom: const {'min_delay_after_app_install_hours': 7 * 24},
+          rolloutCustom: const {'min_delay_after_app_install_hours': 7 * 24},
         ),
       ];
 
@@ -69,7 +69,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'bad',
-          custom: const {'min_delay_after_app_install_hours': 24},
+          rolloutCustom: const {'min_delay_after_app_install_hours': 24},
         ),
       ];
 
@@ -103,9 +103,11 @@ void main() {
       final rules = [
         createTestRule(
           title: 'Combined matchers work',
-          custom: const {
+          rolloutCustom: const {
             'min_delay_after_app_install_hours': 5 * 24, // 5 дней
-            'env_is': 'prod', // Для customParamsMatcher
+          },
+          whenCustom: const {
+            'env_is': 'prod',
           },
         ),
       ];
