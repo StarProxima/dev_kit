@@ -1,5 +1,13 @@
 # Style Guide: App Update Library
 
+
+### Важно
+В конце всегда проверяй новый код через dcm analyze <dir> и исправляй проблемы.
+
+Используй dart fix <dir> --apply, dcm fix <dir> и  dcm fix <dir> --unsafe, чтобы автоматом исправить некоторые ошибки.
+
+После фиксов проверяй вручную, все ли ок. Или правь линты, или игнорь их, если кажется что так лучше.
+
 ## Dart/Flutter Code Style
 
 ### 1. Naming Conventions
@@ -197,8 +205,8 @@ app_status_is: outdated
 view_target_is: card
 locale_is: ru
 delay_hours: 24
-rollout_hours: 72
-segmentation_percent: 25
+gradual_rollout_hours: 72
+user_segmentation_percent: 25
 
 # ❌ Bad
 appStatusIs: outdated

@@ -50,7 +50,7 @@ void main() {
       // pointer 0.2 > 0.1 => правило не подходит
       expect(
         () => resolver.resolve(
-          searchData: createTestSearchData(segmentationPointer: 0.2),
+          searchData: createTestSearchData(userSegmentationPointer: 0.2),
           rules: rules,
         ),
         throwsA(isA<Exception>()),

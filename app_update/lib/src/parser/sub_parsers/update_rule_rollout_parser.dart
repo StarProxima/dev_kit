@@ -38,14 +38,15 @@ class UpdateRuleRolloutParser {
     final delayHoursValue = map.remove('delay_hours');
     final delay = _durationParser.parse(hours: delayHoursValue);
 
-    // rollout_hours
-    final rolloutHoursValue = map.remove('rollout_hours');
-    final rollout = _durationParser.parse(hours: rolloutHoursValue);
+    // gradual_rollout_hours
+    final gradualRolloutHoursValue = map.remove('gradual_rollout_hours');
+    final rollout = _durationParser.parse(hours: gradualRolloutHoursValue);
 
-    // segmentation_percent
-    final segmentationPercentValue = map.remove('segmentation_percent');
-    final segmentationPercent =
-        _doubleParser.parse(value: segmentationPercentValue);
+    // user_segmentation_percent
+    final userSegmentationPercentValue =
+        map.remove('user_segmentation_percent');
+    final userSegmentationPercent =
+        _doubleParser.parse(value: userSegmentationPercentValue);
 
     // customParams
     final customParamsValue = map.remove('custom_params');
@@ -62,8 +63,8 @@ class UpdateRuleRolloutParser {
     return UpdateRuleRollout(
       date: date,
       delay: delay,
-      rollout: rollout,
-      segmentationPercent: segmentationPercent,
+      gradualRolloutDuration: rollout,
+      userSegmentationPercent: userSegmentationPercent,
       customParams: customParams,
     );
   }

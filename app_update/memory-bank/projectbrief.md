@@ -27,8 +27,8 @@
 app_settings:
   - date: $updateReleaseDate
     delay_hours: 24          # Задержка на сутки
-    rollout_hours: 168       # Выкат за неделю  
-    segmentation_percent: 25 # Только 25% пользователей
+    gradual_rollout_hours: 168       # Выкат за неделю  
+    user_segmentation_percent: 25 # Только 25% пользователей
     data:
       app_status: outdated
 ```

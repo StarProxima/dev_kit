@@ -409,7 +409,7 @@ UpdateRuleConfig<T>? parse<T extends Mergeable<T>>(
     
   // 2. Parse temporal logic
   final delay = _durationParser.parse(hours: delayHoursValue);
-  final rollout = _durationParser.parse(hours: rolloutHoursValue);
+  final rollout = _durationParser.parse(hours: gradualRolloutHoursValue);
   
   // 3. Parse data с fallback logic
   final data = dataParser(dataValue) ?? dataParser(map);
@@ -904,8 +904,8 @@ app_settings:
   # Dynamic date reference
   - date: $updateReleaseDate        # ← Parsed as UpdateDate.updateReleaseDate
     delay_hours: 48                 # ← Converted to Duration(hours: 48)
-    rollout_hours: 168              # ← Progressive rollout timing
-    segmentation_percent: 25        # ← A/B testing percentage
+    gradual_rollout_hours: 168              # ← Progressive rollout timing
+    user_segmentation_percent: 25        # ← A/B testing percentage
     data:
       app_status: outdated
 ```
@@ -915,8 +915,8 @@ app_settings:
 // UpdateRuleConfigParser coordinates temporal parsing:
 final date = _updateDateParser.parse(dateValue);           // → UpdateDate entity
 final delay = _durationParser.parse(hours: delayHoursValue);  // → Duration 
-final rollout = _durationParser.parse(hours: rolloutHoursValue); // → Duration
-final segmentationPercent = _doubleParser.parse(value: segmentationPercentValue); // → double
+final rollout = _durationParser.parse(hours: gradualRolloutHoursValue); // → Duration
+final userSegmentationPercent = _doubleParser.parse(value: userSegmentationPercentValue); // → double
 ```
 
 ## 🎯 Configuration DSL Benefits
@@ -963,8 +963,8 @@ content:
         platforms: [android]
     date: $updateReleaseDate
     delay_hours: 24
-    rollout_hours: 168
-    segmentation_percent: 25
+    gradual_rollout_hours: 168
+    user_segmentation_percent: 25
     custom_params:
       country_is: russia
     data:
@@ -1095,8 +1095,8 @@ content:
     rollout:                 # ⏰ Temporal parameters
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:                    # 📄 Rule result data
       title: "Title"
       custom_params:
@@ -1145,14 +1145,14 @@ class UpdateRuleRolloutParser {
     
     final date = _updateDateParser.parse(map.remove('date'));
     final delay = _durationParser.parse(hours: map.remove('delay_hours'));
-    final rollout = _durationParser.parse(hours: map.remove('rollout_hours'));
-    final segmentationPercent = _doubleParser.parse(value: map.remove('segmentation_percent'));
+    final rollout = _durationParser.parse(hours: map.remove('gradual_rollout_hours'));
+    final userSegmentationPercent = _doubleParser.parse(value: map.remove('user_segmentation_percent'));
     
     return UpdateRuleRollout(
       date: date,
       delay: delay,
       rollout: rollout,
-      segmentationPercent: segmentationPercent,
+      userSegmentationPercent: userSegmentationPercent,
     );
   }
 }
@@ -1235,8 +1235,8 @@ content:
     rollout:                # ⏰ "When and how to rollout?"
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:                   # 📄 "What to show user?"
       title: "Премиум обновление Android"
       description: "Эксклюзивные функции доступны в Google Play"

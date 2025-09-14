@@ -17,15 +17,15 @@ class TemporalMatcher extends RuleMatcher {
     return _isMatchByDateAndRollout(
       ruleDate: rolloutParams?.date ?? UpdateDate.any,
       delay: rolloutParams?.delay,
-      rollout: rolloutParams?.rollout,
-      segmentationPercent: rolloutParams?.segmentationPercent,
+      rollout: rolloutParams?.gradualRolloutDuration,
+      userSegmentationPercent: rolloutParams?.userSegmentationPercent,
       currentDate: search.currentDate,
       localReleaseDate: search.localReleaseDate,
       updateReleaseDate: search.updateReleaseDate,
       appUpdateDate: search.appUpdateDate,
       appInstallDate: search.appInstallDate,
       rolloutPointer: search.rolloutPointer,
-      segmentationPointer: search.segmentationPointer,
+      userSegmentationPointer: search.userSegmentationPointer,
     );
   }
 
@@ -34,18 +34,18 @@ class TemporalMatcher extends RuleMatcher {
     required UpdateDate ruleDate,
     required Duration? delay,
     required Duration? rollout,
-    required double? segmentationPercent,
+    required double? userSegmentationPercent,
     required DateTime currentDate,
     required DateTime? localReleaseDate,
     required DateTime? updateReleaseDate,
     required DateTime? appUpdateDate,
     required DateTime? appInstallDate,
     required double rolloutPointer,
-    required double segmentationPointer,
+    required double userSegmentationPointer,
   }) {
-    if (segmentationPercent != null) {
-      final threshold = segmentationPercent.clamp(0, 100) / 100.0;
-      if (segmentationPointer > threshold) return false;
+    if (userSegmentationPercent != null) {
+      final threshold = userSegmentationPercent.clamp(0, 100) / 100.0;
+      if (userSegmentationPointer > threshold) return false;
     }
 
     if (ruleDate == UpdateDate.any) return true;

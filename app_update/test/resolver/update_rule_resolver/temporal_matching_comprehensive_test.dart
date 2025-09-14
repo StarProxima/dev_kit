@@ -438,7 +438,7 @@ void main() {
         final res = resolver.resolve(
           searchData: createTestSearchData(
             currentDate: baseDate.add(const Duration(hours: 1)),
-            segmentationPointer: 0.3, // 30% < 50%
+            userSegmentationPointer: 0.3, // 30% < 50%
           ),
           rules: rules,
         );
@@ -459,7 +459,7 @@ void main() {
           () => resolver.resolve(
             searchData: createTestSearchData(
               currentDate: baseDate.add(const Duration(hours: 1)),
-              segmentationPointer: 0.7, // 70% > 50%
+              userSegmentationPointer: 0.7, // 70% > 50%
             ),
             rules: rules,
           ),
@@ -480,7 +480,7 @@ void main() {
         final res = resolver.resolve(
           searchData: createTestSearchData(
             currentDate: baseDate.add(const Duration(hours: 1)),
-            segmentationPointer: 0.99,
+            userSegmentationPointer: 0.99,
           ),
           rules: rules,
         );
@@ -511,7 +511,7 @@ void main() {
           () => resolver.resolve(
             searchData: createTestSearchData(
               currentDate: baseDate.add(const Duration(hours: 1)),
-              segmentationPointer: 0.01,
+              userSegmentationPointer: 0.01,
             ),
             rules: rules,
           ),
@@ -532,7 +532,7 @@ void main() {
         final res = resolver.resolve(
           searchData: createTestSearchData(
             currentDate: baseDate.add(const Duration(hours: 1)),
-            segmentationPointer: 0.3, // Ровно на границе 30%
+            userSegmentationPointer: 0.3, // Ровно на границе 30%
           ),
           rules: rules,
         );
@@ -560,7 +560,7 @@ void main() {
         final res = resolver.resolve(
           searchData: createTestSearchData(
             currentDate: baseDate.add(const Duration(hours: 30)),
-            segmentationPointer: 0.4, // 40%
+            userSegmentationPointer: 0.4, // 40%
             rolloutPointer: 0.1, // 10%
           ),
           rules: rules,
@@ -584,7 +584,7 @@ void main() {
           () => resolver.resolve(
             searchData: createTestSearchData(
               currentDate: baseDate.add(const Duration(hours: 30)),
-              segmentationPointer: 0.5, // 50% > 30%
+              userSegmentationPointer: 0.5, // 50% > 30%
               rolloutPointer: 0.1,
             ),
             rules: rules,
@@ -609,7 +609,7 @@ void main() {
           () => resolver.resolve(
             searchData: createTestSearchData(
               currentDate: baseDate.add(const Duration(hours: 30)),
-              segmentationPointer: 0.5, // 50% < 80% ✓
+              userSegmentationPointer: 0.5, // 50% < 80% ✓
               rolloutPointer: 0.2, // 20% > 12.5% ✗
             ),
             rules: rules,
@@ -664,7 +664,7 @@ void main() {
           searchData: createTestSearchData(
             currentDate: currentTime,
             updateReleaseDate: updateRelease,
-            segmentationPointer: 0.15, // 15% < 25% ✓
+            userSegmentationPointer: 0.15, // 15% < 25% ✓
             rolloutPointer: 0.35, // 35% < 39.6% ✓
           ),
           rules: rules,
@@ -674,7 +674,7 @@ void main() {
     });
 
     group('Граничные случаи и edge cases', () {
-      test('segmentationPointer = 0.0', () {
+      test('userSegmentationPointer = 0.0', () {
         final baseDate = DateTime(2024, 1, 1, 12);
         final rules = [
           createTestRule(
@@ -746,7 +746,7 @@ void main() {
         final res = resolver.resolve(
           searchData: createTestSearchData(
             currentDate: baseDate.add(const Duration(hours: 1)),
-            segmentationPointer: 0.99, // 99% < 100% ✓
+            userSegmentationPointer: 0.99, // 99% < 100% ✓
           ),
           rules: rules,
         );
@@ -777,7 +777,7 @@ void main() {
           () => resolver.resolve(
             searchData: createTestSearchData(
               currentDate: baseDate.add(const Duration(hours: 1)),
-              segmentationPointer: 0.01,
+              userSegmentationPointer: 0.01,
             ),
             rules: rules,
           ),

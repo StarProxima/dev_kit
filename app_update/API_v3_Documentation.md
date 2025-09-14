@@ -62,7 +62,7 @@ releases:         # Конкретные релизы приложения
 - **Локали (`locales`)**: коды языков, например `ru`, `en`, либо `any`.
 - **Дата и время (`date`)**: локальное время в формате `YYYY-MM-DD HH:mm:ss` либо UTC c суффиксом `Z`.
 - **Динамические даты**: `$localReleaseDate` (дата текущей версии приложения) и `$updateReleaseDate` (дата последнего доступного обновления).
-- **Выкатывание**: `delay_hours`, `rollout_hours`, `segmentation_percent`.
+- **Выкатывание**: `delay_hours`, `gradual_rollout_hours`, `user_segmentation_percent`.
 
 ## Content Rules — контент UI
 
@@ -182,24 +182,24 @@ app_settings:
 
   - date: $updateReleaseDate
     delay_hours: 48
-    rollout_hours: 72
+    gradual_rollout_hours: 72
     data:
       app_status: outdated
 
   # Жизненный цикл от локальной даты релиза текущего приложения
   - date: $localReleaseDate
     delay_hours: 168
-    rollout_hours: 72
+    gradual_rollout_hours: 72
     data:
       app_status: outdated
   - date: $localReleaseDate
     delay_hours: 2880
-    rollout_hours: 168
+    gradual_rollout_hours: 168
     data:
       app_status: deprecated
   - date: $localReleaseDate
     delay_hours: 6760
-    rollout_hours: 168
+    gradual_rollout_hours: 168
     data:
       app_status: unsupported
 ```
@@ -215,19 +215,19 @@ app_settings:
   - app_version_is: "<4.0.0"
     date: 2014-10-17 00:00:00
     delay_hours: 168
-    rollout_hours: 72
+    gradual_rollout_hours: 72
     data: { app_status: outdated }
 
   - app_version_is: "<4.0.0"
     date: 2014-10-17 00:00:00
     delay_hours: 2880
-    rollout_hours: 168
+    gradual_rollout_hours: 168
     data: { app_status: deprecated }
 
   - app_version_is: "<4.0.0"
     date: 2015-01-01 00:00:00
     delay_hours: 6720
-    rollout_hours: 336
+    gradual_rollout_hours: 336
 
   - app_version_is: "<=2.0.0"
     date: 2014-10-17 23:00:00
@@ -244,15 +244,15 @@ app_settings:
   - app_version_is: "<=3.0.0"
     date: 2014-10-17
     delay_hours: 12
-    rollout_hours: 72
-    segmentation_percent: 10
+    gradual_rollout_hours: 72
+    user_segmentation_percent: 10
     data: { app_status: unsupported }
 
   - app_version_is: "<=3.0.0"
     date: 2014-10-17
     delay_hours: 120
-    rollout_hours: 72
-    segmentation_percent: 50
+    gradual_rollout_hours: 72
+    user_segmentation_percent: 50
     data: { app_status: unsupported }
 ```
 

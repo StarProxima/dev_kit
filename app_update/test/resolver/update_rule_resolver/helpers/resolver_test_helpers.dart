@@ -20,7 +20,7 @@ UpdateSearchData createTestSearchData({
   DateTime? updateReleaseDate,
   DateTime? appUpdateDate,
   DateTime? appInstallDate,
-  double segmentationPointer = 0.0,
+  double userSegmentationPointer = 0.0,
   double rolloutPointer = 0.0,
   DateTime? customAppInstallDate,
   Map<String, dynamic>? custom,
@@ -41,7 +41,7 @@ UpdateSearchData createTestSearchData({
     updateReleaseDate: updateReleaseDate,
     appUpdateDate: appUpdateDate,
     appInstallDate: appInstallDate,
-    segmentationPointer: segmentationPointer,
+    userSegmentationPointer: userSegmentationPointer,
     rolloutPointer: rolloutPointer,
     appName: appName,
     appPackageName: appPackageName,
@@ -93,8 +93,8 @@ UpdateRuleConfig<UpdateContentConfig> createTestRule({
     rollout: UpdateRuleRollout(
       date: date,
       delay: delay,
-      rollout: rollout,
-      segmentationPercent: segmentation,
+      gradualRolloutDuration: rollout,
+      userSegmentationPercent: segmentation,
       customParams: rolloutParams?.isNotEmpty == true ? rolloutParams : null,
     ),
     data: UpdateContentConfig(

@@ -43,7 +43,7 @@ class UpdateSearchDataDefaulter {
       appUpdateDate: packageInfo.updateTime,
       appInstallDate: packageInfo.installTime,
       // TODO: default value
-      segmentationPointer: 0,
+      userSegmentationPointer: 0,
       // TODO: default value
       rolloutPointer: 0,
       appName: packageInfo.appName,
@@ -68,8 +68,8 @@ class UpdateSearchDataDefaulter {
           searchConfig.appUpdateDate ?? defaultSearchData.appUpdateDate,
       appInstallDate:
           searchConfig.appInstallDate ?? defaultSearchData.appInstallDate,
-      segmentationPointer: searchConfig.segmentationPointer ??
-          defaultSearchData.segmentationPointer,
+      userSegmentationPointer: searchConfig.userSegmentationPointer ??
+          defaultSearchData.userSegmentationPointer,
       rolloutPointer:
           searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
       appName: searchConfig.appName ?? defaultSearchData.appName,

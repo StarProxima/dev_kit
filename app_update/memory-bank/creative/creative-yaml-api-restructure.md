@@ -75,7 +75,7 @@ class UpdateRuleRollout {
   final UpdateDate? date;
   final Duration? delay;
   final Duration? rollout;
-  final double? segmentationPercent;
+  final double? userSegmentationPercent;
 }
 ```
 

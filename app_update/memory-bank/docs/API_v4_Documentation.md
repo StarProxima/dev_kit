@@ -15,8 +15,8 @@ content:
     rollout:                 # ⏰ Параметры раскатки
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:                    # 📄 Данные для UI
       title: "Обновление доступно"
       description: "Версия $releaseVersion готова"
@@ -92,8 +92,8 @@ app_settings:
     rollout:
       date: $updateReleaseDate
       delay_hours: 48              # 2 дня после релиза
-      rollout_hours: 168           # Раскатка за неделю
-      segmentation_percent: 30     # 30% пользователей
+      gradual_rollout_hours: 168           # Раскатка за неделю
+      user_segmentation_percent: 30     # 30% пользователей
     data:
       app_status: outdated
 ```
@@ -133,8 +133,8 @@ when:
 rollout:
   date: $updateReleaseDate            # Базовая дата
   delay_hours: 24                     # Задержка активации
-  rollout_hours: 168                  # Длительность раскатки
-  segmentation_percent: 25            # Процент пользователей
+  gradual_rollout_hours: 168                  # Длительность раскатки
+  user_segmentation_percent: 25            # Процент пользователей
 ```
 
 #### 3. data (Данные правила)
@@ -162,8 +162,8 @@ data:
 ### Раскатка (rollout секция)
 - **date**: статическая дата (`"2024-01-01 10:00:00"`) или динамическая (`$localReleaseDate`, `$updateReleaseDate`)
 - **delay_hours**: задержка активации правила (в часах)
-- **rollout_hours**: длительность постепенной раскатки (в часах)
-- **segmentation_percent**: процент пользователей (0-100) для A/B тестирования
+- **gradual_rollout_hours**: длительность постепенной раскатки (в часах)
+- **user_segmentation_percent**: процент пользователей (0-100) для A/B тестирования
 
 ### Данные (data секция)
 - **content rules**: `title`, `description`, `updateButton`, `skipButton`, `postponeButton`, `releaseNotes`
@@ -381,8 +381,8 @@ app_settings:
     rollout:
       date: "2014-10-17 00:00:00"
       delay_hours: 12              # 12 часов задержки
-      rollout_hours: 72            # 3 дня раскатки
-      segmentation_percent: 10     # Только 10% пользователей первоначально
+      gradual_rollout_hours: 72            # 3 дня раскатки
+      user_segmentation_percent: 10     # Только 10% пользователей первоначально
     data:
       app_status: unsupported
       
@@ -391,8 +391,8 @@ app_settings:
     rollout:
       date: "2014-10-17 00:00:00"
       delay_hours: 120             # 5 дней задержки
-      rollout_hours: 72
-      segmentation_percent: 50     # 50% пользователей
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 50     # 50% пользователей
     data:
       app_status: unsupported
 ```
@@ -532,8 +532,8 @@ releases:
         rollout:
           date: "2024-08-20 10:00:00"
           delay_hours: 0
-          rollout_hours: 48          # 2 дня постепенной раскатки
-          segmentation_percent: 100  # Всем eligible users
+          gradual_rollout_hours: 48          # 2 дня постепенной раскатки
+          user_segmentation_percent: 100  # Всем eligible users
         data: { should_show: true }
     sources: [googlePlay, appStore]
 ```
@@ -599,7 +599,7 @@ app_settings:
     rollout:
       date: $updateReleaseDate
       delay_hours: 0
-      segmentation_percent: 5
+      user_segmentation_percent: 5
     data:
       app_status: outdated
       
@@ -610,7 +610,7 @@ app_settings:
     rollout:
       date: $updateReleaseDate
       delay_hours: 24
-      segmentation_percent: 25
+      user_segmentation_percent: 25
     data:
       app_status: outdated
       
@@ -634,8 +634,8 @@ content:
     rollout:
       date: "2024-09-01 00:00:00"
       delay_hours: 0
-      rollout_hours: 168
-      segmentation_percent: 50     # A/B test на 50%
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 50     # A/B test на 50%
     data:
       title: "New UI Available"
       description: "Experience our redesigned interface"
@@ -655,7 +655,7 @@ app_settings:
     rollout:
       date: "2024-08-25 14:30:00"         # Emergency deployment time
       delay_hours: 0                      # Immediate
-      segmentation_percent: 100           # All affected users
+      user_segmentation_percent: 100           # All affected users
     data:
       app_status: unsupported
 
@@ -680,7 +680,7 @@ content:
     rollout:                 # Все temporal параметры вместе
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
+      gradual_rollout_hours: 168
     data:                    # Все данные результата вместе
       title: "Обновление"
       description: "Доступно"
@@ -708,8 +708,8 @@ app_settings:
     rollout:
       date: $updateReleaseDate
       delay_hours: 24              # Дайте время на stabilization
-      rollout_hours: 168           # Постепенно за неделю
-      segmentation_percent: 20     # Начните с малой группы
+      gradual_rollout_hours: 168           # Постепенно за неделю
+      user_segmentation_percent: 20     # Начните с малой группы
     data:
       app_status: unsupported
 ```
@@ -738,8 +738,8 @@ content:
     rollout:
       date: $updateReleaseDate
       delay_hours: 48
-      rollout_hours: 168
-      segmentation_percent: 30
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 30
     data:
       title: "Важное обновление Android"
       description: "Обновитесь через Google Play"

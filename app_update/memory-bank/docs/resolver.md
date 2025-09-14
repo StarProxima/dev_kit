@@ -153,15 +153,15 @@ bool isRuleMatched<T extends Mergeable<T>>({
 #### A. Segmentation (A/B Testing)
 ```dart
 // Проверка user segmentation:
-if (segmentationPercent != null) {
-  final threshold = segmentationPercent.clamp(0, 100) / 100.0;
-  if (segmentationPointer > threshold) return false;
+if (userSegmentationPercent != null) {
+  final threshold = userSegmentationPercent.clamp(0, 100) / 100.0;
+  if (userSegmentationPointer > threshold) return false;
 }
 
 // Example:
-// segmentation_percent: 25  →  threshold = 0.25
-// segmentationPointer: 0.3  →  0.3 > 0.25 = false (rule rejected)
-// segmentationPointer: 0.1  →  0.1 < 0.25 = true (rule accepted)
+// user_segmentation_percent: 25  →  threshold = 0.25
+// userSegmentationPointer: 0.3  →  0.3 > 0.25 = false (rule rejected)
+// userSegmentationPointer: 0.1  →  0.1 < 0.25 = true (rule accepted)
 ```
 
 #### B. Dynamic Date Resolution
@@ -506,8 +506,8 @@ for (final entry in ruleCustom.entries) {
 app_settings:
   - date: $updateReleaseDate      # ← Base: latest release date
     delay_hours: 24               # ← Wait 24h после release
-    rollout_hours: 168            # ← Gradual rollout over 7 days  
-    segmentation_percent: 25      # ← Only 25% of users
+    gradual_rollout_hours: 168            # ← Gradual rollout over 7 days  
+    user_segmentation_percent: 25      # ← Only 25% of users
     data:
       app_status: outdated
 ```
@@ -515,9 +515,9 @@ app_settings:
 ### Temporal Evaluation Logic
 ```dart
 // 1️⃣ Segmentation check (FIRST - fastest to fail):
-if (segmentationPercent != null) {
-  final threshold = segmentationPercent.clamp(0, 100) / 100.0;
-  if (segmentationPointer > threshold) return false;  // ← User not in segment
+if (userSegmentationPercent != null) {
+  final threshold = userSegmentationPercent.clamp(0, 100) / 100.0;
+  if (userSegmentationPointer > threshold) return false;  // ← User not in segment
 }
 
 // 2️⃣ Date resolution (dynamic dates):
@@ -550,8 +550,8 @@ if (rollout != null) {
 app_settings:
   - date: "2024-01-01 09:00:00"  # Release announcement
     delay_hours: 12              # Wait 12h для initial stability
-    rollout_hours: 168           # 7-day gradual rollout
-    segmentation_percent: 20     # Only 20% of user base
+    gradual_rollout_hours: 168           # 7-day gradual rollout
+    user_segmentation_percent: 20     # Only 20% of user base
     data:
       app_status: outdated
 ```
@@ -563,7 +563,7 @@ app_settings:
 - **Jan 8 21:00** - 100% rollout complete
 
 **User experience**:
-- **segmentationPointer 0.1** (10% user) + **rolloutPointer 0.3** (wants 30% rollout):
+- **userSegmentationPointer 0.1** (10% user) + **rolloutPointer 0.3** (wants 30% rollout):
   - Day 1-2: ❌ (delay period)
   - Day 3: ❌ (rollout progress ~14%, user wants 30%)
   - Day 4: ✅ (rollout progress ~43%, user gets 30%)
@@ -937,16 +937,16 @@ app_settings:
       
   - date: $updateReleaseDate
     delay_hours: 48                         # 2 days after update release  
-    rollout_hours: 144                      # 6-day rollout
-    segmentation_percent: 30                # 30% of users
+    gradual_rollout_hours: 144                      # 6-day rollout
+    user_segmentation_percent: 30                # 30% of users
     data:
       app_status: outdated
 ```
 
 **User scenarios**:
 - **Day 1 after release**: ❌ (delay period)  
-- **Day 3, segmentationPointer 0.2, rolloutPointer 0.1**: ✅ (20% < 30%, 10% < 17% rollout progress)
-- **Day 3, segmentationPointer 0.4, rolloutPointer 0.1**: ❌ (40% > 30% segment threshold)
+- **Day 3, userSegmentationPointer 0.2, rolloutPointer 0.1**: ✅ (20% < 30%, 10% < 17% rollout progress)
+- **Day 3, userSegmentationPointer 0.4, rolloutPointer 0.1**: ❌ (40% > 30% segment threshold)
 
 ## 🎨 Advanced Matching Patterns
 
@@ -1095,8 +1095,8 @@ settings:
 app_settings:
   - date: "2024-01-15 10:00:00"    # Feature release date
     delay_hours: 24                # 1 day stabilization
-    rollout_hours: 336             # 2 weeks rollout
-    segmentation_percent: 25       # 25% of user base
+    gradual_rollout_hours: 336             # 2 weeks rollout
+    user_segmentation_percent: 25       # 25% of user base
     custom_params:
       feature_flag_is: premium_v2  # ← Only premium users
     data:
@@ -1119,7 +1119,7 @@ content:
 - **Jan 29**: 100% rollout complete
 
 **User filtering**:
-- **Segmentation**: Only 25% of users (segmentationPointer ≤ 0.25)
+- **Segmentation**: Only 25% of users (userSegmentationPointer ≤ 0.25)
 - **Feature flag**: Only premium users (feature_flag = premium_v2)
 - **Progressive rollout**: Gradual по времени (rolloutPointer ≤ progress)
 
@@ -1259,7 +1259,7 @@ content:
   - custom_params:
       feature_enabled_is: new_ui_v2        # ← Feature flag check
       user_tier_is: [premium, enterprise]  # ← User eligibility  
-    segmentation_percent: 50               # ← A/B testing
+    user_segmentation_percent: 50               # ← A/B testing
     data:
       title: "New UI Available!"
       description: "Try our redesigned interface"
@@ -1274,7 +1274,7 @@ content:
 app_settings:
   - date: "2024-01-15 14:30:00"           # Emergency deployment time
     delay_hours: 0                        # No delay - immediate
-    segmentation_percent: 100             # All users
+    user_segmentation_percent: 100             # All users
     app_version_is: ["1.2.0", "1.2.1"]   # Specific affected versions
     data:
       app_status: unsupported             # Force immediate update
@@ -1445,8 +1445,8 @@ app_settings:
   # Phase 1: Alpha users (5%) after 6 hours
   - date: $updateReleaseDate
     delay_hours: 6
-    rollout_hours: 168  
-    segmentation_percent: 5
+    gradual_rollout_hours: 168  
+    user_segmentation_percent: 5
     custom_params:
       user_tier_is: alpha
     data:
@@ -1455,8 +1455,8 @@ app_settings:
   # Phase 2: Beta users (25%) after 24 hours
   - date: $updateReleaseDate
     delay_hours: 24
-    rollout_hours: 168
-    segmentation_percent: 25
+    gradual_rollout_hours: 168
+    user_segmentation_percent: 25
     custom_params:
       user_tier_is: [alpha, beta]
     data:
@@ -1559,7 +1559,7 @@ test('Delay + Rollout + Segmentation: все условия соблюдены',
   final res = resolver.resolve(
     searchData: createTestSearchData(
       currentDate: baseDate.add(const Duration(hours: 30)),
-      segmentationPointer: 0.4,    // 40% < 60% ✓  
+      userSegmentationPointer: 0.4,    // 40% < 60% ✓  
       rolloutPointer: 0.1,         // 10% < 12.5% ✓
     ),
     rules: rules,
@@ -1581,9 +1581,9 @@ test('rolloutPointer точно на границе', () {
 });
 
 test('segmentation граничный случай', () {
-  // segmentation_percent: 30, pointer = 30% → should pass (<=)
+  // user_segmentation_percent: 30, pointer = 30% → should pass (<=)
   final res = resolver.resolve(
-    searchData: createTestSearchData(segmentationPointer: 0.3),
+    searchData: createTestSearchData(userSegmentationPointer: 0.3),
     // ...
   );
   expect(res.title, 'segment_exact');
@@ -1623,7 +1623,7 @@ app_settings:
   # Phase 1: Internal team (1%)  
   - date: $updateReleaseDate
     delay_hours: 0
-    segmentation_percent: 1
+    user_segmentation_percent: 1
     custom_params:
       user_tier_is: internal
     data:
@@ -1632,7 +1632,7 @@ app_settings:
   # Phase 2: Beta testers (10%) after 24h
   - date: $updateReleaseDate  
     delay_hours: 24
-    segmentation_percent: 10
+    user_segmentation_percent: 10
     custom_params:
       user_tier_is: [internal, beta]
     data:
@@ -1651,8 +1651,8 @@ app_settings:
 app_settings:
   - date: $updateReleaseDate
     delay_hours: 12
-    rollout_hours: 24                    # Fast 24h rollout
-    segmentation_percent: 5              # Small canary group
+    gradual_rollout_hours: 24                    # Fast 24h rollout
+    user_segmentation_percent: 5              # Small canary group
     custom_params:
       deployment_type_is: canary
     data:
@@ -1709,8 +1709,8 @@ content:
     rollout:                 # ⏰ TemporalMatcher input  
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:                    # 📄 Merge target (что resolver возвращает)
       title: "Обновление"
       custom_params:
@@ -1747,7 +1747,7 @@ class TemporalMatcher extends RuleMatcher {
       ruleDate: rule.date ?? UpdateDate.any,           // ← From top level (confusing)
       delay: rule.delay,                               // ← From top level
       rollout: rule.rollout,                           // ← From top level
-      segmentationPercent: rule.segmentationPercent,   // ← From top level
+      userSegmentationPercent: rule.userSegmentationPercent,   // ← From top level
       // ...
     );
   }
@@ -1761,7 +1761,7 @@ class TemporalMatcher extends RuleMatcher {
       ruleDate: rolloutParams?.date ?? UpdateDate.any,           // ← Obviously from rollout!
       delay: rolloutParams?.delay,                               // ← Obviously temporal!
       rollout: rolloutParams?.rollout,                           // ← Self-documenting!
-      segmentationPercent: rolloutParams?.segmentationPercent,   // ← Clearly rollout param!
+      userSegmentationPercent: rolloutParams?.userSegmentationPercent,   // ← Clearly rollout param!
       // ...
     );
   }
@@ -1817,8 +1817,8 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 168        # 1 week
-      rollout_hours: 168      # 7 days rollout
-      segmentation_percent: 25 # 25% users
+      gradual_rollout_hours: 168      # 7 days rollout
+      user_segmentation_percent: 25 # 25% users
     data:
       app_status: outdated
       
@@ -1826,8 +1826,8 @@ app_settings:
 # app_version_is: "<2.0.0"     # When condition
 # date: $localReleaseDate      # Rollout param  
 # delay_hours: 168             # Rollout param
-# rollout_hours: 168           # Rollout param (what's the difference?)
-# segmentation_percent: 25     # Rollout param
+# gradual_rollout_hours: 168           # Rollout param (what's the difference?)
+# user_segmentation_percent: 25     # Rollout param
 # data: { app_status: outdated }
 ```
 
@@ -1855,7 +1855,7 @@ graph TD
     TemporalMatcher --> T1["rollout.date"]
     TemporalMatcher --> T2["rollout.delay"]
     TemporalMatcher --> T3["rollout.rollout"]
-    TemporalMatcher --> T4["rollout.segmentationPercent"]
+    TemporalMatcher --> T4["rollout.userSegmentationPercent"]
     
     style When fill:#10b981,stroke:#059669,color:white
     style Rollout fill:#f6546a,stroke:#c30052,color:white
@@ -1877,7 +1877,7 @@ class UpdateRuleConfig<T extends Mergeable<T>> {
   UpdateDate? get date => rollout?.date;
   Duration? get delay => rollout?.delay;
   Duration? get rollout => rollout?.rollout;
-  double? get segmentationPercent => rollout?.segmentationPercent;
+  double? get userSegmentationPercent => rollout?.userSegmentationPercent;
   Map<String, dynamic>? get customParams => when?.customParams;  // ← Only matching params
 }
 
@@ -1911,8 +1911,8 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 168        # 1 week stabilization
-      rollout_hours: 336      # 2 week gradual rollout
-      segmentation_percent: 30 # 30% of eligible users
+      gradual_rollout_hours: 336      # 2 week gradual rollout
+      user_segmentation_percent: 30 # 30% of eligible users
     data:
       app_status: outdated
 ```
@@ -1964,7 +1964,7 @@ graph TD
     
     Matchers --> M1["when.viewTargetIs<br>when.localeIs<br>when.appStatusIs<br>when.sourceIs<br>when.platformIs<br>when.appVersionIs<br>when.customParams"]
     
-    Temporal --> T1["rollout.date<br>rollout.delay<br>rollout.rollout<br>rollout.segmentationPercent"]
+    Temporal --> T1["rollout.date<br>rollout.delay<br>rollout.rollout<br>rollout.userSegmentationPercent"]
     
     Merging --> Result["Final T Result"]
     
@@ -2019,7 +2019,7 @@ class TemporalMatcher extends RuleMatcher {
       ruleDate: rolloutParams.date ?? UpdateDate.any,
       delay: rolloutParams.delay,
       rollout: rolloutParams.rollout,                // ← rollout.rollout (clear!)
-      segmentationPercent: rolloutParams.segmentationPercent,
+      userSegmentationPercent: rolloutParams.userSegmentationPercent,
       // ... search params
     );
   }
@@ -2035,7 +2035,7 @@ app_settings:
   - app_version_is: "<2.0.0"      # Условие (unclear context)
     date: $localReleaseDate       # Rollout param (unclear purpose)
     delay_hours: 168              # Rollout param (why this number?)
-    segmentation_percent: 25      # Rollout param (what does this control?)
+    user_segmentation_percent: 25      # Rollout param (what does this control?)
     data: { app_status: outdated }
 ```
 
@@ -2048,7 +2048,7 @@ app_settings:
     rollout:                      # ⏰ "Control rollout timing..."
       date: $localReleaseDate     # ← Obviously timing reference
       delay_hours: 168            # ← Obviously delay period
-      segmentation_percent: 25    # ← Obviously user percentage
+      user_segmentation_percent: 25    # ← Obviously user percentage
     data:                         # 📄 "Result of rule application..."
       app_status: outdated        # ← Obviously the outcome
 ```
@@ -2120,7 +2120,7 @@ content:
       app_status_is: deprecated
       locale_is: ru
     rollout:
-      segmentation_percent: 100   # All deprecated users immediately
+      user_segmentation_percent: 100   # All deprecated users immediately
     data:
       title: "Критическое обновление"
       description: "Ваша версия больше не поддерживается"
@@ -2134,8 +2134,8 @@ content:
     rollout:
       date: $updateReleaseDate
       delay_hours: 12             # Shorter delay для critical
-      rollout_hours: 48           # Faster rollout
-      segmentation_percent: 100   # All users
+      gradual_rollout_hours: 48           # Faster rollout
+      user_segmentation_percent: 100   # All users
     data:
       title: "Критическое обновление Android"
       description: "Обновитесь через Google Play немедленно"
@@ -2165,8 +2165,8 @@ app_settings:
     rollout:                        # ⏰ "How to rollout?"
       date: $updateReleaseDate      # ← Base timing
       delay_hours: 48               # ← 2-day stabilization
-      rollout_hours: 336            # ← 2-week gradual rollout
-      segmentation_percent: 40      # ← 40% of eligible users
+      gradual_rollout_hours: 336            # ← 2-week gradual rollout
+      user_segmentation_percent: 40      # ← 40% of eligible users
     data:                           # 📄 "What status change?"
       app_status: outdated
 ```
@@ -2180,7 +2180,7 @@ app_settings:
 ```yaml
 content:
   - when: { app_status_is: deprecated }
-    rollout: { segmentation_percent: 25 }
+    rollout: { user_segmentation_percent: 25 }
     monitoring:                     # 🔍 Future section
       track_impressions: true
       success_metric: "update_completion_rate"

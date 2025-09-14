@@ -240,8 +240,8 @@ content:
     rollout:                 # ⏰ Temporal parameters
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:                    # 📄 Rule result data
       title: "Title"
       custom_params:

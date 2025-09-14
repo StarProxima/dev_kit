@@ -671,7 +671,7 @@ content:
       update_url: "https://example.com/update"
       
   - platform_is: android
-    segmentation_percent: 30
+    user_segmentation_percent: 30
     data:
       title: "Beta Update"
       update_url: "https://example.com/update"
@@ -691,7 +691,7 @@ releases:
     date: "2024-01-10T10:00:00"
     settings:
       - should_show: false
-      - segmentation_percent: 30
+      - user_segmentation_percent: 30
         data:
           should_show: true
     sources: [googlePlay]
@@ -721,7 +721,7 @@ releases:
               displayTarget: UpdateViewTarget.dialog,
               locale: UpdateLocale.en,
               currentDate: DateTime.parse('2024-01-15T10:00:00'),
-              segmentationPointer: 0.2, // 20%
+              userSegmentationPointer: 0.2, // 20%
             ),
           );
 
@@ -733,7 +733,7 @@ releases:
               displayTarget: UpdateViewTarget.dialog,
               locale: UpdateLocale.en,
               currentDate: DateTime.parse('2024-01-15T10:00:00'),
-              segmentationPointer: 0.4, // 40%
+              userSegmentationPointer: 0.4, // 40%
             ),
           );
 
@@ -773,8 +773,8 @@ app_settings:
   - app_version_is: "<2.0.0"
     date: "2024-01-01T10:00:00"
     delay_hours: 24      # Задержка 24 часа
-    rollout_hours: 72    # Раскатка за 3 дня
-    segmentation_percent: 50  # Только на 50% пользователей
+    gradual_rollout_hours: 72    # Раскатка за 3 дня
+    user_segmentation_percent: 50  # Только на 50% пользователей
     data:
       app_status: unsupported
 
@@ -810,7 +810,7 @@ releases:
 
               // 10 часов после релиза
               currentDate: releaseDate.add(const Duration(hours: 10)),
-              segmentationPointer: 0.3,
+              userSegmentationPointer: 0.3,
               rolloutPointer: 0.3,
             ),
           );
@@ -822,7 +822,7 @@ releases:
               sources: const [UpdateSource.googlePlay],
 
               currentDate: releaseDate.add(const Duration(hours: 24 + 34)),
-              segmentationPointer: 0.3, // В сегменте
+              userSegmentationPointer: 0.3, // В сегменте
               rolloutPointer: 0.3, // В rollout
             ),
           );
@@ -833,7 +833,7 @@ releases:
               sources: const [UpdateSource.googlePlay],
 
               currentDate: releaseDate.add(const Duration(hours: 24 + 34)),
-              segmentationPointer: 0.3, // В сегменте
+              userSegmentationPointer: 0.3, // В сегменте
               rolloutPointer: 0.7, // Не в rollout
             ),
           );
@@ -845,7 +845,7 @@ releases:
               sources: const [UpdateSource.googlePlay],
 
               currentDate: releaseDate.add(const Duration(hours: 24 + 72 + 1)),
-              segmentationPointer: 0.3,
+              userSegmentationPointer: 0.3,
               rolloutPointer: 1, // В rollout
             ),
           );
@@ -856,7 +856,7 @@ releases:
               sources: const [UpdateSource.googlePlay],
 
               currentDate: releaseDate.add(const Duration(hours: 24 + 72 + 1)),
-              segmentationPointer: 0.7,
+              userSegmentationPointer: 0.7,
               rolloutPointer: 1, // В rollout
             ),
           );

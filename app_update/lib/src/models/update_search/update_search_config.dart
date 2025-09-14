@@ -29,7 +29,7 @@ class UpdateSearchConfig {
   final DateTime? appInstallDate;
 
   /// From 0.0 to 1.0, uses for calculate user segmentation compliance.
-  final double? segmentationPointer;
+  final double? userSegmentationPointer;
 
   /// From 0.0 to 1.0, uses for calculate user rollout compliance.
   final double? rolloutPointer;
@@ -53,7 +53,7 @@ class UpdateSearchConfig {
     this.appUpdateDate,
     this.appInstallDate,
     this.appStatus,
-    this.segmentationPointer,
+    this.userSegmentationPointer,
     this.rolloutPointer,
     this.appName,
     this.appPackageName,
@@ -72,7 +72,7 @@ class UpdateSearchConfig {
     DateTime? appUpdateDate,
     DateTime? appInstallDate,
     AppStatus? appStatus,
-    double? segmentationPointer,
+    double? userSegmentationPointer,
     double? rolloutPointer,
     String? appName,
     String? appPackageName,
@@ -90,7 +90,8 @@ class UpdateSearchConfig {
         appUpdateDate: appUpdateDate ?? this.appUpdateDate,
         appInstallDate: appInstallDate ?? this.appInstallDate,
         appStatus: appStatus ?? this.appStatus,
-        segmentationPointer: segmentationPointer ?? this.segmentationPointer,
+        userSegmentationPointer:
+            userSegmentationPointer ?? this.userSegmentationPointer,
         rolloutPointer: rolloutPointer ?? this.rolloutPointer,
         appName: appName ?? this.appName,
         appPackageName: appPackageName ?? this.appPackageName,

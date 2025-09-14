@@ -139,7 +139,7 @@ app_settings:
     rollout:
       date: $updateReleaseDate
       delay_hours: 48  # 2 days
-      rollout_hours: 72 # 3 days
+      gradual_rollout_hours: 72 # 3 days
     data:
       app_status: outdated
 
@@ -149,7 +149,7 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 168 # 7 days
-      rollout_hours: 72 # 3 days
+      gradual_rollout_hours: 72 # 3 days
     data:
       app_status: outdated
       
@@ -158,7 +158,7 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 2880 # 120 days
-      rollout_hours: 168 # 7 days
+      gradual_rollout_hours: 168 # 7 days
     data:
       app_status: deprecated
       
@@ -167,7 +167,7 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 6760 # 240 days
-      rollout_hours: 168 # 7 days
+      gradual_rollout_hours: 168 # 7 days
     data:
       app_status: unsupported
 
@@ -183,7 +183,7 @@ app_settings:
     rollout:
       date: 2014-10-17 00:00:00
       delay_hours: 168 # 7 days
-      rollout_hours: 72 # 3 days
+      gradual_rollout_hours: 72 # 3 days
     data:
       app_status: outdated
       
@@ -192,7 +192,7 @@ app_settings:
     rollout:
       date: 2014-10-17 00:00:00
       delay_hours: 2880 # 120 days
-      rollout_hours: 168 # 7 days
+      gradual_rollout_hours: 168 # 7 days
     data:
       app_status: deprecated
       
@@ -201,7 +201,7 @@ app_settings:
     rollout:
       date: 2015-01-01 00:00:00
       delay_hours: 6720 # 280 days
-      rollout_hours: 336 # 14 days
+      gradual_rollout_hours: 336 # 14 days
     data:
       app_status: unsupported
 
@@ -230,8 +230,8 @@ app_settings:
     rollout:
       date: 2014-10-17
       delay_hours: 12
-      rollout_hours: 72
-      segmentation_percent: 10
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 10
     data:
       app_status: unsupported
 
@@ -239,8 +239,8 @@ app_settings:
       app_version_is: '<=3.0.0'
     rollout:
       date: 2014-10-17
-      rollout_hours: 72
-      segmentation_percent: 50
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 50
     data:
       app_status: unsupported
 

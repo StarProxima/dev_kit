@@ -34,7 +34,7 @@ content:
       app_status_is: deprecated
       locale_is: ru
     rollout:
-      segmentation_percent: 100        # All deprecated users immediately
+      user_segmentation_percent: 100        # All deprecated users immediately
     data:
       title: "Важное обновление"
       description: "Ваша версия устарела, обновитесь как можно скорее"
@@ -54,8 +54,8 @@ content:
     rollout:
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:
       title: "Премиум обновление Android"
       description: "Эксклюзивные функции доступны в Google Play"
@@ -139,7 +139,7 @@ app_settings:
     rollout:
       date: $updateReleaseDate
       delay_hours: 48            # 2 days after update release
-      rollout_hours: 72          # 3 days gradual rollout
+      gradual_rollout_hours: 72          # 3 days gradual rollout
     data:
       app_status: outdated
 
@@ -148,7 +148,7 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 168           # 7 days
-      rollout_hours: 72          # 3 days rollout
+      gradual_rollout_hours: 72          # 3 days rollout
     data:
       app_status: outdated
 
@@ -156,7 +156,7 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 2880          # 120 days
-      rollout_hours: 168         # 7 days rollout
+      gradual_rollout_hours: 168         # 7 days rollout
     data:
       app_status: deprecated
 
@@ -164,7 +164,7 @@ app_settings:
     rollout:
       date: $localReleaseDate
       delay_hours: 6760          # 280 days
-      rollout_hours: 168         # 7 days rollout
+      gradual_rollout_hours: 168         # 7 days rollout
     data:
       app_status: unsupported
 
@@ -178,7 +178,7 @@ app_settings:
     rollout:
       date: "2014-10-17 00:00:00"
       delay_hours: 168
-      rollout_hours: 72
+      gradual_rollout_hours: 72
     data:
       app_status: outdated
 
@@ -186,7 +186,7 @@ app_settings:
     rollout:
       date: "2014-10-17 00:00:00"
       delay_hours: 2880
-      rollout_hours: 168
+      gradual_rollout_hours: 168
     data:
       app_status: deprecated
 
@@ -198,8 +198,8 @@ app_settings:
     rollout:
       date: "2014-10-17 00:00:00"
       delay_hours: 12
-      rollout_hours: 72
-      segmentation_percent: 10
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 10
     data:
       app_status: unsupported
 
@@ -207,8 +207,8 @@ app_settings:
     rollout:
       date: "2014-10-17 00:00:00"
       delay_hours: 120
-      rollout_hours: 72
-      segmentation_percent: 50
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 50
     data:
       app_status: unsupported
 
@@ -288,8 +288,8 @@ releases:
             user_tier_is: [beta, internal]
         rollout:
           delay_hours: 0
-          rollout_hours: 48
-          segmentation_percent: 100
+          gradual_rollout_hours: 48
+          user_segmentation_percent: 100
         data: { should_show: true }
     sources: [googlePlay, github]
 

@@ -371,24 +371,24 @@ app_settings:
   # Фаза 1: Только 5% пользователей через 6 часов
   - date: "2024-01-15T10:00:00"
     delay_hours: 6
-    rollout_hours: 168
-    segmentation_percent: 5
+    gradual_rollout_hours: 168
+    user_segmentation_percent: 5
     data:
       app_status: outdated
       
   # Фаза 2: 25% пользователей через 24 часа
   - date: "2024-01-15T10:00:00"
     delay_hours: 24
-    rollout_hours: 168
-    segmentation_percent: 25
+    gradual_rollout_hours: 168
+    user_segmentation_percent: 25
     data:
       app_status: outdated
       
   # Фаза 3: 75% пользователей через 48 часов  
   - date: "2024-01-15T10:00:00"
     delay_hours: 48
-    rollout_hours: 168
-    segmentation_percent: 75
+    gradual_rollout_hours: 168
+    user_segmentation_percent: 75
     data:
       app_status: outdated
       
@@ -431,7 +431,7 @@ releases:
             displayTarget: UpdateViewTarget.dialog,
             locale: UpdateLocale.en,
             currentDate: DateTime.parse('2024-01-15T15:00:00'), // +5 часов
-            segmentationPointer: 0.03, // 3%
+            userSegmentationPointer: 0.03, // 3%
             rolloutPointer: 0.01, // 1%
           ),
         );
@@ -450,7 +450,7 @@ releases:
             displayTarget: UpdateViewTarget.dialog,
             locale: UpdateLocale.en,
             currentDate: DateTime.parse('2024-01-15T20:00:00'), // +10 часов
-            segmentationPointer: 0.03, // 3% - в alpha сегменте
+            userSegmentationPointer: 0.03, // 3% - в alpha сегменте
             rolloutPointer: 0.01,
           ),
         );
@@ -468,7 +468,7 @@ releases:
             displayTarget: UpdateViewTarget.dialog,
             locale: UpdateLocale.en,
             currentDate: DateTime.parse('2024-01-22T15:00:00'), // +7+ дней
-            segmentationPointer: 0.9, // 90% - любой пользователь
+            userSegmentationPointer: 0.9, // 90% - любой пользователь
             rolloutPointer: 0.5,
           ),
         );
@@ -983,7 +983,7 @@ app_settings:
   # Правило с микро-задержкой (5 минут)
   - date: "2024-01-15T10:00:00"
     delay_hours: 0.08333  # 5 мин
-    segmentation_percent: 1
+    user_segmentation_percent: 1
     data:
       app_status: outdated
       
@@ -996,8 +996,8 @@ app_settings:
   # Правило с micro rollout (30 минут)
   - date: "2024-01-15T10:00:00"
     delay_hours: 1
-    rollout_hours: 0.5
-    segmentation_percent: 50
+    gradual_rollout_hours: 0.5
+    user_segmentation_percent: 50
     data:
       app_status: outdated
 
@@ -1033,7 +1033,7 @@ releases:
             displayTarget: UpdateViewTarget.dialog,
             locale: UpdateLocale.en,
             currentDate: DateTime.parse('2024-01-15T11:30:00'), // +1.5 часа
-            segmentationPointer: 0.005, // 0.5% - VIP сегмент
+            userSegmentationPointer: 0.005, // 0.5% - VIP сегмент
             rolloutPointer: 0.001,
           ),
         );
@@ -1053,7 +1053,7 @@ releases:
             displayTarget: UpdateViewTarget.dialog,
             locale: UpdateLocale.en,
             currentDate: DateTime.parse('2024-01-15T11:20:00'), // +80 минут
-            segmentationPointer: 0.3, // 30%
+            userSegmentationPointer: 0.3, // 30%
             rolloutPointer: 0.4, // 40%
           ),
         );

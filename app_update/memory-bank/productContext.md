@@ -54,8 +54,8 @@ content:
 app_settings:
   - date: $updateReleaseDate
     delay_hours: 24              # Сутки на стабилизацию
-    rollout_hours: 168           # Неделя на полный rollout  
-    segmentation_percent: 25     # Только четверть пользователей
+    gradual_rollout_hours: 168           # Неделя на полный rollout  
+    user_segmentation_percent: 25     # Только четверть пользователей
     data:
       app_status: outdated
 
@@ -129,7 +129,7 @@ UpdateHandler.alert(
 # Управление rollout через конфигурацию без code changes
 settings:
   - app_status_is: deprecated
-    segmentation_percent: 10  # A/B test на 10%
+    user_segmentation_percent: 10  # A/B test на 10%
     data:
       should_show: true
 ```

@@ -17,8 +17,8 @@ content:
     locale_is: any                # Условие
     date: 2020-01-01              # Rollout параметр
     delay_hours: 24               # Rollout параметр
-    rollout_hours: 72             # Rollout параметр
-    segmentation_percent: 10      # Rollout параметр
+    gradual_rollout_hours: 72             # Rollout параметр
+    user_segmentation_percent: 10      # Rollout параметр
     custom_params:                # Смешанное назначение
       env_is: prod                # Условие
       analytics_data: value       # Data
@@ -45,8 +45,8 @@ content:
     rollout:                      # ⏰ Temporal параметры
       date: 2020-01-01
       delay_hours: 24
-      rollout_hours: 72
-      segmentation_percent: 10
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 10
     data:                         # 📄 Данные правила
       title: "Обновите приложение"
       custom_params:
@@ -169,8 +169,8 @@ content:
     rollout:
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:
       title: "Премиум обновление"
       description: "Эксклюзивные функции доступны"
@@ -216,7 +216,7 @@ class UpdateRuleRollout {
   final UpdateDate? date;
   final Duration? delay;
   final Duration? rollout;
-  final double? segmentationPercent;
+  final double? userSegmentationPercent;
 }
 ```
 
@@ -516,8 +516,8 @@ content:
     rollout:
       date: 2020-01-01
       delay_hours: 24
-      rollout_hours: 72
-      segmentation_percent: 10
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 10
     data:
       title: "Title"
 ```
@@ -591,8 +591,8 @@ content:
     # ROLLOUT CONDITIONS:
     date: 2020-01-01
     delay_hours: 24
-    rollout_hours: 72
-    segmentation_percent: 10
+    gradual_rollout_hours: 72
+    user_segmentation_percent: 10
     # RULE DATA:
     data:
       title: "Title"
@@ -904,8 +904,8 @@ content:
     rollout:                 # ⏰ Temporal parameters
       date: $updateReleaseDate
       delay_hours: 24
-      rollout_hours: 168
-      segmentation_percent: 25
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:                    # 📄 Rule result data
       title: "Title"
       custom_params:
@@ -1008,7 +1008,7 @@ content:
     rollout:                 # ⏰ "Control timing and rollout"
       date: $updateReleaseDate
       delay_hours: 24
-      segmentation_percent: 30
+      user_segmentation_percent: 30
     data:                    # 📄 "Show this to user"
       title: "Критическое обновление Android"
       description: "Обновитесь через Google Play"
@@ -1086,7 +1086,7 @@ content:
   - VersionMatcher → rule.when?.appVersionIs
   - PlatformMatcher → rule.when?.platformIs
   - SourceMatcher → rule.when?.sourceIs
-  - TemporalMatcher → rule.rollout?.date/delay/rollout/segmentationPercent
+  - TemporalMatcher → rule.rollout?.date/delay/rollout/userSegmentationPercent
   - CustomParamsMatcher → rule.when?.customParams
 
 ##### Phase 4: Integration Updates ✅

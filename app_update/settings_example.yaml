@@ -11,7 +11,7 @@ settings_0:
     Version $releaseVersion is now available. You have a $appVersion
   # Extends to `recommended` and `available`, but not `required` ⬇️
   reminder_period_hours: 96
-  progressive_rollout_hours: 96
+  progressive_gradual_rollout_hours: 96
   delay_hours: 20
 
   # # Skip

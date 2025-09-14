@@ -120,14 +120,15 @@ void main() {
       expect(result?.when?.customParams, containsPair('custom_field', 42));
     });
 
-    test('Парсит delay_hours, rollout_hours, segmentation_percent', () {
+    test('Парсит delay_hours, gradual_rollout_hours, user_segmentation_percent',
+        () {
       const yamlStr = '''
         when:
           app_status_is: deprecated
         rollout:
           delay_hours: 12
-          rollout_hours: 72
-          segmentation_percent: 12.5
+          gradual_rollout_hours: 72
+          user_segmentation_percent: 12.5
         data:
           title: test
       ''';
@@ -141,8 +142,8 @@ void main() {
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
       expect(result?.rollout?.delay?.inHours, 12);
-      expect(result?.rollout?.rollout?.inHours, 72);
-      expect(result?.rollout?.segmentationPercent, closeTo(12.5, 0.0001));
+      expect(result?.rollout?.gradualRolloutDuration?.inHours, 72);
+      expect(result?.rollout?.userSegmentationPercent, closeTo(12.5, 0.0001));
     });
   });
 }

@@ -132,8 +132,8 @@ class UpdateRuleConfigParser {
     final rolloutFieldNames = [
       'date',
       'delay_hours',
-      'rollout_hours',
-      'segmentation_percent'
+      'gradual_rollout_hours',
+      'user_segmentation_percent'
     ];
 
     for (final field in rolloutFieldNames) {
