@@ -1,4 +1,4 @@
-// ignore_for_file: cast_nullable_to_non_nullable, avoid-type-casts
+//skip:file: cast_nullable_to_non_nullable, avoid-type-casts
 
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +22,8 @@ void main() {
 
     test('Базовое правило с data', () {
       const yamlStr = '''
-        app_status_is: outdated
+        when:
+          app_status_is: outdated
         data:
           title: "Заголовок"
       ''';
@@ -35,17 +36,18 @@ void main() {
         isDebug: true,
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
-      expect(result?.appStatusIs?.firstOrNull?.name, 'outdated');
+      expect(result?.when?.appStatusIs?.firstOrNull?.name, 'outdated');
       expect(result?.data.map['title'], 'Заголовок');
     });
 
     test('Массивы значений', () {
       const yamlStr = '''
-        app_status_is: [outdated, active]
-        locale_is: [ru, en]
-        view_target_is: [card, dialog]
-        app_version_is: [">=1.0.0", "<2.0.0"]
-        source_is: [googlePlay, appStore]
+        when:
+          app_status_is: [outdated, active]
+          locale_is: [ru, en]
+          view_target_is: [card, dialog]
+          app_version_is: [">=1.0.0", "<2.0.0"]
+          source_is: [googlePlay, appStore]
         data:
           title: test
       ''';
@@ -57,11 +59,11 @@ void main() {
         ),
         isDebug: true,
       );
-      expect(result?.appStatusIs?.length, 2);
-      expect(result?.localeIs?.length, 2);
-      expect(result?.viewTargetIs?.length, 2);
-      expect(result?.appVersionIs?.length, 2);
-      expect(result?.sourceIs?.length, 2);
+      expect(result?.when?.appStatusIs?.length, 2);
+      expect(result?.when?.localeIs?.length, 2);
+      expect(result?.when?.viewTargetIs?.length, 2);
+      expect(result?.when?.appVersionIs?.length, 2);
+      expect(result?.when?.sourceIs?.length, 2);
     });
 
     test('null возвращает null', () {
@@ -100,9 +102,10 @@ void main() {
 
     test('customParams содержит неиспользованные поля', () {
       const yamlStr = '''
-        app_status_is: outdated
-        custom_params:
-          custom_field: 42
+        when:
+          app_status_is: outdated
+          custom_params:
+            custom_field: 42
         data:
           title: test
       ''';
@@ -114,15 +117,17 @@ void main() {
         ),
         isDebug: true,
       );
-      expect(result?.customParams, containsPair('custom_field', 42));
+      expect(result?.when?.customParams, containsPair('custom_field', 42));
     });
 
     test('Парсит delay_hours, rollout_hours, segmentation_percent', () {
       const yamlStr = '''
-        app_status_is: deprecated
-        delay_hours: 12
-        rollout_hours: 72
-        segmentation_percent: 12.5
+        when:
+          app_status_is: deprecated
+        rollout:
+          delay_hours: 12
+          rollout_hours: 72
+          segmentation_percent: 12.5
         data:
           title: test
       ''';
@@ -135,9 +140,9 @@ void main() {
         isDebug: true,
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
-      expect(result?.delay?.inHours, 12);
+      expect(result?.rollout?.delay?.inHours, 12);
       expect(result?.rollout?.rollout?.inHours, 72);
-      expect(result?.segmentationPercent, closeTo(12.5, 0.0001));
+      expect(result?.rollout?.segmentationPercent, closeTo(12.5, 0.0001));
     });
   });
 }

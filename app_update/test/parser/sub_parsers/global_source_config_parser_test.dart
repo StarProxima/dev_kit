@@ -14,15 +14,18 @@ void main() {
           - name: android
           - name: ios
         content:
-          - locale_is: ru
+          - when:
+              locale_is: ru
             data:
               title: 'Заголовок'
         settings:
-          - app_status_is: outdated
+          - when:
+              app_status_is: outdated
             data:
               can_skip: true
         app_settings:
-          - app_version_is: any
+          - when:
+              app_version_is: any
             data:
               app_status: active
         custom_params:

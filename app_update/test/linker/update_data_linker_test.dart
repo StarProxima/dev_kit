@@ -181,7 +181,7 @@ void main() {
         );
         // Проверяем что правило было связано с источником
         expect(
-          result.contentRules!.first.sourceIs?.firstOrNull?.sourceName,
+          result.contentRules!.first.when?.sourceIs?.firstOrNull?.sourceName,
           equals(UpdateSourceName.googlePlay),
         );
       });
@@ -219,11 +219,11 @@ void main() {
         );
         // Проверяем что правило было связано с источником и платформой
         expect(
-          result.contentRules!.first.sourceIs?.firstOrNull?.sourceName,
+          result.contentRules!.first.when?.sourceIs?.firstOrNull?.sourceName,
           equals(UpdateSourceName.googlePlay),
         );
         expect(
-          result.contentRules!.first.sourceIs?.firstOrNull?.platforms,
+          result.contentRules!.first.when?.sourceIs?.firstOrNull?.platforms,
           contains(UpdatePlatform.android),
         );
       });
@@ -666,13 +666,13 @@ void main() {
 
           /// Проверяем что правило связано с источником
           expect(
-            linkedRule.sourceIs?.firstOrNull?.sourceName,
+            linkedRule.when?.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
 
           /// Проверяем что в список платформ включена только нужная платформа
           expect(
-            linkedRule.sourceIs?.firstOrNull?.platforms,
+            linkedRule.when?.sourceIs?.firstOrNull?.platforms,
             contains(UpdatePlatform.android),
           );
         },

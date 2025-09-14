@@ -499,7 +499,7 @@ void main() {
 
             final firstRule = updateData.contentRules!.first;
             expect(firstRule.data.title, releaseRule.data.title);
-            final firstRuleSourceIs = firstRule.sourceIs?.firstOrNull;
+            final firstRuleSourceIs = firstRule.when?.sourceIs?.firstOrNull;
             expect(
               firstRuleSourceIs?.sourceName,
               equals(UpdateSourceName.googlePlay),
@@ -511,7 +511,7 @@ void main() {
 
             final secondRule = updateData.contentRules![1];
             expect(secondRule.data.description, sourceRule.data.description);
-            final secondRuleSourceIs = secondRule.sourceIs?.firstOrNull;
+            final secondRuleSourceIs = secondRule.when?.sourceIs?.firstOrNull;
             expect(
               secondRuleSourceIs?.sourceName,
               equals(UpdateSourceName.googlePlay),
@@ -523,7 +523,7 @@ void main() {
 
             final thirdRule = updateData.contentRules![2];
             expect(thirdRule.data.title, platformRule.data.title);
-            final thirdRuleSourceIs = thirdRule.sourceIs?.firstOrNull;
+            final thirdRuleSourceIs = thirdRule.when?.sourceIs?.firstOrNull;
             expect(
               thirdRuleSourceIs?.sourceName,
               equals(UpdateSourceName.googlePlay),
@@ -562,33 +562,33 @@ void main() {
           final firstContentRule = result.first.contentRules!.first;
           expect(firstContentRule.data.title, equals('Title'));
           expect(
-            firstContentRule.sourceIs?.firstOrNull?.sourceName,
+            firstContentRule.when?.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstContentRule.sourceIs?.firstOrNull?.platforms,
+            firstContentRule.when?.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
 
           final firstSettingsRule = result.first.settingsRules!.first;
           expect(firstSettingsRule.data.shouldShow, equals(true));
           expect(
-            firstSettingsRule.sourceIs?.firstOrNull?.sourceName,
+            firstSettingsRule.when?.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstSettingsRule.sourceIs?.firstOrNull?.platforms,
+            firstSettingsRule.when?.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
 
           final firstAppSettingsRule = result.first.appSettingsRules!.first;
           expect(firstAppSettingsRule.data.appStatus, equals(AppStatus.active));
           expect(
-            firstAppSettingsRule.sourceIs?.firstOrNull?.sourceName,
+            firstAppSettingsRule.when?.sourceIs?.firstOrNull?.sourceName,
             equals(UpdateSourceName.googlePlay),
           );
           expect(
-            firstAppSettingsRule.sourceIs?.firstOrNull?.platforms,
+            firstAppSettingsRule.when?.sourceIs?.firstOrNull?.platforms,
             equals([UpdatePlatform.android]),
           );
         });

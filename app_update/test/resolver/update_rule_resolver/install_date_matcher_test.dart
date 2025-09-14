@@ -92,7 +92,7 @@ void main() {
           VersionMatcher(),
           AppStatusMatcher(),
           TemporalMatcher(),
-          InstallDateMatcher(), // ПЕРЕД customParamsMatcher
+          InstallDateMatcher(),
           CustomParamsMatcher(),
         ],
       );

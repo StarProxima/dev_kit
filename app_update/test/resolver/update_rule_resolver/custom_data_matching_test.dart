@@ -253,7 +253,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'bad',
-          custom: const {
+          whenCustom: const {
             'env_is': 'prod', // Проверяется
             'version': '1.0.0', // Неизвестное поле - блокирует
             'debug_mode': true, // Неизвестное поле - блокирует
@@ -276,7 +276,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'items_is': [
               {'name': 'item1'}, // List<Map> - должен быть проигнорирован
               {'name': 'item2'},
@@ -300,7 +300,7 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'mixed_is': [
               'string',
               42,
@@ -326,7 +326,7 @@ void main() {
         final rules = [
           createTestRule(
             title: 'ignored',
-            custom: const {
+            whenCustom: const {
               'config_is': {
                 'debug': true,
                 'level': 'info',
@@ -354,7 +354,7 @@ void main() {
       List<UpdateRuleConfig<UpdateContentConfig>> rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
             'nullable_is': null, // null - поддерживается (всегда true)
             'env_is': 'prod',
           },
@@ -375,7 +375,7 @@ void main() {
       rules = [
         createTestRule(
           title: 'bad',
-          custom: const {
+          whenCustom: const {
             'empty_list_is': <String>[], // Пустой список - никого не пускает
             'env_is': 'prod',
           },
@@ -407,7 +407,7 @@ void main() {
           VersionMatcher(),
           AppStatusMatcher(),
           TemporalMatcher(),
-          InstallDateMatcher(), // ПЕРЕД customParamsMatcher
+          InstallDateMatcher(),
           CustomParamsMatcher(),
         ],
       );
@@ -415,16 +415,18 @@ void main() {
       final rules = [
         createTestRule(
           title: 'ok',
-          custom: const {
+          whenCustom: const {
+            'env_is': 'prod', // Поле для customParamsMatcher
+          },
+          rolloutCustom: const {
             'min_delay_after_app_install_hours':
                 24, // Поле для InstallDateMatcher
-            'env_is': 'prod', // Поле для customParamsMatcher
           },
         ),
       ];
 
-      // InstallDateMatcher должен обработать и удалить свое поле,
-      // затем customParamsMatcher увидит только env_is и пропустит правило
+      // InstallDateMatcher обработает поле из rollout,
+      // CustomParamsMatcher обработает env_is из when
       final currentDate = DateTime.now();
       final installDate =
           currentDate.subtract(const Duration(hours: 48)); // 48 часов назад
