@@ -10,6 +10,7 @@ import '../models/release/update_data.dart';
 import '../models/update_config/update_config.dart';
 import '../models/update_content/update_content_config.dart';
 import '../models/update_rule/update_rule_config.dart';
+import '../models/update_rule/update_rule_when.dart';
 import 'source_fetchers/app_store_fetcher.dart';
 import 'source_fetchers/google_play_fetcher.dart';
 import 'source_fetchers/ru_store_fetcher.dart';
@@ -61,7 +62,9 @@ abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
         ? null
         : [
             UpdateRuleConfig(
-              sourceIs: [source],
+              when: UpdateRuleWhen(
+                sourceIs: [source],
+              ),
               data: UpdateContentConfig(
                 updateUrl: url.toString(),
               ),

@@ -8,6 +8,7 @@ import '../../models/release/update_data.dart';
 import '../../models/release_platrform/release_platrform_config.dart';
 import '../../models/release_source/release_source_config.dart';
 import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_rule/update_rule_when.dart';
 import '../../utils/mergeable.dart';
 
 class UpdateReleaseLinker {
@@ -175,7 +176,9 @@ class UpdateReleaseLinker {
     );
 
     final finalRule = rule.copyWith(
-      sourceIs: [finalSource],
+      when: (rule.when ?? const UpdateRuleWhen()).copyWith(
+        sourceIs: [finalSource],
+      ),
     );
 
     return finalRule;

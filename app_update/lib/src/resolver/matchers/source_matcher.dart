@@ -14,7 +14,7 @@ class SourceMatcher extends RuleMatcher {
     required UpdateSearchData search,
   }) {
     return isMatchBySources(
-      ruleSources: rule.sourceIs ?? [UpdateSource.any],
+      ruleSources: rule.when?.sourceIs ?? [UpdateSource.any],
       searchSources: search.sources,
       searchPlatform: search.platform,
     );

@@ -12,7 +12,7 @@ class LocaleMatcher extends RuleMatcher {
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    final ruleLocales = rule.localeIs ?? [UpdateLocale.any];
+    final ruleLocales = rule.when?.localeIs ?? [UpdateLocale.any];
     final searchLocale = search.locale;
 
     final isMatch = ruleLocales.contains(UpdateLocale.any) ||

@@ -12,7 +12,8 @@ class VersionMatcher extends RuleMatcher {
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    final constraints = rule.appVersionIs ?? [UpdateVersionConstraint.any];
+    final constraints =
+        rule.when?.appVersionIs ?? [UpdateVersionConstraint.any];
     if (constraints.contains(UpdateVersionConstraint.any)) return true;
     final local = search.appVersion;
     for (final c in constraints) {

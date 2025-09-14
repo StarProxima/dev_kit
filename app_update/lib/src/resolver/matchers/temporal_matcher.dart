@@ -12,11 +12,13 @@ class TemporalMatcher extends RuleMatcher {
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
+    final rolloutParams = rule.rollout;
+
     return _isMatchByDateAndRollout(
-      ruleDate: rule.date ?? UpdateDate.any,
-      delay: rule.delay,
-      rollout: rule.rollout,
-      segmentationPercent: rule.segmentationPercent,
+      ruleDate: rolloutParams?.date ?? UpdateDate.any,
+      delay: rolloutParams?.delay,
+      rollout: rolloutParams?.rollout,
+      segmentationPercent: rolloutParams?.segmentationPercent,
       currentDate: search.currentDate,
       localReleaseDate: search.localReleaseDate,
       updateReleaseDate: search.updateReleaseDate,

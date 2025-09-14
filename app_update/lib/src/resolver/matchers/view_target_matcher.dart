@@ -12,7 +12,7 @@ class ViewTargetMatcher extends RuleMatcher {
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    final ruleTargets = rule.viewTargetIs ?? [UpdateViewTarget.any];
+    final ruleTargets = rule.when?.viewTargetIs ?? [UpdateViewTarget.any];
     final searchTarget = search.displayTarget;
 
     final isMatch = ruleTargets.contains(UpdateViewTarget.any) ||

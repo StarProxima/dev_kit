@@ -12,7 +12,7 @@ class AppStatusMatcher extends RuleMatcher {
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    final ruleStatuses = rule.appStatusIs ?? [AppStatus.any];
+    final ruleStatuses = rule.when?.appStatusIs ?? [AppStatus.any];
     final searchStatus = search.appStatus;
 
     final isMatch = ruleStatuses.contains(AppStatus.any) ||

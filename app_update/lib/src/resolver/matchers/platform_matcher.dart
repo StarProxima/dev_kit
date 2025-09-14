@@ -12,7 +12,7 @@ class PlatformMatcher extends RuleMatcher {
     required UpdateRuleConfig rule,
     required UpdateSearchData search,
   }) {
-    final ruleStatuses = rule.platformIs ?? [UpdatePlatform.any];
+    final ruleStatuses = rule.when?.platformIs ?? [UpdatePlatform.any];
     final searchStatus = search.platform;
 
     final isMatch = ruleStatuses.contains(UpdatePlatform.any) ||

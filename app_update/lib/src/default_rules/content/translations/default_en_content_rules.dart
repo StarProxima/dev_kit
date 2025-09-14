@@ -2,11 +2,14 @@ import '../../../entities/app_status.dart';
 import '../../../entities/update_locale.dart';
 import '../../../models/update_content/update_content_config.dart';
 import '../../../models/update_rule/update_rule_config.dart';
+import '../../../models/update_rule/update_rule_when.dart';
 
 // ignore: prefer-static-class
 final defaultEnContentRules = [
   const UpdateRuleConfig(
-    localeIs: [UpdateLocale.en, UpdateLocale.any],
+    when: UpdateRuleWhen(
+      localeIs: [UpdateLocale.en, UpdateLocale.any],
+    ),
     data: UpdateContentConfig.byRequired(
       updateUrl: null,
       title: r'Update $appName',
@@ -21,8 +24,10 @@ final defaultEnContentRules = [
     ),
   ),
   const UpdateRuleConfig(
-    appStatusIs: [AppStatus.unsupported],
-    localeIs: [UpdateLocale.en, UpdateLocale.any],
+    when: UpdateRuleWhen(
+      appStatusIs: [AppStatus.unsupported],
+      localeIs: [UpdateLocale.en, UpdateLocale.any],
+    ),
     data: UpdateContentConfig(
       title: r'Update $appName',
       description:

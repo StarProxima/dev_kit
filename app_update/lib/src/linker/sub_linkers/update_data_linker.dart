@@ -5,6 +5,7 @@ import '../../models/global_platform/global_platform_config.dart';
 import '../../models/global_source/global_source_config.dart';
 import '../../models/release/update_data.dart';
 import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_rule/update_rule_when.dart';
 import '../../models/update_rule/update_rules_container.dart';
 import '../../utils/mergeable.dart';
 
@@ -112,7 +113,9 @@ class UpdateDataLinker {
           );
 
     final finalRule = rule.copyWith(
-      sourceIs: finalSource == null ? null : [finalSource],
+      when: (rule.when ?? const UpdateRuleWhen()).copyWith(
+        sourceIs: finalSource == null ? null : [finalSource],
+      ),
     );
 
     return finalRule;

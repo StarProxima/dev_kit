@@ -21,7 +21,7 @@ class CustomParamsMatcher extends RuleMatcher with RegExpMatcherMixin {
     required UpdateSearchData search,
   }) {
     return _isMatchBycustomParams(
-      rule.customParams,
+      rule.when?.customParams,
       search.customParams,
     );
   }

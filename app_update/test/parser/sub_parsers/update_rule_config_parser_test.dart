@@ -136,7 +136,7 @@ void main() {
       );
       expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
       expect(result?.delay?.inHours, 12);
-      expect(result?.rollout?.inHours, 72);
+      expect(result?.rollout?.rollout?.inHours, 72);
       expect(result?.segmentationPercent, closeTo(12.5, 0.0001));
     });
   });

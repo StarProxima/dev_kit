@@ -1,5 +1,6 @@
 import '../../entities/app_status.dart';
 import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_rule/update_rule_when.dart';
 import '../../models/update_settings/update_settings_config.dart';
 
 // ignore: prefer-static-class
@@ -18,14 +19,18 @@ final defaultUpdateSettingsRules = [
     ),
   ),
   const UpdateRuleConfig(
-    appStatusIs: [AppStatus.unsupported],
+    when: UpdateRuleWhen(
+      appStatusIs: [AppStatus.unsupported],
+    ),
     data: UpdateSettingsConfig(
       canSkip: false,
       canPostpone: false,
     ),
   ),
   const UpdateRuleConfig(
-    appStatusIs: [AppStatus.outdated],
+    when: UpdateRuleWhen(
+      appStatusIs: [AppStatus.outdated],
+    ),
     data: UpdateSettingsConfig(
       canSkip: false,
       canPostpone: true,

@@ -2,31 +2,13 @@
 
 import '../../models/update_rule/update_rule_config.dart';
 import '../../utils/mergeable.dart';
-import '../base_parsers/app_status_parser.dart';
-import '../base_parsers/custom_params_parser.dart';
-import '../base_parsers/update_date_parser.dart';
-import '../base_parsers/update_locale_parser.dart';
-import '../base_parsers/update_platform_parser.dart';
-import '../base_parsers/update_source_parser.dart';
-import '../base_parsers/update_version_constraint_parser.dart';
-import '../base_parsers/update_view_target_parser.dart';
 import '../parse_config_exeption.dart';
-import '../primitive_parsers/double_parser.dart';
-import '../primitive_parsers/duration_parser.dart';
-import '../primitive_parsers/list_or_value_parser.dart';
+import 'update_rule_rollout_parser.dart';
+import 'update_rule_when_parser.dart';
 
 class UpdateRuleConfigParser {
-  static const _appStatusParser = AppStatusParser();
-  static const _updateLocaleParser = UpdateLocaleParser();
-  static const _updateViewTargetParser = UpdateViewTargetParser();
-  static const _updateVersionConstraintParser = UpdateVersionConstraintParser();
-  static const _updateSourceParser = UpdateSourceParser();
-  static const _updateDateParser = UpdateDateParser();
-  static const _listOrValueParser = ListOrValueParser();
-  static const _durationParser = DurationParser();
-  static const _doubleParser = DoubleParser();
-  static const _customParamsParser = CustomParamsParser();
-  static const _updatePlatformParser = UpdatePlatformParser();
+  static const _whenParser = UpdateRuleWhenParser();
+  static const _rolloutParser = UpdateRuleRolloutParser();
 
   const UpdateRuleConfigParser();
 
@@ -48,11 +30,15 @@ class UpdateRuleConfigParser {
 
     final map = Map<String, dynamic>.from(value);
 
-    // customParams
-    final customParamsValue = map.remove('custom_params');
-    final customParams = _customParamsParser.parse(customParamsValue);
+    // when section
+    final whenValue = map.remove('when');
+    final when = _whenParser.parse(whenValue, isDebug: isDebug);
 
-    // data
+    // rollout section
+    final rolloutValue = map.remove('rollout');
+    final rollout = _rolloutParser.parse(rolloutValue, isDebug: isDebug);
+
+    // data section
     final dataValue = map.remove('data');
     final data = dataParser(dataValue);
 
@@ -69,9 +55,12 @@ class UpdateRuleConfigParser {
           );
         }
 
-        return UpdateRuleConfig<T>(data: finalData);
+        return UpdateRuleConfig<T>(
+          when: when,
+          rollout: rollout,
+          data: finalData,
+        );
       } on ParseConfigException catch (_) {
-        // ignore: avoid-throw-in-catch-block
         throw ParseConfigException.requiredParams(
           params: ['data'],
           parserType: UpdateRuleConfigParser,
@@ -80,62 +69,7 @@ class UpdateRuleConfigParser {
       }
     }
 
-    // appStatusIs
-    final appStatusIsRawValue = map.remove('app_status_is');
-    final appStatusIsValue = _listOrValueParser.parse(appStatusIsRawValue);
-    final appStatusIs =
-        appStatusIsValue?.map(_appStatusParser.parse).nonNulls.toList();
-
-    // locales
-    final localeIsRawValue = map.remove('locale_is');
-    final localeIsValue = _listOrValueParser.parse(localeIsRawValue);
-    final localeIs =
-        localeIsValue?.map(_updateLocaleParser.parse).nonNulls.toList();
-
-    // viewTargets
-    final viewTargetIsRawValue = map.remove('view_target_is');
-    final viewTargetIsValue = _listOrValueParser.parse(viewTargetIsRawValue);
-    final viewTargetIs =
-        viewTargetIsValue?.map(_updateViewTargetParser.parse).nonNulls.toList();
-
-    // versions
-    final appVersionIsRawValue = map.remove('app_version_is');
-    final appVersionIsValue = _listOrValueParser.parse(appVersionIsRawValue);
-    final appVersionIs = appVersionIsValue
-        ?.map(_updateVersionConstraintParser.parse)
-        .nonNulls
-        .toList();
-
-    // sources
-    final sourceIsRawValue = map.remove('source_is');
-    final sourceIsValue = _listOrValueParser.parse(sourceIsRawValue);
-    final sourceIs =
-        sourceIsValue?.map(_updateSourceParser.parse).nonNulls.toList();
-
-    // platforms
-    final platformIsRawValue = map.remove('platform_is');
-    final platformIsValue = _listOrValueParser.parse(platformIsRawValue);
-    final platformIs =
-        platformIsValue?.map(_updatePlatformParser.parse).nonNulls.toList();
-
-    // date
-    final dateValue = map.remove('date');
-    final date = _updateDateParser.parse(dateValue);
-
-    // delay_hours
-    final delayHoursValue = map.remove('delay_hours');
-    final delay = _durationParser.parse(hours: delayHoursValue);
-
-    // rollout_hours
-    final rolloutHoursValue = map.remove('rollout_hours');
-    final rollout = _durationParser.parse(hours: rolloutHoursValue);
-
-    // segmentation_percent
-    final segmentationPercentValue = map.remove('segmentation_percent');
-    final segmentationPercent =
-        _doubleParser.parse(value: segmentationPercentValue);
-
-    // Проверяем, что не осталось неизвестных параметров
+    // Check for unexpected params
     if (isDebug && map.isNotEmpty) {
       throw ParseConfigException.unexpectedParams(
         params: map,
@@ -144,21 +78,10 @@ class UpdateRuleConfigParser {
       );
     }
 
-    final config = UpdateRuleConfig<T>.byRequired(
-      appStatusIs: appStatusIs,
-      localeIs: localeIs,
-      viewTargetIs: viewTargetIs,
-      appVersionIs: appVersionIs,
-      sourceIs: sourceIs,
-      platformIs: platformIs,
-      date: date,
-      delay: delay,
+    return UpdateRuleConfig<T>(
+      when: when,
       rollout: rollout,
-      segmentationPercent: segmentationPercent,
       data: data,
-      customParams: customParams,
     );
-
-    return config;
   }
 }

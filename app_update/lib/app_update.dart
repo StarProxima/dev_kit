@@ -44,6 +44,8 @@ export 'src/models/update_content/update_content_config.dart';
 export 'src/models/update_content/update_content_data.dart';
 export 'src/models/update_result/update_result.dart';
 export 'src/models/update_rule/update_rule_config.dart';
+export 'src/models/update_rule/update_rule_rollout.dart';
+export 'src/models/update_rule/update_rule_when.dart';
 export 'src/models/update_rule/update_rules_container.dart';
 export 'src/models/update_search/update_search_config.dart';
 export 'src/models/update_search/update_search_data.dart';

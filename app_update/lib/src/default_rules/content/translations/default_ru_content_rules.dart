@@ -2,11 +2,14 @@ import '../../../entities/app_status.dart';
 import '../../../entities/update_locale.dart';
 import '../../../models/update_content/update_content_config.dart';
 import '../../../models/update_rule/update_rule_config.dart';
+import '../../../models/update_rule/update_rule_when.dart';
 
 // ignore: prefer-static-class
 final defaultRuContentRules = [
   const UpdateRuleConfig(
-    localeIs: [UpdateLocale.ru],
+    when: UpdateRuleWhen(
+      localeIs: [UpdateLocale.ru],
+    ),
     data: UpdateContentConfig.byRequired(
       updateUrl: null,
       title: r'Обновите $appName',
@@ -21,8 +24,10 @@ final defaultRuContentRules = [
     ),
   ),
   const UpdateRuleConfig(
-    appStatusIs: [AppStatus.unsupported],
-    localeIs: [UpdateLocale.ru],
+    when: UpdateRuleWhen(
+      appStatusIs: [AppStatus.unsupported],
+      localeIs: [UpdateLocale.ru],
+    ),
     data: UpdateContentConfig(
       title: r'Обновите $appName',
       description:

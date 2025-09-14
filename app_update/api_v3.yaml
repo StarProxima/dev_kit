@@ -21,6 +21,29 @@ content:
           url: https://example.com
           border_radius: 10
 
+  - when:
+      view_target_is: card
+      app_status_is: any
+      locale_is: any
+      source_is:
+        - name: gitHub
+          platforms:
+            - android
+            - ios
+      app_version_is: any
+    rollout:
+      date: 2020-01-01
+      delay_hours: 24
+      gradual_rollout_hours: 72
+      user_segmentation_percent: 10
+    data:
+      title: Обновите приложение
+      description: Описание
+      custom_params:
+        image: 
+          url: https://example.com
+          border_radius: 10
+
   - view_target_is: any
     locale_is: ru
     app_status_is: 

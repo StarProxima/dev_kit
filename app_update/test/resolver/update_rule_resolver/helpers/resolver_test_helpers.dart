@@ -65,21 +65,25 @@ UpdateRuleConfig<UpdateContentConfig> createTestRule({
   String? description,
   Map<String, dynamic>? custom,
 }) {
-  return UpdateRuleConfig<UpdateContentConfig>.byRequired(
-    appStatusIs: statuses,
-    localeIs: locales,
-    viewTargetIs: targets,
-    appVersionIs: versions,
-    sourceIs: sources,
-    platformIs: platforms,
-    date: date,
-    delay: delay,
-    rollout: rollout,
-    segmentationPercent: segmentation,
+  return UpdateRuleConfig<UpdateContentConfig>(
+    when: UpdateRuleWhen(
+      appStatusIs: statuses,
+      localeIs: locales,
+      viewTargetIs: targets,
+      appVersionIs: versions,
+      sourceIs: sources,
+      platformIs: platforms,
+      customParams: custom,
+    ),
+    rollout: UpdateRuleRollout(
+      date: date,
+      delay: delay,
+      rollout: rollout,
+      segmentationPercent: segmentation,
+    ),
     data: UpdateContentConfig(
       title: title,
       description: description,
     ),
-    customParams: custom,
   );
 }
