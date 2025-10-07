@@ -200,7 +200,8 @@ content:
       postpone_button: "Later"
       
   # Русская локализация
-  - locale_is: ru
+  - when:
+      locale_is: ru
     data:
       title: "Доступно обновление"
       description: "Доступна версия {updateVersion}"
@@ -208,8 +209,9 @@ content:
       skip_button: "Пропустить"
       
   # Специфичная локализация для iOS
-  - locale_is: ru
-    platform_is: ios
+  - when:
+      locale_is: ru
+      platform_is: ios
     data:
       title: "Обновление для iOS"
       description: "Версия {updateVersion} доступна в App Store"
@@ -310,7 +312,8 @@ content:
       postpone_button: "Later"
       update_button: "Update"
       
-  - locale_is: en
+  - when:
+      locale_is: en
     data:
       title: "English Title"
 
@@ -368,35 +371,41 @@ sources:
     platforms: [android]
 
 content:
-  - app_status_is: active
+  - when:
+      app_status_is: active
     data:
       title: "Optional Update"
       update_url: "https://example.com/update"
       
-  - app_status_is: outdated
+  - when:
+      app_status_is: outdated
     data:
       title: "Recommended Update"
       update_url: "https://example.com/update"
       
-  - app_status_is: unsupported
+  - when:
+      app_status_is: unsupported
     data:
       title: "Critical Update Required"
       update_url: "https://example.com/update"
 
 settings:
-  - app_status_is: active
+  - when:
+      app_status_is: active
     data:
       should_show: true
       can_skip: true
       can_postpone: true
       
-  - app_status_is: outdated
+  - when:
+      app_status_is: outdated
     data:
       should_show: true
       can_skip: true
       can_postpone: true
       
-  - app_status_is: unsupported
+  - when:
+      app_status_is: unsupported
     data:
       should_show: true
       can_skip: false
@@ -404,21 +413,26 @@ settings:
 
 app_settings:
   # По умолчанию все активные
-  - app_version_is: any
+  - when:
+      app_version_is: any
     data:
       app_status: active
       
   # Версии старше 2 дней становятся outdated
-  - app_version_is: any
-    date: $localReleaseDate
-    delay_hours: 48
+  - when:
+      app_version_is: any
+    rollout:
+      date: $localReleaseDate
+      delay_hours: 48
     data:
       app_status: outdated
       
   # Версии старше 30 дней становятся unsupported
-  - app_version_is: any
-    date: $localReleaseDate
-    delay_hours: 720  # 30 дней
+  - when:
+      app_version_is: any
+    rollout:
+      date: $localReleaseDate
+      delay_hours: 720  # 30 дней
     data:
       app_status: unsupported
 
@@ -514,7 +528,8 @@ sources:
     platforms: [android]
 
 content:
-  - app_status_is: active
+  - when:
+      app_status_is: active
     data:
       title: "Current Version"
       description: "Current version"
@@ -524,7 +539,8 @@ content:
       postpone_button: "Later"
       update_button: "Update"
       
-  - app_status_is: deprecated
+  - when:
+      app_status_is: deprecated
     data:
       title: "Please Update Soon"
       description: "Please update soon"
@@ -534,7 +550,8 @@ content:
       postpone_button: "Later"
       update_button: "Update"
       
-  - app_status_is: unsupported
+  - when:
+      app_status_is: unsupported
     data:
       title: "Update Required"
       description: "Update required"
@@ -550,17 +567,20 @@ settings:
 
 app_settings:
   # По умолчанию active
-  - app_version_is: any
+  - when:
+      app_version_is: any
     data:
       app_status: active
       
   # Версии 1.x deprecated
-  - app_version_is: ">=1.0.0 <2.0.0"
+  - when:
+      app_version_is: ">=1.0.0 <2.0.0"
     data:
       app_status: deprecated
       
   # Версии ниже 1.0 unsupported
-  - app_version_is: "<1.0.0"
+  - when:
+      app_version_is: "<1.0.0"
     data:
       app_status: unsupported
 
@@ -673,8 +693,10 @@ content:
       title: "Regular Update"
       update_url: "https://example.com/update"
       
-  - platform_is: android
-    user_segmentation_percent: 30
+  - when:
+      platform_is: android
+    rollout:
+      user_segmentation_percent: 30
     data:
       title: "Beta Update"
       update_url: "https://example.com/update"
@@ -693,8 +715,10 @@ releases:
   - version: "2.1.0-beta.1"
     date: "2024-01-10T10:00:00"
     settings:
-      - should_show: false
-      - user_segmentation_percent: 30
+      - data:
+          should_show: false
+      - rollout:
+          user_segmentation_percent: 30
         data:
           should_show: true
     sources: [googlePlay]
@@ -773,11 +797,13 @@ sources:
 
 app_settings:
   # Поэтапный rollout для критических версий
-  - app_version_is: "<2.0.0"
-    date: "2024-01-01T10:00:00"
-    delay_hours: 24      # Задержка 24 часа
-    gradual_rollout_hours: 72    # Раскатка за 3 дня
-    user_segmentation_percent: 50  # Только на 50% пользователей
+  - when:
+      app_version_is: "<2.0.0"
+    rollout:
+      date: "2024-01-01T10:00:00"
+      delay_hours: 24      # Задержка 24 часа
+      gradual_rollout_hours: 72    # Раскатка за 3 дня
+      user_segmentation_percent: 50  # Только на 50% пользователей
     data:
       app_status: unsupported
 
@@ -913,15 +939,6 @@ sources:
     
   - name: ruStore
     platforms: [android]
-    content:
-      - locale_is: ru
-        data:
-          title: "Update from {sourceName}"
-          description: "Version {updateVersion} via {sourceName}"
-          update_url: "https://example.com/update"
-          custom_params:
-            store_name: "RuStore"
-            special_offer: "Без комиссий!"
           
   - name: fdroid
     platforms: [android]
@@ -931,6 +948,19 @@ content:
       title: "Update from {sourceName}"
       description: "Version {updateVersion} via {sourceName}"
       update_url: "https://example.com/update"
+      
+  - when:
+      locale_is: ru
+      source_is:
+        - name: ruStore
+          platforms: [android]
+    data:
+      title: "Update from {sourceName}"
+      description: "Version {updateVersion} via {sourceName}"
+      update_url: "https://example.com/update"
+      custom_params:
+        store_name: "RuStore"
+        special_offer: "Без комиссий!"
 
 releases:
   # Один релиз доступен во всех источниках
@@ -1057,12 +1087,14 @@ sources:
 
 content:
   # Базовый контент
-  - title: "Universal Update"
-    description: "Works on all platforms"
-    update_url: "https://example.com/update"
+  - data:
+      title: "Universal Update"
+      description: "Works on all platforms"
+      update_url: "https://example.com/update"
       
   # Специфично для мобильных
-  - platform_is: [android, ios]
+  - when:
+      platform_is: [android, ios]
     data:
       title: "Mobile Update"
       update_url: "https://example.com/update"
@@ -1071,7 +1103,8 @@ content:
     
       
   # Специфично для desktop
-  - platform_is: [windows, macos, linux]
+  - when:
+      platform_is: [windows, macos, linux]
     data:
       title: "Desktop Update"
       update_url: "https://example.com/update"
@@ -1086,12 +1119,14 @@ settings:
       can_skip: true
       
   # На мобильных нельзя откладывать
-  - platform_is: [android, ios]
+  - when:
+      platform_is: [android, ios]
     data:
       can_postpone: false
       
   # На desktop можно все
-  - platform_is: [windows, macos, linux]
+  - when:
+      platform_is: [windows, macos, linux]
     data:
       can_postpone: true
 
@@ -1102,21 +1137,24 @@ releases:
     
     # Platform-specific overrides в релизе
     content:
-      - platform_is: android
+      - when:
+          platform_is: android
         data:
           title: "Android Update"
           update_url: "https://example.com/update"
           custom_params:
             android_feature: "Google Play Integration"
           
-      - platform_is: ios
+      - when:
+          platform_is: ios
         data:
           title: "iOS Update"
           update_url: "https://example.com/update"
           custom_params:
             ios_feature: "App Store Integration"
           
-      - platform_is: windows
+      - when:
+          platform_is: windows
         data:
           title: "Windows Update"
           update_url: "https://example.com/update"
@@ -1393,14 +1431,15 @@ content:
       update_url: "https://example.com/update"
       
   # Правило с кастомными данными  
-  - platform_is: android
+  - when:
+      platform_is: android
+      custom_params:
+        android_specific: true
+        theme: "dark"  # Переопределяет глобальное
+        android_features: "enabled"
     data:
       title: "Android Update"
       update_url: "https://example.com/update"
-    custom_params:
-      android_specific: true
-      theme: "dark"  # Переопределяет глобальное
-      android_features: "enabled"
 
 releases:
   - version: "2.0.0"
@@ -1412,13 +1451,14 @@ releases:
       beta_features: false
     
     content:
-      - platform_is: android
+      - when:
+          platform_is: android
+          custom_params:
+            performance_mode: "optimized"
+            android_optimization: "enabled"
         data:
           title: "Android Performance Update"
           update_url: "https://example.com/update"
-        custom_params:
-          performance_mode: "optimized"
-          android_optimization: "enabled"
 ''';
 
           PackageInfo.setMockInitialValues(
@@ -1772,28 +1812,31 @@ content:
       update_url: "https://example.com/update"
       
   # Специфично для карточек
-  - view_target_is: card
+  - when:
+      view_target_is: card
+      custom_params:
+        show_icon: true
     data:
       title: "Card Update"
       update_url: "https://example.com/update"
-    custom_params:
-      show_icon: true
       
   # Специфично для диалогов
-  - view_target_is: dialog
+  - when:
+      view_target_is: dialog
+      custom_params:
+        show_details: true
     data:
       title: "Dialog Update"
       update_url: "https://example.com/update"
-    custom_params:
-      show_details: true
       
   # Специфично для полноэкранного режима
-  - view_target_is: screen
+  - when:
+      view_target_is: screen
+      custom_params:
+        full_screen_mode: true
     data:
       title: "Critical Update Required"
       update_url: "https://example.com/update"
-    custom_params:
-      full_screen_mode: true
 
 settings:
   # Базовые настройки
@@ -1803,19 +1846,22 @@ settings:
       can_postpone: true
       
   # Для карточек - можно пропустить  
-  - view_target_is: card
+  - when:
+      view_target_is: card
     data:
       can_skip: true
       can_postpone: true
       
   # Для диалогов - ограниченные возможности
-  - view_target_is: dialog  
+  - when:
+      view_target_is: dialog  
     data:
       can_skip: true
       can_postpone: false
       
   # Для полного экрана - никаких действий
-  - view_target_is: screen
+  - when:
+      view_target_is: screen
     data:
       can_skip: false
       can_postpone: false

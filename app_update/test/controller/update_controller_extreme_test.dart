@@ -122,7 +122,8 @@ content:
       update_button: "Update"
       
   # 2. Русская локализация (переопределяет базовые)
-  - locale_is: ru
+  - when:
+      locale_is: ru
     data:
       title: "Доступно обновление"
       description: "Новая версия {updateVersion} доступна для {appName}"
@@ -132,30 +133,34 @@ content:
       release_notes_title: "Что нового?"
       
   # 3. Платформо-специфичные правила (ВЫСШИЙ приоритет)
-  - locale_is: ru
-    platform_is: android
+  - when:
+      locale_is: ru
+      platform_is: android
     data:
       title: "Обновление Android"
       description: "Обновите {appName} до версии {updateVersion} из Google Play"
       
-  - locale_is: ru  
-    platform_is: ios
+  - when:
+      locale_is: ru  
+      platform_is: ios
     data:
       title: "Обновление iOS"
       description: "Обновите {appName} до версии {updateVersion} из App Store"
       
   # 4. Source-специфичные правила
-  - locale_is: ru
-    source_is:
-      - name: ruStore
-        platforms: [android]
+  - when:
+      locale_is: ru
+      source_is:
+        - name: ruStore
+          platforms: [android]
     data:
       title: "Обновление из RuStore"
       description: "Обновите {appName} до версии {updateVersion} из российского магазина"
       
   # 5. View target специфичные правила (МАКСИМАЛЬНЫЙ приоритет)
-  - locale_is: ru
-    view_target_is: screen
+  - when:
+      locale_is: ru
+      view_target_is: screen
     data:
       title: "Критическое обновление"
       description: "ВНИМАНИЕ! Требуется немедленное обновление {appName}"
@@ -168,22 +173,25 @@ settings:
       can_postpone: true
       
   # Критические обновления версий 3.x
-  - app_version_is: ">=3.0.0"
+  - when:
+      app_version_is: ">=3.0.0"
     data:
       can_skip: false
       can_postpone: false
       
   # RuStore особенности
-  - source_is:
-      - name: ruStore  
-        platforms: [android]
+  - when:
+      source_is:
+        - name: ruStore  
+          platforms: [android]
     data:
       can_skip: true
       can_postpone: true
       postpone_all_releases_delay_hours: 168  # Неделя
       
   # Полноэкранный режим - никаких действий
-  - view_target_is: screen
+  - when:
+      view_target_is: screen
     data:
       can_skip: false
       can_postpone: false
@@ -371,32 +379,36 @@ app_settings:
       app_status: active
       
   # Фаза 1: Только 5% пользователей через 6 часов
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 6
-    gradual_rollout_hours: 168
-    user_segmentation_percent: 5
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 6
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 5
     data:
       app_status: outdated
       
   # Фаза 2: 25% пользователей через 24 часа
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 24
-    gradual_rollout_hours: 168
-    user_segmentation_percent: 25
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 24
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 25
     data:
       app_status: outdated
       
   # Фаза 3: 75% пользователей через 48 часов  
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 48
-    gradual_rollout_hours: 168
-    user_segmentation_percent: 75
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 48
+      gradual_rollout_hours: 168
+      user_segmentation_percent: 75
     data:
       app_status: outdated
       
   # Фаза 4: Все пользователи через 7 дней
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 168
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 168
     data:
       app_status: outdated
 
@@ -515,22 +527,25 @@ content:
       update_button: "Update"
       
   # Store-specific messaging
-  - source_is:
-      - name: googlePlay
-        platforms: [android]
+  - when:
+      source_is:
+        - name: googlePlay
+          platforms: [android]
     data:
       title: "Update via Google Play"
       
-  - source_is:
-      - name: appStore
-        platforms: [ios, macos]
+  - when:
+      source_is:
+        - name: appStore
+          platforms: [ios, macos]
     data:
       title: "Update via App Store"
       
-  - source_is:
-      - name: ruStore
-        platforms: [android]
-    locale_is: ru
+  - when:
+      source_is:
+        - name: ruStore
+          platforms: [android]
+      locale_is: ru
     data:
       title: "Обновление через RuStore"
 
@@ -988,23 +1003,26 @@ app_settings:
       app_status: active
       
   # Правило с микро-задержкой (5 минут)
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 0.08333  # 5 мин
-    user_segmentation_percent: 1
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 0.08333  # 5 мин
+      user_segmentation_percent: 1
     data:
       app_status: outdated
       
   # Правило с огромной задержкой (30 дней)
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 720  # 30 дней
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 720  # 30 дней
     data:
       app_status: outdated
       
   # Правило с micro rollout (30 минут)
-  - date: "2024-01-15T10:00:00"
-    delay_hours: 1
-    gradual_rollout_hours: 0.5
-    user_segmentation_percent: 50
+  - rollout:
+      date: "2024-01-15T10:00:00"
+      delay_hours: 1
+      gradual_rollout_hours: 0.5
+      user_segmentation_percent: 50
     data:
       app_status: outdated
 
