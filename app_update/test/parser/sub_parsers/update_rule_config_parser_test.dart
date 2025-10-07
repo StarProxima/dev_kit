@@ -1,4 +1,4 @@
-//skip:file: cast_nullable_to_non_nullable, avoid-type-casts
+// ignore_for_file: avoid-type-casts, avoid-non-null-assertion
 
 import 'package:app_update/app_update.dart';
 import 'package:flutter_test/flutter_test.dart';

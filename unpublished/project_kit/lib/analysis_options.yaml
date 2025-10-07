@@ -463,9 +463,6 @@ dart_code_metrics:
         ignore-names:
           - (.*)Provider
           - use(.*)
-      
-    - prefer-static-method:
-        ignore-public: true
 
     - prefer-correct-error-name:
         allowed-names:

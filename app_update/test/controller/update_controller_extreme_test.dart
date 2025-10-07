@@ -1,3 +1,5 @@
+// ignore_for_file: prefer-moving-to-variable, avoid-non-null-assertion
+
 import 'dart:io';
 
 import 'package:app_update/src/controller/update_contoller.dart';
@@ -865,6 +867,7 @@ releases:
               .toIso8601String()
               .split('T')
               .join('T')
+              // ignore: no-empty-string
               .replaceAll('Z', '');
 
           yamlConfigBuffer.writeln('''

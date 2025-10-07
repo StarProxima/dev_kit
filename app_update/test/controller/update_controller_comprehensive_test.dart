@@ -1,3 +1,5 @@
+// ignore_for_file: no-empty-string, prefer-moving-to-variable, avoid-non-null-assertion
+
 import 'dart:io';
 
 import 'package:app_update/src/controller/update_contoller.dart';
@@ -19,6 +21,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 /// Mock для source fetcher чтобы не делать сетевые запросы
+// ignore: avoid-top-level-members-in-tests
 class MockUpdateConfigSourceFetcher extends Mock
     implements UpdateConfigSourceFetcher {
   @override
