@@ -141,7 +141,16 @@ Future<List<UpdateData>> fetchUpdates({
 // Material Design диалог с полной функциональностью
 static Future<void> materialDialog(...) {
   // ✅ Использует UpdateMaterialDialog widget
+  // ✅ Умное закрытие (barrierDismissible = canPostpone)
+  // ✅ PopScope для контроля back button
+  // ✅ Автоматический postpone при закрытии
 }
+
+// ✅ РЕАЛИЗОВАНО Example Sandbox
+// - Feature-based архитектура
+// - ValueNotifier для состояния
+// - Enum для конфигураций
+// - Автоматическое пересоздание контроллера
 
 // TODO остальные виджеты:
 // - primaryDialog, adaptiveDialog, cupertinoDialog

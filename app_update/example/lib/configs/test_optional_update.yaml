@@ -1,0 +1,77 @@
+# Тестовая конфигурация: Опциональное обновление
+# Можно пропустить или отложить
+
+content:
+  # Английский контент
+  - data:
+      title: "Update Available"
+      description: "Version $releaseVersion is now available with new features and improvements."
+      update_button: "Update"
+      skip_button: "Skip"
+      postpone_button: "Later"
+      release_notes_title: "What's New"
+      release_notes: |
+        - New features
+        - Bug fixes
+        - Performance improvements
+      
+  # Русский контент
+  - when: { locale_is: ru }
+    data:
+      title: "Доступно обновление"
+      description: "Версия $releaseVersion доступна с новыми функциями и улучшениями."
+      update_button: "Обновить"
+      skip_button: "Пропустить"
+      postpone_button: "Позже"
+      release_notes_title: "Что нового"
+      release_notes: |
+        - Новые функции
+        - Исправления ошибок
+        - Улучшения производительности
+
+settings:
+  # По умолчанию не показываем
+  - data:
+      should_show: false
+      can_skip: true
+      can_postpone: true
+      skip_release_delay_hours: 2160
+      skip_all_releases_delay_hours: 72
+      postpone_release_delay_hours: 96
+      postpone_all_releases_delay_hours: 24
+      
+  # Для outdated показываем с возможностью пропустить
+  - when: { app_status_is: [active, outdated] }
+    data:
+      should_show: true
+      can_skip: true
+      can_postpone: true
+
+app_settings:
+  # По умолчанию все активные
+  - data:
+      app_status: active
+      
+  # Версии ниже текущей - outdated
+  - when: { app_version_is: "<1.5.0" }
+    data:
+      app_status: outdated
+
+sources:
+  - name: googlePlay
+    platforms: [android]
+    
+  - name: appStore
+    platforms: [ios, macos]
+
+releases:
+  - version: "1.5.0"
+    date: "2024-01-10 14:00:00"
+    content:
+      - data:
+          release_notes: "New features and improvements in this release"
+      - when: { locale_is: ru }
+        data:
+          release_notes: "Новые функции и улучшения в этом релизе"
+    sources: [googlePlay, appStore]
+

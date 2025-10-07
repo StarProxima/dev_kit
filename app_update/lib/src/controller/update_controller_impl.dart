@@ -32,7 +32,9 @@ class UpdateControllerImpl implements UpdateController {
   // ignore: prefer-correct-callback-field-name
   final onFetchStreamController = StreamController<void>.broadcast();
   @protected
-  final initCompleter = Completer<void>();
+  Completer<void>? initCompleter;
+
+  bool get isInitialized => initCompleter?.isCompleted ?? false;
   @protected
   List<UpdateData> updates = [];
 
@@ -81,14 +83,29 @@ class UpdateControllerImpl implements UpdateController {
 
   @override
   Future<void> init() async {
-    if (initCompleter.isCompleted) return;
+    Completer<void>? completer = initCompleter;
 
-    packageInfo = await PackageInfo.fromPlatform();
-    await sourceSupportChecker.init();
+    // Защита от concurrent initialization
+    if (completer != null) {
+      if (completer.isCompleted) return;
+      await completer.future;
 
-    if (initCompleter.isCompleted) return;
+      return;
+    }
 
-    initCompleter.complete();
+    completer = Completer<void>();
+    initCompleter = completer;
+
+    try {
+      packageInfo = await PackageInfo.fromPlatform();
+      await sourceSupportChecker.init();
+
+      completer.complete();
+    } catch (e, s) {
+      completer.completeError(e, s);
+      initCompleter = null;
+      rethrow;
+    }
   }
 
   @override
@@ -118,7 +135,7 @@ class UpdateControllerImpl implements UpdateController {
 
   @override
   UpdateResult findUpdate(UpdateSearchConfig searchConfig) {
-    if (!initCompleter.isCompleted) {
+    if (!isInitialized) {
       throw Exception('UpdateController is not initialized');
     }
 

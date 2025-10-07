@@ -222,6 +222,11 @@ UpdateHandler.alert(
 - ✅ UpdateAlertHandler.materialDialog метод готов
 - ✅ Поддержка всех action buttons (update, skip, postpone)
 - ✅ Release notes отображение
+- ✅ Умное закрытие диалога (barrierDismissible работает как postpone)
+- ✅ Example sandbox с чистой архитектурой
+- ✅ ValueNotifier для управления состоянием
+- ✅ Enum для типов конфигураций
+- ✅ Автоматическое пересоздание UpdateController при смене конфига
 
 ## Immediate Next Actions (1-2 недели)
 1. **Complete UpdateController TODO methods** - highest impact

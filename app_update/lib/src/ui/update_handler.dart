@@ -80,7 +80,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
   }
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
     _controller = widget.controller ?? UpdateControllerImpl();
     _searchConfig = widget.searchConfig ?? const UpdateSearchConfig();
@@ -97,7 +97,7 @@ class _UpdateHandlerState extends State<UpdateHandler> {
       },
     );
 
-    await fetch();
+    fetch();
   }
 
   @override
