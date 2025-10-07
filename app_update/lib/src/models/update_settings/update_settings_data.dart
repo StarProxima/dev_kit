@@ -10,6 +10,8 @@ class UpdateSettingsData {
   final Duration postponeAllReleasesDelay;
   final Map<String, dynamic>? customParams;
 
+  bool get canClose => canPostpone || canSkip;
+
   const UpdateSettingsData({
     required this.shouldShow,
     required this.canSkip,

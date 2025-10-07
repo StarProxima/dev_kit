@@ -31,7 +31,11 @@ lib/
     ├── searcher/                      # Update search
     ├── storage/                       # Local persistence
     ├── utils/                         # Shared utilities
-    └── widgets/                       # UI components
+    └── ui/                            # UI components
+        ├── update_alert_handler.dart  # Alert handler facade
+        ├── update_handler.dart        # Main handler widget
+        └── widgets/                   # UI widgets
+            └── update_material_dialog.dart  # ✅ Material dialog
 ```
 
 ### 2. Configuration System
@@ -133,10 +137,16 @@ Future<List<UpdateData>> fetchUpdates({
 
 ### 3. Widget Implementation
 ```dart
-// TODO в UpdateAlertHandler:
-static FutureOr<void> primaryDialog(...) {
-  // TODO: Вызов нужного метода c виджетом
+// ✅ РЕАЛИЗОВАНО UpdateAlertHandler.materialDialog
+// Material Design диалог с полной функциональностью
+static Future<void> materialDialog(...) {
+  // ✅ Использует UpdateMaterialDialog widget
 }
+
+// TODO остальные виджеты:
+// - primaryDialog, adaptiveDialog, cupertinoDialog
+// - bottomModalSheet, screen, snackbar
+// - pickUpdate
 ```
 
 ## Приоритетные задачи

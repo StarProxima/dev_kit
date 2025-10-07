@@ -103,5 +103,6 @@ export 'src/storage/update_storage.dart';
 export 'src/storage/update_storage_manager.dart';
 export 'src/utils/mergeable.dart';
 export 'src/utils/version_x.dart';
-export 'src/widgets/update_alert_handler.dart';
-export 'src/widgets/update_handler.dart';
+export 'src/ui/update_alert_handler.dart';
+export 'src/ui/update_handler.dart';
+export 'src/ui/widgets/update_material_dialog.dart';

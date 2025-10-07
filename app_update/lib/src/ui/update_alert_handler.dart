@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../controller/update_contoller.dart';
 import '../models/update_result/update_result.dart';
+import 'widgets/update_material_dialog.dart';
 
 /// Нужен, чтобы можно было использовать отдельные методы в onUpdateAvailable.
 ///
@@ -36,69 +37,82 @@ import '../models/update_result/update_result.dart';
 ///  );
 /// ```
 abstract final class UpdateAlertHandler {
-  // Куча примеров, что вообще может быть, пока необязательно для реализации
-
+  /// Показывает primary диалог с информацией об обновлении
   static FutureOr<void> primaryDialog(
     BuildContext context,
-    UpdateResult update,
     UpdateController controller,
+    UpdateResult result,
   ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает Update и UpdateController
   }
 
+  /// Показывает адаптивный диалог (Material или Cupertino в зависимости от платформы)
   static FutureOr<void> adaptiveDialog(
     BuildContext context,
     UpdateController controller,
     UpdateResult result,
   ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает Update и UpdateController
   }
 
-  static FutureOr<void> materialDialog(
+  /// Показывает Material Design диалог с информацией об обновлении
+  static Future<void> materialDialog(
     BuildContext context,
-    UpdateResult update,
     UpdateController controller,
-  ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    UpdateResult result,
+  ) async {
+    final update = result.update;
+    if (update == null) return;
+
+    await showUpdateMaterialDialog(
+      context: context,
+      update: update,
+      controller: controller,
+    );
   }
 
+  /// Показывает Cupertino диалог с информацией об обновлении (iOS стиль)
   static FutureOr<void> cupertinoDialog(
     BuildContext context,
-    UpdateResult update,
     UpdateController controller,
+    UpdateResult result,
   ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает Update и UpdateController
   }
 
+  /// Показывает bottom modal sheet с информацией об обновлении
   static FutureOr<void> bottomModalSheet(
     BuildContext context,
-    UpdateResult update,
     UpdateController controller,
+    UpdateResult result,
   ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает Update и UpdateController
   }
 
+  /// Показывает полноэкранный экран с информацией об обновлении
   static FutureOr<void> screen(
     BuildContext context,
-    UpdateResult update,
     UpdateController controller,
+    UpdateResult result,
   ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает Update и UpdateController
   }
 
+  /// Показывает snackbar с информацией об обновлении
   static FutureOr<void> snackbar(
     BuildContext context,
-    UpdateResult update,
     UpdateController controller,
+    UpdateResult result,
   ) {
-    // TODO: Вызов нужного метода c с виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает Update и UpdateController
   }
 
+  /// Показывает диалог выбора обновления из списка доступных обновлений
   static FutureOr<UpdateResult?> pickUpdate(
     BuildContext context,
     List<UpdateResult> updates,
     UpdateController controller,
   ) {
-    // TODO: Вызов нужного метода c виджетом, который принимает AppUpdate и UpdateController
+    // TODO: Вызов нужного метода c виджетом, который принимает список Update и UpdateController
   }
 }
