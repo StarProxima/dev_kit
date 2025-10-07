@@ -78,7 +78,10 @@ class SandboxStateNotifier extends ValueNotifier<SandboxState> {
     ConfigLoader configLoader,
   ) {
     return UpdateController(
-      fetchers: [configLoader.createFetcher(configType)],
+      fetchers: [
+        configLoader.createFetcher(configType),
+        ...UpdateConfigSourceFetcher.defaultFetchers,
+      ],
     );
   }
 
@@ -118,13 +121,14 @@ class SandboxStateNotifier extends ValueNotifier<SandboxState> {
     value = value.copyWith(isLoading: true);
 
     try {
-      await value.controller.fetch(
-        UpdateSearchConfig(locale: value.locale),
+      final searchConfig = UpdateSearchConfig(
+        locale: value.locale,
+        platform: UpdatePlatform.android,
+        sources: [...UpdateSource.values],
       );
 
-      final result = value.controller.findUpdate(
-        UpdateSearchConfig(locale: value.locale),
-      );
+      await value.controller.fetch(searchConfig);
+      final result = value.controller.findUpdate(searchConfig);
 
       value = value.copyWith(
         lastResult: result,

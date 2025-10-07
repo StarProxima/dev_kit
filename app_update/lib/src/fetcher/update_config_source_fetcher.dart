@@ -42,21 +42,11 @@ abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
     required PackageInfo packageInfo,
   });
 
-  @override
-  Future<UpdateConfig> fetch({
+  Future<UpdateConfig> fetchSourceAppUrl({
     required Locale locale,
     required PackageInfo packageInfo,
   }) async {
     final url = await getSourceAppUrl(locale: locale, packageInfo: packageInfo);
-
-    final updates = await fetchUpdates(locale: locale, packageInfo: packageInfo)
-        .onError<Object>(
-      (e, s) {
-        Future.error(e, s);
-
-        return [];
-      },
-    );
 
     final urlContentRules = url == null
         ? null
@@ -71,10 +61,28 @@ abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
             ),
           ];
 
+    return UpdateConfig(
+      contentRules: urlContentRules,
+    );
+  }
+
+  @override
+  Future<UpdateConfig> fetch({
+    required Locale locale,
+    required PackageInfo packageInfo,
+  }) async {
+    final updates = await fetchUpdates(locale: locale, packageInfo: packageInfo)
+        .onError<Object>(
+      (e, s) {
+        Future.error(e, s);
+
+        return [];
+      },
+    );
+
     final releases = updates.map((e) => e.toReleaseConfig()).toList();
 
     return UpdateConfig(
-      contentRules: urlContentRules,
       releases: releases,
     );
   }

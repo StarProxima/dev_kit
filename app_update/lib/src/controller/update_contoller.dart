@@ -55,5 +55,5 @@ abstract interface class UpdateController {
   Future<void> launchUpdateUrl(Update update);
 
   /// Dispose controller.
-  FutureOr<void> dispose();
+  void dispose();
 }

@@ -59,13 +59,30 @@ class UpdateConfigFetcherCoordinator {
           }
 
           try {
+            final config = await fetcher.fetchSourceAppUrl(
+              locale: locale,
+              packageInfo: packageInfo,
+            );
+            configs.add(config);
+            // ignore: avoid_catching_errors
+          } on UnimplementedError catch (_) {
+          } on Object catch (e, s) {
+            // ignore: unawaited_futures
+            Future.error(e, s);
+          }
+
+          try {
             final config = await fetcher.fetch(
               locale: locale,
               packageInfo: packageInfo,
             );
             configs.add(config);
             // ignore: avoid_catching_errors
-          } on UnimplementedError catch (_) {}
+          } on UnimplementedError catch (_) {
+          } on Object catch (e, s) {
+            // ignore: unawaited_futures
+            Future.error(e, s);
+          }
 
         case _:
           if (!shouldFetchFerchers) continue;
