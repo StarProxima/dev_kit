@@ -31,7 +31,7 @@ void main() {
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
-          Map<String, dynamic>.of(v as Map<String, dynamic>),
+          Map<String, dynamic>.of(v! as Map<String, dynamic>),
         ),
         isDebug: true,
       );
@@ -55,7 +55,7 @@ void main() {
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
-          Map<String, dynamic>.of(v as Map<String, dynamic>),
+          Map<String, dynamic>.of(v! as Map<String, dynamic>),
         ),
         isDebug: true,
       );
@@ -70,7 +70,7 @@ void main() {
       final result = parser.parse<_MergeableMapAdapter>(
         null,
         dataParser: (v) => _MergeableMapAdapter(
-          Map<String, dynamic>.of(v as Map<String, dynamic>),
+          Map<String, dynamic>.of(v! as Map<String, dynamic>),
         ),
         isDebug: true,
       );
@@ -82,7 +82,7 @@ void main() {
         () => parser.parse<_MergeableMapAdapter>(
           123,
           dataParser: (v) => _MergeableMapAdapter(
-            Map<String, dynamic>.of(v as Map<String, dynamic>),
+            Map<String, dynamic>.of(v! as Map<String, dynamic>),
           ),
           isDebug: true,
         ),
@@ -92,7 +92,7 @@ void main() {
         () => parser.parse<_MergeableMapAdapter>(
           [],
           dataParser: (v) => _MergeableMapAdapter(
-            Map<String, dynamic>.of(v as Map<String, dynamic>),
+            Map<String, dynamic>.of(v! as Map<String, dynamic>),
           ),
           isDebug: true,
         ),
@@ -113,7 +113,7 @@ void main() {
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
-          Map<String, dynamic>.of(v as Map<String, dynamic>),
+          Map<String, dynamic>.of(v! as Map<String, dynamic>),
         ),
         isDebug: true,
       );
@@ -136,7 +136,7 @@ void main() {
       final result = parser.parse<_MergeableMapAdapter>(
         map,
         dataParser: (v) => _MergeableMapAdapter(
-          Map<String, dynamic>.of(v as Map<String, dynamic>),
+          Map<String, dynamic>.of(v! as Map<String, dynamic>),
         ),
         isDebug: true,
       );
