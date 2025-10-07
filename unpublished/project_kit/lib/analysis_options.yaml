@@ -423,6 +423,10 @@ dart_code_metrics:
     # Гемор. Плохо работает с ApiWrap
     - prefer-extracting-function-callbacks: false
 
+    # На public методах dcm fix ломает код
+    - prefer-static-method:
+        ignore-public: true
+
     - avoid-importing-entrypoint-exports:
         only-in-src: true
         severity: error
