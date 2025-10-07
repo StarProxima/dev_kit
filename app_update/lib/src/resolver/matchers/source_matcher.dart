@@ -64,6 +64,7 @@ class SourceMatcher extends RuleMatcher {
     if (rulePlatforms == null) {
       /// Если null, то считаем, что правило не учитывает платформы
       if (searchSource.platforms == null) return true;
+
       return false;
     }
 

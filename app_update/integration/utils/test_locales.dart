@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 /// Тестовые локали для различных сценариев
-class TestLocales {
+abstract final class TestLocales {
   /// Английская локаль (США) - базовая для большинства тестов
   static const english = Locale('en', 'US');
 
@@ -34,6 +34,7 @@ class TestLocales {
     if (locale.countryCode != null) {
       return '${locale.languageCode}-${locale.countryCode}';
     }
+
     return locale.languageCode;
   }
 }

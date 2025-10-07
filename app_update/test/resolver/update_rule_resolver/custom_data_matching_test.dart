@@ -164,7 +164,9 @@ void main() {
     test('числа и булевы сравниваются по точному совпадению', () {
       List<UpdateRuleConfig<UpdateContentConfig>> rules = [
         createTestRule(
-            title: 'ok', whenCustom: const {'n_is': 5, 'b_is': true}),
+          title: 'ok',
+          whenCustom: const {'n_is': 5, 'b_is': true},
+        ),
       ];
       final res = resolver.resolve(
         searchData: createTestSearchData(custom: const {'n': 5, 'b': true}),

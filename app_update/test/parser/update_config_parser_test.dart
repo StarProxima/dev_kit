@@ -83,8 +83,10 @@ void main() {
         releases: null
       ''';
       final map = parseYamlToMap(yamlStr);
-      expect(() => parser.parse(map, isDebug: true),
-          throwsA(isA<ParseConfigException>()));
+      expect(
+        () => parser.parse(map, isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
   });
 }

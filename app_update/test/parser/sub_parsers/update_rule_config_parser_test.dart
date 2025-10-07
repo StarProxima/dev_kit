@@ -120,9 +120,10 @@ void main() {
       expect(result?.when?.customParams, containsPair('custom_field', 42));
     });
 
-    test('Парсит delay_hours, gradual_rollout_hours, user_segmentation_percent',
-        () {
-      const yamlStr = '''
+    test(
+      'Парсит delay_hours, gradual_rollout_hours, user_segmentation_percent',
+      () {
+        const yamlStr = '''
         when:
           app_status_is: deprecated
         rollout:
@@ -132,18 +133,19 @@ void main() {
         data:
           title: test
       ''';
-      final map = parseYamlToMap(yamlStr);
-      final result = parser.parse<_MergeableMapAdapter>(
-        map,
-        dataParser: (v) => _MergeableMapAdapter(
-          Map<String, dynamic>.of(v! as Map<String, dynamic>),
-        ),
-        isDebug: true,
-      );
-      expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
-      expect(result?.rollout?.delay?.inHours, 12);
-      expect(result?.rollout?.gradualRolloutDuration?.inHours, 72);
-      expect(result?.rollout?.userSegmentationPercent, closeTo(12.5, 0.0001));
-    });
+        final map = parseYamlToMap(yamlStr);
+        final result = parser.parse<_MergeableMapAdapter>(
+          map,
+          dataParser: (v) => _MergeableMapAdapter(
+            Map<String, dynamic>.of(v! as Map<String, dynamic>),
+          ),
+          isDebug: true,
+        );
+        expect(result, isA<UpdateRuleConfig<_MergeableMapAdapter>>());
+        expect(result?.rollout?.delay?.inHours, 12);
+        expect(result?.rollout?.gradualRolloutDuration?.inHours, 72);
+        expect(result?.rollout?.userSegmentationPercent, closeTo(12.5, 0.0001));
+      },
+    );
   });
 }

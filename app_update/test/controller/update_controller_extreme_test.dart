@@ -699,7 +699,9 @@ releases:
 
           // Должен выбрать самую новую версию
           expect(
-              multipleSourcesResult.updateStatus.type, UpdateStatusType.found);
+            multipleSourcesResult.updateStatus.type,
+            UpdateStatusType.found,
+          );
           expect(multipleSourcesResult.update, isNotNull);
           expect(multipleSourcesResult.update!.version, Version.parse('2.1.0'));
           expect(
@@ -723,7 +725,9 @@ releases:
 
           // Одинаковая версия 2.0.0, выберет первый источник
           expect(
-              primarySecondaryResult.updateStatus.type, UpdateStatusType.found);
+            primarySecondaryResult.updateStatus.type,
+            UpdateStatusType.found,
+          );
           expect(primarySecondaryResult.update, isNotNull);
           expect(
             primarySecondaryResult.update!.sourceName,

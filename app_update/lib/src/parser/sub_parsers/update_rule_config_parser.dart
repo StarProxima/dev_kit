@@ -34,16 +34,14 @@ class UpdateRuleConfigParser {
     final hasWhenSection = map.containsKey('when');
     final hasRolloutSection = map.containsKey('rollout');
 
-    if (hasWhenSection || hasRolloutSection) {
-      // New format: when/rollout/data
-      return _parseNewFormat(map, dataParser, isDebug);
-    } else {
-      // Legacy format: flat structure - convert to new format
-      return _parseLegacyFormat(map, dataParser, isDebug);
-    }
+    return hasWhenSection || hasRolloutSection
+        ? _parseNewFormat(map, dataParser, isDebug)
+        : _parseLegacyFormat(map, dataParser,
+            isDebug); // Legacy format: flat structure - convert to new format
+    return _parseLegacyFormat(map, dataParser, isDebug);
   }
 
-  UpdateRuleConfig<T>? _parseNewFormat<T extends Mergeable<T>>(
+  static UpdateRuleConfig<T>? _parseNewFormat<T extends Mergeable<T>>(
     Map<String, dynamic> map,
     T? Function(Object? value) dataParser,
     bool isDebug,
@@ -103,7 +101,7 @@ class UpdateRuleConfigParser {
     );
   }
 
-  UpdateRuleConfig<T>? _parseLegacyFormat<T extends Mergeable<T>>(
+  static UpdateRuleConfig<T>? _parseLegacyFormat<T extends Mergeable<T>>(
     Map<String, dynamic> map,
     T? Function(Object? value) dataParser,
     bool isDebug,
@@ -117,7 +115,7 @@ class UpdateRuleConfigParser {
       'app_version_is',
       'source_is',
       'platform_is',
-      'custom_params'
+      'custom_params',
     ];
 
     for (final field in whenFieldNames) {
@@ -133,7 +131,7 @@ class UpdateRuleConfigParser {
       'date',
       'delay_hours',
       'gradual_rollout_hours',
-      'user_segmentation_percent'
+      'user_segmentation_percent',
     ];
 
     for (final field in rolloutFieldNames) {

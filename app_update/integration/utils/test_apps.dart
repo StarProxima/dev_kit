@@ -1,5 +1,5 @@
 /// Тестовые приложения для интеграционных тестов
-class TestApps {
+abstract final class TestApps {
   /// Популярное приложение (должно быть во всех сторах)
   static const multiStoreApp = TestAppData(
     name: 'Yandex Go',
@@ -51,6 +51,7 @@ class TestAppData {
     switch (platform) {
       case TargetPlatform.android:
         return androidPackageId;
+
       case TargetPlatform.ios:
         return iosPackageId;
     }

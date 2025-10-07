@@ -103,11 +103,11 @@ void main() {
       final rules = [
         createTestRule(
           title: 'Combined matchers work',
-          rolloutCustom: const {
-            'min_delay_after_app_install_hours': 5 * 24, // 5 дней
-          },
           whenCustom: const {
             'env_is': 'prod',
+          },
+          rolloutCustom: const {
+            'min_delay_after_app_install_hours': 5 * 24, // 5 дней
           },
         ),
       ];

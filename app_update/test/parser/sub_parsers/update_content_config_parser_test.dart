@@ -58,18 +58,24 @@ void main() {
         () => parser.parse('not a map', isDebug: true),
         throwsA(isA<ParseConfigException>()),
       );
-      expect(() => parser.parse(123, isDebug: true),
-          throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([], isDebug: true),
-          throwsA(isA<ParseConfigException>()));
+      expect(
+        () => parser.parse(123, isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
+      expect(
+        () => parser.parse([], isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
 
     test('Ошибка при нестроковых значениях полей', () {
       final map = {
         'title': 123,
       };
-      expect(() => parser.parse(map, isDebug: true),
-          throwsA(isA<ParseConfigException>()));
+      expect(
+        () => parser.parse(map, isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
   });
 }

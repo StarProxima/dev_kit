@@ -46,10 +46,14 @@ void main() {
     });
 
     test('Ошибка при неверном типе', () {
-      expect(() => parser.parse(123, isDebug: true),
-          throwsA(isA<ParseConfigException>()));
-      expect(() => parser.parse([], isDebug: true),
-          throwsA(isA<ParseConfigException>()));
+      expect(
+        () => parser.parse(123, isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
+      expect(
+        () => parser.parse([], isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
 
     test('null возвращает null', () {
