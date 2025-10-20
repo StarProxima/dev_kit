@@ -93,7 +93,7 @@ class SandboxStateNotifier extends ValueNotifier<SandboxState> {
   /// Изменяет тип конфига (пересоздает контроллер)
   Future<void> changeConfigType(UpdateConfigType configType) async {
     // Dispose старого контроллера
-    await value.controller.dispose();
+    value.controller.dispose();
 
     // Создаем новый контроллер
     final newController = _createController(configType, _configLoader);

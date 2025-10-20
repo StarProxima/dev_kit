@@ -7,6 +7,7 @@ import '../fetcher/update_config_source_fetcher.dart';
 import '../models/release/update.dart';
 import '../models/update_result/update_result.dart';
 import '../models/update_search/update_search_config.dart';
+import '../models/update_settings/update_settings_data.dart';
 import 'update_controller_impl.dart';
 
 /// Контроллер для поиска обновлений
@@ -46,9 +47,15 @@ abstract interface class UpdateController {
   UpdateResult findUpdate(UpdateSearchConfig searchConfig);
 
   /// Skip a update, a update with this version will no longer be displayed.
+  ///
+  /// Откладывает конкретное обновление на [UpdateSettingsData.skipReleaseDelay].
+  /// Также откладывает показ всех обновлений на [UpdateSettingsData.skipAllReleasesDelay].
   Future<void> skipUpdate(Update update);
 
   /// Postpone the update, it will display later after a set amount of time.
+  ///
+  /// Откладывает конкретное обновление на [UpdateSettingsData.postponeReleaseDelay].
+  /// Также откладывает показ всех обновлений на [UpdateSettingsData.postponeAllReleasesDelay].
   Future<void> postponeUpdate(Update update);
 
   /// Launches a link to the correct store to update the app.

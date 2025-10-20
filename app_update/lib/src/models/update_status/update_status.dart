@@ -1,3 +1,4 @@
+import '../../storage/storage_data.dart';
 import '../update_rule/update_rule_config.dart';
 
 enum UpdateStatusType {
@@ -58,15 +59,23 @@ class UpdateNotFoundException extends UpdateException {
 }
 
 class UpdateSkippedException extends UpdateException {
-  const UpdateSkippedException() : super(type: UpdateStatusType.skipped);
+  final PostponedUpdate postponedUpdate;
+
+  const UpdateSkippedException({
+    required this.postponedUpdate,
+  }) : super(type: UpdateStatusType.skipped);
 
   @override
   String toString() => 'UpdateSkippedException';
 }
 
 class UpdatePostponedException extends UpdateException {
-  const UpdatePostponedException() : super(type: UpdateStatusType.postponed);
+  final PostponedUpdate? postponedUpdate;
+
+  const UpdatePostponedException({
+    this.postponedUpdate,
+  }) : super(type: UpdateStatusType.postponed);
 
   @override
-  String toString() => 'UpdateNotFoundException';
+  String toString() => 'UpdatePostponedException';
 }
