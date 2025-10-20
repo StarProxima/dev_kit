@@ -8,6 +8,7 @@ import '../models/release/update.dart';
 import '../models/update_result/update_result.dart';
 import '../models/update_search/update_search_config.dart';
 import '../models/update_settings/update_settings_data.dart';
+import '../storage/update_storage.dart';
 import 'update_controller_impl.dart';
 
 /// Контроллер для поиска обновлений
@@ -28,8 +29,12 @@ abstract interface class UpdateController {
   factory UpdateController({
     List<UpdateConfigFetcher> fetchers =
         UpdateConfigSourceFetcher.defaultFetchers,
+    UpdateStorage? storage,
   }) =>
-      UpdateControllerImpl(fetchers: fetchers);
+      UpdateControllerImpl(
+        fetchers: fetchers,
+        storage: storage,
+      );
 
   /// Initialize controller.
   FutureOr<void> init();

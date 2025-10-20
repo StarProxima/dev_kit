@@ -21,6 +21,8 @@ import '../resolver/update_rule_resolver.dart';
 import '../searcher/update_search_data_defaulter.dart';
 import '../searcher/update_searcher.dart';
 import '../searcher/update_supported_sources_checker.dart';
+import '../storage/shared_preferences_update_storage.dart';
+import '../storage/update_storage.dart';
 import '../storage/update_storage_manager.dart';
 import 'update_contoller.dart';
 
@@ -30,9 +32,9 @@ class UpdateControllerImpl implements UpdateController {
   @protected
   final List<UpdateConfigFetcher> fetchers;
   @protected
-  late final PackageInfo packageInfo;
+  final UpdateStorage? storage;
   @protected
-  late final SharedPreferences prefs;
+  late final PackageInfo packageInfo;
   @protected
   // ignore: prefer-correct-callback-field-name
   final onFetchStreamController = StreamController<void>.broadcast();
@@ -83,10 +85,11 @@ class UpdateControllerImpl implements UpdateController {
   );
 
   @protected
-  late final storageManager = UpdateStorageManager(prefs);
+  late final UpdateStorageManager storageManager;
 
   UpdateControllerImpl({
     this.fetchers = UpdateConfigSourceFetcher.defaultFetchers,
+    this.storage,
   });
 
   @override
@@ -106,7 +109,12 @@ class UpdateControllerImpl implements UpdateController {
 
     try {
       packageInfo = await PackageInfo.fromPlatform();
-      prefs = await SharedPreferences.getInstance();
+
+      final storage = this.storage ??
+          SharedPreferencesUpdateStorage(await SharedPreferences.getInstance());
+
+      storageManager = UpdateStorageManager(storage);
+
       await sourceSupportChecker.init();
       await storageManager.cleanup();
 

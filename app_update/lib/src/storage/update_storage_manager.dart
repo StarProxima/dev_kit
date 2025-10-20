@@ -1,23 +1,21 @@
-import 'dart:convert';
-
 import 'package:pub_semver/pub_semver.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/release/update.dart';
 import 'storage_data.dart';
+import 'update_storage.dart';
 
+/// Менеджер для работы с пропущенными и отложенными обновлениями
 class UpdateStorageManager {
-  static const _storageKey = 'app_update_storage_data';
-  final SharedPreferences _prefs;
+  final UpdateStorage _storage;
 
-  const UpdateStorageManager(this._prefs);
+  const UpdateStorageManager(this._storage);
 
   /// Добавляет обновление в список пропущенных
   ///
   /// Добавляет конкретное обновление в skippedUpdates на skipReleaseDelay.
   /// Также откладывает показ всех обновлений на skipAllReleasesDelay.
   Future<void> onUpdateSkip(Update update) async {
-    final data = await _load();
+    final data = _storage.load();
     final now = DateTime.now();
     final skipDelay = update.settings.skipReleaseDelay;
     final skipAllDelay = update.settings.skipAllReleasesDelay;
@@ -41,7 +39,7 @@ class UpdateStorageManager {
       ],
     );
 
-    await _save(newData);
+    await _storage.save(newData);
   }
 
   /// Откладывает показ обновления
@@ -49,7 +47,7 @@ class UpdateStorageManager {
   /// Откладывает конкретное обновление на postponeReleaseDelay.
   /// Также откладывает показ всех обновлений на postponeAllReleasesDelay.
   Future<void> onUpdatePostpone(Update update) async {
-    final data = await _load();
+    final data = _storage.load();
     final now = DateTime.now();
     final postponeDelay = update.settings.postponeReleaseDelay;
     final postponeAllDelay = update.settings.postponeAllReleasesDelay;
@@ -73,14 +71,14 @@ class UpdateStorageManager {
       skippedUpdates: data.skippedUpdates,
     );
 
-    await _save(newData);
+    await _storage.save(newData);
   }
 
   /// Проверяет отложено ли конкретное обновление
   ///
   /// Возвращает [PostponedUpdate] если обновление отложено и срок еще не истек
   PostponedUpdate? getPostponedUpdate(Version version) {
-    final data = _loadSync();
+    final data = _storage.load();
     final now = DateTime.now();
 
     for (final postponed in data.postponedUpdates) {
@@ -97,7 +95,7 @@ class UpdateStorageManager {
   ///
   /// Возвращает [PostponedUpdate] если обновление пропущено и срок еще не истек
   PostponedUpdate? getSkippedUpdate(Version version) {
-    final data = _loadSync();
+    final data = _storage.load();
     final now = DateTime.now();
 
     for (final skipped in data.skippedUpdates) {
@@ -113,7 +111,7 @@ class UpdateStorageManager {
   ///
   /// Возвращает true если allUpdatesPostponedUntil установлен и срок еще не истек
   bool isAllUpdatesPostponed() {
-    final data = _loadSync();
+    final data = _storage.load();
     final allUpdatesPostponedUntil = data.allUpdatesPostponedUntil;
 
     if (allUpdatesPostponedUntil == null) return false;
@@ -128,7 +126,7 @@ class UpdateStorageManager {
   /// Удаляет postponedUpdates и skippedUpdates где postponedUntil < now
   /// Сбрасывает allUpdatesPostponedUntil если срок истек
   Future<void> cleanup() async {
-    final data = await _load();
+    final data = _storage.load();
     final now = DateTime.now();
 
     // Фильтруем postponedUpdates - оставляем только те, что еще не истекли
@@ -157,62 +155,12 @@ class UpdateStorageManager {
         skippedUpdates: activeSkippedUpdates,
       );
 
-      await _save(newData);
+      await _storage.save(newData);
     }
   }
 
   /// Полностью очищает хранилище
   Future<void> clear() async {
-    await _prefs.remove(_storageKey);
-  }
-
-  /// Загружает данные из SharedPreferences
-  // ignore: avoid-unnecessary-futures
-  Future<StorageData> _load() async {
-    final jsonString = _prefs.getString(_storageKey);
-
-    if (jsonString == null) {
-      return StorageData.empty();
-    }
-
-    try {
-      final jsonDecoded = jsonDecode(jsonString);
-      if (jsonDecoded is! Map<String, dynamic>) {
-        return StorageData.empty();
-      }
-
-      return StorageData.fromJson(jsonDecoded);
-    } catch (_) {
-      // Если не удалось распарсить - возвращаем пустые данные
-      return StorageData.empty();
-    }
-  }
-
-  /// Синхронная загрузка данных (для проверок)
-  StorageData _loadSync() {
-    final jsonString = _prefs.getString(_storageKey);
-
-    if (jsonString == null) {
-      return StorageData.empty();
-    }
-
-    try {
-      final jsonDecoded = jsonDecode(jsonString);
-      if (jsonDecoded is! Map<String, dynamic>) {
-        return StorageData.empty();
-      }
-
-      return StorageData.fromJson(jsonDecoded);
-    } catch (_) {
-      return StorageData.empty();
-    }
-  }
-
-  /// Сохраняет данные в SharedPreferences
-  Future<void> _save(StorageData data) async {
-    final json = data.toJson();
-    final jsonString = jsonEncode(json);
-
-    await _prefs.setString(_storageKey, jsonString);
+    await _storage.clear();
   }
 }

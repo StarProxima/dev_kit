@@ -14,6 +14,7 @@ import 'package:app_update/src/fetcher/update_config_source_fetcher.dart';
 import 'package:app_update/src/models/release/update_data.dart';
 import 'package:app_update/src/models/update_search/update_search_config.dart';
 import 'package:app_update/src/models/update_status/update_status.dart';
+import 'package:app_update/src/storage/in_memory_update_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -101,6 +102,7 @@ releases:
             UpdateConfigFetcher.byFile(configFile),
             MockUpdateConfigSourceFetcher(),
           ],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -153,6 +155,7 @@ releases:
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -237,6 +240,7 @@ releases:
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -334,6 +338,7 @@ releases:
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -445,6 +450,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -603,6 +609,7 @@ releases:
 
         final activeController = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
         await activeController.init();
         await activeController.fetch(const UpdateSearchConfig());
@@ -630,6 +637,7 @@ releases:
 
         final deprecatedController = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
         await deprecatedController.init();
         await deprecatedController.fetch(const UpdateSearchConfig());
@@ -657,6 +665,7 @@ releases:
 
         final unsupportedController = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
         await unsupportedController.init();
         await unsupportedController.fetch(const UpdateSearchConfig());
@@ -735,6 +744,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -824,6 +834,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -993,6 +1004,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -1173,6 +1185,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -1321,6 +1334,7 @@ releases:
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -1472,6 +1486,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -1530,6 +1545,7 @@ releases: []
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -1596,6 +1612,7 @@ releases:
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         await controller.init();
@@ -1669,6 +1686,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
@@ -1753,6 +1771,7 @@ releases:
         final configFile = await _createTempConfig(yamlConfig);
         final controller = UpdateController(
           fetchers: [UpdateConfigFetcher.byFile(configFile)],
+          storage: InMemoryUpdateStorage(),
         );
 
         // Act & Assert - Попытка использования до инициализации
@@ -1883,6 +1902,7 @@ releases:
           final configFile = await _createTempConfig(yamlConfig);
           final controller = UpdateController(
             fetchers: [UpdateConfigFetcher.byFile(configFile)],
+            storage: InMemoryUpdateStorage(),
           );
 
           await controller.init();
