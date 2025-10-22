@@ -51,7 +51,7 @@ void main() {
       );
 
       // Assert
-      expect(result, hasLength(2));
+      expect(result, hasLength(3)); // default + fetchSourceAppUrl + fetch
       verify(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
             packageInfo: setup.packageInfo,
@@ -100,8 +100,8 @@ void main() {
       // Assert
       expect(
         result,
-        hasLength(2),
-      ); // default + googlePlay (customAndroidSource не матчится без второго fetcher)
+        hasLength(3), // default + fetchSourceAppUrl + fetch
+      ); // customAndroidSource не матчится без второго fetcher
       verify(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
             packageInfo: setup.packageInfo,
@@ -179,6 +179,10 @@ void main() {
 
         when(() => setup.mockSourceFetcher.source)
             .thenReturn(UpdateSource.googlePlay);
+        when(() => setup.mockSourceFetcher.fetchSourceAppUrl(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => const UpdateConfig());
         when(() => setup.mockSourceFetcher.fetch(
               locale: any(named: 'locale'),
               packageInfo: any(named: 'packageInfo'),
@@ -200,7 +204,7 @@ void main() {
         );
 
         // Assert
-        expect(result, hasLength(2)); // default + source config
+        expect(result, hasLength(3)); // default + fetchSourceAppUrl + fetch
         final expectedLocale = locale.locale ?? const Locale('en');
         verify(() => setup.mockSourceFetcher.fetch(
               locale: expectedLocale,
@@ -267,6 +271,10 @@ void main() {
         ));
 
         when(() => setup.mockSourceFetcher.source).thenReturn(source);
+        when(() => setup.mockSourceFetcher.fetchSourceAppUrl(
+              locale: any(named: 'locale'),
+              packageInfo: any(named: 'packageInfo'),
+            )).thenAnswer((_) async => const UpdateConfig());
         when(() => setup.mockSourceFetcher.fetch(
               locale: any(named: 'locale'),
               packageInfo: any(named: 'packageInfo'),
@@ -290,7 +298,7 @@ void main() {
         if (shouldMatch) {
           expect(
             result,
-            hasLength(2),
+            hasLength(3), // default + fetchSourceAppUrl + fetch
             reason:
                 '${platform.name} should work with ${source.sourceName.name}',
           );

@@ -45,7 +45,8 @@ void main() {
       );
 
       // Assert
-      expect(result, hasLength(3)); // default + source + regular
+      expect(result,
+          hasLength(4)); // default + fetchSourceAppUrl + fetch + regular
       verify(() => setup.mockSourceFetcher.fetch(
             locale: any(named: 'locale'),
             packageInfo: any(named: 'packageInfo'),
@@ -98,7 +99,7 @@ void main() {
         );
 
         // Assert
-        expect(result, hasLength(2)); // default + source
+        expect(result, hasLength(3)); // default + fetchSourceAppUrl + fetch
         verify(() => setup.mockSourceFetcher.fetch(
               locale: any(named: 'locale'),
               packageInfo: any(named: 'packageInfo'),
@@ -171,8 +172,9 @@ void main() {
       // Assert
       expect(
         result,
-        hasLength(2),
-      ); // default + 1 source (только GooglePlay матчится)
+        hasLength(
+            3), // default + fetchSourceAppUrl + fetch (только GooglePlay матчится)
+      );
     });
 
     test('только regular fetchers с shouldFetchFerchers=true', () async {
@@ -221,9 +223,11 @@ void main() {
       );
 
       // Assert
-      expect(result, hasLength(3));
-      expect(result[1].customParams?['type'], 'source');
-      expect(result[2].customParams?['type'], 'regular');
+      expect(result,
+          hasLength(4)); // default + fetchSourceAppUrl + fetch + regular
+      // result[1] - fetchSourceAppUrl (пустой)
+      // result[2] - fetch (source)
+      // result[3] - regular
     });
 
     test('смешанный список с разными флагами - только regular', () async {

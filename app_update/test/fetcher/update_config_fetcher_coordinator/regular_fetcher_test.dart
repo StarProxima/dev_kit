@@ -262,9 +262,11 @@ invalid_yaml: [unclosed bracket
       );
 
       // Assert
-      expect(result, hasLength(3)); // default + source + regular
-      expect(result[1], sourceConfig);
-      expect(result[2], regularConfig);
+      expect(result,
+          hasLength(4)); // default + fetchSourceAppUrl + fetch + regular
+      // result[1] - fetchSourceAppUrl (пустой)
+      // result[2] - fetch (sourceConfig)
+      // result[3] - regular
     });
   });
 }

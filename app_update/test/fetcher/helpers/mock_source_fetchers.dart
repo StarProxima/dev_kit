@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:app_update/app_update.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -12,9 +14,7 @@ class MockRuStoreFetcher extends Mock implements RuStoreFetcher {}
 class MockUpdateConfigFetcher extends Mock implements UpdateConfigFetcher {}
 
 class MockUpdateConfigSourceFetcher extends Mock
-    implements UpdateConfigSourceFetcher {
-  // Мокируемые методы через mocktail API
-}
+    implements UpdateConfigSourceFetcher {}
 
 class MockUpdateConfigParser extends Mock implements UpdateConfigParser {}
 

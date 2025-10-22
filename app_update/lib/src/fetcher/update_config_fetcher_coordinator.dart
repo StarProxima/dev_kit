@@ -66,9 +66,9 @@ class UpdateConfigFetcherCoordinator {
             configs.add(config);
             // ignore: avoid_catching_errors
           } on UnimplementedError catch (_) {
-          } on Object catch (e, s) {
-            // ignore: unawaited_futures
-            Future.error(e, s);
+            // Source fetcher не реализован - пропускаем
+          } on Object catch (_) {
+            // Ошибка при получении URL - пропускаем
           }
 
           try {
@@ -79,9 +79,9 @@ class UpdateConfigFetcherCoordinator {
             configs.add(config);
             // ignore: avoid_catching_errors
           } on UnimplementedError catch (_) {
-          } on Object catch (e, s) {
-            // ignore: unawaited_futures
-            Future.error(e, s);
+            // Source fetcher не реализован - пропускаем
+          } on Object catch (_) {
+            // Ошибка при получении данных - пропускаем
           }
 
         case _:

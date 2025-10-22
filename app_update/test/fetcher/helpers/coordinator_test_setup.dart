@@ -83,6 +83,16 @@ class CoordinatorTestSetup {
     mockSourceFetcher = MockUpdateConfigSourceFetcher();
     mockSourceFetcher2 = MockUpdateConfigSourceFetcher();
 
+    // Stub по умолчанию для fetchSourceAppUrl
+    when(() => mockSourceFetcher.fetchSourceAppUrl(
+          locale: any(named: 'locale'),
+          packageInfo: any(named: 'packageInfo'),
+        )).thenAnswer((_) async => const UpdateConfig());
+    when(() => mockSourceFetcher2.fetchSourceAppUrl(
+          locale: any(named: 'locale'),
+          packageInfo: any(named: 'packageInfo'),
+        )).thenAnswer((_) async => const UpdateConfig());
+
     packageInfo = FakePackageInfo();
     baseSearchConfig = const UpdateSearchConfig(
       platform: UpdatePlatform.android,

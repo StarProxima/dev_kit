@@ -97,7 +97,7 @@ void main() {
       );
 
       // Assert
-      expect(result, hasLength(2)); // default + source config
+      expect(result, hasLength(3)); // default + fetchSourceAppUrl + fetch
       verify(() => setup.mockSourceFetcher.fetch(
             locale: const Locale('ru', 'RU'),
             packageInfo: setup.packageInfo,
@@ -131,7 +131,7 @@ void main() {
       );
 
       // Assert
-      expect(result, hasLength(2)); // default + source config
+      expect(result, hasLength(3)); // default + fetchSourceAppUrl + fetch
       verify(() => setup.mockSourceFetcher.fetch(
             locale: const Locale('en'),
             packageInfo: setup.packageInfo,
