@@ -54,6 +54,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
     ToJson<State>? toJson,
     Object? storageId,
     String? storageKey,
+    bool updateAfterFirstBuild = false,
   }) {
     _fromJson = fromJson;
     if (toJson != null) _toJson = toJson;
@@ -72,6 +73,14 @@ mixin PersistenceMixin<State> implements INotifier<State> {
         // type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast
         final json = jsonDecode(jsonEncode(data));
         final map = Map<String, dynamic>.from(json);
+
+        if (updateAfterFirstBuild) {
+          Future(() {
+            final data = build();
+            state = data;
+          });
+        }
+
         return _fromJson(map);
       } catch (e, s) {
         logger.error(
@@ -151,6 +160,7 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
     ToJson<State>? toJson,
     Object? storageId,
     String? storagePrefix,
+    bool updateAfterFirstBuild = false,
   }) {
     _fromJson = fromJson;
     if (toJson != null) _toJson = toJson;
@@ -170,6 +180,20 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
         // type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast
         final json = jsonDecode(jsonEncode(data));
         final map = Map<String, dynamic>.from(json);
+
+        if (updateAfterFirstBuild) {
+          Future(() async {
+            final futureOr = build();
+
+            if (futureOr is Future) {
+              final data = await futureOr;
+              state = AsyncData(data);
+            } else {
+              state = AsyncData(futureOr);
+            }
+          });
+        }
+
         return _fromJson(map);
       } catch (e, s) {
         logger.error(
@@ -216,8 +240,7 @@ Map<String, dynamic>? _defaultToJson<State>(State state) {
     return (state as dynamic).toJson();
   } catch (e, s) {
     logger.error(
-      title:
-          'Error while serializing data to storage. State should implement toJson()',
+      title: 'Error while serializing data to storage. State should implement toJson()',
       message: state,
       error: e,
       stack: s,
