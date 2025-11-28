@@ -133,7 +133,7 @@ class UpdateControllerImpl implements UpdateController {
   Future<void> fetch(
     UpdateSearchConfig searchConfig, {
     bool shouldFetchSourceFetchers = true,
-    bool shouldFetchFerchers = true,
+    bool shouldFetchFetchers = true,
   }) async {
     await init();
 
@@ -142,7 +142,7 @@ class UpdateControllerImpl implements UpdateController {
       searchConfig: searchConfig,
       packageInfo: packageInfo,
       shouldFetchSourceFetchers: shouldFetchSourceFetchers,
-      shouldFetchFerchers: shouldFetchFerchers,
+      shouldFetchFetchers: shouldFetchFetchers,
     );
 
     final updates = linker.linkAllConfigs(configs);

@@ -43,7 +43,7 @@ abstract interface class UpdateController {
   Future<void> fetch(
     UpdateSearchConfig searchConfig, {
     bool shouldFetchSourceFetchers = true,
-    bool shouldFetchFerchers = true,
+    bool shouldFetchFetchers = true,
   });
 
   /// Finds an update from fetched UpdateConfig and global sources releases data.

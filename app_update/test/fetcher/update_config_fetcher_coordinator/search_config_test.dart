@@ -47,7 +47,7 @@ void main() {
         searchConfig: iosConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -94,7 +94,7 @@ void main() {
         searchConfig: androidConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -151,7 +151,7 @@ void main() {
         searchConfig: complexConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -200,7 +200,7 @@ void main() {
           searchConfig: config,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -291,7 +291,7 @@ void main() {
           searchConfig: config,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -352,7 +352,7 @@ void main() {
           searchConfig: config,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -414,7 +414,7 @@ void main() {
           searchConfig: config,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert

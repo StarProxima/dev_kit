@@ -18,7 +18,7 @@ void main() {
       setup.setUp();
     });
 
-    test('выполняет regular fetcher при shouldFetchFerchers = true', () async {
+    test('выполняет regular fetcher при shouldFetchFetchers = true', () async {
       // Arrange
       when(() => setup.mockDefaulter.getSearchDataWithDefaults(
             searchConfig: any(named: 'searchConfig'),
@@ -36,7 +36,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -45,7 +45,7 @@ void main() {
     });
 
     test(
-      'пропускает regular fetcher при shouldFetchFerchers = false',
+      'пропускает regular fetcher при shouldFetchFetchers = false',
       () async {
         // Arrange
         when(() => setup.mockDefaulter.getSearchDataWithDefaults(
@@ -64,7 +64,7 @@ void main() {
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -99,7 +99,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -128,7 +128,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -163,7 +163,7 @@ releases:
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -193,7 +193,7 @@ releases:
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: true,
+          shouldFetchFetchers: true,
         ),
         throwsA(isA<Exception>()),
       );
@@ -222,7 +222,7 @@ invalid_yaml: [unclosed bracket
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: true,
+          shouldFetchFetchers: true,
         ),
         throwsA(isA<Exception>()),
       );
@@ -258,7 +258,7 @@ invalid_yaml: [unclosed bracket
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
