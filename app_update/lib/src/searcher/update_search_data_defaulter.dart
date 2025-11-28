@@ -32,8 +32,9 @@ class UpdateSearchDataDefaulter {
     final defaultSearchData = UpdateSearchData(
       platform: UpdatePlatform.current(),
       sources: defaultSources,
-      appVersion:
-          Version.parse('${packageInfo.version}+${packageInfo.buildNumber}'),
+      appVersion: Version.parse(
+        '${packageInfo.version}${packageInfo.buildNumber.isNotEmpty ? '+${packageInfo.buildNumber}' : ''}',
+      ),
       displayTarget: UpdateViewTarget.any,
       appStatus: null,
       locale: UpdateLocale.any,
