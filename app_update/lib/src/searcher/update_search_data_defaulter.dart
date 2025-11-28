@@ -51,31 +51,23 @@ class UpdateSearchDataDefaulter {
       customParams: null,
     );
 
-    final searchData = UpdateSearchData(
-      platform: searchConfig.platform ?? defaultSearchData.platform,
-      sources: searchConfig.sources ?? defaultSearchData.sources,
-      appVersion: searchConfig.appVersion ?? defaultSearchData.appVersion,
-      displayTarget:
-          searchConfig.displayTarget ?? defaultSearchData.displayTarget,
-      appStatus: searchConfig.appStatus ?? defaultSearchData.appStatus,
-      locale: searchConfig.locale ?? defaultSearchData.locale,
-      currentDate: searchConfig.currentDate ?? defaultSearchData.currentDate,
-      localReleaseDate:
-          searchConfig.localReleaseDate ?? defaultSearchData.localReleaseDate,
-      updateReleaseDate:
-          searchConfig.updateReleaseDate ?? defaultSearchData.updateReleaseDate,
-      appUpdateDate:
-          searchConfig.appUpdateDate ?? defaultSearchData.appUpdateDate,
-      appInstallDate:
-          searchConfig.appInstallDate ?? defaultSearchData.appInstallDate,
-      userSegmentationPointer: searchConfig.userSegmentationPointer ??
-          defaultSearchData.userSegmentationPointer,
-      rolloutPointer:
-          searchConfig.rolloutPointer ?? defaultSearchData.rolloutPointer,
-      appName: searchConfig.appName ?? defaultSearchData.appName,
-      appPackageName:
-          searchConfig.appPackageName ?? defaultSearchData.appPackageName,
-      customParams: searchConfig.customParams ?? defaultSearchData.customParams,
+    final searchData = defaultSearchData.copyWith(
+      platform: searchConfig.platform,
+      sources: searchConfig.sources,
+      appVersion: searchConfig.appVersion,
+      displayTarget: searchConfig.displayTarget,
+      appStatus: searchConfig.appStatus,
+      locale: searchConfig.locale,
+      currentDate: searchConfig.currentDate,
+      localReleaseDate: searchConfig.localReleaseDate,
+      updateReleaseDate: searchConfig.updateReleaseDate,
+      appUpdateDate: searchConfig.appUpdateDate,
+      appInstallDate: searchConfig.appInstallDate,
+      userSegmentationPointer: searchConfig.userSegmentationPointer,
+      rolloutPointer: searchConfig.rolloutPointer,
+      appName: searchConfig.appName,
+      appPackageName: searchConfig.appPackageName,
+      customParams: searchConfig.customParams,
     );
 
     return searchData;
