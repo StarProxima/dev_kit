@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../fetcher/update_config_fetcher.dart';
 import '../fetcher/update_config_fetcher_coordinator.dart';
 import '../fetcher/update_config_source_fetcher.dart';
-import '../linker/update_inker.dart';
+import '../linker/update_linker.dart';
 import '../models/release/update.dart';
 import '../models/release/update_data.dart';
 import '../models/update_result/update_result.dart';
