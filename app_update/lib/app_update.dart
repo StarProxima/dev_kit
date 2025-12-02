@@ -27,7 +27,7 @@ export 'src/fetcher/update_config_fetcher_coordinator.dart';
 export 'src/fetcher/update_config_source_fetcher.dart';
 export 'src/linker/sub_linkers/update_data_linker.dart';
 export 'src/linker/sub_linkers/update_release_linker.dart';
-export 'src/linker/update_inker.dart';
+export 'src/linker/update_linker.dart';
 export 'src/models/global_platform/global_platform_config.dart';
 export 'src/models/global_source/global_source_config.dart';
 export 'src/models/release/release_config.dart';

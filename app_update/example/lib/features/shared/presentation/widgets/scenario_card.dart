@@ -35,8 +35,8 @@ class ScenarioCard extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   color: enabled
-                      ? color.withValues(alpha: 0.1)
-                      : Colors.grey.withValues(alpha: 0.1),
+                      ? color.withOpacity(0.1)
+                      : Colors.grey.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(

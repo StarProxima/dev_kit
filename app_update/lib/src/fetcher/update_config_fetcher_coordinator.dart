@@ -29,7 +29,7 @@ class UpdateConfigFetcherCoordinator {
     required UpdateSearchConfig searchConfig,
     required PackageInfo packageInfo,
     required bool shouldFetchSourceFetchers,
-    required bool shouldFetchFerchers,
+    required bool shouldFetchFetchers,
   }) async {
     final configs = <UpdateConfig>[
       // Default config from app_update package
@@ -85,7 +85,7 @@ class UpdateConfigFetcherCoordinator {
           }
 
         case _:
-          if (!shouldFetchFerchers) continue;
+          if (!shouldFetchFetchers) continue;
 
           final config = await fetcher.fetch(
             locale: locale,

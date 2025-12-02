@@ -36,7 +36,7 @@ abstract class UpdateConfigSourceFetcher implements UpdateConfigFetcher {
     required PackageInfo packageInfo,
   });
 
-  /// Получает список возможных обовлений из стора (чаще всего последнее).
+  /// Получает список возможных обновлений из стора (чаще всего последнее).
   Future<List<UpdateData>> fetchUpdates({
     required Locale locale,
     required PackageInfo packageInfo,
