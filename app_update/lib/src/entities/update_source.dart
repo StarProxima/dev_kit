@@ -61,6 +61,8 @@ base class UpdateSource extends UpdateEntity {
 
   const UpdateSource._(this.sourceName, {this.platforms});
 
+  /// Создает кастомный источник обновлений.
+  /// Если platforms = null, то считается, что поддерживает все.
   const factory UpdateSource.custom(
     UpdateSourceName sourceName, {
     List<UpdatePlatform>? platforms,

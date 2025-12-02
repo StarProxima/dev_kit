@@ -36,9 +36,10 @@ class UpdateSearcher {
       if (update.version <= searchData.appVersion) break;
       if (update.date.isAfter(searchData.currentDate)) continue;
       if (update.platform != searchData.platform) continue;
-      if (!searchData.sources.any((source) =>
+      final isSourceSupported = searchData.sources.any((source) =>
           source.sourceName == update.sourceName &&
-          (source.platforms?.contains(update.platform) ?? true))) {
+          (source.platforms?.contains(update.platform) ?? true));
+      if (!isSourceSupported) {
         continue;
       }
 
@@ -78,9 +79,10 @@ class UpdateSearcher {
       if (update.version > searchData.appVersion) continue;
       if (update.date.isAfter(searchData.currentDate)) continue;
       if (update.platform != searchData.platform) continue;
-      if (!searchData.sources.any((source) =>
+      final isSourceSupported = searchData.sources.any((source) =>
           source.sourceName == update.sourceName &&
-          (source.platforms?.contains(update.platform) ?? false))) {
+          (source.platforms?.contains(update.platform) ?? true));
+      if (!isSourceSupported) {
         continue;
       }
 
