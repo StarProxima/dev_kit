@@ -14,6 +14,7 @@ enum UpdateStatusType {
   /// Обновление с версией выше текущей не найдено.
   notFound,
 
+  /// TODO: implement this
   /// Обновление с версиями выше текущей найдено, но не для установленного источника.
   notFoundForTargetSource,
 
@@ -23,9 +24,11 @@ enum UpdateStatusType {
   /// Найдено и показывалось, но пользователь отложил это конкретное обновление.
   postponed,
 
+  /// TODO: implement this
   /// Найдено, но ещё не отображается из-за установленного delay в [UpdateRuleConfig.rollout].
   delayed,
 
+  /// TODO: implement this
   /// Найдено, но еще не отображается этому конкретному пользователю
   /// из-за установленного [UpdateRuleConfig.rollout].
   notYetRollout,
