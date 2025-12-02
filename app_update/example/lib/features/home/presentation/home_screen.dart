@@ -1,5 +1,6 @@
 import 'package:app_update/app_update.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../settings/presentation/settings_screen.dart';
 import '../../shared/domain/app_state.dart';
@@ -99,6 +100,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _clearUpdates() async {
+    final storage =
+        SharedPreferencesUpdateStorage(await SharedPreferences.getInstance());
+    final storageManager = UpdateStorageManager(storage);
+    await storageManager.clear();
+  }
+
   Future<void> _testScenario(UpdateScenario scenario) async {
     try {
       final result = await _notifier.loadScenario(scenario.configFile);
@@ -190,6 +198,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.teal,
                   onTap: _showUpdateInfo,
                   enabled: state.lastResult != null,
+                ),
+                const SizedBox(height: 12),
+                ScenarioCard(
+                  title: 'Очистить хранилище обновлений',
+                  description: 'Отменить отложенные и пропущенные обновления',
+                  icon: Icons.delete,
+                  color: Colors.red,
+                  onTap: _clearUpdates,
+                  enabled: true,
                 ),
                 const SizedBox(height: 24),
 

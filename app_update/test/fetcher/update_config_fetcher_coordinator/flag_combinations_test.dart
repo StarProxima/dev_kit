@@ -28,7 +28,7 @@ void main() {
           )).thenAnswer((_) async => const UpdateConfig());
     });
 
-    test('shouldFetchSourceFetchers=true, shouldFetchFerchers=true', () async {
+    test('shouldFetchSourceFetchers=true, shouldFetchFetchers=true', () async {
       // Arrange
       final regularConfig = UpdateConfig(
         releases: [setup.createReleaseConfig('1.0.0')],
@@ -41,7 +41,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -54,7 +54,7 @@ void main() {
     });
 
     test(
-      'shouldFetchSourceFetchers=false, shouldFetchFerchers=true',
+      'shouldFetchSourceFetchers=false, shouldFetchFetchers=true',
       () async {
         // Arrange
         final regularConfig = UpdateConfig(
@@ -68,7 +68,7 @@ void main() {
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: true,
+          shouldFetchFetchers: true,
         );
 
         // Assert
@@ -81,7 +81,7 @@ void main() {
     );
 
     test(
-      'shouldFetchSourceFetchers=true, shouldFetchFerchers=false',
+      'shouldFetchSourceFetchers=true, shouldFetchFetchers=false',
       () async {
         // Arrange
         final regularConfig = UpdateConfig(
@@ -95,7 +95,7 @@ void main() {
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -108,7 +108,7 @@ void main() {
     );
 
     test(
-      'shouldFetchSourceFetchers=false, shouldFetchFerchers=false',
+      'shouldFetchSourceFetchers=false, shouldFetchFetchers=false',
       () async {
         // Arrange
         final regularConfig = UpdateConfig(
@@ -122,7 +122,7 @@ void main() {
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -141,7 +141,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -166,7 +166,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -177,7 +177,7 @@ void main() {
       );
     });
 
-    test('только regular fetchers с shouldFetchFerchers=true', () async {
+    test('только regular fetchers с shouldFetchFetchers=true', () async {
       // Arrange
       final config1 =
           UpdateConfig(releases: [setup.createReleaseConfig('1.0.0')]);
@@ -192,7 +192,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -219,7 +219,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -241,7 +241,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert

@@ -40,7 +40,7 @@ void main() {
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -71,7 +71,7 @@ void main() {
           searchConfig: setup.baseSearchConfig,
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: false,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -101,7 +101,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -140,7 +140,7 @@ void main() {
           ),
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -174,7 +174,7 @@ void main() {
           ),
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -218,7 +218,7 @@ void main() {
           ),
           packageInfo: setup.packageInfo,
           shouldFetchSourceFetchers: true,
-          shouldFetchFerchers: false,
+          shouldFetchFetchers: false,
         );
 
         // Assert
@@ -274,7 +274,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -306,7 +306,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -337,7 +337,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert - возвращает только default config

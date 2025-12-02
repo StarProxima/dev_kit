@@ -41,7 +41,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -82,7 +82,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -115,7 +115,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -149,7 +149,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -186,7 +186,7 @@ void main() {
         searchConfig: setup.baseSearchConfig,
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: false,
-        shouldFetchFerchers: true,
+        shouldFetchFetchers: true,
       );
 
       // Assert
@@ -237,7 +237,7 @@ void main() {
             searchConfig: setup.baseSearchConfig,
             packageInfo: setup.packageInfo,
             shouldFetchSourceFetchers: true,
-            shouldFetchFerchers: true,
+            shouldFetchFetchers: true,
           ),
           throwsA(isA<UnimplementedError>()),
         );
@@ -286,7 +286,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
@@ -322,7 +322,7 @@ void main() {
         ),
         packageInfo: setup.packageInfo,
         shouldFetchSourceFetchers: true,
-        shouldFetchFerchers: false,
+        shouldFetchFetchers: false,
       );
 
       // Assert
