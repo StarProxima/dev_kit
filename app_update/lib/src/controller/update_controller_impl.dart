@@ -40,10 +40,12 @@ class UpdateControllerImpl implements UpdateController {
   final onFetchStreamController = StreamController<void>.broadcast();
   @protected
   Completer<void>? initCompleter;
+  @protected
+  Completer<void>? fetchCompleter;
 
   bool get isInitialized => initCompleter?.isCompleted ?? false;
   @protected
-  List<UpdateData> updates = [];
+  List<UpdateData>? updates;
 
   // Dependencies, can be overridden
 
@@ -146,8 +148,8 @@ class UpdateControllerImpl implements UpdateController {
     );
 
     final updates = linker.linkAllConfigs(configs);
-
     this.updates = updates;
+
     onFetchStreamController.add(null);
   }
 
@@ -156,6 +158,9 @@ class UpdateControllerImpl implements UpdateController {
     if (!isInitialized) {
       throw Exception('UpdateController is not initialized');
     }
+
+    final updates =
+        this.updates ?? (throw Exception('Updates are not fetched'));
 
     final searchResult = updateSearcher.searchFull(
       updates: updates,
