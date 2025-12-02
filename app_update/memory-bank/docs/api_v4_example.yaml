@@ -1,8 +1,8 @@
-# App Update API v4 - Enhanced Rule Structure
-# Демонстрация новой when/rollout/data архитектуры
+# App Update API v4 - Example Configuration
+# Демонстрация основных возможностей
 
 content:
-  # Базовый контент для всех
+  # Базовый контент (английский)
   - data:
       title: "Update $appName"
       description: "Version $releaseVersion is available"
@@ -21,51 +21,16 @@ content:
       postpone_button: "Позже"
       release_notes_title: "Что нового?"
 
-  # Platform-specific messaging
+  # Критические обновления
   - when:
-      platform_is: ios
+      app_status_is: [deprecated, unsupported]
       locale_is: ru
-    data:
-      title: "Обновите $appName через App Store"
-      description: "Новая версия доступна в App Store"
-
-  # Critical updates с temporal control
-  - when:
-      app_status_is: deprecated
-      locale_is: ru
-    rollout:
-      user_segmentation_percent: 100        # All deprecated users immediately
     data:
       title: "Важное обновление"
-      description: "Ваша версия устарела, обновитесь как можно скорее"
-
-  # Complex rule с full features
-  - when:
-      view_target_is: card
-      app_status_is: outdated
-      locale_is: ru
-      platform_is: android
-      source_is:
-        - name: googlePlay
-          platforms: [android]
-      custom_params:
-        env_is: prod
-        user_tier_is: [premium, enterprise]
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 24
-      gradual_rollout_hours: 168
-      user_segmentation_percent: 25
-    data:
-      title: "Премиум обновление Android"
-      description: "Эксклюзивные функции доступны в Google Play"
-      custom_params:
-        analytics_track: "premium_android_rollout"
-        ui_variant: "gold_theme"
-        conversion_funnel: "premium_upgrade"
+      description: "Обновитесь как можно скорее"
 
 settings:
-  # Default: hide everything
+  # Базовые настройки: скрыто по умолчанию
   - data:
       should_show: false
       can_skip: false
@@ -75,140 +40,76 @@ settings:
       postpone_release_delay_hours: 96
       postpone_all_releases_delay_hours: 24
 
-  # Unsupported versions - strict policy
+  # Unsupported — блокирующее
   - when: { app_status_is: unsupported }
     data:
       should_show: true
       can_skip: false
       can_postpone: false
 
-  # Deprecated versions - limited flexibility
+  # Deprecated — можно отложить
   - when: { app_status_is: deprecated }
     data:
       should_show: true
-      can_skip: false
       can_postpone: true
       postpone_release_delay_hours: 24
-      postpone_all_releases_delay_hours: 24
 
-  # Active/outdated versions - full flexibility
+  # Active/Outdated — полная свобода
   - when: { app_status_is: [active, outdated] }
     data:
       should_show: true
       can_skip: true
       can_postpone: true
 
-  # UI target specific settings
-  - when:
-      app_status_is: active
-      view_target_is: aboutScreen
-    data:
-      should_show: true
-
+  # Таргет-специфичные настройки
   - when:
       app_status_is: outdated
       view_target_is: [card, toast, aboutScreen]
     data:
       should_show: true
 
-  - when:
-      app_status_is: deprecated
-      view_target_is: [card, toast, aboutScreen, screen]
-    data:
-      should_show: true
-
-  - when:
-      app_status_is: unsupported
-      view_target_is: screen
-    data:
-      should_show: true
-
 app_settings:
-  # Default: everything active
+  # По умолчанию активные
   - data:
       app_status: active
 
-  # Lifecycle management от update release date
+  # Lifecycle от даты нового релиза
   - when: { app_version_is: any }
     rollout:
       date: $updateReleaseDate
-    data:
-      app_status: active
-
-  - when: { app_version_is: any }
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 48            # 2 days after update release
-      gradual_rollout_hours: 72          # 3 days gradual rollout
-    data:
-      app_status: outdated
-
-  # Lifecycle management от local version date
-  - when: { app_version_is: any }
-    rollout:
-      date: $localReleaseDate
-      delay_hours: 168           # 7 days
-      gradual_rollout_hours: 72          # 3 days rollout
-    data:
-      app_status: outdated
-
-  - when: { app_version_is: any }
-    rollout:
-      date: $localReleaseDate
-      delay_hours: 2880          # 120 days
-      gradual_rollout_hours: 168         # 7 days rollout
-    data:
-      app_status: deprecated
-
-  - when: { app_version_is: any }
-    rollout:
-      date: $localReleaseDate
-      delay_hours: 6760          # 280 days
-      gradual_rollout_hours: 168         # 7 days rollout
-    data:
-      app_status: unsupported
-
-  # Version-specific overrides
-  - when: { app_version_is: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"] }
-    data:
-      app_status: deprecated
-
-  # Legacy version management
-  - when: { app_version_is: "<4.0.0" }
-    rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 168
+      delay_hours: 48
       gradual_rollout_hours: 72
     data:
       app_status: outdated
 
-  - when: { app_version_is: "<4.0.0" }
+  # Lifecycle от даты текущей версии
+  - when: { app_version_is: any }
     rollout:
-      date: "2014-10-17 00:00:00"
+      date: $localReleaseDate
       delay_hours: 2880
       gradual_rollout_hours: 168
     data:
       app_status: deprecated
 
-  # Controlled critical rollout
-  - when:
-      app_version_is: "<=3.0.0"
-      custom_params:
-        env_is: prod
+  - when: { app_version_is: any }
     rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 12
-      gradual_rollout_hours: 72
-      user_segmentation_percent: 10
+      date: $localReleaseDate
+      delay_hours: 6760
     data:
       app_status: unsupported
 
+  # Версионные ограничения
+  - when: { app_version_is: "<4.0.0" }
+    data:
+      app_status: deprecated
+
+  # Контролируемая раскатка
   - when: { app_version_is: "<=3.0.0" }
     rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 120
+      date: "2024-01-01"
+      delay_hours: 12
       gradual_rollout_hours: 72
-      user_segmentation_percent: 50
+      user_segmentation_percent: 10
     data:
       app_status: unsupported
 
@@ -235,13 +136,10 @@ sources:
           update_button: "Перейти в RuStore"
 
   - name: github
-    platforms: [android, ios, windows, macos, linux]
+    platforms: [android, windows, macos, linux]
     content:
       - data:
           update_url: "https://github.com/user/repo/releases"
-      - when: { platform_is: android }
-        data:
-          update_url: "https://github.com/user/repo/releases/download/v$releaseVersion/app.apk"
 
 releases:
   - version: "2.1.0"
@@ -249,49 +147,16 @@ releases:
     content:
       - data:
           release_notes: |
-            # Major Update v2.1.0
-            
-            ## New Features
+            # Update v2.1.0
             - Enhanced user interface
-            - Improved performance
-            - Bug fixes and stability improvements
-            
-            [Full changelog](https://github.com/user/repo/releases/v2.1.0)
-            
+            - Bug fixes
       - when: { locale_is: ru }
         data:
           release_notes: |
-            # Крупное обновление v2.1.0
-            
-            ## Новые возможности
+            # Обновление v2.1.0
             - Улучшенный интерфейс
-            - Повышенная производительность  
-            - Исправления ошибок и улучшения стабильности
-            
-            [Полный список изменений](https://github.com/user/repo/releases/v2.1.0)
+            - Исправления ошибок
     sources: [googlePlay, appStore, ruStore]
-
-  - version: "2.2.0-beta.1"
-    date: "2024-09-01 10:00:00"
-    content:
-      - when:
-          custom_params:
-            user_tier_is: [beta, internal]
-        data:
-          title: "Beta Update Available"
-          description: "Help us test upcoming features"
-          release_notes: "Beta version with experimental features"
-    settings:
-      - data: { should_show: false }
-      - when:
-          custom_params:
-            user_tier_is: [beta, internal]
-        rollout:
-          delay_hours: 0
-          gradual_rollout_hours: 48
-          user_segmentation_percent: 100
-        data: { should_show: true }
-    sources: [googlePlay, github]
 
   - version: "2.0.5"
     date: "2024-08-20 12:00:00"
@@ -299,22 +164,27 @@ releases:
       - googlePlay
       - appStore
       - name: ruStore
+        platforms: [android]
         release_override:
           version: "2.0.6"
         content:
           - when: { locale_is: ru }
             data:
               title: "Обновление RuStore"
-              update_url: "https://apps.rustore.ru/app/custom.package"
-        platforms: [android]
-      - name: github
-        platforms:
-          - windows
-          - linux
-          - name: macos
-            content:
-              - data:
-                  update_url: "https://github.com/user/repo/releases/download/v2.0.5/macos.dmg"
-            settings:
-              - when: { app_status_is: deprecated }
-                data: { can_postpone: true }
+
+  - version: "2.0.0-beta.1"
+    date: "2024-09-01 10:00:00"
+    content:
+      - when:
+          custom_params:
+            user_tier_is: [beta, internal]
+        data:
+          title: "Beta Update"
+          release_notes: "Beta features for testing"
+    settings:
+      - data: { should_show: false }
+      - when:
+          custom_params:
+            user_tier_is: [beta, internal]
+        data: { should_show: true }
+    sources: [googlePlay]

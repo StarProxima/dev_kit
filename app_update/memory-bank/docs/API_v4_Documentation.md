@@ -1,48 +1,16 @@
-# App Update API v4 — Enhanced Rule Structure
+# App Update API v4
 
-App Update — система конфигураций для управления отображением обновлений приложения на разных платформах и в разных сторах. Версия v4 представляет **значительно улучшенную структуру правил** с четким разделением концепций.
+Система конфигураций для управления обновлениями приложения. Поддерживает правила контента, поведение UI, жизненный цикл версий, прогрессивное выкатывание и мульти-источники дистрибуции.
 
-## 🎯 Ключевые улучшения v4
+## Быстрый старт
 
-### Семантическая структура правил
-```yaml
-# v4 - Crystal Clear Structure:
-content:
-  - when:                    # 🎯 Условия применения
-      view_target_is: card
-      app_status_is: outdated
-      locale_is: ru
-    rollout:                 # ⏰ Параметры раскатки
-      date: $updateReleaseDate
-      delay_hours: 24
-      gradual_rollout_hours: 168
-      user_segmentation_percent: 25
-    data:                    # 📄 Данные для UI
-      title: "Обновление доступно"
-      description: "Версия $releaseVersion готова"
-```
+Минимальная конфигурация:
 
-### Разделение custom_params по назначению
-```yaml
-content:
-  - when:
-      custom_params:
-        env_is: prod              # ← Для матчинга условий
-        user_tier_is: premium     # ← Логика применения правила
-    data:
-      custom_params:
-        analytics_track: "event"  # ← Данные для результата
-        ui_variant: "premium"     # ← Данные для приложения
-```
-
-## Быстрый старт v4
-
-### Минимальная конфигурация
 ```yaml
 content:
   - data:
       title: "Обновление доступно"
-      description: "Новая версия с улучшениями"
+      description: "Версия $releaseVersion готова"
 
 settings:
   - data:
@@ -60,346 +28,198 @@ releases:
   - version: 1.2.0
     date: "2024-08-24 15:35:00"
     content:
-      release_notes: "Улучшения и исправления"
+      - data:
+          release_notes: "Улучшения и исправления"
     sources: [appStore]
 ```
 
-### Локализованная конфигурация
-```yaml
-content:
-  # Базовый контент
-  - data:
-      title: "Update Available"
-      description: "Version $releaseVersion is available"
-      
-  # Русская локализация
-  - when: { locale_is: ru }
-    data:
-      title: "Обновление доступно"
-      description: "Версия $releaseVersion готова к установке"
-```
+## Структура конфигурации
 
-### Controlled Rollout
 ```yaml
-app_settings:
-  # Базовый статус
-  - data:
-      app_status: active
-      
-  # Постепенная смена статуса на outdated
-  - when:
-      app_version_is: "<2.0.0"
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 48              # 2 дня после релиза
-      gradual_rollout_hours: 168           # Раскатка за неделю
-      user_segmentation_percent: 30     # 30% пользователей
-    data:
-      app_status: outdated
-```
-
-## Структура конфигурации v4
-
-### Основные секции
-```yaml
-content:      # Контент для UI по условиям
-settings:     # Поведение UI и доступные действия
+content:      # Контент для UI (тексты, кнопки)
+settings:     # Поведение UI (показывать ли, можно ли пропустить)
 app_settings: # Жизненный цикл версий (статусы, раскатка)
 sources:      # Источники дистрибуции (сторы/платформы)
 releases:     # Конкретные релизы приложения
 ```
 
-### Структура правил
-Каждое правило состоит из трех логических секций:
+## Базовые понятия
 
-#### 1. when (Условия применения)
-Определяет **когда** правило должно применяться:
+| Понятие | Значения | Описание |
+|---------|----------|----------|
+| **app_status** | `active`, `outdated`, `deprecated`, `unsupported`, `any` | Статус версии приложения |
+| **view_target** | `card`, `dialog`, `screen`, `toast`, `aboutScreen`, `any` | Место отображения UI |
+| **locale** | `ru`, `en`, ... или `any` | Код языка пользователя |
+| **platform** | `android`, `ios`, `macos`, `windows`, `linux`, `web`, `any` | Платформа |
+| **date** | `"2024-01-01 10:00:00"` или `"...Z"` (UTC) | Дата и время |
+| **Динамические даты** | `$localReleaseDate`, `$updateReleaseDate` | Даты текущей и новой версии |
+
+## Структура правил (when/rollout/data)
+
+Каждое правило состоит из трёх секций:
+
 ```yaml
-when:
-  view_target_is: [card, dialog]      # UI таргет
-  app_status_is: outdated             # Статус версии
-  locale_is: ru                       # Локаль пользователя
-  platform_is: android               # Платформа
-  source_is: googlePlay               # Источник установки
-  app_version_is: ">=1.0.0 <2.0.0"   # Версионные ограничения
-  custom_params:                      # Кастомные условия
-    env_is: prod
-    user_tier_is: premium
+- when:                              # Условия применения
+    view_target_is: card
+    app_status_is: outdated
+    locale_is: ru
+    platform_is: android
+    source_is: googlePlay
+    app_version_is: ">=1.0.0 <2.0.0"
+    custom_params:
+      env_is: prod                   # Кастомные условия (суффикс _is)
+      
+  rollout:                           # Параметры раскатки (опционально)
+    date: $updateReleaseDate         # Базовая дата
+    delay_hours: 24                  # Задержка активации
+    gradual_rollout_hours: 168       # Длительность раскатки
+    user_segmentation_percent: 25    # Процент пользователей
+    
+  data:                              # Данные правила
+    title: "Заголовок"
+    custom_params:                   # Данные для приложения (без _is)
+      analytics_event: "update_shown"
 ```
 
-#### 2. rollout (Управление раскаткой)
-Определяет **как и когда** раскатывать правило:
-```yaml
-rollout:
-  date: $updateReleaseDate            # Базовая дата
-  delay_hours: 24                     # Задержка активации
-  gradual_rollout_hours: 168                  # Длительность раскатки
-  user_segmentation_percent: 25            # Процент пользователей
-```
+## Content Rules — контент UI
 
-#### 3. data (Данные правила)
-Определяет **что** показать/применить:
-```yaml
-data:
-  title: "Заголовок"
-  description: "Описание"
-  custom_params:                      # Данные для приложения
-    analytics_track: "event_name"
-    ui_theme: "dark"
-```
-
-## Базовые понятия v4
-
-### Условия (when секция)
-- **view_target_is**: `card`, `dialog`, `screen`, `toast`, `aboutScreen`, `any`
-- **app_status_is**: `active`, `outdated`, `deprecated`, `unsupported`, `any`
-- **locale_is**: коды языков (`ru`, `en`) или `any`
-- **platform_is**: `android`, `ios`, `macos`, `windows`, `linux`, `web`, `any`
-- **source_is**: источники (`googlePlay`, `appStore`, `ruStore`, `gitHub`) или кастомные
-- **app_version_is**: semver ограничения (`">=1.0.0 <2.0.0"`, `">2.1.0"`)
-- **custom_params**: произвольные поля с суффиксом `_is` для матчинга
-
-### Раскатка (rollout секция)
-- **date**: статическая дата (`"2024-01-01 10:00:00"`) или динамическая (`$localReleaseDate`, `$updateReleaseDate`)
-- **delay_hours**: задержка активации правила (в часах)
-- **gradual_rollout_hours**: длительность постепенной раскатки (в часах)
-- **user_segmentation_percent**: процент пользователей (0-100) для A/B тестирования
-
-### Данные (data секция)
-- **content rules**: `title`, `description`, `updateButton`, `skipButton`, `postponeButton`, `releaseNotes`
-- **settings rules**: `shouldShow`, `canSkip`, `canPostpone`, delay параметры
-- **app_settings rules**: `appStatus`
-- **custom_params**: произвольные данные для приложения (без суффикса `_is`)
-
-## Content Rules v4 — контент UI
-
-### Базовая локализация
 ```yaml
 content:
-  # Английский (по умолчанию)
+  # Базовый контент (английский)
   - data:
       title: "Update $appName"
       description: "Version $releaseVersion available"
-      updateButton: "Update"
-      skipButton: "Skip"
-      postponeButton: "Later"
-      
+      update_button: "Update"
+      skip_button: "Skip"
+      postpone_button: "Later"
+
   # Русская локализация
   - when: { locale_is: ru }
     data:
       title: "Обновите $appName"
       description: "Версия $releaseVersion доступна"
-      updateButton: "Обновить"
-      skipButton: "Пропустить"
-      postponeButton: "Позже"
-```
+      update_button: "Обновить"
 
-### Статус-специфичный контент
-```yaml
-content:
-  # Базовый контент
-  - data:
-      title: "Update Available"
-      description: "New version available"
-      
   # Критические обновления
-  - when: { app_status_is: unsupported }
-    data:
-      title: "Critical Update Required"
-      description: "Your version is no longer supported"
-      
-  # Deprecated версии на русском
   - when:
-      app_status_is: deprecated
+      app_status_is: [deprecated, unsupported]
       locale_is: ru
     data:
       title: "Важное обновление"
-      description: "Ваша версия устарела, обновитесь как можно скорее"
-```
+      description: "Обновитесь как можно скорее"
 
-### Платформо-специфичный контент
-```yaml
-content:
-  # Базовый контент
-  - data:
-      title: "Update $appName"
-      updateButton: "Update"
-      
-  # iOS специфичный
-  - when: { platform_is: ios }
-    data:
-      title: "Update $appName via App Store"
-      updateButton: "Open App Store"
-      
-  # Android Google Play
+  # Платформо-специфичный контент
   - when:
       platform_is: android
       source_is: googlePlay
     data:
-      title: "Update $appName via Play Store"
-      updateButton: "Open Play Store"
-      
-  # Android RuStore русская локализация
-  - when:
-      platform_is: android
-      source_is: ruStore
-      locale_is: ru
-    data:
-      title: "Обновление $appName в RuStore"
-      updateButton: "Открыть RuStore"
+      update_button: "Open Play Store"
 ```
 
-## Settings Rules v4 — поведение UI
+Поддерживаются произвольные поля в `data`:
 
-### Базовая матрица поведения
+```yaml
+data:
+  custom_params:
+    image:
+      url: https://example.com/banner.png
+      border_radius: 10
+```
+
+## Settings Rules — поведение UI
+
 ```yaml
 settings:
-  # Консервативные настройки по умолчанию
+  # Базовые настройки: скрыто по умолчанию
   - data:
-      should_show: false           # Скрыто по умолчанию
+      should_show: false
       can_skip: false
       can_postpone: false
-      skip_release_delay_hours: 2160
+      skip_release_delay_hours: 2160       # 90 дней
       skip_all_releases_delay_hours: 72
       postpone_release_delay_hours: 96
       postpone_all_releases_delay_hours: 24
 
-  # Критические обновления - строгие правила
+  # Unsupported — блокирующее обновление
   - when: { app_status_is: unsupported }
     data:
       should_show: true
-      can_skip: false              # Нельзя пропустить
-      can_postpone: false          # Нельзя отложить
+      can_skip: false
+      can_postpone: false
 
-  # Deprecated - ограниченная свобода
+  # Deprecated — можно отложить ненадолго
   - when: { app_status_is: deprecated }
     data:
       should_show: true
-      can_skip: false
       can_postpone: true
-      postpone_release_delay_hours: 24  # Короткая отсрочка
+      postpone_release_delay_hours: 24
 
-  # Обычные обновления - полная свобода
+  # Active/Outdated — полная свобода
   - when: { app_status_is: [active, outdated] }
     data:
       should_show: true
       can_skip: true
       can_postpone: true
+
+  # Точечное включение по таргетам
+  - when:
+      app_status_is: outdated
+      view_target_is: [card, toast, aboutScreen]
+    data:
+      should_show: true
 ```
 
-### UI таргет специфичные настройки
-```yaml
-settings:
-  # About screen - всегда показываем информацию
-  - when:
-      view_target_is: aboutScreen
-      app_status_is: [active, outdated, deprecated]
-    data:
-      should_show: true
-      
-  # Карточки и уведомления - только для устаревших
-  - when:
-      view_target_is: [card, toast]
-      app_status_is: [outdated, deprecated]
-    data:
-      should_show: true
-      
-  # Полноэкранный режим - только критические
-  - when:
-      view_target_is: screen
-      app_status_is: unsupported
-    data:
-      should_show: true
-      can_skip: false
-      can_postpone: false
-```
+## App Settings Rules — жизненный цикл версий
 
-## App Settings Rules v4 — жизненный цикл
-
-### Базовый lifecycle управление
 ```yaml
 app_settings:
   # По умолчанию все активные
   - data:
       app_status: active
 
-  # Automatic aging от даты текущей версии
+  # Автоматический lifecycle от даты нового релиза
   - when: { app_version_is: any }
     rollout:
-      date: $localReleaseDate
-      delay_hours: 168             # 1 неделя → outdated
+      date: $updateReleaseDate
+      delay_hours: 48              # 2 дня → outdated
+      gradual_rollout_hours: 72
     data:
       app_status: outdated
-      
+
+  # Lifecycle от даты текущей версии
   - when: { app_version_is: any }
     rollout:
       date: $localReleaseDate
-      delay_hours: 2160            # 90 дней → deprecated
+      delay_hours: 2880            # 120 дней → deprecated
+      gradual_rollout_hours: 168
     data:
       app_status: deprecated
-      
+
   - when: { app_version_is: any }
     rollout:
       date: $localReleaseDate
-      delay_hours: 4320            # 180 дней → unsupported
+      delay_hours: 6760            # 280 дней → unsupported
     data:
       app_status: unsupported
-```
 
-### Версионные ограничения
-```yaml
-app_settings:
-  # Specific версии deprecated
-  - when: { app_version_is: ["<=5.1.0 >=4.2.0", ">5.6.0 <5.6.7"] }
+  # Версионные ограничения (semver)
+  - when: { app_version_is: ["<=5.1.0 >=4.2.0", "<4.0.0"] }
     data:
       app_status: deprecated
-      
-  # Старые версии с temporal lifecycle
-  - when: { app_version_is: "<4.0.0" }
-    rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 168
-    data:
-      app_status: outdated
-      
-  - when: { app_version_is: "<4.0.0" }
-    rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 2880
-    data:
-      app_status: deprecated
-```
 
-### Controlled Rollout Examples
-```yaml
-app_settings:
-  # Осторожная раскатка критического статуса
-  - when:
-      app_version_is: "<=3.0.0"
-      custom_params:
-        env_is: [prod, staging]
-    rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 12              # 12 часов задержки
-      gradual_rollout_hours: 72            # 3 дня раскатки
-      user_segmentation_percent: 10     # Только 10% пользователей первоначально
-    data:
-      app_status: unsupported
-      
-  # Расширение до 50% пользователей
+  # Контролируемая раскатка
   - when: { app_version_is: "<=3.0.0" }
     rollout:
-      date: "2014-10-17 00:00:00"
-      delay_hours: 120             # 5 дней задержки
+      date: "2024-01-01"
+      delay_hours: 12
       gradual_rollout_hours: 72
-      user_segmentation_percent: 50     # 50% пользователей
+      user_segmentation_percent: 10    # Сначала 10% пользователей
     data:
       app_status: unsupported
 ```
 
-## Sources v4 — источники дистрибуции
+## Sources — источники дистрибуции
 
-### Базовые источники
 ```yaml
 sources:
   - name: appStore
@@ -407,7 +227,7 @@ sources:
     content:
       - data:
           update_url: "https://apps.apple.com/app/id123"
-          
+
   - name: googlePlay
     platforms: [android]
     content:
@@ -417,377 +237,145 @@ sources:
   - name: ruStore
     platforms: [android]
     content:
+      - data:
+          update_url: "https://apps.rustore.ru/app/$appPackageName"
       - when: { locale_is: ru }
         data:
-          update_url: "https://apps.rustore.ru/app/$appPackageName"
-          updateButton: "Перейти в RuStore"
+          update_button: "Перейти в RuStore"
+
+  - name: github
+    platforms: [android, windows, macos, linux]
+    content:
+      - data:
+          update_url: "https://github.com/user/repo/releases"
+      # Platform-specific URL
+      - when: { platform_is: windows }
+        data:
+          update_url: "https://github.com/user/repo/releases/download/v$releaseVersion/setup.exe"
 ```
 
-### Сложные источники с переопределениями
+Платформы можно указывать с переопределениями:
+
 ```yaml
 sources:
   - name: github
     platforms:
-      - android
-      - ios  
       - windows
-      - macos
       - linux
-    content:
-      - data:
-          update_url: "https://github.com/user/repo/releases"
-          
-      # Platform-specific URLs:
-      - when: { platform_is: windows }
-        data:
-          update_url: "https://github.com/user/repo/releases/download/v$releaseVersion/setup.exe"
-          
-      # Локализация для русских пользователей
-      - when:
-          platform_is: android
-          locale_is: ru
-        data:
-          update_url: "https://github.com/user/repo/releases/download/v$releaseVersion/app.apk"
-          updateButton: "Скачать APK"
+      - name: android
+        content:
+          - data:
+              update_url: "https://github.com/user/repo/releases/download/v$releaseVersion/app.apk"
 ```
 
-## Releases v4 — релизы
+## Releases — релизы
 
-### Простые релизы
 ```yaml
 releases:
+  # Простой релиз
   - version: "2.1.0"
     date: "2024-08-24 15:35:00"
     content:
       - data:
-          release_notes: "Улучшения производительности и исправления ошибок"
+          release_notes: "Улучшения и исправления"
     sources: [googlePlay, appStore]
-```
 
-### Комплексные релизы с overrides
-```yaml
-releases:
+  # Локализованный релиз
   - version: "2.0.0"
-    date: "2024-08-24 15:35:00"
+    date: "2024-08-20 12:00:00"
     content:
-      # Базовые release notes
       - data:
           release_notes: "Major update with new features"
-          
-      # Русская локализация
       - when: { locale_is: ru }
         data:
           release_notes: "Крупное обновление с новыми возможностями"
-          
+    sources: [googlePlay, appStore]
+
+  # Релиз с переопределениями для источника
+  - version: "1.2.0"
+    date: "2024-08-15 10:00:00"
     sources:
       - googlePlay
       - appStore
-      
-      # RuStore с особенностями
       - name: ruStore
         platforms: [android]
         release_override:
-          version: "2.0.1"           # Другая версия в RuStore
+          version: "1.2.1"           # Другая версия в RuStore
         content:
           - when: { locale_is: ru }
             data:
               title: "Обновление RuStore"
-              release_notes: "Версия для российского магазина"
-              
-      # GitHub с platform overrides
       - name: github
         platforms:
-          - windows
           - linux
-          - name: macos
+          - name: windows
             content:
               - data:
-                  update_url: "https://github.com/user/repo/releases/download/v2.0.0/macos.dmg"
+                  update_url: "https://github.com/user/repo/releases/download/v1.2.0/setup.exe"
             settings:
               - when: { app_status_is: deprecated }
                 data: { can_postpone: true }
-```
 
-### Beta релизы с controlled access
-```yaml
-releases:
+  # Beta-релиз с ограниченным доступом
   - version: "2.1.0-beta.1"
-    date: "2024-08-20 10:00:00"
+    date: "2024-09-01 10:00:00"
     content:
       - when:
           custom_params:
             user_tier_is: [beta, internal]
         data:
-          title: "Beta Update Available"
-          description: "Help us test new features"
+          title: "Beta Update"
           release_notes: "Beta features for testing"
     settings:
-      # Скрыто по умолчанию
       - data: { should_show: false }
-      
-      # Показываем только beta users с rollout
       - when:
           custom_params:
             user_tier_is: [beta, internal]
         rollout:
-          date: "2024-08-20 10:00:00"
-          delay_hours: 0
-          gradual_rollout_hours: 48          # 2 дня постепенной раскатки
-          user_segmentation_percent: 100  # Всем eligible users
+          gradual_rollout_hours: 48
         data: { should_show: true }
-    sources: [googlePlay, appStore]
+    sources: [googlePlay]
 ```
 
-## Правила мерджа и приоритеты v4
+## Правила мерджа и приоритеты
 
-### Последовательное применение правил
+1. **Порядок в списке важен**: правила применяются последовательно, поздние переопределяют ранние
+2. **Специфичность контекста**: `release` > `source` > `platform` > глобальные правила
+3. **Объединение полей**: поля мерджатся по ключам, отсутствующие не затираются
+
 ```yaml
 content:
   # Правило 1 (базовое)
   - data:
-      title: "Update Available"
+      title: "Update"
       description: "New version"
-      updateButton: "Update"
       
-  # Правило 2 (русская локализация)
+  # Правило 2 (переопределяет только title)
   - when: { locale_is: ru }
     data:
-      title: "Обновление доступно"      # ← Переопределяет title
-      description: "Новая версия"       # ← Переопределяет description
-      # updateButton остается "Update"
-      
-  # Правило 3 (критический статус)
-  - when:
-      app_status_is: deprecated
-      locale_is: ru
-    data:
-      title: "Важное обновление"        # ← Финальное переопределение
-      # description и updateButton остаются из предыдущих правил
-```
-
-### Custom Params Merging
-```yaml
-# Rule merging для custom_params:
-content:
-  # Rule 1
-  - data:
-      custom_params:
-        theme: "light"
-        version: "1.0"
-        
-  # Rule 2 (добавляет и переопределяет)
-  - when: { locale_is: ru }
-    data:
-      custom_params:
-        theme: "dark"               # ← Переопределяет
-        locale_variant: "ru"        # ← Добавляет новое поле
-        # version остается "1.0"
-
-# Final result custom_params:
-# { theme: "dark", version: "1.0", locale_variant: "ru" }
-```
-
-## Advanced Patterns v4
-
-### Multi-Stage Rollout
-```yaml
-app_settings:
-  # Phase 1: Alpha users (5%) немедленно
-  - when:
-      custom_params:
-        user_tier_is: alpha
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 0
-      user_segmentation_percent: 5
-    data:
-      app_status: outdated
-      
-  # Phase 2: Beta users (25%) через сутки
-  - when:
-      custom_params:
-        user_tier_is: [alpha, beta]
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 24
-      user_segmentation_percent: 25
-    data:
-      app_status: outdated
-      
-  # Phase 3: All users (100%) через неделю
-  - when: { app_version_is: any }
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 168
-    data:
-      app_status: outdated
-```
-
-### Feature Flag Integration
-```yaml
-content:
-  # Новая функция только для premium пользователей
-  - when:
-      custom_params:
-        feature_flag_is: new_ui_v2
-        user_tier_is: [premium, enterprise]
-    rollout:
-      date: "2024-09-01 00:00:00"
-      delay_hours: 0
-      gradual_rollout_hours: 168
-      user_segmentation_percent: 50     # A/B test на 50%
-    data:
-      title: "New UI Available"
-      description: "Experience our redesigned interface"
-      custom_params:
-        feature_variant: "ui_v2"
-        analytics_track: "new_ui_rollout"
-```
-
-### Emergency Updates
-```yaml
-app_settings:
-  # Emergency hotfix deployment
-  - when:
-      app_version_is: ["1.2.0", "1.2.1"]  # Affected versions
-      custom_params:
-        env_is: [prod, staging]
-    rollout:
-      date: "2024-08-25 14:30:00"         # Emergency deployment time
-      delay_hours: 0                      # Immediate
-      user_segmentation_percent: 100           # All affected users
-    data:
-      app_status: unsupported
-
-settings:
-  - when: { app_status_is: unsupported }
-    data:
-      should_show: true
-      can_skip: false                     # Must update
-      can_postpone: false
-```
-
-## Лучшие практики v4
-
-### 1. Структурная организация
-```yaml
-# ✅ Good - логическая группировка секций:
-content:
-  - when:                    # Группируйте условия логически
-      view_target_is: card
-      app_status_is: outdated
-      locale_is: ru
-    rollout:                 # Все temporal параметры вместе
-      date: $updateReleaseDate
-      delay_hours: 24
-      gradual_rollout_hours: 168
-    data:                    # Все данные результата вместе
       title: "Обновление"
-      description: "Доступно"
+      # description остается "New version"
 ```
 
-### 2. Custom Params Best Practices
+## Custom Params — разделение по назначению
+
 ```yaml
-# ✅ Good - четкое разделение назначения:
 content:
   - when:
       custom_params:
-        env_is: prod              # ← Matching: суффикс _is
-        user_type_is: premium     # ← Matching: суффикс _is
+        env_is: prod              # Условие (суффикс _is)
+        user_tier_is: premium     # Условие
     data:
+      title: "Premium Update"
       custom_params:
-        analytics_track: "event"  # ← Data: без суффикса _is
-        ui_variant: "premium"     # ← Data: без суффикса _is
+        analytics_track: "event"  # Данные для приложения
+        ui_variant: "gold"        # Данные для приложения
 ```
 
-### 3. Rollout Safety
-```yaml
-# ✅ Good - безопасная раскатка критических изменений:
-app_settings:
-  - when: { app_version_is: "<1.0.0" }
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 24              # Дайте время на stabilization
-      gradual_rollout_hours: 168           # Постепенно за неделю
-      user_segmentation_percent: 20     # Начните с малой группы
-    data:
-      app_status: unsupported
-```
+## Лучшие практики
 
-### 4. Progressive Complexity
-```yaml
-# ✅ Good - используйте minimal syntax для простых случаев:
-content:
-  # Simple:
-  - when: { locale_is: ru }
-    data: { title: "Заголовок" }
-    
-  # Medium:
-  - when:
-      app_status_is: outdated
-      locale_is: ru
-    data:
-      title: "Рекомендуемое обновление"
-      
-  # Complex (only when needed):
-  - when:
-      view_target_is: card
-      app_status_is: [outdated, deprecated]
-      locale_is: ru
-      platform_is: android
-    rollout:
-      date: $updateReleaseDate
-      delay_hours: 48
-      gradual_rollout_hours: 168
-      user_segmentation_percent: 30
-    data:
-      title: "Важное обновление Android"
-      description: "Обновитесь через Google Play"
-```
-
-## Migration from v3 to v4
-
-### Automatic Conversion Rules
-```yaml
-# v3 structure:
-content:
-  - view_target_is: card
-    app_status_is: any
-    date: 2020-01-01
-    delay_hours: 24
-    data:
-      title: "Title"
-
-# v4 equivalent:
-content:
-  - when:
-      view_target_is: card
-      app_status_is: any
-    rollout:
-      date: 2020-01-01
-      delay_hours: 24
-    data:
-      title: "Title"
-```
-
-### Custom Params Migration
-```yaml
-# v3 confusing custom_params:
-content:
-  - custom_params:
-      env_is: prod              # Matching
-      analytics: data           # Data storage
-    data: { title: "Title" }
-
-# v4 clear separation:
-content:
-  - when:
-      custom_params:
-        env_is: prod            # ← Clearly matching
-    data:
-      title: "Title"
-      custom_params:
-        analytics: data         # ← Clearly data storage
-```
-
-**API v4 представляет significant evolution в configuration design, обеспечивая excellent developer experience с maintained powerful functionality.**
+1. **Жизненный цикл**: постепенно повышайте срочность `active` → `outdated` → `deprecated` → `unsupported`
+2. **UX**: по умолчанию `should_show: false`, явно включайте нужные таргеты
+3. **Раскатка**: для критических изменений используйте `delay_hours` + `gradual_rollout_hours` + `user_segmentation_percent`
+4. **Локализация**: базовый контент без `when`, локализации через `when: { locale_is: ... }`
+5. **Простота**: используйте короткий синтаксис где возможно: `- when: { locale_is: ru }`
