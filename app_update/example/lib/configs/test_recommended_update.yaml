@@ -1,0 +1,77 @@
+# Тестовая конфигурация: Рекомендуемое обновление
+# Можно отложить, но нельзя пропустить
+
+content:
+  # Английский контент
+  - data:
+      title: "Important Update Available"
+      description: "We recommend updating to version $releaseVersion for better experience."
+      update_button: "Update Now"
+      skip_button: "Skip"
+      postpone_button: "Remind Me Later"
+      release_notes_title: "What's New"
+      release_notes: |
+        - Important bug fixes
+        - Stability improvements
+        - New features
+      
+  # Русский контент
+  - when: { locale_is: ru }
+    data:
+      title: "Доступно важное обновление"
+      description: "Мы рекомендуем обновиться до версии $releaseVersion для лучшего опыта."
+      update_button: "Обновить сейчас"
+      skip_button: "Пропустить"
+      postpone_button: "Напомнить позже"
+      release_notes_title: "Что нового"
+      release_notes: |
+        - Важные исправления ошибок
+        - Улучшения стабильности
+        - Новые функции
+
+settings:
+  # По умолчанию не показываем
+  - data:
+      should_show: false
+      can_skip: false
+      can_postpone: true
+      skip_release_delay_hours: 2160
+      skip_all_releases_delay_hours: 72
+      postpone_release_delay_hours: 96
+      postpone_all_releases_delay_hours: 24
+      
+  # Для deprecated показываем с возможностью отложить
+  - when: { app_status_is: deprecated }
+    data:
+      should_show: true
+      can_skip: false
+      can_postpone: true
+
+app_settings:
+  # По умолчанию все активные
+  - data:
+      app_status: active
+      
+  # Версии ниже 1.3.0 - deprecated
+  - when: { app_version_is: "<1.3.0" }
+    data:
+      app_status: deprecated
+
+sources:
+  - name: googlePlay
+    platforms: [android]
+    
+  - name: appStore
+    platforms: [ios, macos]
+
+releases:
+  - version: "1.4.0"
+    date: "2024-01-12 12:00:00"
+    content:
+      - data:
+          release_notes: "Important fixes and improvements in this update"
+      - when: { locale_is: ru }
+        data:
+          release_notes: "Важные исправления и улучшения в этом обновлении"
+    sources: [googlePlay, appStore]
+

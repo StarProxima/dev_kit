@@ -1,0 +1,186 @@
+import 'package:collection/collection.dart';
+
+import '../../entities/update_source.dart';
+import '../../entities/update_source_name.dart';
+import '../../models/release/release_config.dart';
+import '../../models/release/release_override_config.dart';
+import '../../models/release/update_data.dart';
+import '../../models/release_platrform/release_platrform_config.dart';
+import '../../models/release_source/release_source_config.dart';
+import '../../models/update_rule/update_rule_config.dart';
+import '../../models/update_rule/update_rule_when.dart';
+import '../../utils/mergeable.dart';
+
+class UpdateReleaseLinker {
+  const UpdateReleaseLinker();
+
+  /// Преобразует все релизы в конкретные обновления с источником и платформой.
+  List<UpdateData> linkAll({
+    required List<ReleaseConfig> releases,
+    required List<UpdateSource> sources,
+  }) {
+    final allUpdates = <UpdateData>[];
+
+    for (final release in releases) {
+      final updates = link(release: release, sources: sources);
+      allUpdates.addAll(updates);
+    }
+
+    return allUpdates;
+  }
+
+  /// Преобразует релиз в конкретные обновления с источником и платформой.
+  ///
+  /// [sources] — список источников, используеются для получения дефолтных платформ.
+  /// Если [ReleaseSourceConfig.platforms] null (но не []), то платформы будет созданы
+  /// из [UpdateSource.platforms] через [ReleasePlatformConfig] для каждого источника.
+  ///
+  /// Если источники не заданы, то обновлений нет.
+  /// Применяет [ReleaseOverrideConfig], чтобы переопределить параметры релиза.
+  ///
+  /// Мержит все правила в приоритете:
+  /// [...releaseRules, ...releaseSourceRules, ...releasePlatformRules]
+  /// в общий список правил в [UpdateData].
+  List<UpdateData> link({
+    required ReleaseConfig release,
+    required List<UpdateSource> sources,
+  }) {
+    final releaseSources = release.sources ?? [];
+
+    final updates = <UpdateData>[];
+
+    for (final releaseSource in releaseSources) {
+      final platforms = releaseSource.platforms ??
+          _getPlatforms(
+            sourceName: releaseSource.sourceName,
+            sources: sources,
+          );
+
+      for (final platform in platforms) {
+        final updateData = _createUpdateData(
+          release: release,
+          source: releaseSource,
+          platform: platform,
+        );
+
+        updates.add(updateData);
+      }
+    }
+
+    return updates;
+  }
+
+  /// Создает UpdateData для конкретной комбинации релиза, источника и платформы.
+  /// Применяет переопределения.
+  UpdateData _createUpdateData({
+    required ReleaseConfig release,
+    required ReleaseSourceConfig source,
+    required ReleasePlatformConfig platform,
+  }) {
+    final finalRelease = release
+        .overrideBy(
+          ReleaseOverrideConfig(
+            customParams: Mergeable.mergeCustomParams(
+              source.customParams,
+              platform.customParams,
+            ),
+          ),
+        )
+        .overrideBy(
+          source.releaseOverride,
+        )
+        .overrideBy(
+          platform.releaseOverride,
+        );
+
+    List<UpdateRuleConfig<T>>? linkRules<T extends Mergeable<T>>(
+      List<UpdateRuleConfig<T>>? rules,
+    ) =>
+        rules
+            ?.map(
+              (rule) => _linkRule(
+                rule: rule,
+                release: release,
+                source: source,
+                platform: platform,
+              ),
+            )
+            .toList();
+
+    final contentRules = Mergeable.mergeRules(
+      linkRules(release.contentRules),
+      linkRules(source.contentRules),
+      linkRules(platform.contentRules),
+    );
+
+    final settingsRules = Mergeable.mergeRules(
+      linkRules(release.settingsRules),
+      linkRules(source.settingsRules),
+      linkRules(platform.settingsRules),
+    );
+
+    final appSettingsRules = Mergeable.mergeRules(
+      linkRules(release.appSettingsRules),
+      linkRules(source.appSettingsRules),
+      linkRules(platform.appSettingsRules),
+    );
+
+    return UpdateData(
+      version: finalRelease.version,
+      date: finalRelease.date,
+      sourceName: source.sourceName,
+      platform: platform.platformName,
+      contentRules: contentRules,
+      settingsRules: settingsRules,
+      appSettingsRules: appSettingsRules,
+      customParams: finalRelease.customParams,
+    );
+  }
+
+  /// Получает ReleasePlatformConfig для источника из глобальных источников.
+  static List<ReleasePlatformConfig> _getPlatforms({
+    required UpdateSourceName sourceName,
+    required List<UpdateSource> sources,
+  }) {
+    final platforms = sources
+            .firstWhereOrNull(
+              (source) => source.sourceName == sourceName,
+            )
+            ?.platforms
+            ?.map(
+              (platform) => ReleasePlatformConfig(
+                platformName: platform,
+              ),
+            )
+            .toList() ??
+        [];
+
+    return platforms;
+  }
+
+  /// Добавляет в правило источник, платформу и версию релиза.
+  static UpdateRuleConfig<T> _linkRule<T extends Mergeable<T>>({
+    required UpdateRuleConfig<T> rule,
+    required ReleaseConfig release,
+    required ReleaseSourceConfig source,
+    required ReleasePlatformConfig platform,
+  }) {
+    final finalPlatforms = source.platforms
+        ?.map((releasePlatformConfig) => releasePlatformConfig.platformName)
+        .where((platformName) => platformName == platform.platformName)
+        .toList();
+
+    final finalSource = UpdateSource.custom(
+      source.sourceName,
+      platforms: finalPlatforms,
+    );
+
+    final finalRule = rule.copyWith(
+      when: (rule.when ?? const UpdateRuleWhen()).copyWith(
+        sourceIs: [finalSource],
+      ),
+    );
+
+    return finalRule;
+  }
+}

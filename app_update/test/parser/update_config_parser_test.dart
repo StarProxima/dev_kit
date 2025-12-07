@@ -1,193 +1,92 @@
-// ignore_for_file: avoid-long-functions
+import 'dart:io';
 
-import 'package:app_update/src/parser/models/update_config_exception.dart';
-import 'package:app_update/src/parser/update_config_parser.dart';
+import 'package:app_update/app_update.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/parser_test_helpers.dart';
+
 void main() {
-  group('UpdateConfigParser', () {
+  group('UpdateConfigParser (интеграционный)', () {
     const parser = UpdateConfigParser();
-    const isDebug = true;
 
-    test(
-      'parses full config with settings, version settings, sources, and releases',
-      () {
-        final value = {
-          'settings': {
-            'base': {'can_skip_release': true},
-            'dialog': {
-              'updatable': {
-                'title': 'Update Available',
-                'can_skip_release': false,
-              },
-            },
-          },
-          'version_settings': {
-            'unsupported_versions': ['<=4.2.0'],
-            'deprecated_versions': ['>5.6.0 <5.6.7'],
-          },
-          'sources': [
-            {
-              'name': 'appStore',
-              'url': 'https://example.com',
-              'platforms': ['macos'],
-            },
-            {
-              'name': 'googlePlay',
-              'url': 'https://play.google.com',
-            },
-          ],
-          'releases': [
-            {
-              'version': '1.0.0',
-              'date': '2024-08-24T15:35:00Z',
-              'settings': {
-                'release_notes': 'Big update!',
-                'can_skip_release': true,
-              },
-              'sources': ['googlePlay', 'appStore'],
-            },
-          ],
-        };
+    test('Парсинг большого конфига из api_v3.yaml', () async {
+      final yamlStr =
+          await File('test/parser/helpers/api_v3.yaml').readAsString();
 
-        final result = parser.parse(value, isDebug: isDebug);
+      final map = parseYamlToMap(yamlStr);
+      final result = parser.parse(map, isDebug: true);
+      expect(result, isA<UpdateConfig>());
 
-        expect(result.settings, isNotNull);
-        expect(result.versionSettings, isNotNull);
-        expect(result.sources?.length, 2);
-        expect(result.releases.length, 1);
-        expect(result.releases.firstOrNull?.version?.toString(), '1.0.0');
-      },
-    );
-
-    test('throws exception if settings is invalid', () {
-      final value = {
-        'settings': 'invalid_settings',
-        'version_settings': {
-          'unsupported_versions': ['<=4.2.0'],
-        },
-        'sources': [],
-        'releases': [],
-      };
-
+      // Проверка content_rules
       expect(
-        () => parser.parse(value, isDebug: isDebug),
-        throwsA(isA<UpdateConfigException>()),
+        result?.contentRules?.any((r) => r.data.title == 'Обновите приложение'),
+        isTrue,
       );
-    });
-
-    test('parses config without settings and version settings', () {
-      final value = {
-        'sources': [
-          {'name': 'appStore', 'url': 'https://example.com'},
-        ],
-        'releases': [
-          {'version': '1.0.0', 'date': '2024-08-24T15:35:00Z', 'sources': []},
-        ],
-      };
-
-      final result = parser.parse(value, isDebug: isDebug);
-
-      expect(result.settings, isNull);
-      expect(result.versionSettings, isNull);
-      expect(result.sources?.length, 1);
-      expect(result.releases.length, 1);
-      expect(result.releases.firstOrNull?.version?.toString(), '1.0.0');
-    });
-
-    test('throws exception if version settings is not a map', () {
-      final value = {
-        'settings': {
-          'base': {'can_skip_release': true},
-        },
-        'version_settings': 'invalid_version_settings',
-        'sources': [],
-        'releases': [],
-      };
-
+      // Проверка settings_rules
       expect(
-        () => parser.parse(value, isDebug: isDebug),
-        throwsA(isA<UpdateConfigException>()),
+        result?.settingsRules?.any((r) => r.data.shouldShow == false),
+        isTrue,
       );
-    });
-
-    test('parses config with only sources and releases', () {
-      final value = {
-        'sources': [
-          {'name': 'appGallery', 'url': 'https://example.com'},
-          {'name': 'ruStore', 'url': 'https://example.com'},
-        ],
-        'releases': [
-          {
-            'version': '0.2.6',
-            'date': '2014-10-17T23:00:00Z',
-            'sources': ['appGallery', 'ruStore'],
-          },
-          {'version': '0.3.0', 'date': '2014-10-18T23:00:00Z', 'sources': []},
-        ],
-      };
-
-      final result = parser.parse(value, isDebug: isDebug);
-
-      expect(result.sources?.length, 2);
-      expect(result.releases.length, 2);
-      expect(result.releases.firstOrNull?.sources?.length, 2);
-    });
-
-    test('throws exception if sources is not a list', () {
-      final value = {
-        'settings': {
-          'base': {'can_skip_release': true},
-        },
-        'version_settings': {
-          'unsupported_versions': ['<=4.2.0'],
-        },
-        'sources': 'invalid_sources',
-        'releases': [],
-      };
-
+      // Проверка sources
       expect(
-        () => parser.parse(value, isDebug: isDebug),
-        throwsA(isA<UpdateConfigException>()),
+        result?.sources?.any((s) => s.sourceName.name == 'appstore'),
+        isTrue,
       );
-    });
-
-    test('throws exception if releases is not a list', () {
-      final value = {
-        'settings': {
-          'base': {'can_skip_release': true},
-        },
-        'version_settings': {
-          'unsupported_versions': ['<=4.2.0'],
-        },
-        'sources': [],
-        'releases': 'invalid_releases',
-      };
-
       expect(
-        () => parser.parse(value, isDebug: isDebug),
-        throwsA(isA<UpdateConfigException>()),
+        result?.sources?.any((s) =>
+            s.platforms?.any((p) => p.platformName.name == 'macos') ?? false),
+        isTrue,
       );
+      // Проверка releases
+      expect(
+        result?.releases.any((r) => r.version.toString() == '0.3.7'),
+        isTrue,
+      );
+      expect(
+        result?.releases.any((r) =>
+            r.contentRules?.any((cr) => cr.data.releaseNotes != null) ?? false),
+        isTrue,
+      );
+      expect(
+        result?.releases.any((r) =>
+            r.customParams?.containsKey('is_super_ultra_mega_release') ??
+            false),
+        isTrue,
+      );
+      // Проверка вложенных источников и платформ
+      final githubSource = result?.sources
+          ?.firstWhereOrNull((s) => s.sourceName.name == 'github');
+      expect(githubSource?.platforms, isNotNull);
+      expect(
+        githubSource?.platforms?.any((p) => p.platformName.name == 'android'),
+        isTrue,
+      );
+      // Проверка вложенного release в source
+      final releaseWithNested = result?.releases
+          .firstWhereOrNull((r) => r.version.toString() == '0.0.3+80');
+      final googlePlaySource = releaseWithNested?.sources
+          ?.firstWhereOrNull((s) => s.sourceName.name == 'googleplay');
+      expect(googlePlaySource?.releaseOverride, isNotNull);
+      // Проверка кастомных полей
+      final megaRelease = result?.releases.firstWhereOrNull(
+        (r) => r.customParams?['is_super_ultra_mega_release'] == true,
+      );
+      expect(megaRelease?.customParams?['is_super_ultra_mega_release'], isTrue);
+      // Проверка appStatusRules
+      expect(result?.appSettingsRules, isNotNull);
+      expect(result?.appSettingsRules, isNotEmpty);
     });
 
-    test('parses config with empty sources and releases', () {
-      final value = {
-        'settings': {
-          'base': {'can_skip_release': true},
-        },
-        'version_settings': {
-          'unsupported_versions': ['<=4.2.0'],
-        },
-        'sources': [],
-        'releases': [],
-      };
-
-      final result = parser.parse(value, isDebug: isDebug);
-
-      expect(result.settings, isNotNull);
-      expect(result.versionSettings, isNotNull);
-      expect(result.sources, isEmpty);
-      expect(result.releases, isEmpty);
+    test('Ошибка при некорректном yaml', () {
+      const yamlStr = '''
+        releases: null
+      ''';
+      final map = parseYamlToMap(yamlStr);
+      expect(
+        () => parser.parse(map, isDebug: true),
+        throwsA(isA<ParseConfigException>()),
+      );
     });
   });
 }

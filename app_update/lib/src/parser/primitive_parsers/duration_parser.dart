@@ -1,0 +1,31 @@
+import '../parse_config_exeption.dart';
+
+class DurationParser {
+  const DurationParser();
+
+  Duration? parse({
+    // ignore: avoid-dynamic
+    required dynamic hours,
+  }) {
+    if (hours == null) return null;
+
+    if (hours is! num) {
+      throw ParseConfigException.wrongType(
+        rightType: int,
+        wrongType: hours.runtimeType,
+        parserType: DurationParser,
+        configs: [hours],
+      );
+    }
+
+    if (hours < 0) {
+      throw const ParseConfigException();
+    }
+
+    final hoursInMs = hours * 60 * 60 * 1000;
+
+    final duraton = Duration(milliseconds: hoursInMs.toInt());
+
+    return duraton;
+  }
+}

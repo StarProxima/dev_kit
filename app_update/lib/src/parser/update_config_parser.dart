@@ -1,100 +1,84 @@
-// ignore_for_file: prefer-type-over-var, avoid-negated-conditions, avoid-collection-mutating-methods, parameter_assignments, avoid-unnecessary-reassignment
+// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
 
-import 'dart:ui';
-
-import '../shared/raw_update_config.dart';
-import '../shared/update_alert_type.dart';
-import '../shared/update_platform.dart';
-import '../shared/version_status.dart';
-import 'base_parsers/bool_parser.dart';
-import 'base_parsers/date_time_parser.dart';
-import 'base_parsers/duration_parser.dart';
-import 'base_parsers/string_parser.dart';
-import 'base_parsers/version_parser.dart';
-import 'models/platform_config.dart';
-import 'models/release_config.dart';
-import 'models/release_settings_config.dart';
-import 'models/source_config.dart';
-import 'models/update_config_exception.dart';
-import 'models/update_config_model.dart';
-import 'models/update_settings_config_container.dart';
-import 'models/update_text_config.dart';
-import 'models/update_text_config_container.dart';
-import 'sub_parsers/version_settings_parser.dart';
-
-part 'sub_parsers/release_parser.dart';
-part 'sub_parsers/sources/global_platform_parser.dart';
-part 'sub_parsers/sources/global_source_parser.dart';
-part 'sub_parsers/sources/release_platform_parser.dart';
-part 'sub_parsers/sources/release_source_parser.dart';
-part 'sub_parsers/update_settings_container_parser.dart';
-part 'sub_parsers/update_settings_parser.dart';
-part 'sub_parsers/update_text_parser.dart';
-part 'sub_parsers/update_text_container_parser.dart';
-part 'sub_parsers/raw_container_parser.dart';
+import '../models/update_config/update_config.dart';
+import 'base_parsers/custom_params_parser.dart';
+import 'base_parsers/update_rules_container_parser.dart';
+import 'parse_config_exeption.dart';
+import 'primitive_parsers/list_or_value_parser.dart';
+import 'sub_parsers/global_source_config_parser.dart';
+import 'sub_parsers/release_config_parser.dart';
 
 class UpdateConfigParser {
-  UpdateSettingsContainerParser get _updateSettingsContainerParser => const UpdateSettingsContainerParser();
-  UpdateTextContainerParser get _updateTextContainerParser => const UpdateTextContainerParser();
-  VersionSettingsParser get _versionSettingsParser => const VersionSettingsParser();
-  GlobalSourceParser get _sourceParser => const GlobalSourceParser();
-  ReleaseParser get _releaseParser => const ReleaseParser();
+  static const _releaseConfigParser = ReleaseConfigParser();
+  static const _globalSourceConfigParser = GlobalSourceConfigParser();
+  static const _updateRulesPartParser = UpdateRulesPartParser();
+  static const _listOrValueParser = ListOrValueParser();
+  static const _customParamsParser = CustomParamsParser();
 
   const UpdateConfigParser();
 
-  UpdateConfigModel parse(
-    RawUpdateConfig map, {
+  UpdateConfig? parse(
+    Object? value, {
     required bool isDebug,
   }) {
-    // text
-    final textValue = map.remove('text');
-    final text = _updateTextContainerParser.parse(textValue, isDebug: isDebug);
+    if (value == null) return null;
 
-    // updateSettings
-    final updateSettingsValue = map.remove('settings');
-    final updateSettings = _updateSettingsContainerParser.parse(
-      updateSettingsValue,
-      isDebug: isDebug,
-    );
+    if (value is! Map) {
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: UpdateConfigParser,
+        configs: [value],
+      );
+    }
 
-    // versionSettings
-    final versionSettingsValue = map.remove('version_settings');
-    final versionSettings = _versionSettingsParser.parse(
-      versionSettingsValue,
-      isDebug: isDebug,
-    );
+    final map = Map<String, dynamic>.from(value);
+
+    // customParams
+    final customParamsValue = map.remove('custom_params');
+    final customParams = _customParamsParser.parse(customParamsValue);
+
+    // releases
+    final releasesRawValue = map.remove('releases');
+    final releasesValue = _listOrValueParser.parse(releasesRawValue);
+
+    if (releasesValue == null) throw const ParseConfigException();
+
+    final releases = releasesValue
+        .map((value) => _releaseConfigParser.parse(value, isDebug: isDebug))
+        .nonNulls
+        .toList();
 
     // sources
-    final sourcesValue = map.remove('sources');
-    if (sourcesValue is! List?) throw const UpdateConfigException();
+    final sourcesRawValue = map.remove('sources');
+    final sourcesValue = _listOrValueParser.parse(sourcesRawValue);
 
     final sources = sourcesValue
         ?.map(
-          (e) => _sourceParser.parse(
-            e,
-            isDebug: true,
-            isOverride: false,
-          ),
+          (value) => _globalSourceConfigParser.parse(value, isDebug: isDebug),
         )
-        .whereType<GlobalSourceConfig>()
+        .nonNulls
         .toList();
 
-    // releases
-    final releasesValue = map.remove('releases');
-    if (releasesValue is! List) throw const UpdateConfigException();
+    // rules
+    final rules = _updateRulesPartParser.parse(map, isDebug: isDebug);
 
-    final releases = releasesValue
-        .map((e) => _releaseParser.parse(e, isDebug: isDebug, isOverride: false))
-        .whereType<ReleaseConfig>()
-        .toList();
+    // Проверяем, что не осталось неизвестных параметров
+    if (isDebug && map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateConfigParser,
+        configs: [value],
+      );
+    }
 
-    return UpdateConfigModel.byRequired(
-      text: text,
-      settings: updateSettings,
-      versionSettings: versionSettings,
+    return UpdateConfig.byRequired(
+      contentRules: rules.contentRules,
+      settingsRules: rules.settingsRules,
+      appSettingsRules: rules.appSettingsRules,
       sources: sources,
       releases: releases,
-      customData: map,
+      customParams: customParams,
     );
   }
 }

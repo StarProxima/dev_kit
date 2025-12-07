@@ -2,31 +2,83 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
+
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:yaml/yaml.dart';
 
-import '../shared/raw_update_config.dart';
+import '../models/update_config/update_config.dart';
+import '../parser/parse_config_exeption.dart';
+import '../parser/update_config_parser.dart';
 
-class UpdateConfigFetcher {
-  final Future<RawUpdateConfig> Function() _onFetch;
+/// Базовый класс для фетчера конфига
+///
+/// Дает интерфейс [fetch]
+/// и предоставляет конструкторы с дефолтной реализацией.
+interface class UpdateConfigFetcher {
+  final UpdateConfigParser _updateConfigParser;
+  final FutureOr<Map<String, dynamic>> Function()? _onFetchRawConfig;
+  final FutureOr<UpdateConfig> Function()? _onFetchConfig;
 
-  const UpdateConfigFetcher.custom({
-    required Future<RawUpdateConfig> Function() onFetch,
-  }) : _onFetch = onFetch;
+  factory UpdateConfigFetcher.config(UpdateConfig config) =>
+      UpdateConfigFetcher.custom(
+        () => config,
+      );
 
-  factory UpdateConfigFetcher.byUrl({required Uri uri}) {
-    return UpdateConfigFetcher.custom(onFetch: () => _defaultFetchByUrl(uri));
-  }
+  const UpdateConfigFetcher.custom(
+    FutureOr<UpdateConfig> Function() fetchConfig,
+  )   : _onFetchConfig = fetchConfig,
+        _onFetchRawConfig = null,
+        _updateConfigParser = const UpdateConfigParser();
 
-  factory UpdateConfigFetcher.byFile({required File file}) {
-    return UpdateConfigFetcher.custom(onFetch: () => _defaultFetchByFile(file));
-  }
+  const UpdateConfigFetcher.customRaw(
+    FutureOr<Map<String, dynamic>> Function() fetchRawConfig, {
+    UpdateConfigParser? updateConfigParser,
+  })  : _onFetchRawConfig = fetchRawConfig,
+        _onFetchConfig = null,
+        _updateConfigParser = updateConfigParser ?? const UpdateConfigParser();
 
-  Future<RawUpdateConfig> fetch() {
-    return _onFetch();
+  factory UpdateConfigFetcher.byUrl(Uri uri) => UpdateConfigFetcher.customRaw(
+        () => _defaultFetchByUrl(uri),
+      );
+
+  factory UpdateConfigFetcher.byFile(File file) =>
+      UpdateConfigFetcher.customRaw(
+        () => _defaultFetchByFile(file),
+      );
+
+  /// Fetch UpdateConfig.
+  Future<UpdateConfig> fetch({
+    required Locale locale,
+    required PackageInfo packageInfo,
+  }) async {
+    final fetchRawConfig = _onFetchRawConfig;
+    if (fetchRawConfig != null) {
+      final result = await fetchRawConfig();
+      final config = _updateConfigParser.parse(
+        result,
+        isDebug: true,
+      );
+
+      if (config == null) {
+        throw const ParseConfigException();
+      }
+
+      return config;
+    }
+
+    final fetchConfig = _onFetchConfig;
+    if (fetchConfig != null) {
+      final config = await fetchConfig();
+
+      return config;
+    }
+
+    throw const ParseConfigException();
   }
 }
 
-Future<RawUpdateConfig> _defaultFetchByUrl(Uri uri) async {
+Future<Map<String, dynamic>> _defaultFetchByUrl(Uri uri) async {
   final file = File.fromUri(uri);
   final fileText = await file.readAsString();
   final config = await loadYaml(fileText);
@@ -36,7 +88,7 @@ Future<RawUpdateConfig> _defaultFetchByUrl(Uri uri) async {
   throw ArgumentError('Wrong yaml format file on $uri');
 }
 
-Future<RawUpdateConfig> _defaultFetchByFile(File file) async {
+Future<Map<String, dynamic>> _defaultFetchByFile(File file) async {
   final fileText = await file.readAsString();
   final config = await loadYaml(fileText);
   if (config is YamlMap) {
@@ -64,6 +116,7 @@ extension YamlMapConverter on YamlMap {
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     nodes.forEach((k, v) {
+      // ignore: avoid-type-casts
       map[(k as YamlScalar).value.toString()] = _convertNode(v.value);
     });
 

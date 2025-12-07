@@ -14,12 +14,12 @@ dependencies:
     sdk: flutter
     
   yaml: ^3.1.2
-  package_info_plus: '>=4.2.0 <9.0.0'
-  pub_semver: ^2.1.4
+  package_info_plus: ^8.3.0
+  pub_semver: ^2.2.0
   html: ^0.15.4
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.3.0
   url_launcher: ^6.1.14
-  store_checker: ^1.6.0
+  store_checker: ^1.8.0
   collection: ^1.18.0
   http: ^1.2.2
 
@@ -29,8 +29,12 @@ dev_dependencies:
     
   flutter_lints: ^3.0.0
 
+  mocktail: ^1.0.0
+
   project_kit:
     path: ../unpublished/project_kit
+    
   clock: ^1.1.1
   path: ^1.8.0
+  test: ^1.25.7
 

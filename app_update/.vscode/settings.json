@@ -6,11 +6,12 @@
     "files.watcherExclude": {
         "**/.fvm": true
     },
-    "dart.lineLength": 120,
-    "[dart]": {
-        "editor.formatOnSave": true,
-        "editor.rulers": [
-            120
-        ]
-    }
+    "git.openRepositoryInParentFolders": "always",
+    // "dart.lineLength": 100,
+    // "[dart]": {
+    //     "editor.formatOnSave": true,
+    //     "editor.rulers": [
+    //         100
+    //     ]
+    // }
 }

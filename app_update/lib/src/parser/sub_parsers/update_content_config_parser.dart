@@ -1,0 +1,88 @@
+// ignore_for_file: avoid-collection-mutating-methods, prefer-type-over-var, avoid-unnecessary-reassignment
+
+import '../../models/update_content/update_content_config.dart';
+import '../base_parsers/custom_params_parser.dart';
+import '../parse_config_exeption.dart';
+import '../primitive_parsers/string_parser.dart';
+
+class UpdateContentConfigParser {
+  static const _stringParser = StringParser();
+  static const _customParamsParser = CustomParamsParser();
+
+  const UpdateContentConfigParser();
+
+  UpdateContentConfig? parse(
+    Object? value, {
+    required bool isDebug,
+  }) {
+    if (value == null) return null;
+
+    if (value is! Map) {
+      throw ParseConfigException.wrongType(
+        rightType: Map,
+        wrongType: value.runtimeType,
+        parserType: UpdateContentConfigParser,
+        configs: [value],
+      );
+    }
+
+    final map = Map<String, dynamic>.from(value);
+
+    // customParams
+    final customParamsValue = map.remove('custom_params');
+    final customParams = _customParamsParser.parse(customParamsValue);
+
+    // updateUrl
+    final updateUrlValue = map.remove('update_url');
+    final updateUrl = _stringParser.parse(updateUrlValue);
+
+    // title
+    final titleValue = map.remove('title');
+    final title = _stringParser.parse(titleValue);
+
+    // description
+    final descriptionValue = map.remove('description');
+    final description = _stringParser.parse(descriptionValue);
+
+    // releaseNotesTitle
+    final releaseNotesTitleValue = map.remove('release_notes_title');
+    final releaseNotesTitle = _stringParser.parse(releaseNotesTitleValue);
+
+    // releaseNotes
+    final releaseNotesValue = map.remove('release_notes');
+    final releaseNotes = _stringParser.parse(releaseNotesValue);
+
+    // skipButton
+    final skipButtonValue = map.remove('skip_button');
+    final skipButton = _stringParser.parse(skipButtonValue);
+
+    // postponeButton
+    final postponeButtonValue = map.remove('postpone_button');
+    final postponeButton = _stringParser.parse(postponeButtonValue);
+
+    // updateButton
+    final updateButtonValue = map.remove('update_button');
+    final updateButton = _stringParser.parse(updateButtonValue);
+
+    // Проверяем, что не осталось неизвестных параметров
+    if (isDebug && map.isNotEmpty) {
+      throw ParseConfigException.unexpectedParams(
+        params: map,
+        parserType: UpdateContentConfigParser,
+        configs: [value],
+      );
+    }
+
+    return UpdateContentConfig.byRequired(
+      updateUrl: updateUrl,
+      title: title,
+      description: description,
+      releaseNotesTitle: releaseNotesTitle,
+      releaseNotes: releaseNotes,
+      skipButton: skipButton,
+      postponeButton: postponeButton,
+      updateButton: updateButton,
+      customParams: customParams,
+    );
+  }
+}

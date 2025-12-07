@@ -1,57 +1,111 @@
 /// Library for App Update.
 library app_update;
 
-// TODO:
-// 1) [x] Fetch и другие методы в UpdateController
-// 2) [x] Реализация findAllAvailableUpdates в UpdateController
-// 3) [x] UpdateConfigFetcher - получение и парсинг с remote url (для тестов можно оставить файл)
-// 4) [x] SourceReleaseFetcher для Google Play и AppStore
-// 5) [ ] Реализация UpdateAlertHandler.primaryDialog
-// 6) [x] Тесты на Parser
-// 7) [x] Интеграционные тесты нескольких компонентов
-// 8) [ ] Обновить спеку и README
-// 9) [x] Переименовать date_utc -> date. Чекать таймзону пожно по постфиксу Z.
- 
-// 10) [ ] Можно сделать отдельные модельный для оверайда (ReleaseConfigOverride, GlobalSourceConfigOverride, ReleaseSourceConfigOverride)
-// Тогда получится в ReleaseConfig сохранить non-null version, в оверрайде убрать sources. 
-// GlobalSourceConfig сохранить non-null name и url, в оверрайде убрать platforms.
-// + Могда мерж нада будет писать только для ReleaseConfig + ReleaseConfigOverride. 
-// И не будет циклов (что мы переопределяем в сурсе релиз, а в нём сурсы и т.д.).
-// Что скажешь?
-//
-// Го сделаем только GlobalSourceConfigOverride и хватит
-
-// 11) [ ] Вынести все текста как?
-// settings:
-//  texts:
-//    title: ...
-//    description: ...
-//    
-
-// 12) [ ] Доработать линкер и написать под него тесты, см. TODO в UpdateConfigLinker
-
-// CANCELLED - ОТМЕНЕНА
-// 13) [-] Логика мержа (или инхерита) - когда задаётся base,
-// мы меняем не только исходный base, но и удаляем все варианты, оставляя только те, которые заданы.
-// 
-// Если юзер задаст:
-// text:
-//  title: Title
-// Чтобы будет распаршено, как base locale -> base alert type -> base status -> title: Title
-// То, абсолютно для всех локалей, типов и статусов должен быть title: Title.
-// Т.е. если в дефолтный настрайках был какой-то отдельный title для deprecated, например, он не используется.
-// 
-// (?) Для UpdateSettings нужно исключение для required?
-// Т.к. если юзер задаст:
-// settings:
-//  can_skip_release: true
-// То обязательное обновление тоже можно будет скипнуть??
-// Мб нужно, чтобы для него конкретно задали что-то:
-// settings:
-//  required:
-//   can_skip_release: true
-// РЕШЕНО - делаем логику получения отдельного UpdateSettings в getByBase
-
-// 14 [ ]
-// Мержить дефолтный контейнер и контейнером Controller и с контейнером ReleaseData, чтобы получить один,
-// который передать в Release, из которого будет вытаскиваться нужные настройки или текст (по пункт. 13)
+export 'src/controller/update_contoller.dart';
+export 'src/controller/update_controller_impl.dart';
+export 'src/default_rules/app_settings/default_update_app_settings.dart';
+export 'src/default_rules/content/default_update_content.dart';
+export 'src/default_rules/content/translations/default_en_content_rules.dart';
+export 'src/default_rules/content/translations/default_ru_content_rules.dart';
+export 'src/default_rules/default_update_config.dart';
+export 'src/default_rules/settings/default_update_settings_rules.dart';
+export 'src/entities/app_status.dart';
+export 'src/entities/update_date.dart';
+export 'src/entities/update_entity.dart';
+export 'src/entities/update_locale.dart';
+export 'src/entities/update_platform.dart';
+export 'src/entities/update_source.dart';
+export 'src/entities/update_source_name.dart';
+export 'src/entities/update_version_constraint.dart';
+export 'src/entities/update_view_target.dart';
+export 'src/fetcher/data/app_store_api.dart';
+export 'src/fetcher/source_fetchers/app_store_fetcher.dart';
+export 'src/fetcher/source_fetchers/google_play_fetcher.dart';
+export 'src/fetcher/source_fetchers/ru_store_fetcher.dart';
+export 'src/fetcher/update_config_fetcher.dart';
+export 'src/fetcher/update_config_fetcher_coordinator.dart';
+export 'src/fetcher/update_config_source_fetcher.dart';
+export 'src/linker/sub_linkers/update_data_linker.dart';
+export 'src/linker/sub_linkers/update_release_linker.dart';
+export 'src/linker/update_linker.dart';
+export 'src/models/global_platform/global_platform_config.dart';
+export 'src/models/global_source/global_source_config.dart';
+export 'src/models/release/release_config.dart';
+export 'src/models/release/release_data.dart';
+export 'src/models/release/release_override_config.dart';
+export 'src/models/release/update.dart';
+export 'src/models/release/update_data.dart';
+export 'src/models/release_platrform/release_platrform_config.dart';
+export 'src/models/release_source/release_source_config.dart';
+export 'src/models/update_app_settings/update_app_settings_config.dart';
+export 'src/models/update_app_settings/update_app_settings_data.dart';
+export 'src/models/update_config/update_config.dart';
+export 'src/models/update_content/update_content_config.dart';
+export 'src/models/update_content/update_content_data.dart';
+export 'src/models/update_result/update_result.dart';
+export 'src/models/update_rule/update_rule_config.dart';
+export 'src/models/update_rule/update_rule_rollout.dart';
+export 'src/models/update_rule/update_rule_when.dart';
+export 'src/models/update_rule/update_rules_container.dart';
+export 'src/models/update_search/update_search_config.dart';
+export 'src/models/update_search/update_search_data.dart';
+export 'src/models/update_search/update_search_result.dart';
+export 'src/models/update_settings/update_settings_config.dart';
+export 'src/models/update_settings/update_settings_data.dart';
+export 'src/models/update_status/update_status.dart';
+export 'src/parser/base_parsers/app_status_parser.dart';
+export 'src/parser/base_parsers/update_date_parser.dart';
+export 'src/parser/base_parsers/update_locale_parser.dart';
+export 'src/parser/base_parsers/update_platform_parser.dart';
+export 'src/parser/base_parsers/update_rules_container_parser.dart';
+export 'src/parser/base_parsers/update_source_name_parser.dart';
+export 'src/parser/base_parsers/update_source_parser.dart';
+export 'src/parser/base_parsers/update_version_constraint_parser.dart';
+export 'src/parser/base_parsers/update_view_target_parser.dart';
+export 'src/parser/parse_config_exeption.dart';
+export 'src/parser/primitive_parsers/bool_parser.dart';
+export 'src/parser/primitive_parsers/date_time_parser.dart';
+export 'src/parser/primitive_parsers/double_parser.dart';
+export 'src/parser/primitive_parsers/duration_parser.dart';
+export 'src/parser/primitive_parsers/list_or_value_parser.dart';
+export 'src/parser/primitive_parsers/locale_parser.dart';
+export 'src/parser/primitive_parsers/string_parser.dart';
+export 'src/parser/primitive_parsers/uri_parser.dart';
+export 'src/parser/primitive_parsers/version_constraint_parser.dart';
+export 'src/parser/primitive_parsers/version_parser.dart';
+export 'src/parser/sub_parsers/global_platform_config_parser.dart';
+export 'src/parser/sub_parsers/global_source_config_parser.dart';
+export 'src/parser/sub_parsers/release_config_parser.dart';
+export 'src/parser/sub_parsers/release_override_config_parser.dart';
+export 'src/parser/sub_parsers/release_platrform_config_parser.dart';
+export 'src/parser/sub_parsers/release_source_config_parser.dart';
+export 'src/parser/sub_parsers/update_app_settings_config_parser.dart';
+export 'src/parser/sub_parsers/update_content_config_parser.dart';
+export 'src/parser/sub_parsers/update_rule_config_parser.dart';
+export 'src/parser/sub_parsers/update_settings_config_parser.dart';
+export 'src/parser/update_config_parser.dart';
+export 'src/resolver/base/reg_exp_matcher_mixin.dart';
+export 'src/resolver/base/rule_matcher.dart';
+export 'src/resolver/matchers/app_status_matcher.dart';
+export 'src/resolver/matchers/custom_params_matcher.dart';
+export 'src/resolver/matchers/locale_matcher.dart';
+export 'src/resolver/matchers/source_matcher.dart';
+export 'src/resolver/matchers/temporal_matcher.dart';
+export 'src/resolver/matchers/version_matcher.dart';
+export 'src/resolver/matchers/view_target_matcher.dart';
+export 'src/resolver/update_content_interpolator.dart';
+export 'src/resolver/update_resolver.dart';
+export 'src/resolver/update_rule_resolver.dart';
+export 'src/searcher/update_search_data_defaulter.dart';
+export 'src/searcher/update_searcher.dart';
+export 'src/searcher/update_supported_sources_checker.dart';
+export 'src/storage/in_memory_update_storage.dart';
+export 'src/storage/shared_preferences_update_storage.dart';
+export 'src/storage/storage_data.dart';
+export 'src/storage/update_storage.dart';
+export 'src/storage/update_storage_manager.dart';
+export 'src/ui/update_alert_handler.dart';
+export 'src/ui/update_handler.dart';
+export 'src/ui/widgets/update_material_dialog.dart';
+export 'src/utils/mergeable.dart';
+export 'src/utils/version_x.dart';

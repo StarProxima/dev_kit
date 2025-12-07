@@ -9,11 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.3.5
 
   app_update:
     path: ../
 
   benchmark_harness: ^2.2.2
+  yaml: ^3.1.2
 
 
 dev_dependencies:
@@ -23,3 +25,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
+  # Тестовые конфигурации для sandbox
+  assets:
+    - lib/configs/
