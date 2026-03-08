@@ -4,8 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:riverpod_async_builder/riverpod_async_builder.dart';
-import 'package:riverpod_async_builder/riverpod_utils.dart';
+
+import 'async_builder_defaults.dart';
+import 'async_value_utils.dart';
+import 'list_data.dart';
 
 /// {@template AsyncBuilder}
 /// Виджет для упрощения работы с асинхронными данными.
@@ -292,10 +294,9 @@ class AsyncBuilder<T> extends StatelessWidget {
             // Должно быть безопасно, т.к. если вызвался dataFn, то данные есть
             itemsOnPage: asyncItems.requireValue.toList(),
             itemsOnPrevPageFn: () => prevPagePointer != null
-                ? value(prevPagePointer).valueOrNull?.toList()
+                ? value(prevPagePointer).value?.toList()
                 : null,
-            itemsOnNextPageFn: () =>
-                value(nextPagePointer).valueOrNull?.toList(),
+            itemsOnNextPageFn: () => value(nextPagePointer).value?.toList(),
             item: item,
           ),
         );

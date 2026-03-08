@@ -6,6 +6,7 @@ packages:
   - app_onboarding
   - dev_kit
   - riverpod_async_builder
+  - riverpod_utils
   - riverpod_validator
 
 scripts:
