@@ -2,19 +2,7 @@
 
 import 'dart:async';
 
-import 'package:riverpod/riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'single_validator.g.dart';
-
-@riverpod
-class _Error extends _$Error {
-  @override
-  String? build(int hashcode, String? initialError) => initialError;
-
-  // ignore: use_setters_to_change_properties
-  void setError(String? error) => state = error;
-}
+import 'validator_riverpod_adapter.dart';
 
 /// {@template [SingleValidatorBase]}
 /// Базовый класс для валидаторов
@@ -22,7 +10,7 @@ class _Error extends _$Error {
 abstract class SingleValidatorBase<T> {
   /// {@macro [SingleValidatorBase]}
   SingleValidatorBase(
-    this._ref, {
+    this._riverpod, {
     String? label,
     String? initialError,
     List<SingleValidatorBase> relatedValidators = const [],
@@ -30,7 +18,7 @@ abstract class SingleValidatorBase<T> {
         _label = label,
         _relatedValidators = relatedValidators;
 
-  final Ref _ref;
+  final ValidatorRiverpodAdapter _riverpod;
   final String? _initialError;
   String? _label;
   String? get label => _label;
@@ -49,7 +37,7 @@ abstract class SingleValidatorBase<T> {
     String? error, {
     required bool softMode,
   }) {
-    final currentError = _ref.read(errorProvider);
+    final currentError = _riverpod.read(errorProvider);
 
     final errorsEqual = error == currentError;
     final softModeBlock = softMode && currentError == null;
@@ -66,15 +54,22 @@ abstract class SingleValidatorBase<T> {
   }
 
   /// Провайдер ошибки
-  late final errorProvider = _errorProvider(hashCode, _initialError);
+  late final errorProvider = _riverpod.createErrorProvider(
+    hashcode: hashCode,
+    initialError: _initialError,
+  );
 
   /// Текущая ошибка в валидаторе
-  String? get errorText => _ref.read(errorProvider);
+  String? get errorText => _riverpod.read(errorProvider);
 
   /// Устанавливает ошибку в провайдер.
   void setError(String? error) {
-    if (_ref.exists(errorProvider)) {
-      _ref.read(errorProvider.notifier).setError(error);
+    if (_riverpod.exists(errorProvider)) {
+      _riverpod.setError(
+        hashCode,
+        error,
+        initialError: _initialError,
+      );
     }
   }
 
@@ -98,7 +93,7 @@ abstract class SingleValidatorBase<T> {
 class SingleValidator<T> extends SingleValidatorBase<T> {
   /// {@macro [SingleValidator]}
   SingleValidator(
-    super._ref,
+    super._riverpod,
     this._getState,
     this._validatorFn, {
     super.label,
@@ -118,26 +113,13 @@ class SingleValidator<T> extends SingleValidatorBase<T> {
       _internalValidate(_validatorFn(_getState()), softMode: false);
 }
 
-@riverpod
-class _ValidationCount extends _$ValidationCount {
-  @override
-  int build(int hashcode) => 0;
-
-  void increment() => state++;
-  void decrement() => state--;
-}
-
-@riverpod
-bool _loading(_LoadingRef ref, int hashcode) =>
-    ref.watch(_validationCountProvider(hashcode)) > 0;
-
 /// {@template [SingleAsyncValidator]}
 /// Вариант валидора с асинхронной валидацией
 /// {@endtemplate}
 class SingleAsyncValidator<T> extends SingleValidatorBase<T> {
   /// {@macro [SingleAsyncValidator]}
   SingleAsyncValidator(
-    super._ref,
+    super._riverpod,
     this._getState,
     this._validatorFn, {
     super.label,
@@ -150,25 +132,32 @@ class SingleAsyncValidator<T> extends SingleValidatorBase<T> {
       _validatorFn;
 
   /// Провайдер загрузки - true, если валидация в процессе
-  late final loadingProvider = _loadingProvider(hashCode);
+  late final loadingProvider = _riverpod.createLoadingProvider(hashCode);
 
-  _ValidationCountProvider get _countProvider =>
-      _validationCountProvider(hashCode);
+  late final _countProvider = _riverpod.createValidationCountProvider(hashCode);
 
   FutureOr<String?> _internalAsyncValidate({bool softMode = false}) async {
-    final notifier = _ref.read(_countProvider.notifier);
-
-    final initialExist = _ref.exists(_countProvider);
+    final initialExist = _riverpod.exists(_countProvider);
 
     // ignore: unawaited_futures
     Future(() {
-      if (initialExist && _ref.exists(_countProvider)) notifier.increment();
+      if (initialExist && _riverpod.exists(_countProvider)) {
+        _riverpod.incrementValidationCount(
+          hashCode,
+          initialError: _initialError,
+        );
+      }
     });
 
     final state = await _getState();
     final newError = await _validatorFn(state, softMode: softMode);
 
-    if (initialExist && _ref.exists(_countProvider)) notifier.decrement();
+    if (initialExist && _riverpod.exists(_countProvider)) {
+      _riverpod.decrementValidationCount(
+        hashCode,
+        initialError: _initialError,
+      );
+    }
 
     return _internalValidate(newError, softMode: softMode);
   }

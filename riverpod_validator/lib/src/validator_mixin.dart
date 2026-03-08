@@ -2,13 +2,17 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:meta/meta.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:riverpod_validator/src/single_validator.dart';
+import 'package:riverpod_validator/src/validator_riverpod_adapter.dart';
 
 /// {@template [ValidatorMixin]}
 /// Предоставляет методы для создания и проверки обычных и асинхронных валидаторов.
 /// {@endtemplate}
-mixin ValidatorMixin implements _IRef {
+mixin ValidatorMixin implements ValidatorRiverpodRef {
+  @protected
+  @override
+  late final validatorRiverpod = ValidatorRiverpodAdapter(ref);
+
   @protected
   List<SingleValidatorBase> get allValidators =>
       UnmodifiableListView(_allValidators);
@@ -32,7 +36,7 @@ mixin ValidatorMixin implements _IRef {
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
     final validator = SingleValidator<T>(
-      ref,
+      validatorRiverpod,
       getState,
       validatorFn,
       label: label,
@@ -73,7 +77,7 @@ mixin ValidatorMixin implements _IRef {
     List<SingleValidatorBase> relatedValidators = const [],
   }) {
     final validator = SingleAsyncValidator<T>(
-      ref,
+      validatorRiverpod,
       getState,
       validatorFn,
       label: label,
@@ -108,8 +112,4 @@ mixin ValidatorMixin implements _IRef {
 
     return errors;
   }
-}
-
-abstract class _IRef {
-  Ref get ref;
 }
