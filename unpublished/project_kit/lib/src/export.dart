@@ -6,12 +6,9 @@
 export 'package:project_kit/src/extensions/date_utils.dart';
 export 'package:project_kit/src/extensions/duration_utils.dart';
 export 'package:project_kit/src/extensions/list_utils.dart';
-export 'package:project_kit/src/extensions/ref_cache.dart';
 export 'package:project_kit/src/extensions/string_utils.dart';
 export 'package:project_kit/src/hooks/use_app_lifecycle_listener.dart';
 export 'package:project_kit/src/hooks/use_listener.dart';
-export 'package:project_kit/src/utils/auth_token/auth_token.dart';
-export 'package:project_kit/src/utils/auth_token/secure_token_storage.dart';
 export 'package:project_kit/src/utils/interfaces.dart';
 export 'package:project_kit/src/utils/persistence/persistence_mixin.dart';
 export 'package:project_kit/src/utils/persistence/persistence_storage.dart';

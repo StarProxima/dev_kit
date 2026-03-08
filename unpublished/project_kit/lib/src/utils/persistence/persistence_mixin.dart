@@ -19,10 +19,14 @@ import 'persistence_storage.dart';
 /// Пример:
 ///
 /// ```dart
-/// class TestPersistenceNotifier extends FamilyNotifier<PersistenceState, int>
+/// class TestPersistenceNotifier extends Notifier<PersistenceState>
 ///     with PersistenceMixin<PersistenceState> {
+///   TestPersistenceNotifier(this.arg);
+///
+///   final int arg;
+///
 ///   @override
-///   PersistenceState build(int arg) => persistenceBuild(
+///   PersistenceState build() => persistentBuild(
 ///         () => PersistenceState(index: arg),
 ///         fromJson: PersistenceState.fromJson,
 ///         storageId: arg,
@@ -68,7 +72,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    ref.listenSelf((_, __) => Future(pushData));
+    listenSelf((_, __) => Future(pushData));
 
     if (enabled && data != null && !_isInitialized) {
       try {
@@ -126,10 +130,14 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 ///
 /// Пример:
 /// ```dart
-/// class TestPersistenceNotifier extends FamilyAsyncNotifier<PersistenceState, int>
+/// class TestPersistenceNotifier extends AsyncNotifier<PersistenceState>
 ///     with AsyncPersistenceMixin<PersistenceState> {
+///   TestPersistenceNotifier(this.arg);
+///
+///   final int arg;
+///
 ///   @override
-///   FutureOr<PersistenceState> build(int arg) => persistenceBuild(
+///   FutureOr<PersistenceState> build() => persistentBuild(
 ///         () async {
 ///           await Future.delayed(const Duration(seconds: 1));
 ///           return PersistenceState(index: arg);
@@ -177,7 +185,7 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    ref.listenSelf((_, __) => Future(pushDataToStorage));
+    listenSelf((_, __) => Future(pushDataToStorage));
     final isRefresh = state.isRefreshing || state.isReloading;
 
     if (enabled && data != null && !_isInitialized && !isRefresh) {
