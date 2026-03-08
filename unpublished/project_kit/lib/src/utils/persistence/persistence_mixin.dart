@@ -1,11 +1,14 @@
+// ignore_for_file: deprecated_member_use, prefer-correct-callback-field-name
+
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../project_kit.dart';
 import '../../internal/logger/dev_kit_logger.dart';
+import '../interfaces.dart';
+import 'persistence_storage.dart';
 
 /// {@template [PersistenceMixin]}
 /// Миксин для локального сохранение состояния в [PersistenceStorage].
@@ -47,6 +50,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
   /// [storageKey] - Префикс ключа для доступа к хранилищу. По умолчанию равен имени класса контроллера.
   @protected
   @nonVirtual
+  // ignore: avoid-long-parameter-list
   State persistentBuild(
     State Function() build, {
     bool enabled = true,
@@ -54,6 +58,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
     ToJson<State>? toJson,
     Object? storageId,
     String? storageKey,
+    // ignore: prefer-boolean-prefixes
     bool updateAfterFirstBuild = false,
   }) {
     _fromJson = fromJson;
@@ -83,11 +88,11 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
         return _fromJson(map);
       } catch (e, s) {
-        logger.error(
+        DevKitLogger.instance.error(
           title: 'Error while parsing data from storage',
-          message: data,
-          error: e,
           stack: s,
+          error: e,
+          message: data,
         );
         clearData();
         if (kDebugMode) rethrow;
@@ -105,12 +110,13 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
   @protected
   Future<void> pushData() async {
-    final data = state != null ? _toJson(state) : null;
+    final data = state == null ? null : _toJson(state);
     await _storage.write(key: _storageKey, id: _storageId, value: data);
   }
 
   @protected
-  Future<void> clearData() => _storage.delete(key: _storageKey, id: _storageId);
+  Future<void> clearData() =>
+      _storage.delete(key: _storageKey, id: _storageId);
 
   @protected
   Future<void> clearStorage() => _storage.delete(key: _storageKey);
@@ -153,6 +159,7 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
   /// [storagePrefix] - Префикс ключа для доступа к хранилищу. По умолчанию равен имени класса контроллера.
   @protected
   @nonVirtual
+  // ignore: avoid-long-parameter-list
   FutureOr<State> persistentBuild(
     FutureOr<State> Function() build, {
     bool enabled = true,
@@ -160,6 +167,7 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
     ToJson<State>? toJson,
     Object? storageId,
     String? storagePrefix,
+    // ignore: prefer-boolean-prefixes
     bool updateAfterFirstBuild = false,
   }) {
     _fromJson = fromJson;
@@ -196,11 +204,11 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
         return _fromJson(map);
       } catch (e, s) {
-        logger.error(
+        DevKitLogger.instance.error(
           title: 'Error while parsing data from storage',
-          message: data,
-          error: e,
           stack: s,
+          error: e,
+          message: data,
         );
         clearStorage();
         if (kDebugMode) rethrow;
@@ -220,12 +228,13 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
   Future<void> pushDataToStorage() async {
     final st = state;
     if (st is! AsyncData<State>) return;
-    final data = st.value != null ? _toJson(st.value) : null;
+    final data = st.value == null ? null : _toJson(st.value);
     await _storage.write(key: _storageKey, id: _storageId, value: data);
   }
 
   @protected
-  Future<void> clearData() => _storage.delete(key: _storageKey, id: _storageId);
+  Future<void> clearData() =>
+      _storage.delete(key: _storageKey, id: _storageId);
 
   @protected
   Future<void> clearStorage() => _storage.delete(key: _storageKey);
@@ -234,16 +243,17 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 typedef FromJson<State> = State Function(Map<String, dynamic> json);
 typedef ToJson<State> = Map<String, dynamic>? Function(State state);
 
-Map<String, dynamic>? _defaultToJson<State>(State state) {
+Map<String, dynamic> _defaultToJson<State>(State state) {
   try {
-    // ignore: avoid_dynamic_calls
+    // ignore: avoid_dynamic_calls, avoid-type-casts, avoid-dynamic
     return (state as dynamic).toJson();
   } catch (e, s) {
-    logger.error(
-      title: 'Error while serializing data to storage. State should implement toJson()',
-      message: state,
-      error: e,
+    DevKitLogger.instance.error(
+      title:
+          'Error while serializing data to storage. State should implement toJson()',
       stack: s,
+      error: e,
+      message: state,
     );
     rethrow;
   }

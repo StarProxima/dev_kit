@@ -424,8 +424,7 @@ dart_code_metrics:
     - prefer-extracting-function-callbacks: false
 
     # На public методах dcm fix ломает код
-    - prefer-static-method:
-        ignore-public: true
+    - prefer-static-method: false
 
     - avoid-importing-entrypoint-exports:
         only-in-src: true

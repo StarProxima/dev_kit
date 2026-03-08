@@ -1,18 +1,19 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+// ignore: avoid-long-parameter-list
 void useAppLifecycleListener({
-  void Function()? onResume,
-  void Function()? onInactive,
-  void Function()? onHide,
-  void Function()? onShow,
-  void Function()? onPause,
-  void Function()? onRestart,
-  void Function()? onDetach,
+  VoidCallback? onResume,
+  VoidCallback? onInactive,
+  VoidCallback? onHide,
+  VoidCallback? onShow,
+  VoidCallback? onPause,
+  VoidCallback? onRestart,
+  VoidCallback? onDetach,
 }) {
   useEffect(
     () {
-      final listiner = AppLifecycleListener(
+      final listener = AppLifecycleListener(
         onResume: onResume,
         onInactive: onInactive,
         onHide: onHide,
@@ -22,7 +23,7 @@ void useAppLifecycleListener({
         onDetach: onDetach,
       );
 
-      return listiner.dispose;
+      return listener.dispose;
     },
     const [],
   );

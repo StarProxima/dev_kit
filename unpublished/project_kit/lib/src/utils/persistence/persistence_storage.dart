@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-dynamic, avoid-global-state, avoid-assigning-to-static-field
+
 import 'dart:async';
 import 'dart:io';
 
@@ -8,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 
 /// Интерфейс для работы с хранилищем данных.
 abstract class PersistenceStorage {
+  static late PersistenceStorage storage;
+
   dynamic read({required String key, String? id});
 
   Future<void> write({
@@ -22,17 +26,15 @@ abstract class PersistenceStorage {
 
   Future<void> close();
 
-  static late PersistenceStorage storage;
-
-  static Future<void> init(FutureOr<PersistenceStorage> storage) async {
-    PersistenceStorage.storage = await storage;
+  static Future<void> init(FutureOr<PersistenceStorage> storageOrFuture) async {
+    storage = storageOrFuture is Future<PersistenceStorage>
+        ? await storageOrFuture
+        : storageOrFuture;
   }
 }
 
 /// Имплементация [PersistenceStorage] для работы с Hive.
 class HivePersistenceStorage implements PersistenceStorage {
-  HivePersistenceStorage(this._box);
-
   static final webStorageDirectory = Directory('');
 
   static late HiveInterface hive;
@@ -41,12 +43,15 @@ class HivePersistenceStorage implements PersistenceStorage {
 
   final Box<dynamic> _box;
 
+  const HivePersistenceStorage(this._box);
+
   static Future<HivePersistenceStorage> build([
     Directory? storageDirectory,
   ]) async {
-    if (_instance != null) return _instance!;
+    if (_instance case final instance?) return instance;
+
     hive = HiveImpl();
-    Box box;
+    Box<dynamic> box;
 
     storageDirectory ??= await getApplicationDocumentsDirectory();
 
@@ -64,11 +69,15 @@ class HivePersistenceStorage implements PersistenceStorage {
   dynamic read({required String key, String? id}) {
     if (!_box.isOpen) return null;
 
+    final data = _box.get(key);
+
     if (id != null) {
-      final data = read(key: key) as Map?;
-      return data?[id];
+      if (data is Map) return data[id];
+
+      return null;
     }
-    return _box.get(key);
+
+    return data;
   }
 
   @override
@@ -78,10 +87,11 @@ class HivePersistenceStorage implements PersistenceStorage {
     required dynamic value,
   }) async {
     if (id != null) {
-      var data = read(key: key) as Map?;
-      data ??= {};
+      final existing = _box.get(key);
+      final data = existing is Map ? Map.of(existing) : <dynamic, dynamic>{};
       data[id] = value;
       await _box.put(key, data);
+
       return;
     }
     await _box.put(key, value);
@@ -90,8 +100,12 @@ class HivePersistenceStorage implements PersistenceStorage {
   @override
   Future<void> delete({required String key, String? id}) async {
     if (id != null) {
-      final data = (read(key: key) as Map?)?..remove(id);
-      await _box.put(key, data);
+      final existing = _box.get(key);
+      if (existing is Map) {
+        final data = Map.of(existing)..remove(id);
+        await _box.put(key, data);
+      }
+
       return;
     }
     await _box.delete(key);

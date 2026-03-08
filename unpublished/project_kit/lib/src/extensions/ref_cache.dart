@@ -1,7 +1,9 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_async_builder/riverpod_utils.dart' as utils;
 
-import '../../project_kit.dart';
+import '../utils/auth_token/secure_token_storage.dart';
 
 extension RefCacheX on AutoDisposeRef {
   void listenUserChanges() {

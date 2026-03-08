@@ -43,7 +43,6 @@ bool userAuthorized(Ref ref) {
 }
 
 @Riverpod(keepAlive: true)
-// ignore: prefer-boolean-prefixes
 /// Можно переопределить, чтобы использовать другой id для хранения токенов
 /// Например, чтобы использовать разные стораджи для разных окружений
 String? secureTokenStorageId(Ref ref) {
@@ -52,18 +51,19 @@ String? secureTokenStorageId(Ref ref) {
 
 /// Отвечает за управление и хранение токенов авторизации пользователя.
 @Riverpod(keepAlive: true)
-class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStorage<AuthToken> {
+class SecureTokenStorage extends _$SecureTokenStorage
+    implements IRef, TokenStorage<AuthToken> {
   static const _encryptedStorageV1 = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
     ),
   );
   static const _encryptedStorageV2 = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock,
+    ),
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
     ),
   );
 
@@ -73,7 +73,7 @@ class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStor
 
   String? get _id => ref.read(secureTokenStorageIdProvider);
 
-  String get _authTokenKeyV2 => '${_id}_auth_token';
+  String get _authTokenKeyV2 => '${_id ?? ''}_auth_token';
 
   @override
   Future<AuthToken?> build() async {
@@ -81,10 +81,12 @@ class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStor
 
     try {
       final token = await read();
+
       return token;
     } catch (e, s) {
       // ignore: unawaited_futures
       Future.error(e, s);
+
       return null;
     }
   }
@@ -135,16 +137,16 @@ class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStor
       } catch (e, s) {
         await _encryptedStorageV1.deleteAll();
         throw FailedReadFromStorageException(
-          error: e,
           stacktrace: s,
+          error: e,
         );
       }
     } catch (e, s) {
       await _encryptedStorageV2.deleteAll();
       await _encryptedStorageV1.deleteAll();
       throw FailedReadFromStorageException(
-        error: e,
         stacktrace: s,
+        error: e,
       );
     }
   }
@@ -165,6 +167,7 @@ class SecureTokenStorage extends _$SecureTokenStorage implements IRef, TokenStor
 }
 
 class FailedReadFromStorageException implements Exception {
+  // ignore: no-object-declaration
   final Object error;
   final StackTrace stacktrace;
 

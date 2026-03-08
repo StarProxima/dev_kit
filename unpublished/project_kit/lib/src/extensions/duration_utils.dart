@@ -38,7 +38,9 @@ extension DurationUtilsX on Duration {
 /// 1.5.days // equivalent to Duration(hours: 36)
 /// ```
 extension DurationFromNumX on num {
+  // ignore: prefer-digit-separators
   Duration get days => Duration(milliseconds: (this * 86400000).toInt());
+  // ignore: prefer-digit-separators
   Duration get hours => Duration(milliseconds: (this * 3600000).toInt());
   Duration get min => Duration(milliseconds: (this * 60000).toInt());
   Duration get sec => Duration(milliseconds: (this * 1000).toInt());

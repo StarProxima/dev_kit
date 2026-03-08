@@ -9,10 +9,12 @@ extension DateUtilsX on DateTime {
     if (month == DateTime.february) {
       final isLeapYear =
           (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+
       return isLeapYear ? 29 : 28;
     }
     const daysInMonth = <int>[31, -1, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return daysInMonth[month - 1];
+
+    return daysInMonth.elementAtOrNull(month - 1) ?? 30;
   }
 
   DateTime addMonths(int months) => copyWith(month: month + months);
@@ -32,13 +34,14 @@ extension DateUtilsX on DateTime {
 
   /// Returns week number of current week in a year
   int get weekOfYear {
-    var w = _weekNumber;
+    int w = _weekNumber;
     final numOfWeeksInCurrentYear = _numOfWeeks(year);
     if (w < 1) {
       w = _numOfWeeks(year - 1);
     } else if (w > numOfWeeksInCurrentYear) {
       w = 1;
     }
+
     return w;
   }
 
@@ -46,6 +49,7 @@ extension DateUtilsX on DateTime {
   int get _weekNumber {
     final startDate = DateTime(year);
     final dayOfYear = difference(startDate).inDays + 1;
+
     return ((dayOfYear - weekday + 10) / 7).floor();
   }
 
@@ -53,6 +57,7 @@ extension DateUtilsX on DateTime {
   /// [year] - year to calculate number of weeks
   static int _numOfWeeks(int year) {
     final dec28 = DateTime(year, 12, 28);
+
     return dec28._weekNumber;
   }
 }

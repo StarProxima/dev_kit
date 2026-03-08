@@ -32,8 +32,10 @@ class AuthToken extends Token {
       accessToken: json['accessToken'],
       tokenType: json['tokenType'],
       refreshToken: json['refreshToken'],
-      expiresAt: json['expiresAt'] != null ? DateTime.parse(json['expiresAt']) : null,
-      issuedAt: json['issuedAt'] != null ? DateTime.parse(json['issuedAt']) : null,
+      issuedAt:
+          json['issuedAt'] == null ? null : DateTime.parse(json['issuedAt']),
+      expiresAt:
+          json['expiresAt'] == null ? null : DateTime.parse(json['expiresAt']),
       userId: json['userId'],
     );
   }
@@ -48,8 +50,8 @@ class AuthToken extends Token {
   }) {
     return AuthToken(
       accessToken: accessToken ?? this.accessToken,
-      refreshToken: refreshToken ?? this.refreshToken,
       tokenType: tokenType ?? this.tokenType,
+      refreshToken: refreshToken ?? this.refreshToken,
       issuedAt: issuedAt ?? this.issuedAt,
       expiresAt: expiresAt ?? this.expiresAt,
       userId: userId ?? this.userId,
@@ -58,6 +60,13 @@ class AuthToken extends Token {
 
   @override
   String toString() {
-    return 'AuthToken(accessToken: $accessToken, tokenType: $tokenType, refreshToken: $refreshToken, expiresAt: $expiresAt, issuedAt: $issuedAt, userId: $userId)';
+    // ignore: avoid-adjacent-strings
+    return 'AuthToken('
+        'accessToken: $accessToken, '
+        'tokenType: ${tokenType ?? 'null'}, '
+        'refreshToken: ${refreshToken ?? 'null'}, '
+        'expiresAt: ${expiresAt?.toIso8601String() ?? 'null'}, '
+        'issuedAt: ${issuedAt?.toIso8601String() ?? 'null'}, '
+        'userId: ${userId ?? 'null'})';
   }
 }

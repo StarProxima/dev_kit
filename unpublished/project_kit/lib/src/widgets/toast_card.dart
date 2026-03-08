@@ -4,9 +4,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../../../project_kit.dart';
 
 enum ToastType {
   success,
@@ -15,8 +14,8 @@ enum ToastType {
   error,
 }
 
-const _rotationFactor = 30;
-const _fadeFactor = 2;
+const _kRotationFactor = 30;
+const _kFadeFactor = 2;
 
 class ToastCard extends StatefulHookConsumerWidget {
   const ToastCard({
@@ -39,6 +38,7 @@ class ToastCard extends StatefulHookConsumerWidget {
   final ToastType type;
   final Duration duration;
   final VoidCallback onDismissed;
+  // ignore: prefer-async-callback
   final Future<void> Function()? onShare;
 
   final Text? text;
@@ -60,6 +60,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
   Timer? timer;
 
   @override
+  // ignore: avoid-high-cyclomatic-complexity
   Widget build(BuildContext context) {
     final title = widget.title;
     final text = widget.text;
@@ -83,13 +84,15 @@ class _ToastCardState extends ConsumerState<ToastCard> {
       reverseDuration: const Duration(milliseconds: 150),
     );
 
-    void setTimerToHide({bool immediately = false}) {
+    void setTimerToHide({bool isImmediate = false}) {
       timer?.cancel();
-      timer = Timer(immediately ? Duration.zero : duration, () {
+      timer = Timer(isImmediate ? Duration.zero : duration, () {
         if (!mounted) return;
         scaleAnimationController.reverse();
+        // Задержка для завершения анимации скрытия перед удалением виджета
         Future.delayed(
-          scaleAnimationController.reverseDuration!,
+          scaleAnimationController.reverseDuration ??
+              const Duration(milliseconds: 150),
           () {
             if (mounted) {
               widget.onDismissed();
@@ -103,6 +106,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
       () {
         scaleAnimationController.forward();
         setTimerToHide();
+
         return timer?.cancel;
       },
       const [],
@@ -126,12 +130,6 @@ class _ToastCardState extends ConsumerState<ToastCard> {
 
     const backgroundColor = Colors.white;
     const textColor = Colors.black;
-    final iconColor = switch (widget.type) {
-      ToastType.success => Colors.green,
-      ToastType.info => Colors.blue,
-      ToastType.warning => Colors.yellow,
-      ToastType.error => Colors.red,
-    };
 
     return FadeTransition(
       opacity: fadeController,
@@ -139,18 +137,19 @@ class _ToastCardState extends ConsumerState<ToastCard> {
         turns: rotationController,
         child: Dismissible(
           key: UniqueKey(),
-          onDismissed: (direction) => widget.onDismissed(),
           onUpdate: (details) {
-            final progress = details.direction == DismissDirection.startToEnd
-                ? details.progress
-                : -details.progress;
             if (widget.isRotated) {
-              rotationController.value = progress / _rotationFactor;
+              final progress =
+                  details.direction == DismissDirection.startToEnd
+                      ? details.progress
+                      : -details.progress;
+              rotationController.value = progress / _kRotationFactor;
             }
             if (widget.isFaded) {
-              fadeController.value = 1 - (details.progress / _fadeFactor);
+              fadeController.value = 1 - (details.progress / _kFadeFactor);
             }
           },
+          onDismissed: (direction) => widget.onDismissed(),
           child: DefaultTextStyle(
             style: const TextStyle(color: textColor),
             child: ScaleTransition(
@@ -160,18 +159,23 @@ class _ToastCardState extends ConsumerState<ToastCard> {
               child: GestureDetector(
                 onTap: openCloseCard,
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: decoration ??
                       BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
                         color: backgroundColor,
-                        border: Border.all(color: textColor.withOpacity(0.2)),
+                        border: Border.all(
+                          color: textColor.withValues(alpha: 0.2),
+                        ),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
                       ),
+                  margin: const EdgeInsets.only(bottom: 16),
                   clipBehavior: Clip.antiAlias,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.sizeOf(context).height * 0.8,
                     ),
+                    // ignore: prefer-using-list-view
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -183,11 +187,17 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                   switch (widget.type) {
                                     ToastType.success =>
                                       Icons.check_circle_outline,
-                                    ToastType.info => Icons.info_outline,
-                                    ToastType.warning => Icons.info_outline,
+                                    ToastType.info ||
+                                    ToastType.warning =>
+                                      Icons.info_outline,
                                     ToastType.error => Icons.cancel_outlined,
                                   },
-                                  color: iconColor,
+                                  color: switch (widget.type) {
+                                    ToastType.success => Colors.green,
+                                    ToastType.info => Colors.blue,
+                                    ToastType.warning => Colors.yellow,
+                                    ToastType.error => Colors.red,
+                                  },
                                 ),
                                 const Gap(12),
                                 Expanded(
@@ -197,9 +207,9 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                     children: [
                                       Flexible(
                                         child: Column(
+                                          mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
                                           children: [
                                             const Gap(12),
                                             if (title != null || isDebug)
@@ -232,6 +242,7 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                                   ),
                                                 ),
                                               ),
+                                            // ignore: prefer-null-aware-elements
                                             if (text != null) text,
                                             const Gap(12),
                                           ],
@@ -244,19 +255,21 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                           child: InkWell(
                                             radius: 50,
                                             borderRadius:
-                                                BorderRadius.circular(50),
+                                                const BorderRadius.all(
+                                              Radius.circular(50),
+                                            ),
                                             onTap: () async {
                                               if (!widget.shouldHideShare) {
                                                 await widget.onShare?.call();
                                               }
-                                              setTimerToHide(immediately: true);
+                                              setTimerToHide(isImmediate: true);
                                             },
                                             child: Padding(
                                               padding: const EdgeInsets.all(8),
                                               child: Icon(
-                                                !widget.shouldHideShare
-                                                    ? Icons.share
-                                                    : Icons.close,
+                                                widget.shouldHideShare
+                                                    ? Icons.close
+                                                    : Icons.share,
                                                 size: 24,
                                                 color: textColor,
                                               ),
@@ -272,8 +285,8 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                           if (debugText != null)
                             SizeTransition(
                               sizeFactor: CurvedAnimation(
-                                curve: Curves.easeInOut,
                                 parent: debugTextAnimationController,
+                                curve: Curves.easeInOut,
                               ),
                               axisAlignment: -1,
                               child: Column(
@@ -281,19 +294,18 @@ class _ToastCardState extends ConsumerState<ToastCard> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Divider(
-                                    color: textColor.withOpacity(0.1),
-                                    thickness: 2,
                                     height: 2,
+                                    thickness: 2,
+                                    color: textColor.withValues(alpha: 0.1),
                                   ),
                                   Padding(
-                                    padding: horizontalPadding,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: 8,
-                                        bottom: 4,
-                                      ),
-                                      child: debugText,
+                                    padding: const EdgeInsets.only(
+                                      left: 12,
+                                      top: 8,
+                                      right: 8,
+                                      bottom: 4,
                                     ),
+                                    child: debugText,
                                   ),
                                 ],
                               ),

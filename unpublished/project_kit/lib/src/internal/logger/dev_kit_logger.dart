@@ -1,30 +1,28 @@
-import 'package:auto_exporter_annotation/auto_exporter_annotation.dart';
 import 'package:proxima_logger/proxima_logger.dart';
 
-/// Логгер, используемый в dev_kit.
-@IgnoreExport()
-final logger = DevKitLogger(
-  settings: _settingsBuilder,
-);
-
-LogSettings _settingsBuilder(ILogType logType) {
-  return switch (logType) {
-    _ => const LogSettings(
-        logParts: [
-          LogPart.stack,
-          LogPart.error,
-          LogPart.divider,
-          LogPart.message,
-        ],
-        skipStackTraceRegExp: 'package:riverpod|api_wrap',
-      )
-  };
-}
-
 class DevKitLogger extends ProximaLoggerBase {
+  /// Логгер, используемый в dev_kit.
+  static final instance = DevKitLogger(
+    settings: _settingsBuilder,
+  );
+
   DevKitLogger({super.settings});
 
-  void debug(String? title, [dynamic message]) {
+  static LogSettings _settingsBuilder(ILogType logType) {
+    return switch (logType) {
+      _ => const LogSettings(
+          logParts: [
+            LogPart.stack,
+            LogPart.error,
+            LogPart.divider,
+            LogPart.message,
+          ],
+          skipStackTraceRegExp: 'package:riverpod|api_wrap',
+        ),
+    };
+  }
+
+  void debug(String? title, [Object? message]) {
     log(
       LogType.debug,
       title: title,
@@ -35,15 +33,15 @@ class DevKitLogger extends ProximaLoggerBase {
   void error({
     String? title,
     StackTrace? stack,
-    dynamic error,
-    dynamic message,
+    Object? error,
+    Object? message,
   }) {
     log(
       LogType.error,
       title: title,
-      message: message,
       error: error,
       stack: stack,
+      message: message,
     );
   }
 }
