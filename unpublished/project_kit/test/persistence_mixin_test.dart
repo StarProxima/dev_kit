@@ -258,6 +258,7 @@ void main() {
 
       container.read(_syncProvider);
       final notifier = container.read(_syncProvider.notifier);
+      await _pumpWrites();
       await notifier.clearData();
 
       expect(_storage.read(key: '_SyncNotifier'), isNull);
@@ -407,6 +408,7 @@ void main() {
 
       container.read(_asyncProvider);
       await container.read(_asyncProvider.future);
+      await _pumpWrites();
 
       final notifier = container.read(_asyncProvider.notifier);
       await notifier.clearData();

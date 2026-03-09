@@ -72,10 +72,10 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    listenSelf((_, next) {
-      final data = next == null ? null : _toJson(next);
-      Future(() => _storage.write(key: _storageKey, id: _storageId, value: data));
-    });
+    listenSelf((_, next) => scheduleMicrotask(() {
+          final data = next == null ? null : _toJson(next);
+          _storage.write(key: _storageKey, id: _storageId, value: data);
+        }));
 
     if (enabled && data != null && !_isInitialized) {
       try {
@@ -190,11 +190,11 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    listenSelf((_, next) {
-      if (next is! AsyncData<State>) return;
-      final data = next.value == null ? null : _toJson(next.value);
-      Future(() => _storage.write(key: _storageKey, id: _storageId, value: data));
-    });
+    listenSelf((_, next) => scheduleMicrotask(() {
+          if (next is! AsyncData<State>) return;
+          final data = next.value == null ? null : _toJson(next.value);
+          _storage.write(key: _storageKey, id: _storageId, value: data);
+        }));
     final isRefresh = state.isRefreshing || state.isReloading;
 
     if (enabled && data != null && !_isInitialized && !isRefresh) {
