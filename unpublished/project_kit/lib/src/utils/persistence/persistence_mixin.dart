@@ -72,7 +72,10 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    listenSelf((_, __) => Future(pushData));
+    listenSelf((_, next) {
+      final data = next == null ? null : _toJson(next);
+      Future(() => _storage.write(key: _storageKey, id: _storageId, value: data));
+    });
 
     if (enabled && data != null && !_isInitialized) {
       try {
@@ -85,6 +88,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
         if (updateAfterFirstBuild) {
           Future(() {
+            if (!ref.mounted) return;
             final data = build();
             state = data;
           });
@@ -114,6 +118,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 
   @protected
   Future<void> pushData() async {
+    if (!ref.mounted) return;
     final data = state == null ? null : _toJson(state);
     await _storage.write(key: _storageKey, id: _storageId, value: data);
   }
@@ -185,7 +190,11 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    listenSelf((_, __) => Future(pushDataToStorage));
+    listenSelf((_, next) {
+      if (next is! AsyncData<State>) return;
+      final data = next.value == null ? null : _toJson(next.value);
+      Future(() => _storage.write(key: _storageKey, id: _storageId, value: data));
+    });
     final isRefresh = state.isRefreshing || state.isReloading;
 
     if (enabled && data != null && !_isInitialized && !isRefresh) {
@@ -199,10 +208,12 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
         if (updateAfterFirstBuild) {
           Future(() async {
+            if (!ref.mounted) return;
             final futureOr = build();
 
             if (futureOr is Future) {
               final data = await futureOr;
+              if (!ref.mounted) return;
               state = AsyncData(data);
             } else {
               state = AsyncData(futureOr);
@@ -234,6 +245,7 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
   @protected
   Future<void> pushDataToStorage() async {
+    if (!ref.mounted) return;
     final st = state;
     if (st is! AsyncData<State>) return;
     final data = st.value == null ? null : _toJson(st.value);
