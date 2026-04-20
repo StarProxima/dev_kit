@@ -368,7 +368,7 @@ dart_code_metrics:
     - avoid-inferrable-type-arguments: false
     - avoid-continue: false
 
- 
+
     # Слишком много false positive
     - avoid-async-call-in-sync-function: false
     - no-empty-block: false
@@ -403,6 +403,12 @@ dart_code_metrics:
 
     # Конфликт c avoid_redundant_argument_values
     - avoid-passing-default-values: false
+
+    # Дублирует lint-правило unnecessary_parenthesis
+    - avoid-unnecessary-parentheses: false
+
+    # Дублирует only_throw_errors, слишком строго
+    - avoid-throw: false
 
     # Без файлов экспорта из-за большого кол-ва кастомных сущностей тяжело
     - avoid-barrel-files: false
@@ -543,3 +549,13 @@ dart_code_metrics:
         #   - overridden-public-methods
         #   - public-methods
         #   - build-method
+
+  pubspec-rules:
+    # Слишком опинионированные правила сортировки/форматирования pubspec
+    - pubspec-ordering: false
+    - dependencies-ordering: false
+    - newline-before-pubspec-entry: false
+    - prefer-pinned-version-syntax: false
+    - prefer-correct-screenshots: false
+    - prefer-correct-topics: false
+    - add-resolution-workspace: false
