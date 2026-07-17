@@ -111,9 +111,15 @@ final _loadingProvider = Provider.family<bool, int>(
 
 @internal
 class ValidatorRiverpodAdapter {
-  ValidatorRiverpodAdapter(this.ref);
+  ValidatorRiverpodAdapter(this._getRef);
 
-  final Ref ref;
+  final Ref Function() _getRef;
+
+  /// Ref берётся лениво на каждый вызов: Ref-объект провайдера умирает при
+  /// каждой его пересборке, а notifier (и созданные им валидаторы) пересборку
+  /// переживают. Захваченный в поле Ref после первой же пересборки бросал бы
+  /// UnmountedRefException на каждую валидацию.
+  Ref get ref => _getRef();
 
   ProviderBase<String?> createErrorProvider({
     required int hashcode,

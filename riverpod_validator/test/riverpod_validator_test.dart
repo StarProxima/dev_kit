@@ -262,4 +262,33 @@ void main() {
       );
     });
   });
+
+  group('Provider rebuild', () {
+    test('validators keep working after host provider rebuild', () async {
+      final container = ProviderContainer.test();
+      addTearDown(container.dispose);
+
+      final sub = container.listen(
+        _syncValidatorHostProvider.notifier,
+        (_, _) {},
+      );
+      final notifier = sub.read();
+
+      expect(notifier.requiredValidator.validate(), 'Required');
+
+      // Пересборка провайдера: Ref прошлого build мёртв, notifier и его
+      // late final валидаторы - те же самые объекты.
+      container.invalidate(_syncValidatorHostProvider);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(identical(sub.read(), notifier), isTrue);
+
+      // До ленивого Ref в адаптере здесь бросало UnmountedRefException.
+      expect(notifier.requiredValidator.validate(), 'Required');
+
+      notifier.setValue('filled');
+      expect(notifier.requiredValidator.validate(), isNull);
+      expect(container.read(notifier.requiredValidator.errorProvider), isNull);
+    });
+  });
 }

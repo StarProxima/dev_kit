@@ -11,7 +11,7 @@ import 'package:riverpod_validator/src/validator_riverpod_adapter.dart';
 mixin ValidatorMixin implements ValidatorRiverpodRef {
   @protected
   @override
-  late final validatorRiverpod = ValidatorRiverpodAdapter(ref);
+  late final validatorRiverpod = ValidatorRiverpodAdapter(() => ref);
 
   @protected
   List<SingleValidatorBase> get allValidators =>
