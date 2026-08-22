@@ -169,6 +169,83 @@ class _AsyncUpdateNotifier extends AsyncNotifier<_TestState>
 }
 
 // ---------------------------------------------------------------------------
+// Async notifier с зависимостью, объявленной до первого await
+// ---------------------------------------------------------------------------
+
+final _depProvider = NotifierProvider<_DepNotifier, int>(_DepNotifier.new);
+
+class _DepNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void bump() => state = state + 1;
+}
+
+/// Держит первый проход build подвисшим, пока тест меняет зависимость.
+Completer<void>? _firstPassGate;
+
+final _asyncWatchingProvider =
+    AsyncNotifierProvider<_AsyncWatchingNotifier, _TestState>(
+  _AsyncWatchingNotifier.new,
+);
+
+class _AsyncWatchingNotifier extends AsyncNotifier<_TestState>
+    with AsyncPersistenceMixin<_TestState> {
+  int buildCount = 0;
+
+  @override
+  Future<_TestState> build() async {
+    buildCount++;
+    final isFirstPass = buildCount == 1;
+
+    ref.watch(_depProvider);
+
+    // Фолбэк выдумывает данные, а не идёт за ними заново - как у потребителей,
+    // которые хранят накопленное.
+    final restored = await persistentBuild(
+      () => state.value ?? const _TestState(0),
+      fromJson: _TestState.fromJson,
+    );
+
+    if (isFirstPass) await _firstPassGate?.future;
+
+    return restored;
+  }
+}
+
+final _asyncWatchingUpdateProvider =
+    AsyncNotifierProvider<_AsyncWatchingUpdateNotifier, _TestState>(
+  _AsyncWatchingUpdateNotifier.new,
+);
+
+class _AsyncWatchingUpdateNotifier extends AsyncNotifier<_TestState>
+    with AsyncPersistenceMixin<_TestState> {
+  int buildCount = 0;
+  int fallbackCallCount = 0;
+
+  @override
+  Future<_TestState> build() async {
+    buildCount++;
+    final isFirstPass = buildCount == 1;
+
+    ref.watch(_depProvider);
+
+    final restored = await persistentBuild(
+      () {
+        fallbackCallCount++;
+        return const _TestState(99);
+      },
+      fromJson: _TestState.fromJson,
+      updateAfterFirstBuild: true,
+    );
+
+    if (isFirstPass) await _firstPassGate?.future;
+
+    return restored;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -414,6 +491,96 @@ void main() {
       await notifier.clearData();
 
       expect(_storage.read(key: '_AsyncNotifier'), isNull);
+    });
+  });
+
+  group('Перезапуск build до его завершения', () {
+    test('восстановленная запись достаётся следующему проходу', () async {
+      _initStorage({
+        '_AsyncWatchingNotifier': {'value': 42},
+      });
+      _firstPassGate = Completer<void>();
+      final container = ProviderContainer.test();
+      addTearDown(container.dispose);
+
+      // Первый проход читает запись и подвисает.
+      container.read(_asyncWatchingProvider);
+      // Зависимость меняется, пока он не дошёл до конца: его результат
+      // выбрасывают, и до состояния доходит только второй проход.
+      container.read(_depProvider.notifier).bump();
+      _firstPassGate!.complete();
+
+      final state = await container.read(_asyncWatchingProvider.future);
+
+      expect(container.read(_asyncWatchingProvider.notifier).buildCount, 2);
+      expect(state, const _TestState(42));
+    });
+
+    test('фолбэк не затирает запись в хранилище', () async {
+      _initStorage({
+        '_AsyncWatchingNotifier': {'value': 42},
+      });
+      _firstPassGate = Completer<void>();
+      final container = ProviderContainer.test();
+      addTearDown(container.dispose);
+
+      container.read(_asyncWatchingProvider);
+      container.read(_depProvider.notifier).bump();
+      _firstPassGate!.complete();
+      await container.read(_asyncWatchingProvider.future);
+      await _pumpWrites();
+
+      expect(_storage.read(key: '_AsyncWatchingNotifier'), {'value': 42});
+    });
+
+    test('updateAfterFirstBuild остаётся одноразовым', () async {
+      _initStorage({
+        '_AsyncWatchingUpdateNotifier': {'value': 5},
+      });
+      _firstPassGate = Completer<void>();
+      final container = ProviderContainer.test();
+      addTearDown(container.dispose);
+
+      container.read(_asyncWatchingUpdateProvider);
+      container.read(_depProvider.notifier).bump();
+      _firstPassGate!.complete();
+      await container.read(_asyncWatchingUpdateProvider.future);
+      await _pumpWrites();
+      await _pumpWrites();
+
+      final notifier =
+          container.read(_asyncWatchingUpdateProvider.notifier);
+      expect(notifier.buildCount, 2);
+      expect(
+        notifier.fallbackCallCount,
+        1,
+        reason: 'обновление после первого build не должно удваиваться',
+      );
+      expect(
+        container.read(_asyncWatchingUpdateProvider),
+        isA<AsyncData<_TestState>>()
+            .having((d) => d.value, 'value', const _TestState(99)),
+      );
+    });
+  });
+
+  group('Ручное обновление провайдера', () {
+    test('не подставляет запись с диска вместо свежих данных', () async {
+      _initStorage({
+        '_AsyncNotifier': {'value': 42},
+      });
+      final container = ProviderContainer.test();
+      addTearDown(container.dispose);
+
+      expect(await container.read(_asyncProvider.future), const _TestState(42));
+
+      container.invalidate(_asyncProvider);
+
+      expect(
+        await container.read(_asyncProvider.future),
+        const _TestState(0),
+        reason: 'принудительное обновление обязано звать build, а не кеш',
+      );
     });
   });
 

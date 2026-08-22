@@ -154,6 +154,7 @@ mixin PersistenceMixin<State> implements INotifier<State> {
 /// ```
 mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
   bool _isInitialized = false;
+  bool _isRefreshScheduled = false;
   String? _storageId;
   late String _storageKey = runtimeType.toString();
   PersistenceStorage get _storage => PersistenceStorage.storage;
@@ -190,23 +191,36 @@ mixin AsyncPersistenceMixin<State> implements IAsyncNotifier<State> {
 
     final data = _storage.read(key: _storageKey, id: _storageId);
 
-    listenSelf((_, next) => scheduleMicrotask(() {
-          if (next is! AsyncData<State>) return;
-          final data = next.value == null ? null : _toJson(next.value);
-          _storage.write(key: _storageKey, id: _storageId, value: data);
-        }));
+    listenSelf((_, next) {
+      // Восстановление израсходовано только тогда, когда проход build довёл
+      // своё значение до состояния. Асинхронный build перезапускается сколько
+      // угодно раз до своего завершения, и результат прерванного прохода
+      // выбрасывают: гаси флаг по факту чтения записи - и следующий проход
+      // останется без неё, соберёт состояние из фолбэка, а фолбэк уедет на
+      // диск поверх сохранённых данных.
+      if (next is AsyncData<State>) _isInitialized = true;
+
+      scheduleMicrotask(() {
+        if (next is! AsyncData<State>) return;
+        final data = next.value == null ? null : _toJson(next.value);
+        _storage.write(key: _storageKey, id: _storageId, value: data);
+      });
+    });
     final isRefresh = state.isRefreshing || state.isReloading;
 
     if (enabled && data != null && !_isInitialized && !isRefresh) {
       try {
-        _isInitialized = true;
         // Нужно предварительно пеобразовать json, т.к. иначе дарт сам не преобразует
         // внутренние модели из Map в Map<String, dynamic> и выбросит
         // type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>' in type cast
         final json = jsonDecode(jsonEncode(data));
         final map = Map<String, dynamic>.from(json);
 
-        if (updateAfterFirstBuild) {
+        // Прерванный проход читает запись заново, поэтому сюда можно зайти
+        // несколько раз за одну инициализацию - обновление же остаётся
+        // одноразовым, как и обещает имя параметра.
+        if (updateAfterFirstBuild && !_isRefreshScheduled) {
+          _isRefreshScheduled = true;
           Future(() async {
             if (!ref.mounted) return;
             final futureOr = build();
