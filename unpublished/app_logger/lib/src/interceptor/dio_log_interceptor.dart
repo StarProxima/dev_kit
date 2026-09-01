@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 typedef ParserError = Map<String, dynamic> Function(Object? data);
 
 /// log Format request time
-final class DioLogInterceptor implements Interceptor {
+final class DioLogInterceptor extends Interceptor {
   DioLogInterceptor({this.parserError});
 
   final logManager = HttpLogManager.instance;
