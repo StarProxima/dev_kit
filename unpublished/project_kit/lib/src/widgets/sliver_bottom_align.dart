@@ -22,26 +22,33 @@ class SliverBottomAlign extends StatelessWidget {
     // LayoutBuilder на такой запрос кидает assertion - экран не строится.
     // Остаток вьюпорта считаем сами и отдаём нижней границей высоты.
     return SliverLayoutBuilder(
-      builder:
-          (context, constraints) => SliverToBoxAdapter(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: math.max(
-                  0,
-                  constraints.viewportMainAxisExtent -
-                      constraints.precedingScrollExtent,
-                ),
+      builder: (context, constraints) {
+        assert(
+          constraints.axis == Axis.vertical,
+          'SliverBottomAlign прижимает ребёнка к низу, горизонтальный скролл '
+          'он не обслуживает.',
+        );
+
+        return SliverToBoxAdapter(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: math.max(
+                0,
+                constraints.viewportMainAxisExtent -
+                    constraints.precedingScrollExtent,
               ),
-              child: Padding(
-                padding: padding,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: crossAxisAlignment,
-                  children: [child],
-                ),
+            ),
+            child: Padding(
+              padding: padding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: crossAxisAlignment,
+                children: [child],
               ),
             ),
           ),
+        );
+      },
     );
   }
 }
